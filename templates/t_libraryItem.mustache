@@ -1,0 +1,16 @@
+<li class="lpLibraryItem {{classes}}" item="{{id}}">
+    {{#url}}<a href="{{url}}" target="_blank" class="lpName lpHref">{{/url}}
+    {{^url}}<span class="lpName">{{/url}}
+        {{name}}
+    {{#url}}</a>{{/url}}
+    {{^url}}</span>{{/url}}
+    <span class="lpWeight">
+        {{displayWeight}}
+        {{{authorUnit}}}
+    </span>
+    <span class="lpDescription">
+        {{description}}
+    </span>
+    <a class="lpRemove lpRemoveLibraryItem" title="Delete this item permanently"><i class="lpSprite lpSpriteRemove"></i></a>
+    <div class="lpHandle" title="Reorder this item"></div>
+</li>

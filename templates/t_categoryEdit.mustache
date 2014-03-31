@@ -1,0 +1,33 @@
+<li class="lpCategory" id="{{id}}">
+    <ul class="lpItems lpTable lpDataTable">
+        <li class="lpRow lpHeader">
+            <span class="lpCell lpHandleCell">
+                <div class="lpHandle lpCategoryHandle" title="Reorder this category"></div>
+            </span>
+            <span class="lpCell lpImageCell"></span>
+            <span class="lpCell lpNameCell">
+                <span class="lpCategoryNameContainer">
+                    <input type="text" value="{{name}}" placeholder="Category Name" class="lpCategoryName lpSilent"/>
+                </span>
+            </span>
+            <span class="lpCell"></span>
+            <span class="lpCell"></span>
+            <span class="lpCell lpWeightCell">Weight</span>
+            <span class="lpCell lpQtyCell">qty</span>
+            <span class="lpCell lpRemoveCell"><a class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
+        </li>
+        {{{items}}}
+        <li class="lpRow lpFooter">
+            <span class="lpCell"></span>
+            <span class="lpCell lpImageCell"></span>
+            <span class="lpCell lpNameCell">
+                <a href="#" class="lpAdd lpAddItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
+            </span>
+            <span class="lpCell"></span>
+            <span class="lpCell"></span>
+            <span class="lpCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
+            <span class="lpCell"></span>
+            <span class="lpCell"></span>
+        </li>
+    </ul>
+</li>

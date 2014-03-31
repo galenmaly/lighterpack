@@ -1,0 +1,19 @@
+<div class="lpUnitSelect">
+    <select class="lpUnit lpInvisible">
+        {{#units}}
+            <option value="{{unit}}" {{#selected}}selected{{/selected}}>{{unit}}</option>
+        {{/units}}
+    </select>
+
+    <!--<input type="hidden" class="lpUnit" value="{{unit}}"/>-->
+    {{#weight}}
+    	<input type="hidden" class="lpMG" value="{{weight}}"/>
+    {{/weight}}
+    <span class="lpDisplay">{{unit}}</span>
+    <i class="lpSprite lpExpand"></i>
+    <ul class="lpUnitDropdown">
+        {{#units}}
+            <li class="{{unit}}">{{unit}}</li>
+        {{/units}}
+    </ul>
+</div>

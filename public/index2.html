@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css' />
+        <link href="common.css" rel="stylesheet" type="text/css" />
+        <link href="edit.css" rel="stylesheet" type="text/css" />
+        <script type="text/html" id="unitSelect">
+            <div class="unitSelect">
+                <input type="hidden" class="unit" value="{{value}}"/>
+                <span class="display">{{value}}</span>
+                <i class="expand"></i>
+                <ul class="unitDropdown">
+                    {{#units}}
+                        <li class="{{value}}">{{value}}</li>
+                    {{/units}}
+                </div>
+            </div>
+        </script>
+        <script type="text/html" id="categorySummary">
+            <li class="totalCategory row" id="total_{{id}}">
+                <span class="cell legendCell">
+                    <span class="legend" style="background-color: {{displayColor}}"></span>
+                </span>
+                <span class="cell">
+                    {{name}}
+                </span>
+                <span class="cell number">
+                    <div class="subtotal"><span class="displaySubtotal">{{displaySubtotal}}</span> <span class="subtotalUnit">{{subtotalUnit}}</span></div>
+                </span>
+            </li>
+        </script>
+        <script type="text/html" id="categoryTemplate">
+            <li class="category" id="{{id}}">
+                <ul class="items table dataTable">
+                    <li class="row header">
+                        <span class="cell handleCell">
+                            <div class="handle categoryHandle" title="Reorder this category"></div>
+                        </span>
+                        <span class="cell imageCell"></span>
+                        <span class="cell nameCell">
+                            <span class="categoryNameContainer">
+                                <input type="text" value="{{name}}" class="categoryName silent"/>
+                            </span>
+                        </span>
+                        <span class="cell"></span>
+                        <span class="cell"></span>
+                        <span class="cell weightCell">Weight</span>
+                        <span class="cell qtyCell">qty</span>
+                        <span class="cell"><a class="remove removeCategory" title="Remove this category"><i class="spriteRemove"></i></a></span>
+                    </li>
+                    {{{items}}}
+                    <li class="row footer">
+                        <span class="cell"></span>
+                        <span class="cell imageCell"></span>
+                        <span class="cell nameCell">
+                            <a href="#" class="add addItem"><i class="spriteAdd"></i>Add new item</a>
+                        </span>
+                        <span class="cell"></span>
+                        <span class="cell"></span>
+                        <span class="cell number"><div class="subtotal"><span class="displaySubtotal">{{displaySubtotal}}</span> <span class="subtotalUnit">{{subtotalUnit}}</span></div></span>
+                        <span class="cell"></span>
+                        <span class="cell"></span>
+                    </li>
+                </ul>
+                
+            </li>
+        </script>
+        <script type="text/html" id="itemTemplate">
+            <li class="row item {{classes}}" id="{{id}}">
+                <span class="cell handleCell">
+                    <div class="itemHandle handle" title="Reorder this item"></div>
+                </span>
+                <span class="cell imageCell">
+                    {{#image}}
+                        <img class="itemImage" src="http://i.imgur.com/{{image}}s.jpg" />
+                    {{/image}}
+                </span>
+                <span class="cell nameCell">
+                    <input type="text" value="{{name}}" class="name silent" placeholder="Name" />
+                </span>
+                <span class="cell descriptionCell">
+                    <input type="text" value="{{description}}" class="description silent" placeholder="Description" />
+                </span>
+                <span class="cell actionsCell">
+                    <i class="camera" title="Upload a photo"></i>
+
+                    {{#url}}
+                        <i class="link active" title="Add a link for this item"></i>
+                    {{/url}}
+                    {{^url}}
+                        <i class="link" title="Add a link for this item"></i>
+                    {{/url}}
+                    
+
+                    {{#worn}}
+                        <i class="worn active" title="Mark this item as worn"></i>
+                    {{/worn}}
+                    {{^worn}}
+                        <i class="worn" title="Mark this item as worn"></i>
+                    {{/worn}}
+                </span>
+                <span class="cell weightCell number">
+                    <input type="text" value="{{displayWeight}}" class="weight number silent" />
+                    {{{unitSelect}}}
+                </span>
+                <span class="cell qtyCell">
+                    <input type="text" value="{{qty}}" class="qty number silent" />
+                </span>
+                <span class="cell removeCell">
+                    <a class="remove removeItem" title="Remove this item"><i class="spriteRemove"></i></a>
+                </span>
+            </li>
+        </script>
+        <script type="text/html" id="libraryItem">
+            <li class="libraryItem {{classes}}" item="{{id}}">
+                <span class="name">
+                    {{name}}
+                </span>
+                <span class="weight">
+                    {{displayWeight}}
+                    {{{authorUnit}}}
+                </span>
+                <span class="description">
+                    {{description}}
+                </span>
+                <a class="remove removeLibraryItem" title="Delete this item permanently"><i class="spriteRemove"></i></a>
+                <div class="handle" title="Reorder this item"></div>
+            </li>
+        </script>
+        <script type="text/html" id="libraryListTemplate">
+            <li class="libraryList" list="{{id}}">
+                <span class='libraryListSwitch listName'>
+                    {{name}}
+                </span>
+                <a class='remove' title="Remove this list"><i class="spriteRemove"></i></a>
+            </li>
+        </script>
+    </head>
+    <body>
+        <!--[if lte IE 8]><div class="notSupported">Whoops! It looks like you're using a rather old web browser. Please upgrade to a more recent version of Internet Explorer, Firefox, or Chrome.</div><![endif]-->
+        <div id="main" class="">
+            <div id="sidebar">
+                <h1>LighterPack <span>(alpha)</span></h1>
+
+                <section>
+                    <h2>Lists</h2>
+                    <ul id="lists"></ul>
+                    <a id="addList" href="#" class="add"><i class="spriteAdd"></i>Add new list</a>
+                </section>
+
+                <section>
+                    <h2>Gear</h2>
+                    <input type="text" id="librarySearch" placeholder="search items"/>
+                    <ul id="library"></ul>
+                </section>
+
+                <a class="button small" href="#" id="toggleImages">Toggle item images</a>
+
+                <h2><a id="showTODO" href="#">Bugs / TODO</a></h2>
+                
+            </div>
+            <div class="list">
+                <div id="header">
+                    <a id="hamburger"><i class="hamburger"></i></a>
+                    <input type="text" id="listName" class="silent" value="Sample List" />
+                    <div id="topRight">
+                        <div class="signedIn">
+                            <div><i class="linkBig" id="share" title="Share this list"></i> &nbsp; <a href="#" class="accountSettings">Signed in as <span class="username"></span></a>. <a href="#" class="button small signout">Sign Out</a></div>
+
+                        </div>
+                        <div class="signedOut" style="display:none">
+                            <a href="#" class="button small showRegister">Register</a> or <a href="#" class="button small showSignin">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="clear:both"></div>
+                <div id="getStarted">
+                    <h2>Welcome to LighterPack!</h2>
+                    <p>Here's what you need to get started:</p>
+                    <ol>
+                        <li>Click on things to edit them. Give your list and category a name.</li>
+                        <li>Add new categories and items to your list.</li>
+                        <li>The “three bar” icon in the top left opens up the menu.</li>
+                    </ol>
+                </div>
+                <div class="half alignRight">
+                    <canvas id="chart" height="260" width="260"></canvas>
+                </div>
+                <div class="half alignLeft">
+                    <div class="table" style="height:260px;"><div class="row"><div class="cell middle">
+                        <ul id="totals" class="table dataTable">
+                            <li class="row header">
+                                <span class="cell"></span>
+                                <span class="cell">
+                                    Category
+                                </span>
+                                <span class="cell">
+                                    Weight
+                                </span>
+                            </li>
+                            <li class="row footer" id="total">
+                                <span class="cell"></span>
+                                <span class="cell subtotal">
+                                    Total
+                                </span>
+                                <span class="cell number subtotal">
+                                    <span id="totalValue"></span>
+                                    <span id="totalUnit"></span>
+                                </span>
+                            </li>
+                            <li class="row footer breakdown" id="wornWeight">
+                                <span class="cell"></span>
+                                <span class="cell subtotal">
+                                    Worn
+                                </span>
+                                <span class="cell number subtotal">
+                                    <span class="displaySubtotal"></span>
+                                    <span class="subtotalUnit"></span>
+                                </span>
+                            </li>
+                            <li class="row footer breakdown" id="packWeight">
+                                <span class="cell"></span>
+                                <span class="cell subtotal">
+                                    Pack Weight
+                                </span>
+                                <span class="cell number subtotal">
+                                    <span class="displaySubtotal"></span>
+                                    <span class="subtotalUnit"></span>
+                                </span>
+                            </li>
+
+                        </ul>
+                    </div></div></div>
+                </div>
+
+                <div style="clear:both"></div>
+
+                <ul id="categories"></ul>
+                <hr />
+                <a href="#" class="add addCategory"><i class="spriteAdd"></i>Add new category</a>
+                <form id="imageUpload">
+                    <input type="file" name="image" id="image" />
+                </form>
+                <div id="footer">
+                    <div id="siteBy">Site by <a href="http://www.galenmaly.com/">Galen Maly</a></div>
+                    <div id="contact">Copyleft LighterPack 2013. <a href="mailto:info@lighterpack.com">Contact</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog sticky" id="welcome">
+            <h2>Welcome to LighterPack</h2>
+            <p>LighterPack lets you track the gear you take on adventures.</p>
+            <div class="columns">
+                <div class="half">
+                    <h3>Register an Account</h3>
+                    <p>
+                        You can register an account to save your data remotely and share your lists.
+                    </p>
+                    <form class="register">
+                        <div class="error"></div>
+                        <input type="text" placeholder="Username" name="username" class="username"/>
+                        <input type="email" placeholder="Email" name="email" class="email"/>
+                        <input type="password" placeholder="Password" name="password" class="password"/>
+                        <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>
+                        <input type="submit" value="Register" class="button" />
+                        <span class="status"></span>
+                        <a class="alternateAction" href="#signin">Already registered?</a>
+                    </form>
+                </div>
+                <div class="half">
+                    <h3>Save Locally</h3>
+                    <p>You can also get started without creating an account.</p>
+                    <ul>
+                        <li>Your data will be saved inside your browser.</li>
+                        <li>You won't be able to share with others until you register an account.</li>
+                        <li>You can always register later to save your data remotely.</li>
+                        <li>No data is transmitted to the server.</li>
+                    </ul>
+                    <a class="button getStarted">Get Started Locally</a>
+                </div>
+            </div>
+        </div>
+        <div class="dialog" id="register">
+            <h2>
+                Register an Account
+                <a class="alternateAction" href="#signin">Already registered?</a>
+            </h2>
+            
+            <span class="info existingData">
+                Your existing data will be saved to your new account upon creation.
+            </span>
+            <form class="register">
+                <div class="error"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="email" placeholder="Email" name="email" class="email"/>
+                <input type="password" placeholder="Password" name="password" class="password"/>
+                <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>
+                <input type="submit" value="Register" class="button" />
+                <span class="status"></span>
+            </form>
+        </div>
+        <div class="dialog" id="signin">
+            <h2>
+                Sign in
+                <a class="alternateAction" href="#register">Need to register?</a>
+            </h2>
+            
+            <p class="message"></p>
+            <form class="signin">
+                <div class="error"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="password" placeholder="Password" name="password" class="password"/>
+                <input type="submit" value="Sign in" class="button" />
+                <span class="status"></span>
+                <a class="alternateAction" href="#forgotPassword">Forgot password?</a>
+            </form>
+        </div>
+        <div class="dialog" id="forgotPassword">
+            <h2>
+                Forgot Your Password?
+            </h2>
+            
+            <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
+            <form class="forgotPassword">
+                <div class="error"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="submit" value="Submit" class="button" />
+                <span class="status"></span>
+                <a class="alternateAction" href="#signin">Return to sign in</a>
+            </form>
+        </div>
+        <div class="dialog" id="accountSettings">
+            <h2>Account Settings</h2>
+
+            <form id="accountForm">
+                <div class="error"></div>
+                <input type="text" name="username" class="username" disabled />
+                <input type="password" placeholder="Current Password" name="currentPassword" class="currentPassword"/>
+                <hr>
+                <input type="email" placeholder="New Email" name="newEmail" class="newEmail" />
+                <hr>
+                <input type="password" placeholder="New Password" name="newPassword" class="newPassword"/>
+                <input type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword"/>
+
+                <input type="submit" value="Submit" class="button" />
+                <a href="#" class="close">Cancel</a>
+                <span class="status"></span>
+            </form>
+        </div>
+        <div class="dialog" id="imageDialog">
+        </div>
+        <div class="dialog" id="shareDialog">
+            <h2>Share your list</h2>
+            <input type="text" id="shareUrl" />
+        </div>
+        <div class="dialog" id="itemLinkDialog">
+            <form id="itemLinkForm">
+                <input type="text" id="itemLink" placeholder="Item Link"/>
+                <input type="submit" class="button" value="Save" />
+            </form>
+        </div>
+        <div class="dialog" id="TODO">
+            <div class="content">
+                <a href="mailto:galenmaly@gmail.com">Found a bug not here? Email me!</a>
+                <h2>Known Bugs</h2>
+                <ul>
+                    <li>Add an item, remove it, is not draggable back into list. (Workaround: refresh page)</li>
+                    <li>Can't drag items to newly created category. (Workaround: refresh page)</li>
+                    <li>Sometimes a section of the pie chart gets "stuck" as hovered (workaround: mouse over empty area near pie chart)</li>
+                </ul>
+
+                <h2>TODO Features</h2>
+                <ul>
+                    <li class="high">Embed widget on external site</li>
+                    <li class="medium">Allow users viewing a list to toggle images on/off</li>
+                    <li class="medium">Add progress bar / spinner for file uploads</li>
+                    <li class="medium">Make qty/weight validation nicer</li>
+                    <li class="medium">Add more "back-end" validation besides hiding of UI elements for adding items to lists, etc</li>
+                    <li class="medium">Support for mobile devices</li>
+                    <li class="low">Import/export to CSV</li>
+                    <li class="low">IE7/IE8 support for report/widget view.</li>
+                    <li class="low">Remove image from item</li>
+                </ul>
+            </div>
+        </div>
+        <div id="modalOverlay"></div>
+        <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
+        <script type="text/javascript" src="jquery-ui-1.10.3.custom.min.js"></script>
+        <script type="text/javascript" src="jquery.mousewheel.js"></script>
+        <script type="text/javascript" src="jquery.jscrollpane.min.js"></script>
+        <script type="text/javascript" src="mustache.js"></script>
+        <script type="text/javascript" src="sha3.js"></script>
+        <script type="text/javascript" src="pies.js"></script>
+        <script type="text/javascript" src="dataTypes.js"></script>
+        <script type="text/javascript" src="edit.js"></script>
+    </body>
+</html>

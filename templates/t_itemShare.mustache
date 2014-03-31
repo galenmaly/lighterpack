@@ -1,0 +1,36 @@
+<li class="lpRow lpItem {{classes}}" id="{{id}}">
+    <span class="lpCell lpImageCell">
+        {{#image}}
+            <img class="lpItemImage" src="http://i.imgur.com/{{image}}s.jpg" href="http://i.imgur.com/{{image}}s.jpg"/>
+        {{/image}}
+    </span>
+    <span class="lpCell lpNameCell">
+        {{#url}}
+            <a href="{{url}}" class="lpHref">
+        {{/url}}
+
+        {{name}}
+
+        {{#url}}
+            </a>
+        {{/url}}
+    </span>
+    <span class="lpCell lpDescriptionCell">
+        {{description}}
+    </span>
+    <span class="lpCell lpActionsCell">
+        {{#worn}}
+            <i class="lpSprite lpWorn lpActive {{wornClass}}" title="This item is worn and not counted in pack weight."></i>
+        {{/worn}}
+        {{#starClass}}
+            <i class="lpSprite lpStar {{starClass}}" title="This item is starred"></i>
+        {{/starClass}}
+    </span>
+    <span class="lpCell lpWeightCell lpNumber">
+        <span class="lpWeight">{{displayWeight}}</span>
+        {{{unitSelect}}}
+    </span>
+    <span class="lpCell lpQtyCell lpNumber">
+        {{qty}}
+    </span>
+</li>

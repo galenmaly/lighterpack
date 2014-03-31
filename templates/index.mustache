@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="lp">
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css' />
+        <link href="common.css" rel="stylesheet" type="text/css" />
+        <link href="edit.css" rel="stylesheet" type="text/css" />
+        <link rel="shortcut icon" href="/favicon.png" />
+        <script type="text/html" id="unitSelect">{{{t_unitSelect}}}</script>
+        <script type="text/html" id="categoryTemplate">{{{t_categoryEdit}}}</script>
+        <script type="text/html" id="itemTemplate">{{{t_itemEdit}}}</script>
+        <script type="text/html" id="libraryItem">{{{t_libraryItem}}}</script>
+        <script type="text/html" id="libraryListTemplate">{{{t_libraryList}}}</script>
+        <script type="text/html" id="totalsTemplate">{{{t_totals}}}</script>
+        <script type="text/html" id="importValidateTemplate">{{{t_importValidate}}}</script>
+        <title>LighterPack</title>
+    </head>
+    <body>
+        <!--[if lte IE 8]><div class="lpNotSupported">Whoops! It looks like you're using a rather old web browser. Please upgrade to a more recent version of Internet Explorer, Firefox, or Chrome.</div><![endif]-->
+        <div id="main" class="lpHasSidebar">
+            <div id="sidebar">
+                <div id="scrollable">
+                    <h1>LighterPack <span>(beta)</span></h1>
+
+                    <section>
+                        <h2>Lists</h2>
+                        <span id="addListFlyout" class="lpFlyout">
+                            <span class="lpTarget"><a id="addList" href="#" class="lpAdd"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
+                            <div class="lpContent">
+                                <a href="#" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a>
+                            </div>
+                        </span>
+                        
+                        <ul id="lists"></ul>
+                    </section>
+
+                    <section>
+                        <h2>Gear</h2>
+                        <input type="text" id="librarySearch" placeholder="search items"/>
+                        <ul id="library"></ul>
+                    </section>
+
+                    <hr />
+
+                    <a class="lpHref lpSmall" href="#" id="toggleImages">Toggle item images</a>
+                </div>
+            </div>
+            <div class="lpList">
+                <div id="header">
+                    <a id="hamburger"><i class="lpSprite lpHamburger"></i></a>
+                    <input type="text" class="lpSilent lpListName" value="New List" placeholder="List Name"/>
+                    <div id="topRight">
+                        <div class="signedIn">
+                            <span id="share" class="lpFlyout">
+                                <span class="lpTarget"><i class="lpSprite lpLinkBig" title="Share this list"></i></span>
+                                <div class="lpContent">
+                                    <h3>Share your list</h3>
+                                    <input type="text" id="shareUrl" />
+                                    <h3>Embed your list</h3>
+                                    <textarea id="embedUrl"></textarea>
+                                    <a href="#"  id="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload"></i>Export to CSV</a>
+                                </div>
+                            </span>
+                            &nbsp; &nbsp;
+                            <span class="lpFlyout">
+                                <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
+                                <div class="lpContent">
+                                    <a href="#" class="lpHref accountSettings">Account Settings</a><br />
+                                    <a href="#" class="lpHref help">Help</a><br />
+                                    <a class="lpHref" id="showTODO" href="#">Bugs / TODO</a><br />
+                                    <a href="#" class="lpHref signout">Sign Out</a>
+                                </div>
+                            </span>
+                        </div>
+                        <div class="signedOut" style="display:none">
+                            <a href="#" class="lpButton lpSmall showRegister">Register</a> or <a href="#" class="lpButton lpSmall showSignin">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="clear:both"></div>
+                <div id="getStarted">
+                    <h2>Welcome to LighterPack!</h2>
+                    <p>Here's what you need to get started:</p>
+                    <ol>
+                        <li>Click on things to edit them. Give your list and category a name.</li>
+                        <li>Add new categories and items to your list.</li>
+                        <li>When you're done, share your list with others!</li>
+                    </ol>
+                </div>
+                <div class="lpHalf lpAlignRight">
+                    <canvas class="lpChart" height="260" width="260"></canvas>
+                </div>
+                <div class="lpHalf lpAlignLeft lpTotalsContainer">
+                </div>
+
+                <div style="clear:both"></div>
+
+                <ul class="lpCategories"></ul>
+                <hr />
+                <a href="#" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
+                <form id="imageUpload">
+                    <input type="file" name="image" id="image" />
+                </form>
+                <form id="csvUpload">
+                    <input type="file" name="csv" id="csv" />
+                </form>
+                <div id="lpPickerContainer"><div id="lpPicker"></div></div>
+                <div id="lpFooter">
+                    <div id="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
+                    <div id="lpContact">Copyleft LighterPack 2013. <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="lpDialog sticky" id="welcome">
+            <h2>Welcome to LighterPack</h2>
+            <p>LighterPack lets you track the gear you take on adventures.</p>
+            <div class="columns">
+                <div class="lpHalf">
+                    <h3>Register an Account</h3>
+                    <form class="register">
+                        <div class="lpError"></div>
+                        <input type="text" placeholder="Username" name="username" class="username"/>
+                        <input type="email" placeholder="Email" name="email" class="email"/>
+                        <input type="password" placeholder="Password" name="password" class="password"/>
+                        <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>
+                        <div class="lpButtons">
+                            <input type="submit" value="Register" class="lpButton" />
+                            <span class="status"></span>
+                            <a class="lpHref alternateAction" href="#signin">Already registered?</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="lpHalf">
+                    <h3>Save Locally</h3>
+                    <p>Get started without an account.</p>
+                    <ul>
+                        <li>You won't be able to share with others until you register an account.</li>
+                        <li>You can always register later to save your data remotely.</li>
+                    </ul>
+                    <div class="lpButtons"><a class="lpButton lpGetStarted">Get Started Locally</a></div>
+                </div>
+            </div>
+            <div class="lpOr">- or - </div>
+        </div>
+        <div class="lpDialog" id="register">
+            <h2>
+                Register an Account
+                <a class="lpHref alternateAction" href="#signin">Already registered?</a>
+            </h2>
+            
+            <span class="info existingData">
+                Your existing data will be saved to your new account upon creation.
+            </span>
+            <form class="register">
+                <div class="lpError"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="email" placeholder="Email" name="email" class="email"/>
+                <input type="password" placeholder="Password" name="password" class="password"/>
+                <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>
+                <input type="submit" value="Register" class="lpButton" />
+                <span class="status"></span>
+            </form>
+        </div>
+        <div class="lpDialog" id="signin">
+            <h2>
+                Sign in
+                <a class="lpHref alternateAction" href="#register">Need to register?</a>
+            </h2>
+            
+            <p class="lpSuccess"></p>
+            <form class="signin">
+                <div class="lpError"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="password" placeholder="Password" name="password" class="password"/>
+                <input type="submit" value="Sign in" class="lpButton" />
+                <span class="status"></span>
+                <a class="lpHref alternateAction" href="#forgotPassword">Forgot password?</a>
+            </form>
+        </div>
+        <div class="lpDialog" id="forgotPassword">
+            <h2>
+                Forgot Your Password?
+            </h2>
+            
+            <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
+            <form class="forgotPassword">
+                <div class="lpError"></div>
+                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input type="submit" value="Submit" class="lpButton" />
+                <span class="status"></span>
+                <a class="lpHref alternateAction" href="#signin">Return to sign in</a>
+            </form>
+        </div>
+        <div class="lpDialog" id="accountSettings">
+            <h2>Account Settings</h2>
+
+            <form id="accountForm">
+                <div class="lpError"></div>
+                <input type="text" name="username" class="username" disabled />
+                <input type="password" placeholder="Current Password" name="currentPassword" class="currentPassword"/>
+                <hr>
+                <input type="email" placeholder="New Email" name="newEmail" class="newEmail" />
+                <hr>
+                <input type="password" placeholder="New Password" name="newPassword" class="newPassword"/>
+                <input type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword"/>
+
+                <input type="submit" value="Submit" class="lpButton" />
+                <a href="#" class="lpHref close">Cancel</a>
+                <span class="status"></span>
+            </form>
+        </div>
+        <div class="lpDialog" id="lpImageDialog">
+        </div>
+        <div class="lpDialog" id="itemLinkDialog">
+            <h2>Add a link for this item</h2>
+            <form id="itemLinkForm">
+                <input type="text" id="itemLink" placeholder="Item Link"/>
+                <input type="submit" class="lpButton" value="Save" />
+                <a href="#" class="lpHref close">Cancel</a>
+            </form>
+        </div>
+        <div class="lpDialog" id="importValidate">
+            <h2>Confirm your import</h2>
+            <div id="importData"></div>
+            <a href="#" class="lpButton" id="importConfirm">Import List</a>
+            <a href="#" class="lpButton close">Cancel Import</a>
+        </div>
+        <div class="lpDialog" id="help">
+            <h2>Help</h2>
+            
+            <p>Getting Started:</p>
+            <ol>
+                <li>Click on things to edit them. Give your list and category a name.</li>
+                <li>Add new categories and items to your list.</li>
+                <li>When you're done, share your list with others!</li>
+            </ol>
+            <p>This section is very much in-progress.</p>
+            <p><a class="lpHref" href="mailto:info@lighterpack.com">More help available via email.</a></p>
+        </div>
+        <div class="lpDialog" id="TODO">
+            <div class="lpContent">
+                <p><a class="lpHref" href="mailto:info@lighterpack.com">Found a bug not here? Email me!</a></p>
+                <h2>Known Bugs</h2>
+                <ul>
+                    <li>Sometimes a section of the pie chart gets "stuck" as hovered (workaround: mouse over empty area near pie chart)</li>
+                    <li>Sometimes the gear section on the left freaks out and you can't drag from it or scroll in it. (don't know how to reproduce)</li>
+                </ul>
+
+                <h2>TODO Features</h2>
+                <ul>
+                    <li class="high">Guided "tour" for new users</li>
+                    <li class="high">Make "list options" dropdown in top right, move "image toggle" feature to it.</li>
+                    <li class="high">Make gear library in sidebar larger, prettier, and easier to use.</li>
+                    <li class="high">Speedbump for deleting list</li>
+                    <li class="high">Allow deletion of non-empty categories with speedbump</li>
+                    <li class="high">Allow deletion of items from gear library with speedbump</li>
+                    <li class="high">Color picker for categories</li>
+                    <li class="medium">Make gear library in sidebar larger, prettier, and easier to use.</li>
+                    <li class="medium">Additional optional field: price.</li>
+                    <li class="medium">Additional optional field: secondary description.</li>
+                    <li class="medium">Support for mobile devices</li>
+                    <li class="medium">Make qty/weight validation nicer</li>
+                    <li class="medium">Allow users viewing a list to toggle images on/off</li>
+                    <li class="low">Collapse categories</li>
+                    <li class="low">Add progress bar / spinner for file uploads</li>
+                    <li class="low">IE7/IE8 support for report/widget view.</li>
+                    <li class="low">Gear sorting?</li>
+                    <li class="low">Better accomodate long names.</li>
+                </ul>
+            </div>
+        </div>
+        <div id="lpModalOverlay"></div>
+        <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
+        <script type="text/javascript" src="jquery-ui-1.10.3.custom.min.js"></script>
+        <script type="text/javascript" src="jquery.mousewheel.js"></script>
+        <script type="text/javascript" src="jquery.jscrollpane.min.js"></script>
+        <script type="text/javascript" src="farbtastic.js"></script>
+        <script type="text/javascript" src="mustache.js"></script>
+        <script type="text/javascript" src="sha3.js"></script>
+        <script type="text/javascript" src="pies.js"></script>
+        <script type="text/javascript" src="dataTypes.js"></script>
+        <script type="text/javascript" src="edit.js"></script>
+    </body>
+</html>

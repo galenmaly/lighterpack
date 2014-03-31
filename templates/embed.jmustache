@@ -1,0 +1,101 @@
+listReport = function() {
+    var $list = $("#{{externalId}}"),
+        $categories,
+        $chartContainer,
+        chart = null,
+        externalId = "{{externalId}}",
+        renderedTemplate = "{{{renderedTemplate}}}",
+        chartData = "{{{chartData}}}";
+
+
+    function init() {
+        $list.append(unescape(renderedTemplate));
+        $categories = $(".lpCategories", $list);
+        $chartContainer = $(".lpChart", $list);
+        if (chartData) {
+            chartData = JSON.parse(unescape(chartData));
+            addParents(chartData, false);
+            chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+        }
+        initEventHandlers();
+    }
+
+    function addParents(chartData, parent) {
+        if (parent) chartData.parent = parent;
+        for (var i in chartData.points) {
+            addParents(chartData.points[i], chartData);
+        }
+    }
+
+    function chartHover(chartItem) {
+        $(".hover").removeClass("hover");
+        if (chartItem && chartItem.id) {
+            $("#total_"+chartItem.id).addClass("hover");
+        }
+    }
+
+    function updateSubtotalsUnit(unit) {
+        $(".lpDisplaySubtotal").each(function() {
+            $(this).text(MgToWeight(parseFloat($(this).attr("mg")), unit));
+            $(this).next().text(unit);
+        });
+    }
+
+    function initEventHandlers() {
+        $list.on("click", ".lpUnitSelect", function(evt) {
+            evt.stopPropagation();
+            $(this).toggleClass("lpOpen");
+            var value = $(".lpUnit", this).val();
+            $("ul", this).removeClass("oz lb g kg");
+            $("ul", this).addClass(value);
+        });
+
+         $list.on("click", ".lpUnitSelect li", function() {
+            var unit = $(this).text();
+            $(".lpDisplay", $(this).parents(".lpUnitSelect")).text(unit)
+            $(".lpUnit", $(this).parents(".lpUnitSelect")).val(unit);
+            if ($(this).parents(".lpTotalUnit").length) {
+                $(".lpTotalValue", $(this).parents(".lpTotal")).text(MgToWeight(parseFloat($(".lpMG", $item).val()), unit));
+                updateSubtotalsUnit(unit);
+            } else {
+                var $item = $(this).parents(".lpItem");
+                $(".lpWeight", $item).text(MgToWeight(parseFloat($(".lpMG", $item).val()), unit));
+            }
+        });
+
+        $categories.on("click", ".lpItemImage", function() {
+            var imageUrl = $(this).attr("href");
+            
+            var $modalImage = $("<img src='"+imageUrl+"' />");
+            $("#lpImageDialog").empty().append($modalImage);
+            $modalImage.load(function() {
+                $("#lpImageDialog").show();
+                $("#lpIodalOverlay").show();
+                centerDialog();
+            });
+        });
+
+        $(document).on("click", function() {
+            $(".lpOpen").removeClass("lpOpen");
+        });
+    }
+
+    init();
+};
+
+function centerDialog() {
+    var $dialog = $(".lp_dialog:visible");
+    $dialog.css("margin-top", ""+(-1*$dialog.outerHeight()/2)+"px");
+}
+
+$.when(
+    $.getScript( "http://www.lighterpack.com/pies.js" ),
+    $.getScript( "http://www.lighterpack.com/dataTypes.js" ),
+    $.Deferred(function( deferred ){
+        $( deferred.resolve );
+    })
+).done(function(){
+    $(function() {
+        listReport();
+    });
+});

@@ -1,0 +1,59 @@
+<div class="lpTable" style="height:260px;"><div class="lpRow"><div class="lpCell lpMiddle">
+    <ul class="lpTotals lpTable lpDataTable">
+        <li class="lpRow lpHeader">
+            <span class="lpCell"></span>
+            <span class="lpCell">
+                Category
+            </span>
+            <span class="lpCell">
+                Weight
+            </span>
+        </li>
+        {{#categories}}
+            <li class="lpTotalCategory lpRow" id="total_{{id}}" category="{{id}}">
+                <span class="lpCell lpLegendCell">
+                    <span class="lpLegend" style="background-color: {{displayColor}}"></span>
+                </span>
+                <span class="lpCell">
+                    {{name}}
+                </span>
+                <span class="lpCell lpNumber">
+                    <div class="lpSubtotal"><span class="lpDisplaySubtotal"  mg="{{subtotal}}">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div>
+                </span>
+            </li>
+        {{/categories}}
+        <li class="lpRow lpFooter lpTotal">
+            <span class="lpCell"></span>
+            <span class="lpCell lpSubtotal">
+                Total
+            </span>
+            <span class="lpCell lpNumber lpSubtotal">
+                <span class="lpTotalValue">{{total}}</span>
+                <span class="lpTotalUnit">{{{totalUnit}}}</span>
+            </span>
+        </li>
+        {{#wornTotal}}
+            <li class="lpRow lpFooter lpBreakdown lpWornWeight">
+                <span class="lpCell"></span>
+                <span class="lpCell lpSubtotal">
+                    Worn
+                </span>
+                <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpDisplaySubtotal" mg="{{wornTotal}}">{{wornDisplayTotal}}</span>
+                    <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+                </span>
+            </li>
+            <li class="lpRow lpFooter lpBreakdown lpPackWeight">
+                <span class="lpCell"></span>
+                <span class="lpCell lpSubtotal">
+                    Pack Weight
+                </span>
+                <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpDisplaySubtotal" mg="{{packTotal}}">{{packDisplayTotal}}</span>
+                    <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+                </span>
+            </li>
+        {{/wornTotal}}
+
+    </ul>
+</div></div></div>
