@@ -787,7 +787,7 @@ editLists = function() {
     function sortItems(evt, ui) {
         var itemId = $(ui.item).attr("id");
         var category = library.getCategoryById($(ui.item).parents(".lpCategory").attr("id"));
-        var oldCategory = library.findCategoryWithItemById(itemId);
+        var oldCategory = library.findCategoryWithItemById(itemId, library.defaultListId);
         var movedCategoryItem = null;
 
         //console.log(category);

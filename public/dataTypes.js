@@ -409,13 +409,26 @@ Library.prototype.getItemsInCurrentList = function() {
     return out;
 }
 
-Library.prototype.findCategoryWithItemById = function(id) {
-    for (var i in this.categories) {
-        var category = this.categories[i];
-        if (category) {
-            for (var j in category.itemIds) {
-                var categoryItem = category.itemIds[j];
-                if (categoryItem.itemId == id) return category;
+Library.prototype.findCategoryWithItemById = function(itemId, listId) {
+    if (listId) {
+        var list = this.getListById(listId);
+        for (i in list.categoryIds) {
+            var category = this.getCategoryById(list.categoryIds[i]);
+            if (category) {
+                for (var j in category.itemIds) {
+                    var categoryItem = category.itemIds[j];
+                    if (categoryItem.itemId == itemId) return category;
+                }
+            }
+        }
+    } else {
+        for (var i in this.categories) {
+            var category = this.categories[i];
+            if (category) {
+                for (var j in category.itemIds) {
+                    var categoryItem = category.itemIds[j];
+                    if (categoryItem.itemId == itemId) return category;
+                }
             }
         }
     }
