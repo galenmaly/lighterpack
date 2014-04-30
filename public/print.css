@@ -5,19 +5,11 @@ body, #content, #container {
 	background: #fff url(none);
 }
 
-#topnav, #navbar, #nav, #sidebar, .ad, .noprint {
+#topright, #sidebar, .addCategory, .lpAddItem, .lpExpand, .ad, .noprint {
 	display: none; 
 }
 
 body {
 	font: 1em Georgia, "Times New Roman", Times, serif;
 	color: #000; 
-}
-
-a:link, a:visited {
-	color: #00c;
-	font-weight: bold;
-	text-decoration: underline; }
-#content a:link:after, #content a:visited:after {
-	content: " (" attr(href) ") ";
 }
