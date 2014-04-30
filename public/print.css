@@ -1,0 +1,15 @@
+body, #content, #container {
+	width: 100%;
+	margin: 0;
+	float: none;
+	background: #fff url(none);
+}
+
+#topright, #sidebar, .addCategory, .lpAddItem, .lpExpand, .ad, .noprint {
+	display: none; 
+}
+
+body {
+	font: 1em Georgia, "Times New Roman", Times, serif;
+	color: #000; 
+}
