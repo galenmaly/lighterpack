@@ -988,7 +988,7 @@ editLists = function() {
     function copyList() {
         var listToCopyId = $("#listToCopy").val();
 
-        if (!listToyCopyId) return;
+        if (!listToCopyId) return;
 
         var copiedList = library.copyList(listToCopyId);
 
