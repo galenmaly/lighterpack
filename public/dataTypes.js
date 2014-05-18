@@ -350,13 +350,15 @@ Library.prototype.removeList = function(id) {
 Library.prototype.copyList = function(id) {
     var oldList = this.getListById(id);
     if (!oldList) return;
-    
+
     copiedList = this.newList();
 
     copiedList.name = "Copy of " + oldList.name;
     for (var i in oldList.categoryIds) {
         var oldCategory = this.getCategoryById(oldList.categoryIds[i]),
             copiedCategory = this.newCategory({list: copiedList});
+
+        copiedCategory.name = oldCategory.name;
 
         for (var j in oldCategory.itemIds) {
             copiedCategory.addItem(oldCategory.itemIds[j]);
