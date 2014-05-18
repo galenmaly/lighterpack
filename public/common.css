@@ -5,9 +5,9 @@ html.lp,.lp body{background:#f7f7f7;color:#333;font-family:'Open Sans',sans-seri
 .lpHref{color:#1b77d3;text-decoration:none}.lpHref:hover{text-decoration:underline}
 .lpInvisible{height:1px;width:1px;overflow:hidden;position:absolute;left:-9999px}
 .lpNumber{text-align:right}
-.lpAdd{color:#7ab317;display:inline-block;padding:5px 10px;text-decoration:none;-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out}.lpAdd i{margin-right:5px}
-.lpAdd:hover{text-decoration:underline}
-#sidebar .lpAdd{color:#7ab317}
+.lpAdd,.lpCopy{color:#7ab317;display:inline-block;padding:5px 10px;text-decoration:none;-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out}.lpAdd i,.lpCopy i{margin-right:5px}
+.lpAdd:hover,.lpCopy:hover{text-decoration:underline}
+#sidebar .lpAdd,#sidebar .lpCopy{color:#7ab317}
 .lpHalf{box-sizing:border-box;-moz-box-sizing:border-box;float:left;width:50%}
 .lpTransition{-webkit-transition:all 1s ease-in-out;-moz-transition:all 1s ease-in-out;-o-transition:all 1s ease-in-out;transition:all 1s ease-in-out}
 .lpTransitionFast{-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out}
