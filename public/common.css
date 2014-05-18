@@ -78,8 +78,8 @@ html.lp,.lp body{background:#f7f7f7;color:#333;font-family:'Open Sans',sans-seri
 #lpFooter{color:#777;padding-top:150px}#lpFooter #lpSiteBy{float:right}
 .lpSprite{background-image:url(/sprite.png);display:inline-block;height:14px;overflow:hidden;position:relative;width:14px;top:2px}
 .lpSpriteAdd{background-position:0 0}
-.lpSpriteUpload{background-position:-225px 0}
-.lpSpriteDownload{background-position:-225px -25px}
+.lpSpriteUpload{background-position:-250px 0}
+.lpSpriteDownload{background-position:-250px -25px}
 .lpSpriteCopy{background-position:0 -50px}
 .lpSpriteRemove{background-position:-25px 0;height:8px;top:0;width:8px}.lpRemove:hover .lpSpriteRemove{background-position:-25px -25px}
 .lpWorn{background-position:-50px 0;width:17px}.lpWorn.lpActive{background-position:-50px -25px}
