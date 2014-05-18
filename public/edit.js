@@ -333,6 +333,16 @@ editLists = function() {
             $("#csv").click();
         });
 
+        $("#copyList").on("click", function(evt) {
+            evt.preventDefault();
+            var listsHtml = "";
+            for (var i in library.lists) {
+                listsHtml += "<option value='" + i + "'>" + library.lists[i].name + "</option>";
+            }
+            $("#listToCopy").html(listsHtml);
+            $("#copyListDialog, #lpModalOverlay").fadeIn();
+        });
+
         $("#csv").on("change", function() {
             if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
                 alert("Your browser is not supported for file import. Please get a newer browser.");
@@ -367,6 +377,12 @@ editLists = function() {
             evt.preventDefault();
             importList();
             $("#importValidate, #lpModalOverlay").fadeOut();
+        });
+
+        $("#copyConfirm").on("click", function(evt) {
+            evt.preventDefault();
+            copyList();
+            $("#copyListDialog, #lpModalOverlay").fadeOut();
         });
 
         $("#lists").on("click", ".lpLibraryListSwitch", function(evt) {
@@ -927,9 +943,10 @@ editLists = function() {
         renderDefaultList();
         var jsp = $libraryContainer.data('jsp');
         jsp.reinitialise();
+        saveLocally();
     }
 
-    function CSVToArray(strData ) {
+    function CSVToArray(strData) {
         var strDelimiter = ",",
             arrData = [[]],
             arrMatches = null;
@@ -966,6 +983,23 @@ editLists = function() {
             if ($(this).val()) empty = false;
         });
         return empty;
+    }
+
+    function copyList() {
+        var listToCopyId = $("#listToCopy").val();
+
+        if (!listToyCopyId) return;
+
+        var copiedList = library.copyList(listToCopyId);
+
+        library.defaultListId = copiedList.id;
+        var $newLibraryList = Mustache.render(libraryListTemplate, copiedList);
+        $("li", $listsContainer).last().after($newLibraryList);
+        displayDefaultList();
+        renderDefaultList();
+        var jsp = $libraryContainer.data('jsp');
+        jsp.reinitialise();
+        saveLocally();
     }
 
     function getSaveData() {

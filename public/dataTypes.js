@@ -336,7 +336,7 @@ Library.prototype.newList = function() {
 
 Library.prototype.removeList = function(id) {
     if (Object.size(this.lists) == 1) return;
-    delete this.lists[id];;
+    delete this.lists[id];
     if (this.defaultListId == id) {
         var newId = -1;
         for (var i in lists) {
@@ -345,6 +345,23 @@ Library.prototype.removeList = function(id) {
         }
         this.defaultListId = newId;
     }
+}
+
+Library.prototype.copyList = function(id) {
+    var oldList = getListById(id),
+        copiedList = newList();
+
+    copiedList.name = "Copy of " + oldList.name;
+    for (var i in oldList.categoryIds) {
+        var oldCategory = getCategoryById(oldList.categoryIds[i]),
+            copiedCategory = newCategory({list: copiedList});
+        
+        for (var j in oldCategory.itemIds) {
+            copiedCategory.addItem(oldCategory.itemIds[j]);
+        }
+    }
+
+    return copiedList;
 }
 
 Library.prototype.render = function(args) {
