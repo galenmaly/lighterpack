@@ -1187,6 +1187,37 @@ editLists = function() {
 
         });
 
+        $(".forgotUsername").on("submit", function(evt) {
+            evt.preventDefault();
+            var form = this;
+            var error = "";
+            var email = $(".email", this).val();
+            if (!username) error = "Please enter an email.";
+
+            if (error) {
+                $(".lpError", this).text(error).show();
+                return;
+            }
+
+            $(".lpError", this).text("").hide();
+
+            email = email.toLowerCase();
+
+            $.ajax({
+                url: "/forgotUsername",
+                data: {email: email},
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred.";
+                    if (data.responseText) error = data.responseText;
+                    $(".lpError", form).text(error).show();
+                },
+                success: function(data) {
+                    showSigninModal({success: "An email has been sent to the address associated with your account."});
+                }
+            });
+
+        });
     }
 
     function showSigninModal(args) {

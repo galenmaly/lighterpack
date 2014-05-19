@@ -55,6 +55,7 @@ input.lpCategoryName{border:1px solid transparent;font-size:16px;font-weight:600
 .alternateAction{font-size:13px;font-weight:normal;margin-left:10px}h2 .alternateAction{float:right;margin-top:0}
 #welcome{margin-left:-300px;margin-top:-185px;width:560px}#welcome .lpOr{position:absolute;left:47%;top:45%}
 #welcome .lpHalf{min-height:260px;padding-bottom:30px;position:relative}#welcome .lpHalf .lpButtons{position:absolute;bottom:0;margin:0}
+#forgotPassword{margin-left:-300px;width:560px}
 #getStarted{background:#f7f7f7;font-size:18px;height:160px;padding:30px 0;position:absolute;width:100%;z-index:11}#getStarted h2{font-size:30px}
 #image,#csv{width:1px;height:1px;overflow:hidden;position:absolute;left:-999px}
 #share{opacity:.5}#share:hover{opacity:1}

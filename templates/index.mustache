@@ -175,22 +175,40 @@
                 <input type="password" placeholder="Password" name="password" class="password"/>
                 <input type="submit" value="Sign in" class="lpButton" />
                 <span class="status"></span>
-                <a class="lpHref alternateAction" href="#forgotPassword">Forgot password?</a>
+                <a class="lpHref alternateAction" href="#forgotPassword">Forgot username/password?</a>
             </form>
         </div>
         <div class="lpDialog" id="forgotPassword">
-            <h2>
-                Forgot Your Password?
-            </h2>
-            
-            <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
-            <form class="forgotPassword">
-                <div class="lpError"></div>
-                <input type="text" placeholder="Username" name="username" class="username"/>
-                <input type="submit" value="Submit" class="lpButton" />
-                <span class="status"></span>
-                <a class="lpHref alternateAction" href="#signin">Return to sign in</a>
-            </form>
+            <div class="columns">
+                <div class="lpHalf">
+                    <h3>
+                        Forgot Your Password?
+                    </h3>
+                    
+                    <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
+                    <form class="forgotPassword">
+                        <div class="lpError"></div>
+                        <input type="text" placeholder="Username" name="username" class="username"/>
+                        <input type="submit" value="Submit" class="lpButton" />
+                        <span class="status"></span>
+                        <a class="lpHref alternateAction" href="#signin">Return to sign in</a>
+                    </form>
+                </div>
+                <div class="lpHalf">
+                    <h3>
+                        Forgot Your Username?
+                    </h3>
+                    
+                    <p>If you've forgotten your username we will email it to you. Please enter your email address.</p>
+                    <form class="forgotUsername">
+                        <div class="lpError"></div>
+                        <input type="text" placeholder="Email Address" name="email" class="email"/>
+                        <input type="submit" value="Submit" class="lpButton" />
+                        <span class="status"></span>
+                        <a class="lpHref alternateAction" href="#signin">Return to sign in</a>
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="lpDialog" id="accountSettings">
             <h2>Account Settings</h2>
@@ -256,7 +274,6 @@
                 <h2>TODO Features</h2>
                 <ul>
                     <li class="high">Add "consumable" flag + accommodate it in weight calculations.</li>
-                    <li class="high">Add ability to duplicate a list.</li>
                     <li class="high">Make "list options" dropdown in top right, move "image toggle" feature to it.</li>
                     <li class="high">Make gear library in sidebar larger, prettier, and easier to use.</li>
                     <li class="high">Speedbump for deleting list</li>
