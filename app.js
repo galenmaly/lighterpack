@@ -359,6 +359,51 @@ app.post("/forgotPassword", function(req, res) {
     });
 });
 
+app.post("/forgotUsername", function(req, res) {
+    awesomeLog(req);
+    var email = req.body.email;
+    if (!email || email.length < 1) {
+        res.send(400, "Invalid email.");
+        awesomeLog(req, "Bad forgot username:" + email);
+        return;
+    }
+
+    db.users.find({email: email}, function(err, users) {
+        if( err ) {
+            res.send(500, ":(");
+            awesomeLog(req, "Forgot email lookup error for:" + email)
+            return;
+        } else if ( !users.length ) {
+            res.send(400, "error.");
+            awesomeLog(req, "Forgot email for unknown user:" + email)
+            return;
+        }
+        var user = users[0];
+        var username = user.username;
+
+        var message = "Hello " + username + ",\n Apparently you forgot your username. Here It is: \n\n Username: " + username + "\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!";
+
+        var mailOptions = {
+            from: "LighterPack <info@lighterpack.com>",
+            to: email,
+            subject: "Your LighterPack username",
+            text: message
+        }
+
+        awesomeLog(req, "Attempting to send username to:" + email);
+        transport.sendMail(mailOptions, function(error, response){
+            if (error) {
+                awesomeLog(req, error);
+            } else {
+                var out = {email: email};
+                res.send(out);
+                awesomeLog(req, "Message sent: " + response.message);
+                awesomeLog(req, "sent username message for user:" + username);
+            }
+        });
+    });
+});
+
 app.post("/account", function(req, res) {
     authenticateUser(req, res, account);
 });
