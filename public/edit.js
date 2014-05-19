@@ -1192,7 +1192,7 @@ editLists = function() {
             var form = this;
             var error = "";
             var email = $(".email", this).val();
-            if (!username) error = "Please enter an email.";
+            if (!email) error = "Please enter an email.";
 
             if (error) {
                 $(".lpError", this).text(error).show();
