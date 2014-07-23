@@ -451,7 +451,7 @@ function externalId(req, res, user) {
                 db.users.save(user);
             } else {
                 awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
-                }
+            }
         } else {
             awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
             awesomeLog(req, err);
@@ -477,11 +477,15 @@ function imageUpload(req, res, user) {
                 awesomeLog(req, e);
                 awesomeLog(req, body);
                 res.send("upload failed :(");
-            } else if (r.statusCode !== 200 || body.error) {
+            } else if (!body) {
                 awesomeLog(req, "imgur post fail!!");
                 awesomeLog(req, e);
-                awesomeLog(req, body);
                 res.send("upload failed :((");
+            } else if (r.statusCode !== 200 || body.error) {
+                awesomeLog(req, "imgur post fail!!!");
+                awesomeLog(req, e);
+                awesomeLog(req, body);
+                res.send("upload failed :(((");
             } else {
                 res.send(body);
             }
@@ -496,7 +500,11 @@ function authenticateUser(req, res, callback) {
     }
     if (req.body.username) {
         db.users.find({username: req.body.username, password: req.body.password}, function(err, users) {
-            if (!users.length) {
+            if (err) {
+                res.send(500, ":(");
+                awesomeLog(req, "Error on authenticateUser for:" + req.body.username + ", " + req.body.password )
+                return;
+            } else if (!users || !users.length) {
                     res.send(400, "Invalid username and/or password.");
                     awesomeLog(req, "Bad password for: "+req.body.username);
                     return;
@@ -512,7 +520,11 @@ function authenticateUser(req, res, callback) {
         });
     } else {
         db.users.find({token: req.cookies.lp}, function(err, users) {
-            if (!users.length) {
+            if (err) {
+                res.send(500, ":(");
+                awesomeLog(req, "Error on authenticateUser else for:" + req.body.username + ", " + req.body.password )
+                return;
+            } else if (!users || !users.length) {
                     awesomeLog(req, "bad cookie!");
                     res.send(400, "Please log in again.");
                     return;
