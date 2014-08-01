@@ -1,13 +1,17 @@
 var express = require('express');
 var app = express();
-app.enable('trust proxy')
+app.enable('trust proxy');
 var oneDay = 86400000;
-var rootPath = '/var/www/lighterpack.com/bin/'
+var rootPath = process.cwd() + "/";
 
 var databaseUrl = "lighterpack";
-var collections = ["users", "libraries"]
+var collections = ["users", "libraries"];
 var db = require("mongojs").connect(databaseUrl, collections);
 
+var connect = require('connect');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var compression = require('compression');
 var request = require("request");
 var fs = require("fs");
 var Mustache = require("mustache");
@@ -21,10 +25,10 @@ eval(fs.readFileSync(rootPath+'public/sha3.js')+'');
 eval(fs.readFileSync(rootPath+'public/pies.js')+'');
 eval(fs.readFileSync(rootPath+'public/dataTypes.js')+'');
 
-app.use(express.cookieParser());
-app.use(express.bodyParser());
-app.use(express.compress());
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
+
+app.use(cookieParser());
+app.use(bodyParser());
 
 var templates = {},
     indexTemplate,
@@ -42,12 +46,12 @@ app.get('/r/:id', function(req, res) {
     awesomeLog(req);
 
     if (!id) {
-        res.send("No list specified!");
+        res.status(400).send("No list specified!");
         return;
     }
     db.users.find({"library.lists.externalId": id}, function(err, users) {
         if (err) {
-            res.send(500, "An error occurred.");
+            res.status(500).send("An error occurred.");
             return;
         }
         if (!users.length) {
@@ -59,7 +63,7 @@ app.get('/r/:id', function(req, res) {
 
         if (!users[0] || typeof(users[0].library) == "undefined") {
             awesomeLog(req, "Undefined users[0].");
-            res.send(500, "Unknown error.");
+            res.status(500).send("Unknown error.");
         }
 
         library.load(users[0].library);
@@ -86,18 +90,18 @@ app.get("/e/:id", function(req, res) {
     awesomeLog(req);
 
     if (!id) {
-        res.send("No list specified!");
+        res.statu(400).send("No list specified!");
         return;
     }
 
     db.users.find({"library.lists.externalId": id}, function(err, users) {
         if (err) {
-            res.send(500, "An error occurred.");
+            res.status(500).send("An error occurred.");
             return;
         }
 
         if (!users.length) {
-            res.send(400, "Invalid list specified.");
+            res.status(400).send("Invalid list specified.");
             return;
         }
 
@@ -106,7 +110,7 @@ app.get("/e/:id", function(req, res) {
 
         if (!users[0] || typeof(users[0].library) == "undefined") {
             awesomeLog(req, "Undefined users[0].");
-            res.send(500, "Unknown error.");
+            res.status(500).send("Unknown error.");
         }
 
         library.load(users[0].library);
@@ -138,18 +142,18 @@ app.get("/csv/:id", function(req, res) {
     awesomeLog(req);
 
     if (!id) {
-        res.send("No list specified!");
+        res.status(400).send("No list specified!");
         return;
     }
 
     db.users.find({"library.lists.externalId": id}, function(err, users) {
         if (err) {
-            res.send(500, "An error occurred.");
+            res.status(500).send("An error occurred.");
             return;
         }
 
         if (!users.length) {
-            res.send(400, "Invalid list specified.");
+            res.status(400).send("Invalid list specified.");
             return;
         }
 
@@ -158,7 +162,7 @@ app.get("/csv/:id", function(req, res) {
 
         if (!users[0] || typeof(users[0].library) == "undefined") {
             awesomeLog(req, "Undefined users[0].");
-            res.send(500, "Unknown error.");
+            res.status(500).send("Unknown error.");
         }
 
         library.load(users[0].library);
@@ -207,17 +211,17 @@ app.post("/register", function(req, res) {
     var password = req.body.password;
     var email = req.body.email;
     if (!username || username.length < 1 || username.length > 24) {
-        res.send(400, "Invalid username.");
+        res.status(400).send("Invalid username.");
         awesomeLog(req, "invalid username");
         return;
     }
     if (!password) {
-        res.send(400, "Invalid password.");
+        res.status(400).send("Invalid password.");
         awesomeLog(req, "invalid Password");
         return;
     }
     if (!email) {
-        res.send(400, "Invalid email.");
+        res.status(400).send("Invalid email.");
         awesomeLog(req, "invalid Email");
         return;
     }
@@ -225,7 +229,7 @@ app.post("/register", function(req, res) {
 
     db.users.find({username: username}, function(err, users) {
         if( err || users.length) {
-            res.send(400, "User Exists.");
+            res.status(400).send("User Exists.");
             return;
         }
         require('crypto').randomBytes(48, function(ex, buf) {
@@ -309,18 +313,18 @@ app.post("/forgotPassword", function(req, res) {
     awesomeLog(req);
     var username = req.body.username;
     if (!username || username.length < 1 || username.length > 24) {
-        res.send(400, "Invalid username.");
+        res.status(400).send("Invalid username.");
         awesomeLog(req, "Bad forgot password:" + username);
         return;
     }
 
     db.users.find({username: username}, function(err, users) {
         if( err ) {
-            res.send(500, ":(");
+            res.status(500).send(":(");
             awesomeLog(req, "Forgot password lookup error for:" + username)
             return;
         } else if ( !users.length ) {
-            res.send(400, "error.");
+            res.status(400).send("error.");
             awesomeLog(req, "Forgot password for unknown user:" + username)
             return;
         }
@@ -363,18 +367,18 @@ app.post("/forgotUsername", function(req, res) {
     awesomeLog(req);
     var email = req.body.email;
     if (!email || email.length < 1) {
-        res.send(400, "Invalid email.");
+        res.status(400).send("Invalid email.");
         awesomeLog(req, "Bad forgot username:" + email);
         return;
     }
 
     db.users.find({email: email}, function(err, users) {
         if( err ) {
-            res.send(500, ":(");
+            res.status(500).send(":(");
             awesomeLog(req, "Forgot email lookup error for:" + email)
             return;
         } else if ( !users.length ) {
-            res.send(400, "error.");
+            res.status(400).send("error.");
             awesomeLog(req, "Forgot email for unknown user:" + email)
             return;
         }
@@ -422,7 +426,7 @@ function account(req, res, user) {
 
     db.users.save(user);
 
-    res.send("success")
+    res.send("success");
     return;
 };
 
@@ -495,17 +499,17 @@ function imageUpload(req, res, user) {
 
 function authenticateUser(req, res, callback) {
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
-        res.send(400, "Please Authenticate");
+        res.status(400).send("Please Authenticate");
         return;
     }
     if (req.body.username) {
         db.users.find({username: req.body.username, password: req.body.password}, function(err, users) {
             if (err) {
-                res.send(500, ":(");
+                res.status(500).send(":(");
                 awesomeLog(req, "Error on authenticateUser for:" + req.body.username + ", " + req.body.password )
                 return;
             } else if (!users || !users.length) {
-                    res.send(400, "Invalid username and/or password.");
+                    res.status(400).send("Invalid username and/or password.");
                     awesomeLog(req, "Bad password for: "+req.body.username);
                     return;
             }
@@ -521,12 +525,12 @@ function authenticateUser(req, res, callback) {
     } else {
         db.users.find({token: req.cookies.lp}, function(err, users) {
             if (err) {
-                res.send(500, ":(");
+                res.status(500).send(":(");
                 awesomeLog(req, "Error on authenticateUser else for:" + req.body.username + ", " + req.body.password )
                 return;
             } else if (!users || !users.length) {
                     awesomeLog(req, "bad cookie!");
-                    res.send(400, "Please log in again.");
+                    res.status(400).send("Please log in again.");
                     return;
             }
             callback(req, res, users[0]);
