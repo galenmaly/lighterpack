@@ -20,7 +20,7 @@ var extend = require('node.extend');
 var nodemailer = require("nodemailer");
 var sendmailTransport = require('nodemailer-sendmail-transport');
 var transport = nodemailer.createTransport(sendmailTransport({}));
-
+var formidable = require('formidable');
 
 //I'm pretty sure there's a better way to do this:
 eval(fs.readFileSync(rootPath+'public/sha3.js')+'');
@@ -476,29 +476,38 @@ app.post("/imageUpload", function(req, res) {
 });
 
 function imageUpload(req, res, user) {
-    var path = req.files.image.path;
-    var imgurRequest = request.defaults({json: true});
-    fs.readFile(path, function(e, img_data) {
-        var temp = { uri: "https://api.imgur.com/3/image", headers: {"Authorization": "Client-ID " + imgurClientID}};
-        temp.body = img_data.toString("base64");
-        imgurRequest.post(temp, function(e, r, body) {
-            if (e) {
-                awesomeLog(req, "imgur post fail!");
-                awesomeLog(req, e);
-                awesomeLog(req, body);
-                res.send("upload failed :(");
-            } else if (!body) {
-                awesomeLog(req, "imgur post fail!!");
-                awesomeLog(req, e);
-                res.send("upload failed :((");
-            } else if (r.statusCode !== 200 || body.error) {
-                awesomeLog(req, "imgur post fail!!!");
-                awesomeLog(req, e);
-                awesomeLog(req, body);
-                res.send("upload failed :(((");
-            } else {
-                res.send(body);
-            }
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        if (err) {
+            awesomelog(req, "form parse error");
+            res.status(500).send("an error occurred");
+            return;
+        }
+
+        var path = files.image.path;
+        var imgurRequest = request.defaults({json: true});
+        fs.readFile(path, function(e, img_data) {
+            var temp = { uri: "https://api.imgur.com/3/image", headers: {"Authorization": "Client-ID " + imgurClientID}};
+            temp.body = img_data.toString("base64");
+            imgurRequest.post(temp, function(e, r, body) {
+                if (e) {
+                    awesomeLog(req, "imgur post fail!");
+                    awesomeLog(req, e);
+                    awesomeLog(req, body);
+                    res.send("upload failed :(");
+                } else if (!body) {
+                    awesomeLog(req, "imgur post fail!!");
+                    awesomeLog(req, e);
+                    res.send("upload failed :((");
+                } else if (r.statusCode !== 200 || body.error) {
+                    awesomeLog(req, "imgur post fail!!!");
+                    awesomeLog(req, e);
+                    awesomeLog(req, body);
+                    res.send("upload failed :(((");
+                } else {
+                    res.send(body);
+                }
+            });
         });
     });
 }
