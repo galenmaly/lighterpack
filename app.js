@@ -2,9 +2,11 @@ var express = require('express');
 var app = express();
 app.enable('trust proxy');
 var oneDay = 86400000;
-var rootPath = process.cwd() + "/";
+var rootPath = __dirname + "/";
 
-var databaseUrl = "lighterpack";
+var fs = require("fs");
+eval(fs.readFileSync(rootPath+'config.js')+'');
+
 var collections = ["users", "libraries"];
 var db = require("mongojs").connect(databaseUrl, collections);
 
@@ -13,14 +15,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var compression = require('compression');
 var request = require("request");
-var fs = require("fs");
 var Mustache = require("mustache");
 var extend = require('node.extend');
 var nodemailer = require("nodemailer");
-var transport = nodemailer.createTransport("sendmail");
+var sendmailTransport = require('nodemailer-sendmail-transport');
+var transport = nodemailer.createTransport(sendmailTransport({}));
+
 
 //I'm pretty sure there's a better way to do this:
-eval(fs.readFileSync(rootPath+'config.js')+'');
 eval(fs.readFileSync(rootPath+'public/sha3.js')+'');
 eval(fs.readFileSync(rootPath+'public/pies.js')+'');
 eval(fs.readFileSync(rootPath+'public/dataTypes.js')+'');
@@ -28,7 +30,11 @@ eval(fs.readFileSync(rootPath+'public/dataTypes.js')+'');
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '50mb'
+}));
 
 var templates = {},
     indexTemplate,
@@ -55,7 +61,7 @@ app.get('/r/:id', function(req, res) {
             return;
         }
         if (!users.length) {
-            res.send(400, "Invalid list specified.");
+            res.status(400).send("Invalid list specified.");
             return;
         }
         var library = new Library();
