@@ -203,7 +203,7 @@ app.get("/csv/:id", function(req, res) {
 
         var filename = list.name;
         if (!filename) filename = id;
-        filename = filename.replace(/ /g,"_");
+        filename = filename.replace(/[^a-z0-9\-]/gi, '_');
 
         res.setHeader("Content-Type", "text/csv");
         res.setHeader("Content-Disposition", "attachment;filename="+filename+".csv")
