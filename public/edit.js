@@ -854,9 +854,10 @@ editLists = function() {
         var category = library.newCategory({list: library.getListById(library.defaultListId)});
         var $newCategory = $(category.render({categoryTemplate: categoryTemplate}));
         $categories.append($newCategory);
-        newItem(category, true, false);
+        newItem(category, false, false);
         $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
         $newCategory.droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
+        $(".lpCategoryName", $newCategory).focus();
         //$(".lpCategory" ).droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
     }
 
