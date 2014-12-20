@@ -177,6 +177,7 @@ editLists = function() {
             var category = library.getCategoryById($(this).attr("id"));
             $(".lpDisplaySubtotal", this).text(category.displaySubtotal);
             $(".lpSubtotalUnit", this).text(category.subtotalUnit);
+            $(".lpQtySubtotal", this).text(category.qtySubtotal);
         });
     }
 

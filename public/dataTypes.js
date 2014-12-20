@@ -73,6 +73,7 @@ Category.prototype.removeItem = function (itemId) {
 Category.prototype.calculateSubtotal = function() {
     this.subtotal = 0;
     this.wornSubtotal = 0;
+    this.qtySubtotal = 0;
     for (var i in this.itemIds) {
         var categoryItem = this.itemIds[i];
         var item = this.library.getItemById(categoryItem.itemId);
@@ -80,6 +81,7 @@ Category.prototype.calculateSubtotal = function() {
         if (categoryItem.worn) {
             this.wornSubtotal += item.weight * ( (item.qty > 0) ? 1 : 0 );
         }
+        this.qtySubtotal += item.qty;
     }
 }
 
