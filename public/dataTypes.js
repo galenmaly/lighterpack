@@ -217,7 +217,8 @@ List.prototype.renderChart = function (doParent) {
 List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit) {
     var total = 0,
         wornTotal = 0,
-        packTotal = 0;
+        packTotal = 0,
+        qtyTotal = 0,
         out = {categories: []};
 
     for (var i in this.categoryIds) {
@@ -228,6 +229,7 @@ List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit)
 
         total += category.subtotal;
         wornTotal += category.wornSubtotal;
+        qtyTotal += category.qtySubtotal;
         out.categories.push(category);
     }
 
@@ -239,6 +241,7 @@ List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit)
     out.wornDisplayTotal = MgToWeight(wornTotal, unit);
     out.packTotal = packTotal;
     out.packDisplayTotal = MgToWeight(packTotal, unit);
+    out.qtyTotal = qtyTotal;
 
     return Mustache.render(totalsTemplate, out);
 }
