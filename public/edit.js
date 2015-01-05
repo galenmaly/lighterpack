@@ -24,7 +24,7 @@ editLists = function() {
         totalsTemplate = $("#totalsTemplate").html(),
         importValidateTemplate = $("#importValidateTemplate").html(),
         numStars = 4,
-        fullUnitToUnit = {ounce: "oz", pound: "lb", gram: "g", kilogram: "kg", grams: "g", kg: "kg"},
+        fullUnitToUnit = {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"},
         speedBumps = {
             "deleteList": {
                 action: "Delete List",
@@ -807,9 +807,6 @@ editLists = function() {
         var oldCategory = library.findCategoryWithItemById(itemId, library.defaultListId);
         var movedCategoryItem = null;
 
-        //console.log(category);
-        //console.log(oldCategory);
-
         if (category != oldCategory) {
             movedCategoryItem = oldCategory.getCategoryItemById(itemId);
             oldCategory.removeItem(itemId);
@@ -883,13 +880,13 @@ editLists = function() {
             if (row[0].toLowerCase() == "item name") continue;
             if (isNaN(parseInt(row[3]))) continue;
             if (isNaN(parseInt(row[4]))) continue;
-            if (fullUnitToUnit[row[5]] == "undefined") continue;
+            if (typeof fullUnitToUnit[row[5]] == "undefined") continue;
 
             importData.data.push(row);
         }
 
         if (!importData.data.length) {
-            alert("Unable to load spreadsheet!");
+            alert("Unable to load spreadsheet - please verify the format.");
         } else {
             data = []
             for (var i in importData.data) {
