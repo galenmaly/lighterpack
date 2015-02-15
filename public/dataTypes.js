@@ -29,7 +29,7 @@ Item.prototype.render = function(args) {
 
     var unitSelect = renderUnitSelect(unit, args.unitSelectTemplate, this.weight);
 
-    var starClass = this.star ? "lpStar"+this.star : "";
+    var starClass = this.star ? "lpStar" + this.star : "";
     var out = {classes: classes, unit: unit, displayWeight: displayWeight, unitSelect: unitSelect, showImages: showImages, starClass: starClass};
     extend(out, this);
 
@@ -48,7 +48,7 @@ Category = function(args) {
     this.library = args.library;
     this.id = args.id;
     this.name = "";
-    this.itemIds = [];
+    this.itemIds = []; //this is actual items, not itemIds. Rename?
     return this;
 }
 
@@ -272,11 +272,6 @@ Library = function(args) {
     return this;
 }
 
-Library.prototype.init = function() {
-    findSequence();
-    firstRun();
-}
-
 Library.prototype.firstRun = function() {
     var firstList = this.newList();
     var firstCategory = this.newCategory({list: firstList});
@@ -290,13 +285,16 @@ Library.prototype.newItem = function(args) {
     return temp;
 }
 
-Library.prototype.removeItem = function(id, force) {
-    if (!this.findCategoryWithItemById(id)){
-        delete this.items[id];
-        return true;
+Library.prototype.removeItem = function(id) {
+    for (var i in this.lists) {
+        var category = this.findCategoryWithItemById(id, i);
+        if (category) {
+            category.removeItem(id);
+        }
     }
-    alert("Unable to delete item, it still exists in a category.");
-    return false;
+
+    delete this.items[id];
+    return true;
 }
 
 Library.prototype.newCategory = function(args) {
@@ -308,10 +306,6 @@ Library.prototype.newCategory = function(args) {
 
 Library.prototype.removeCategory = function(id) {
     var category = this.getCategoryById(id);
-    if (category.itemIds.length) {
-        alert("Can't remove a non-empty category!")
-        return false;
-    }
 
     var list = this.findListWithCategoryById(id);
     if (list && list.categoryIds.length == 1) {
@@ -341,7 +335,14 @@ Library.prototype.newList = function() {
 
 Library.prototype.removeList = function(id) {
     if (Object.size(this.lists) == 1) return;
+    var list = this.getListById(id);
+
+    for (var i = 0; i < list.categoryIds; i++) {
+        this.removeCategory(list.categoryIds[i])
+    }
+
     delete this.lists[id];
+
     if (this.defaultListId == id) {
         var newId = -1;
         for (var i in lists) {
@@ -515,18 +516,21 @@ Library.prototype.save = function() {
 }
 
 Library.prototype.load = function (input) {
+    this.items = [];
     for (var i in input.items) {
         var temp = new Item({id: input.items[i].id, library: this});
         temp.load(input.items[i]);
         this.items[temp.id] = temp;
     }
 
+    this.categories = [];
     for (var i in input.categories) {
         var temp = new Category({id: input.categories[i].id, library: this});
         temp.load(input.categories[i]);
         this.categories[temp.id] = temp;
     }
 
+    this.lists = [];
     for (var i in input.lists) {
         var temp = new List({id: input.lists[i].id, library: this});
         temp.load(input.lists[i]);

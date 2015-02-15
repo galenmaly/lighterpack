@@ -26,13 +26,17 @@ editLists = function() {
         numStars = 4,
         fullUnitToUnit = {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"},
         speedBumps = {
-            "deleteList": {
+            "removeList": {
                 action: "Delete List",
-                message: "Are you sure you want to delete this list?"
+                message: "Are you sure you want to delete this list? This cannot be undone."
             },
-            "deleteItem": {
+            "removeCategory": {
+                action: "Delete Category",
+                message: "Are you sure you want to delete this category? This cannot be undone."
+            },
+            "removeItem": {
                 action: "Delete Item",
-                message: "Are you sure you want to delete this item?"
+                message: "Are you sure you want to delete this item? This cannot be undone."
             }
         };
 
@@ -41,6 +45,7 @@ editLists = function() {
         initWelcomeModal();
         initModalLinks();
         initEditHandlers();
+        initSpeedBumps();
 
         library = new window.Library();
         if (readCookie("lp")) {
@@ -303,7 +308,7 @@ editLists = function() {
             saveLocally();
         });
 
-        $categories.on("click", ".lpRemoveCategory", function(evt) {
+        $categories.on("click", ".lpRemoveCategory.confirmed", function(evt) {
             var id = $(this).parents(".lpCategory").attr("id");
             var result = library.removeCategory(id);
             if (result) {
@@ -392,7 +397,7 @@ editLists = function() {
             renderDefaultList();
         });
 
-        $("#lists").on("click", ".lpRemove", function(evt) {
+        $("#lists").on("click", ".lpRemove.confirmed", function(evt) {
             var id = parseInt($(this).parents(".lpLibraryList").attr("list"));
             library.removeList(id);
             $("[list="+id+"]", $listsContainer).remove();
@@ -556,7 +561,7 @@ editLists = function() {
             });
             
         });
-        $("#library").on("click", ".lpRemoveLibraryItem", function(evt) {
+        $("#library").on("click", ".lpRemoveLibraryItem.confirmed", function(evt) {
             var id = $(this).parents(".lpLibraryItem").attr("item");
             var success = library.removeItem(id);
             if (success) {
@@ -1335,13 +1340,13 @@ editLists = function() {
 
     function initSpeedBumps() {
         $(document).on("click", ".speedbump", function(evt) {
-            var context = $(evt.target);
+            var context = $(evt.currentTarget);
             if (context.hasClass("confirmed")) return;
 
             evt.preventDefault();
             evt.stopImmediatePropagation();
 
-            var speedBumpDetails = speedBumps[context.attr("data-speedbump")];
+            var speedBumpDetails = speedBumps[context.data("speedbump")];
             var speedBumpDialog = createSpeedBumpDialog(speedBumpDetails.action, speedBumpDetails.message);
 
             $(".confirm", speedBumpDialog).on("click", function(evt) {
@@ -1352,16 +1357,17 @@ editLists = function() {
     }
 
     function createSpeedBumpDialog(action, message) {
-        var content = "<p>" + message + "</p>";
+        var content = "<h2>" + message + "</h2>";
         if (message.charAt(0) == "<") content = message;
-        content += "<div class='buttons'><a class='button primary close'>Cancel</a>";
-        content += "<a class='button close confirm'>" + confirmButton + "</a></div>";
+        content += "<div class='buttons'><a class='lpButton primary close'>Cancel</a>&nbsp;&nbsp;&nbsp;";
+        content += "<a class='lpButton close confirm'>" + action + "</a></div>";
 
         return createDialog(content);
     }
 
     function createDialog(content) {
-         $(body).append("<div class='lpDialog'>"+content+"</div>").show();
+        $("<div class='lpDialog'>" + content + "</div>").appendTo("body").show();
+        $modalOverlay.show();
     }
 
     function diagnostics() {
@@ -1397,6 +1403,15 @@ editLists = function() {
                 var category = library.getCategoryById(libraryCategory.id);
                 console.log(category);
                 library.removeCategory(libraryCategory.id);
+            }
+        }
+        for (var k in library.categories) {
+            var libraryCategory = library.categories[k];
+            for (var i = 0; i < libraryCategory.itemIds.length; i++) {
+                if (!library.items[libraryCategory.itemIds[i].itemId]) {
+                    console.log("can't find ID:" + libraryCategory.itemIds[i].itemId);
+                    libraryCategory.removeItem(libraryCategory.itemIds[i].itemId);
+                }
             }
         }*/
     }
