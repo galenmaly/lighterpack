@@ -2,7 +2,7 @@ LighterPack
 ===========
 LighterPack is a website to track the gear you take on adventures. It is still in Beta.
 
-LighterPack is built on a node.js/jQuery/vanillaJS/mongo stack. There are not yet full instructions on how to get LighterPack up and running on your own box.
+LighterPack is built on a node.js/jQuery/vanillaJS/mongo stack.
 
 How to run Lighterpack
 ===========
