@@ -304,11 +304,11 @@ Library.prototype.newCategory = function(args) {
     return temp;
 }
 
-Library.prototype.removeCategory = function(id) {
+Library.prototype.removeCategory = function(id, force) {
     var category = this.getCategoryById(id);
 
     var list = this.findListWithCategoryById(id);
-    if (list && list.categoryIds.length == 1) {
+    if (list && list.categoryIds.length == 1 && !force) {
         alert("Can't remove the last category in a list!");
         return false;
     } else if (list) {
@@ -338,7 +338,7 @@ Library.prototype.removeList = function(id) {
     var list = this.getListById(id);
 
     for (var i = 0; i < list.categoryIds; i++) {
-        this.removeCategory(list.categoryIds[i])
+        this.removeCategory(list.categoryIds[i], true);
     }
 
     delete this.lists[id];
