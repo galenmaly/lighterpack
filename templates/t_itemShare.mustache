@@ -19,12 +19,8 @@
         {{description}}
     </span>
     <span class="lpCell lpActionsCell">
-        {{#worn}}
-            <i class="lpSprite lpWorn lpActive {{wornClass}}" title="This item is worn and not counted in pack weight."></i>
-        {{/worn}}
-        {{#starClass}}
-            <i class="lpSprite lpStar {{starClass}}" title="This item is starred"></i>
-        {{/starClass}}
+        <i class="lpSprite lpWorn lpActive {{wornClass}} {{^worn}}hidden{{/worn}}" title="This item is worn and not counted in pack weight."></i>
+        <i class="lpSprite lpStar {{starClass}} {{^starClass}}hidden{{/starClass}}" title="This item is starred"></i>
     </span>
     <span class="lpCell lpWeightCell lpNumber">
         <span class="lpWeight">{{displayWeight}}</span>

@@ -491,6 +491,12 @@
         ul {
             line-height: 25px;
         }
+
+        hr {
+            border-color: @border1;
+            margin: 7px -0;
+            padding: 0;
+        }
     }
     &:hover {
         .lpTarget {
@@ -588,6 +594,10 @@
     position: relative;
     width: 14px;
     top: 2px;
+
+    &.hidden {
+        visibility: hidden;
+    }
 }
 
 .lpSpriteAdd {
