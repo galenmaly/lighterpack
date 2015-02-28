@@ -79,7 +79,7 @@ Category.prototype.calculateSubtotal = function() {
         var item = this.library.getItemById(categoryItem.itemId);
         this.subtotal += item.weight*categoryItem.qty;
         if (categoryItem.worn) {
-            this.wornSubtotal += item.weight * ( (item.qty > 0) ? 1 : 0 );
+            this.wornSubtotal += item.weight*categoryItem.qty;
         }
         this.qtySubtotal += item.qty;
     }
