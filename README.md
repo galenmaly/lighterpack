@@ -11,13 +11,14 @@ How to run Lighterpack
 2) git clone https://github.com/galenmaly/lighterpack.git
 
 3) Install packages:
-   npm install express
-   npm install cookie-parser
-   npm install body-parser
-   npm install mongojs
-   npm install mustache
-   npm install node.extend
-   npm install nodemailer
+   - npm install express
+   - npm install cookie-parser
+   - npm install body-parser
+   - npm install mongojs
+   - npm install mustache
+   - npm install node.extend
+   - npm install nodemailer
+   - npm install connect
 
 4) run via nodejs app.js
 
