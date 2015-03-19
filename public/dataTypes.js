@@ -73,6 +73,7 @@ Category.prototype.removeItem = function (itemId) {
 Category.prototype.calculateSubtotal = function() {
     this.subtotal = 0;
     this.wornSubtotal = 0;
+    this.consumableSubtotal = 0;
     this.qtySubtotal = 0;
     for (var i in this.itemIds) {
         var categoryItem = this.itemIds[i];
@@ -80,6 +81,9 @@ Category.prototype.calculateSubtotal = function() {
         this.subtotal += item.weight*categoryItem.qty;
         if (categoryItem.worn) {
             this.wornSubtotal += item.weight * ( (item.qty > 0) ? 1 : 0 );
+        }
+        if (categoryItem.consumable) {
+            this.consumableSubtotal += item.weight * item.qty;
         }
         this.qtySubtotal += item.qty;
     }
@@ -217,6 +221,7 @@ List.prototype.renderChart = function (doParent) {
 List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit) {
     var total = 0,
         wornTotal = 0,
+        consumableTotal = 0,
         packTotal = 0,
         qtyTotal = 0,
         out = {categories: []};
@@ -229,16 +234,19 @@ List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit)
 
         total += category.subtotal;
         wornTotal += category.wornSubtotal;
+        consumableTotal += category.consumableSubtotal;
         qtyTotal += category.qtySubtotal;
         out.categories.push(category);
     }
 
-    packTotal = total - wornTotal;
+    packTotal = total - (wornTotal + consumableTotal);
     out.total = MgToWeight(total, unit);
     out.totalUnit = renderUnitSelect(unit, unitSelectTemplate, total);
     out.subtotalUnit = unit;
     out.wornTotal = wornTotal;
     out.wornDisplayTotal = MgToWeight(wornTotal, unit);
+    out.consumableTotal = consumableTotal;
+    out.consumableDisplayTotal = MgToWeight(consumableTotal, unit);
     out.packTotal = packTotal;
     out.packDisplayTotal = MgToWeight(packTotal, unit);
     out.qtyTotal = qtyTotal;

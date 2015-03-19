@@ -31,6 +31,13 @@
             <i class="lpSprite lpWorn" title="Mark this item as worn"></i>
         {{/worn}}
 
+        {{#consumable}}
+            <i class="lpSprite lpConsumable lpActive" title="Mark this item as a consumable"></i>
+        {{/consumable}}
+        {{^consumable}}
+            <i class="lpSprite lpConsumable" title="Mark this item as a consumable"></i>
+        {{/consumable}}
+
         <i class="lpSprite lpStar {{starClass}}" title="Star this item"></i>
     </span>
     <span class="lpCell lpWeightCell lpNumber">

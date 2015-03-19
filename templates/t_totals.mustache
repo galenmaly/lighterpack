@@ -33,6 +33,16 @@
             </span>
         </li>
         {{#wornTotal}}
+            <li class="lpRow lpFooter lpBreakdown lpConsumableWeight">
+                <span class="lpCell"></span>
+                <span class="lpCell lpSubtotal">
+                    Worn
+                </span>
+                <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpDisplaySubtotal" mg="{{consumableTotal}}">{{consumableDisplayTotal}}</span>
+                    <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+                </span>
+            </li>
             <li class="lpRow lpFooter lpBreakdown lpWornWeight">
                 <span class="lpCell"></span>
                 <span class="lpCell lpSubtotal">
