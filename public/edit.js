@@ -284,7 +284,9 @@ editLists = function() {
             if (categoryItem.worn) {
                 categoryItem.worn = false;
             } else {
-                categoryItem.worn = true;
+                if (!categoryItem.consumable) {
+                    categoryItem.worn = true;
+                }
             }
             
             $(this).removeClass("lpActive")
@@ -305,7 +307,9 @@ editLists = function() {
             if (categoryItem.consumable) {
                 categoryItem.consumable = false;
             } else {
-                categoryItem.consumable = true;
+                if (!categoryItem.worn) {
+                    categoryItem.consumable = true;
+                }
             }
 
             $(this).removeClass("lpActive")
