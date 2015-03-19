@@ -19,6 +19,9 @@ How to run Lighterpack
    - npm install node.extend
    - npm install nodemailer
    - npm install connect
+   - npm install compression
+   - npm install nodemailer-sendmail-transport
+   - npm install formidable
 
 4) run via nodejs app.js
 
