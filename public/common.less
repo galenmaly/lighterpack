@@ -278,7 +278,7 @@
 }
 
 .lpItem:hover {
-    .lpRemove, .lpWorn, .lpCamera, .lpLink, .lpHandle, .lpArrows, .lpStar {
+    .lpRemove, .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpHandle, .lpArrows, .lpStar {
         visibility: visible;
     }
 }
@@ -688,5 +688,14 @@
     &.lpStar1 { background-position: -225px -25px; }
     &.lpStar2 { background-position: -225px -50px; }
     &.lpStar3 { background-position: -225px -75px; }
+}
+
+.lpConsumable {
+    background-position: -275px 0px;
+    width: 17px;
+ 
+    &.lpActive {
+        background-position: -275px -25px;
+    }
 }
 

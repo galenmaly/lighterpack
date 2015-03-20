@@ -284,7 +284,9 @@ editLists = function() {
             if (categoryItem.worn) {
                 categoryItem.worn = false;
             } else {
-                categoryItem.worn = true;
+                if (!categoryItem.consumable) {
+                    categoryItem.worn = true;
+                }
             }
             
             $(this).removeClass("lpActive")
@@ -292,6 +294,29 @@ editLists = function() {
             var wornClass = "";
             if (categoryItem.worn) wornClass = "lpActive";
             $(this).addClass(wornClass);
+
+            updateSubtotals();
+            saveLocally();
+        });
+
+        $categories.on("click", ".lpConsumable", function(evt) {
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
+            var id = $(this).parents(".lpItem").attr("id")
+            var categoryItem = category.getCategoryItemById(id);
+
+            if (categoryItem.consumable) {
+                categoryItem.consumable = false;
+            } else {
+                if (!categoryItem.worn) {
+                    categoryItem.consumable = true;
+                }
+            }
+
+            $(this).removeClass("lpActive")
+
+            var consumableClass = "";
+            if (categoryItem.consumable) consumableClass = "lpActive";
+            $(this).addClass(consumableClass);
 
             updateSubtotals();
             saveLocally();
