@@ -1,3 +1,4 @@
+LighterPack
 ===========
 LighterPack is a website to track the gear you take on adventures. It is still in Beta.
 
