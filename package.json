@@ -1,0 +1,26 @@
+{
+	"name": "lighterpack",
+	"description": "LighterPack is a website to track the gear you take on adventures.",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/galenmaly/lighterpack"
+	},
+	"dependencies": {
+		"express": "4.12.x",
+		"cookie-parser": "1.3.x",
+		"body-parser": "1.12.x",
+		"mongojs": "0.18.x",
+		"mustache": "2.0.x",
+		"node.extend": "1.1.x",
+		"nodemailer": "1.3.4",
+		"connect": "3.3.x",
+		"compression": "1.4.x",
+		"nodemailer-sendmail-transport": "1.0.x",
+		"formidable": "1.0.x",
+		"request": "2.55.x"
+	},
+	"engine": "node 0.12.x",
+	"scripts": {
+		"start": "node app.js"
+	}
+}
