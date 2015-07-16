@@ -71,9 +71,15 @@ listReport = function() {
             $("#lpImageDialog").empty().append($modalImage);
             $modalImage.load(function() {
                 $("#lpImageDialog").show();
-                $("#lpIodalOverlay").show();
+                $("#lpModalOverlay").show();
                 centerDialog();
             });
+        });
+
+        $modalOverlay.on("click", function() {
+            if (!$(".lpDialog:visible").hasClass("sticky")) {
+                $("#lpModalOverlay, .lpDialog").fadeOut();
+            }
         });
 
         $(document).on("click", function() {
