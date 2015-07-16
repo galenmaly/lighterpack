@@ -76,7 +76,7 @@ listReport = function() {
             });
         });
 
-        $modalOverlay.on("click", function() {
+        $("#lpModalOverlay").on("click", function() {
             if (!$(".lpDialog:visible").hasClass("sticky")) {
                 $("#lpModalOverlay, .lpDialog").fadeOut();
             }
