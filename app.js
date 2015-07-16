@@ -85,7 +85,7 @@ app.get('/r/:id', function(req, res) {
         var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, showImages: library.showImages, unitSelectTemplate: templates.t_unitSelect});
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
-        var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals};
+        var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, showImages: library.showImages};
         model = extend(model, templates);
         res.send(Mustache.render(shareTemplate, model));
     });
