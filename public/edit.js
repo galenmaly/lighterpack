@@ -159,24 +159,32 @@ editLists = function() {
 
 
     function updateSubtotals() {
-        var chartData = library.renderChart();
+        var list = library.getListById(library.defaultListId);
 
-        if (chartData) {
+        if (list.categoryIds.length) {
+            var chartData = library.renderChart();
+
             $("#getStarted").hide();
             $("#totalsContainer").css("visibility", "visible");
             $chartContainer.css("visibility", "visible");
-            if (chart) {
-                chart.update({processedData: chartData});
+
+            if (chartData) {
+                if (chart) {
+                    chart.update({processedData: chartData});
+                } else {
+                    chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+                }
+                $chartContainer.css("visibility", "visible");
             } else {
-                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+                $chartContainer.css("visibility", "hidden");
             }
+            $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
         } else {
             $("#getStarted").show();
             $("#totalsContainer").css("visibility", "hidden");
             $chartContainer.css("visibility", "hidden");
+            $(".lpTotalsContainer").html("");
         }
-        
-        $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
 
         $(".lpCategory", $categories).each(function() {
             var category = library.getCategoryById($(this).attr("id"));
