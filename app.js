@@ -8,8 +8,10 @@ var fs = require("fs");
 eval(fs.readFileSync(rootPath+'config.js')+'');
 
 var collections = ["users", "libraries"];
-var db = require("mongojs").connect(databaseUrl, collections);
 
+
+var mongojs = require('mongojs');
+var db = mongojs(databaseUrl, collections);
 var connect = require('connect');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -21,6 +23,7 @@ var nodemailer = require("nodemailer");
 var sendmailTransport = require('nodemailer-sendmail-transport');
 var transport = nodemailer.createTransport(sendmailTransport({}));
 var formidable = require('formidable');
+
 
 //I'm pretty sure there's a better way to do this:
 eval(fs.readFileSync(rootPath+'public/sha3.js')+'');
