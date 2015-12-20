@@ -11,7 +11,8 @@ How to run Lighterpack
 2. ```$ git clone https://github.com/galenmaly/lighterpack.git```
 3. Install dependancies ```$ npm install```
 4. start mongo ```$ mongod```
-4. Start app ```$ node app.js```
+5. Start app ```$ node app.js```
+6. go to http://localhost:3000
 
 Running with Vagrant
 -----------
