@@ -8,7 +8,8 @@ var fs = require("fs");
 eval(fs.readFileSync(rootPath+'config.js')+'');
 
 var collections = ["users", "libraries"];
-var db = require("mongojs").connect(databaseUrl, collections);
+var mongojs = require('mongojs');
+var db = mongojs(databaseUrl, collections);
 
 var connect = require('connect');
 var cookieParser = require('cookie-parser');
