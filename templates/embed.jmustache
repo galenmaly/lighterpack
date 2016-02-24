@@ -1,5 +1,6 @@
 listReport_{{externalId}} = function() {
-    var $list = $("#{{externalId}}"),
+    var $ = jQuery,
+        $list = $("#{{externalId}}"),
         $categories,
         $chartContainer,
         chart = null,
@@ -84,18 +85,36 @@ listReport_{{externalId}} = function() {
 };
 
 function centerDialog() {
-    var $dialog = $(".lp_dialog:visible");
+    var $ = jQuery,
+        $dialog = $(".lp_dialog:visible");
+
     $dialog.css("margin-top", ""+(-1*$dialog.outerHeight()/2)+"px");
 }
 
-$.when(
-    $.getScript( "http://www.lighterpack.com/pies.js" ),
-    $.getScript( "http://www.lighterpack.com/dataTypes.js" ),
-    $.Deferred(function( deferred ){
-        $( deferred.resolve );
-    })
-).done(function(){
-    $(function() {
-        listReport_{{externalId}}();
+init_{{externalId}} = function() {
+    var $ = jQuery;
+    $.when(
+        $.getScript("https://lighterpack.com/pies.js"),
+        $.getScript("https://lighterpack.com/dataTypes.js"),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        $(function() {
+            listReport_{{externalId}}();
+        });
     });
-});
+
+}
+
+if (typeof jQuery === "undefined") {
+    var head = document.getElementsByTagName("head")[0],
+        jq = document.createElement("script");
+
+    jq.type = "text/javascript";
+    jq.src = "https://lighterpack.com/jquery-2.0.3.min.js";
+    jq.onload = init_{{externalId}};
+    head.appendChild(jq);
+} else {
+     init_{{externalId}}();
+}
