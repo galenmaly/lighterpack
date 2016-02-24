@@ -1,4 +1,4 @@
-listReport = function() {
+listReport_{{externalId}} = function() {
     var $list = $("#{{externalId}}"),
         $categories,
         $chartContainer,
@@ -96,6 +96,6 @@ $.when(
     })
 ).done(function(){
     $(function() {
-        listReport();
+        listReport_{{externalId}}();
     });
 });
