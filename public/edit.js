@@ -561,7 +561,7 @@ editLists = function() {
                     var item = library.getItemById(selectedItem);
                     var $item = $("#"+selectedItem);
                     item.image = data.data.id;
-                    $(".lpImageCell", $item).html("<img class='lpItemImage' src='http://i.imgur.com/"+item.image+"s.jpg' />");
+                    $(".lpImageCell", $item).html("<img class='lpItemImage' src='https://i.imgur.com/"+item.image+"s.jpg' />");
 
                     library.showImages = true;
                     $list.addClass("lpShowImages");
@@ -585,7 +585,7 @@ editLists = function() {
         $categories.on("click", ".lpItemImage", function() {
             var item = library.getItemById($(this).parents(".lpItem").attr("id"));
             
-            var $modalImage = $("<img src='http://i.imgur.com/"+item.image+"l.png' />");
+            var $modalImage = $("<img src='https://i.imgur.com/"+item.image+"l.png' />");
             $("#lpImageDialog").empty().append($modalImage);
             $modalImage.load(function() {
                 $("#lpImageDialog").show();
