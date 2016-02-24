@@ -1365,9 +1365,9 @@ editLists = function() {
     }
 
     function showShareBox(externalId) {
-        $("#shareUrl").val("http://lighterpack.com/r/"+externalId).focus().select();
-        $("#embedUrl").val("<script src=\"http://lighterpack.com/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
-        $("#csvUrl").attr("href","http://lighterpack.com/csv/"+externalId);
+        $("#shareUrl").val("https://lighterpack.com/r/"+externalId).focus().select();
+        $("#embedUrl").val("<script src=\"https://lighterpack.com/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
+        $("#csvUrl").attr("href","https://lighterpack.com/csv/"+externalId);
     }
 
 
