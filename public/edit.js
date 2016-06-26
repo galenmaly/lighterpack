@@ -181,8 +181,8 @@ editLists = function() {
         });
     }
 
-    function updateChart() {
-        var chartData = library.renderChart();
+    function updateChart(type) {
+        var chartData = library.renderChart(type);
 
         if (chartData) {
             if (chart) {
@@ -496,6 +496,15 @@ editLists = function() {
                 updateItem($(this).parents(".lpItem"));
                 updateSubtotals();
             }
+        });
+
+        $list.on("click", ".lpTotals .lpFooter", function() {
+          var type = this.className.match(/\blp[A-Z][a-z]+Weight\b/);
+          if (type && type[0]) {
+            updateChart(type[0]);
+          } else {
+            updateChart();
+          }
         });
 
         $("#hamburger").off("click").on("click", function() {
