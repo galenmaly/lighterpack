@@ -178,7 +178,16 @@ List.prototype.renderChart = function (type) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             category.calculateSubtotal();
-            total += category.subtotal;
+
+            if (type === 'lpConsumableWeight') {
+              total += category.consumableSubtotal;
+            } else if (type === 'lpWornWeight') {
+              total += category.wornSubtotal;
+            } else if (type === 'lpPackWeight') {
+              total += (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+            } else {
+              total += category.subtotal;
+            }
         }
     }
 
@@ -188,7 +197,18 @@ List.prototype.renderChart = function (type) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             var points = {};
-            var categoryTotal = category.subtotal;
+
+            var categoryTotal;
+            if (type === 'lpConsumableWeight') {
+              categoryTotal = category.consumableSubtotal;
+            } else if (type === 'lpWornWeight') {
+              categoryTotal = category.wornSubtotal;
+            } else if (type === 'lpPackWeight') {
+              categoryTotal = (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+            } else {
+              categoryTotal = category.subtotal;
+            }
+
             var tempColor = category.color || getColor(i);
             category.displayColor = rgbToString(tempColor);
             var tempCategory = {};
