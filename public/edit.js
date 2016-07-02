@@ -499,9 +499,9 @@ editLists = function() {
         });
 
         $list.on("click", ".lpTotals .lpFooter", function() {
-          var type = this.className.match(/\blp[A-Z][a-z]+Weight\b/);
-          if (type && type[0]) {
-            updateChart(type[0]);
+          var type = this.dataset.weightType;
+          if (type) {
+            updateChart(type)
           } else {
             updateChart();
           }

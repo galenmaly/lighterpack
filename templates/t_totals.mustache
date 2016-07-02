@@ -32,7 +32,7 @@
                 <span class="lpTotalUnit">{{{totalUnit}}}</span>
             </span>
         </li>
-        <li class="lpRow lpFooter lpBreakdown lpConsumableWeight">
+        <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight">
             <span class="lpCell"></span>
             <span class="lpCell lpSubtotal">
                 Consumable
@@ -42,7 +42,7 @@
                 <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
             </span>
         </li>
-        <li class="lpRow lpFooter lpBreakdown lpWornWeight">
+        <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight">
             <span class="lpCell"></span>
             <span class="lpCell lpSubtotal">
                 Worn
@@ -52,7 +52,7 @@
                 <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
             </span>
         </li>
-        <li class="lpRow lpFooter lpBreakdown lpPackWeight">
+        <li data-weight-type="pack" class="lpRow lpFooter lpBreakdown lpPackWeight">
             <span class="lpCell"></span>
             <span class="lpCell lpSubtotal">
                 Pack Weight

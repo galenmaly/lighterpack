@@ -179,11 +179,11 @@ List.prototype.renderChart = function (type) {
         if (category) {
             category.calculateSubtotal();
 
-            if (type === 'lpConsumableWeight') {
+            if (type === 'consumable') {
               total += category.consumableSubtotal;
-            } else if (type === 'lpWornWeight') {
+            } else if (type === 'worn') {
               total += category.wornSubtotal;
-            } else if (type === 'lpPackWeight') {
+            } else if (type === 'pack') {
               total += (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
             } else {
               total += category.subtotal;
@@ -199,11 +199,11 @@ List.prototype.renderChart = function (type) {
             var points = {};
 
             var categoryTotal;
-            if (type === 'lpConsumableWeight') {
+            if (type === 'consumable') {
               categoryTotal = category.consumableSubtotal;
-            } else if (type === 'lpWornWeight') {
+            } else if (type === 'worn') {
               categoryTotal = category.wornSubtotal;
-            } else if (type === 'lpPackWeight') {
+            } else if (type === 'pack') {
               categoryTotal = (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
             } else {
               categoryTotal = category.subtotal;
