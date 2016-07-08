@@ -499,7 +499,7 @@ editLists = function() {
         });
 
         $list.on("click", ".lpTotals .lpFooter", function() {
-          var type = this.dataset.weightType;
+          var type = $(this).data("weightType");
           if (type) {
             updateChart(type)
           } else {
