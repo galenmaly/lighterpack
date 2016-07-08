@@ -162,22 +162,9 @@ editLists = function() {
         var list = library.getListById(library.defaultListId);
 
         if (list.categoryIds.length) {
-            var chartData = library.renderChart();
-
             $("#getStarted").hide();
             $("#totalsContainer").css("visibility", "visible");
-            $chartContainer.css("visibility", "visible");
-
-            if (chartData) {
-                if (chart) {
-                    chart.update({processedData: chartData});
-                } else {
-                    chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
-                }
-                $chartContainer.css("visibility", "visible");
-            } else {
-                $chartContainer.css("visibility", "hidden");
-            }
+            updateChart();
             $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
         } else {
             $("#getStarted").show();
@@ -192,6 +179,21 @@ editLists = function() {
             $(".lpSubtotalUnit", this).text(category.subtotalUnit);
             $(".lpQtySubtotal", this).text(category.qtySubtotal);
         });
+    }
+
+    function updateChart(type) {
+        var chartData = library.renderChart(type);
+
+        if (chartData) {
+            if (chart) {
+                chart.update({processedData: chartData});
+            } else {
+                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+            }
+            $chartContainer.css("visibility", "visible");
+        } else {
+            $chartContainer.css("visibility", "hidden");
+        }
     }
 
     function chartHover(chartItem) {
@@ -494,6 +496,15 @@ editLists = function() {
                 updateItem($(this).parents(".lpItem"));
                 updateSubtotals();
             }
+        });
+
+        $list.on("click", ".lpTotals .lpFooter", function() {
+          var type = this.dataset.weightType;
+          if (type) {
+            updateChart(type)
+          } else {
+            updateChart();
+          }
         });
 
         $("#hamburger").off("click").on("click", function() {

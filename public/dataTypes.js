@@ -170,16 +170,24 @@ List.prototype.render = function (args) {
     return out;
 }
 
-List.prototype.renderChart = function (doParent) {
+List.prototype.renderChart = function (type) {
     var chartData = { points: {}};
     var total = 0;
-    if (typeof doParent == "undefined") doParent = true;
 
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             category.calculateSubtotal();
-            total += category.subtotal;
+
+            if (type === 'consumable') {
+              total += category.consumableSubtotal;
+            } else if (type === 'worn') {
+              total += category.wornSubtotal;
+            } else if (type === 'pack') {
+              total += (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+            } else {
+              total += category.subtotal;
+            }
         }
     }
 
@@ -189,7 +197,18 @@ List.prototype.renderChart = function (doParent) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             var points = {};
-            var categoryTotal = category.subtotal;
+
+            var categoryTotal;
+            if (type === 'consumable') {
+              categoryTotal = category.consumableSubtotal;
+            } else if (type === 'worn') {
+              categoryTotal = category.wornSubtotal;
+            } else if (type === 'pack') {
+              categoryTotal = (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+            } else {
+              categoryTotal = category.subtotal;
+            }
+
             var tempColor = category.color || getColor(i);
             category.displayColor = rgbToString(tempColor);
             var tempCategory = {};
@@ -202,13 +221,12 @@ List.prototype.renderChart = function (doParent) {
                 if (item.qty > 1) name += " x "+item.qty;
                 if (!value) value = 0;
                 var percent = value / categoryTotal;
-                var tempItem =  { value: value, id: item.id, name: name, color: color, percent: percent };
-                if (doParent) tempItem.parent = tempCategory;
+                var tempItem =  { value: value, id: item.id, name: name, color: color, parent: tempCategory, percent: percent };
+                tempItem.parent = tempCategory;
                 points[j] = tempItem;
             }
             var percent = categoryTotal / total;
-            var tempCategoryData = {points: points, color: category.color, id:category.id, name:category.name, total: categoryTotal, percent: percent, visiblePoints: false};
-            if (doParent) tempCategoryData.parent = chartData;
+            var tempCategoryData = {parent: chartData, points: points, color: category.color, id:category.id, name:category.name, total: categoryTotal, percent: percent, visiblePoints: false};
             extend(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;
         }
@@ -409,8 +427,8 @@ Library.prototype.renderLibrary = function(template) {
     return out;
 }
 
-Library.prototype.renderChart = function() {
-    return this.lists[this.defaultListId].renderChart();
+Library.prototype.renderChart = function(type) {
+    return this.lists[this.defaultListId].renderChart(type);
 }
 
 Library.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate) {
