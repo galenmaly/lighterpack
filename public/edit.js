@@ -791,7 +791,7 @@ editLists = function() {
             offset = 2;
         }
         if ($this.hasClass("lpQty")) {
-            var qty = parseInt($this.val());
+            var qty = parseFloat($this.val());
             if (qty >= -1 + offset) {
                 $this.val(qty+increment);
             }
@@ -809,7 +809,7 @@ editLists = function() {
 
         var item = library.getItemById(id);
         var weight = parseFloat($(".lpWeight", $row).val()) || 0;
-        var qty = parseInt($(".lpQty", $row).val());
+        var qty = parseFloat($(".lpQty", $row).val());
 
         if (weight < 0) {
             alert("Please enter a valid weight.");
@@ -932,7 +932,7 @@ editLists = function() {
                 var temp = {name: row[0],
                         category: row[1],
                         description: row[2],
-                        qty: parseInt(row[3]),
+                        qty: parseFloat(row[3]),
                         weight: parseFloat(row[4]),
                         unit: row[5]};
                 data.push(temp);
@@ -964,7 +964,7 @@ editLists = function() {
 
             item.name = row[0];
             item.description = row[2];
-            categoryItem.qty = parseInt(row[3]);
+            categoryItem.qty = parseFloat(row[3]);
             item.weight = WeightToMg(parseFloat(row[4]), fullUnitToUnit[row[5]]);
             item.authorUnit = fullUnitToUnit[row[5]];
             category.name = row[1];
