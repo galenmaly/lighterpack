@@ -84,7 +84,7 @@ app.get('/r/:id', function(req, res) {
             }
         }
 
-        var chartData = escape(JSON.stringify(list.renderChart(false)));
+        var chartData = escape(JSON.stringify(list.renderChart("total", false)));
         var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, showImages: library.showImages, unitSelectTemplate: templates.t_unitSelect});
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
@@ -131,7 +131,7 @@ app.get("/e/:id", function(req, res) {
             }
         }
 
-        var chartData = escape(JSON.stringify(list.renderChart(false)));
+        var chartData = escape(JSON.stringify(list.renderChart("total", false)));
 
         var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, showImages: library.showImages, unitSelectTemplate: templates.t_unitSelect});
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect);
