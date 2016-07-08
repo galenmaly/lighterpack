@@ -499,12 +499,12 @@ editLists = function() {
         });
 
         $list.on("click", ".lpTotals .lpFooter", function() {
-          var type = $(this).data("weightType");
-          if (type) {
-            updateChart(type)
-          } else {
-            updateChart();
-          }
+            var type = $(this).data("weightType");
+            if (type) {
+                updateChart(type)
+            } else {
+                updateChart();
+            }
         });
 
         $("#hamburger").off("click").on("click", function() {

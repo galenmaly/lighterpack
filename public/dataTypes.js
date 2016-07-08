@@ -170,9 +170,11 @@ List.prototype.render = function (args) {
     return out;
 }
 
-List.prototype.renderChart = function (type) {
+List.prototype.renderChart = function (type, linkParent) {
     var chartData = { points: {}};
     var total = 0;
+
+    if (typeof linkParent == "undefined") linkParent = true;
 
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
@@ -183,9 +185,9 @@ List.prototype.renderChart = function (type) {
               total += category.consumableSubtotal;
             } else if (type === 'worn') {
               total += category.wornSubtotal;
-            } else if (type === 'pack') {
+            } else if (type === 'base') {
               total += (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
-            } else {
+            } else { //total weight
               total += category.subtotal;
             }
         }
@@ -203,9 +205,9 @@ List.prototype.renderChart = function (type) {
               categoryTotal = category.consumableSubtotal;
             } else if (type === 'worn') {
               categoryTotal = category.wornSubtotal;
-            } else if (type === 'pack') {
+            } else if (type === 'base') {
               categoryTotal = (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
-            } else {
+            } else { //total weight
               categoryTotal = category.subtotal;
             }
 
@@ -221,12 +223,13 @@ List.prototype.renderChart = function (type) {
                 if (item.qty > 1) name += " x "+item.qty;
                 if (!value) value = 0;
                 var percent = value / categoryTotal;
-                var tempItem =  { value: value, id: item.id, name: name, color: color, parent: tempCategory, percent: percent };
-                tempItem.parent = tempCategory;
+                var tempItem =  { value: value, id: item.id, name: name, color: color, percent: percent };
+                if (linkParent) tempItem.parent = tempCategory;
                 points[j] = tempItem;
             }
             var percent = categoryTotal / total;
-            var tempCategoryData = {parent: chartData, points: points, color: category.color, id:category.id, name:category.name, total: categoryTotal, percent: percent, visiblePoints: false};
+            var tempCategoryData = {points: points, color: category.color, id:category.id, name:category.name, total: categoryTotal, percent: percent, visiblePoints: false};
+            if (linkParent) tempCategoryData.parent = chartData;
             extend(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;
         }
