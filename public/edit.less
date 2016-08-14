@@ -186,7 +186,7 @@
     .lpHandle {
         display: none;
         height: 80px;
-        position: absolute; 
+        position: absolute;
         right: 0;
         top: 5px;
     }
@@ -325,6 +325,9 @@ input.lpCategoryName {
 .lpQty {
     width: 49px;
 }
+.lpPrice {
+    width: 49px;
+}
 .lpRemoveCell {
     padding: 0;
     width: 20px;
@@ -342,7 +345,7 @@ input.lpCategoryName {
     opacity: 0.5;
     visibility: hidden;
     &:hover {
-        opacity: 1;    
+        opacity: 1;
     }
 
     &.lpActive, &.lpStar1, &.lpStar2, &.lpStar3 {
@@ -354,7 +357,9 @@ input.lpCategoryName {
 .lpQtySubtotal {
     padding-right: 25px;
 }
-
+.lpPriceSubtotal {
+    padding-right: 5px;
+}
 /* TODO */
 
 #TODO {
@@ -467,7 +472,7 @@ input.lpCategoryName {
         margin: 2px;
         position: absolute;
         top: 0;
-        
+
         &:hover {
             opacity: 1;
         }
@@ -660,7 +665,6 @@ input.lpCategoryName {
   width: 17px;
   height: 17px;
   margin: -8px 0 0 -8px;
-  overflow: hidden; 
+  overflow: hidden;
   background: url(marker.png) no-repeat;
 }
-

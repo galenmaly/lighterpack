@@ -2,7 +2,7 @@
 
 .lp {
 
-    html&, body { 
+    html&, body {
         background: @background1;
         color: @content;
         font-family: 'Open Sans', sans-serif;
@@ -126,7 +126,7 @@
     padding: 0 0 0 10px;
 }
 
-#chart.activeHover { 
+#chart.activeHover {
     cursor: pointer;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .lpHeader {
-    .lpWeightCell, .lpQtyCell {
+    .lpWeightCell, .lpQtyCell, .lpPriceCell {
         text-align: center;
     }
 }
@@ -256,6 +256,10 @@
 
     .lpWeightCell {
         width: 110px;
+    }
+
+    .lpPriceCell {
+        width: 70px;
     }
 }
 
@@ -428,7 +432,7 @@
         overflow-y: scroll;
     }
 }
- 
+
 
 #lpModalOverlay {
     background: rgba(0,0,0,0.5);
@@ -549,7 +553,7 @@
 
     &:hover {
         background-color:#ff9e00;
-        background-image:linear-gradient(bottom,#ff9100 0,#fa0 100%); 
+        background-image:linear-gradient(bottom,#ff9100 0,#fa0 100%);
     }
 
      /* Remove IE8 dotted outline when button is clicked */
@@ -631,7 +635,7 @@
 .lpWorn {
     background-position: -50px 0;
     width: 17px;
- 
+
     &.lpActive {
         background-position: -50px -25px;
     }
@@ -694,9 +698,8 @@
 .lpConsumable {
     background-position: -275px 0px;
     width: 17px;
- 
+
     &.lpActive {
         background-position: -275px -25px;
     }
 }
-

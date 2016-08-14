@@ -266,6 +266,9 @@ input.lpCategoryName {
 .lpQty {
   width: 49px;
 }
+.lpPrice {
+  width: 49px;
+}
 .lpRemoveCell {
   padding: 0;
   width: 20px;
@@ -318,6 +321,9 @@ input.lpCategoryName {
 }
 .lpQtySubtotal {
   padding-right: 25px;
+}
+.lpPriceSubtotal {
+  padding-right: 5px;
 }
 /* TODO */
 #TODO {
