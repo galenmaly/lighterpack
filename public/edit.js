@@ -178,6 +178,7 @@ editLists = function() {
             $(".lpDisplaySubtotal", this).text(category.displaySubtotal);
             $(".lpSubtotalUnit", this).text(category.subtotalUnit);
             $(".lpQtySubtotal", this).text(category.qtySubtotal);
+            $(".lpPriceSubtotal", this).text(category.priceSubtotal);
         });
     }
 
