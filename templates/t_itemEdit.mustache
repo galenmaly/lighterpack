@@ -22,7 +22,7 @@
         {{^url}}
             <i class="lpSprite lpLink" title="Add a link for this item"></i>
         {{/url}}
-        
+
 
         {{#worn}}
             <i class="lpSprite lpWorn lpActive" title="Mark this item as worn"></i>
@@ -50,6 +50,9 @@
             <span class="lpSprite lpUp"></span>
             <span class="lpSprite lpDown"></span>
         </span>
+    </span>
+    <span class="lpCell lpPriceCell lpNumber">
+      <input type="text" value="{{price}}" class="lpPrice lpNumber lpSilent" />
     </span>
     <span class="lpCell lpRemoveCell">
         <a class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>

@@ -63,7 +63,7 @@ editLists = function() {
             addBlackout();
             initWithLibrary();
         }
-        
+
     }
 
     function signin() {
@@ -188,7 +188,7 @@ editLists = function() {
             if (chart) {
                 chart.update({processedData: chartData});
             } else {
-                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});
             }
             $chartContainer.css("visibility", "visible");
         } else {
@@ -298,7 +298,7 @@ editLists = function() {
                     categoryItem.worn = true;
                 }
             }
-            
+
             $(this).removeClass("lpActive")
 
             var wornClass = "";
@@ -512,7 +512,7 @@ editLists = function() {
             library.showSidebar = $("#main").hasClass("lpHasSidebar");
             saveLocally();
         });
-        
+
         $(".lpList").css("min-height", $("#sidebar").height());
 
         $(document).on("click", function() {
@@ -595,7 +595,7 @@ editLists = function() {
         });
         $categories.on("click", ".lpItemImage", function() {
             var item = library.getItemById($(this).parents(".lpItem").attr("id"));
-            
+
             var $modalImage = $("<img src='https://i.imgur.com/"+item.image+"l.png' />");
             $("#lpImageDialog").empty().append($modalImage);
             $modalImage.load(function() {
@@ -603,7 +603,7 @@ editLists = function() {
                 $modalOverlay.show();
                 centerDialog();
             });
-            
+
         });
         $("#library").on("click", ".lpRemoveLibraryItem.confirmed", function(evt) {
             var id = $(this).parents(".lpLibraryItem").attr("item");
@@ -745,7 +745,7 @@ editLists = function() {
             f.setColor(rgbToHex(rgbStringToRgb(category.displayColor)));
 
             $(document).on("click", closePicker);
-            
+
         });
     }
 
@@ -758,7 +758,7 @@ editLists = function() {
     function fragileListEvents() {
         $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
         $categories.sortable({handle: ".lpCategoryHandle", stop: sortCategories, axis: "y"});
-        
+
         $(".lpLibraryItem").draggable({handle: ".lpHandle",  revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
         $(".lpCategory" ).droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
     }
@@ -773,7 +773,7 @@ editLists = function() {
         $(".lpItems .lpFooter", $category).before($item);
         $(ui.draggable).removeClass("lpItemNotInList");
         updateSubtotals();
-        saveLocally();  
+        saveLocally();
     }
 
     function newItem(category, focus, deleteIfEmpty) {
@@ -821,6 +821,7 @@ editLists = function() {
         var item = library.getItemById(id);
         var weight = parseFloat($(".lpWeight", $row).val()) || 0;
         var qty = parseFloat($(".lpQty", $row).val());
+        var price = parseFloat($(".lpPrice", $row).val()) || 0;
 
         if (weight < 0) {
             alert("Please enter a valid weight.");
@@ -830,10 +831,15 @@ editLists = function() {
             alert("Please enter a valid quantity.");
             return;
         }
+        if (price < 0) {
+            alert("Please enter a valid price.");
+            return;
+        }
 
         item.name = $(".lpName", $row).val();
         item.description = $(".lpDescription", $row).val();
         item.weight = WeightToMg(weight, $(".lpUnit", $row).val());
+        item.price = price;
         item.authorUnit = $(".lpUnit", $row).val();
         item.deleteIfEmpty = false;
 
@@ -868,7 +874,7 @@ editLists = function() {
             if (!categoryItem) categoryItem = movedCategoryItem;
             tempCategoryItems.push(categoryItem);
         });
-        
+
         category.itemIds = tempCategoryItems;
 
         updateSubtotals();
@@ -884,7 +890,7 @@ editLists = function() {
             var categoryId = $(this).attr("id");
             tempListItems.push(categoryId);
         });
-        
+
         list.categoryIds = tempListItems;
 
         updateSubtotals();
@@ -1075,7 +1081,7 @@ editLists = function() {
                         if (data.status == 400) {
                             showSigninModal({error: error});
                         } else {
-                            alert(error);    
+                            alert(error);
                         }
                     }
                 });
@@ -1272,8 +1278,8 @@ editLists = function() {
         $("#signin .lpSuccess, #signin .lpError").hide();
 
         if (args) {
-            if (args.success) $("#signin .lpSuccess").text(args.success).show();    
-            if (args.error) $("#signin .lpError").text(args.error).show();    
+            if (args.success) $("#signin .lpSuccess").text(args.success).show();
+            if (args.error) $("#signin .lpError").text(args.error).show();
         }
 
         $(".lpDialog:visible").fadeOut();
@@ -1347,7 +1353,7 @@ editLists = function() {
                     var $item = $("[item="+item.id+"]", $libraryContainer);
                     $item.addClass("lpHit");
                 } else {
-                    
+
                 }
             }
         } else {

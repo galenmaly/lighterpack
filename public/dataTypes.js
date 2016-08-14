@@ -11,6 +11,7 @@ Item = function(args) {
     if (args.unit) this.authorUnit = args.unit;
     this.image = "";
     this.url = "";
+    this.price = 0;
     return this;
 }
 
@@ -58,6 +59,7 @@ Category.prototype.addItem = function (args) {
         worn: 0,
         consumable: false,
         star: 0,
+        price: 0,
         itemId: null
     }
     extend(temp, args);
@@ -75,6 +77,7 @@ Category.prototype.calculateSubtotal = function() {
     this.wornSubtotal = 0;
     this.consumableSubtotal = 0;
     this.qtySubtotal = 0;
+    this.priceSubtotal = 0;
     for (var i in this.itemIds) {
         var categoryItem = this.itemIds[i];
         var item = this.library.getItemById(categoryItem.itemId);
@@ -86,6 +89,7 @@ Category.prototype.calculateSubtotal = function() {
             this.consumableSubtotal += item.weight * item.qty;
         }
         this.qtySubtotal += item.qty;
+        this.priceSubtotal += item.price;
     }
 }
 
@@ -344,14 +348,14 @@ Library.prototype.removeCategory = function(id, force) {
         var result = list.removeCategory(id);
         if (result) {
             delete this.categories[id];
-            return true;    
+            return true;
         } else {
             return false;
         }
     }
 
     delete this.categories[id];
-    return true;    
+    return true;
 }
 
 
