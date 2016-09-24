@@ -1,5 +1,8 @@
-
 @import "globals.less";
+
+body {
+    overflow-x: hidden;
+}
 
 .lpSilent {
     background: transparent;
@@ -20,23 +23,31 @@
 #sidebar {
     background: #555;
     color: #FFF;
+    height: 100%;
     width: 280px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    position: fixed;
     box-shadow: -7px 0 7px rgba(0,0,0,0.2) inset;
     opacity: 0;
     margin-left: -600px;
     padding-left: 620px;
     padding-right: 20px;
+    z-index: @sidebar;
 
     .lpHasSidebar & {
         opacity: 1;
     }
 
+    &.lpTransition {
+        transition: opacity 1s ease-in-out 0s;
+    }
+
     h1 {
-        margin: 20px 0 30px;
+        .fullBleedLeft();
+        box-sizing: border-box;
+        height: 60px;
+        margin: 0 -20px 20px 0;
+        padding: 20px 0 20px;
+        position: relative;
 
         span {
             color: #AAA;
@@ -45,13 +56,12 @@
 
     section {
         position: relative;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
 
     h2 {
         font-size: 16px;
-        margin-top: 20px;
-        margin-bottom: 10px;
+        margin: 0 0 10px;
     }
 
     ul {
@@ -70,14 +80,18 @@
     #addListFlyout {
         position: absolute;
         right: 0;
-        text-align: right;
         top: -10px;
         width: 126px;
+
+        .lpTarget {
+            border: 1px solid transparent;
+            border-bottom: none;
+        }
 
 
         &:hover .lpTarget{
             background: #666;
-            border-color: #999;
+            border: 1px solid #999;
             border-bottom: none;
             display: block;
         }
@@ -86,15 +100,36 @@
             background: #666;
             border-color: #999;
             border-top: none;
-            padding: 8px;
+            left: 0;
+            padding: 0 5px 5px;
+        }
 
+        #importList {
+            padding-top: 0;
         }
     }
 }
 
 #scrollable {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
     position: relative;
     top: 0;
+
+    > h1 { 
+        flex: 0 0 auto;
+    }
+
+    #listContainer {
+        flex: 0 0 auto;
+    }
+
+    #libraryContainer {
+        display: flex;
+        flex: 2 0 400px;
+        flex-direction: column;
+    }
 }
 
 
@@ -133,10 +168,8 @@
     }
 }
 
-
-
 #library {
-    height: 300px;
+    flex: 1 0 300px;
     overflow-y: scroll;
 }
 
@@ -223,16 +256,12 @@
     border: 1px solid #888;
     color: #FFF;
     padding: 3px 6px;
-    position: absolute;
-    right: 0;
-    top: -2px;
-    width: 140px;
+    margin-bottom: 15px;
 }
 
 #hamburger {
     cursor: pointer;
     display: inline-block;
-    margin-top: 20px;
     opacity: 0.6;
 
     &:hover {
@@ -246,25 +275,108 @@
     }
 }
 
+/* Top Nav */
 
-/* Body */
+#header {
+    background: #FBFBFB;
+    box-sizing: border-box;
+    border-bottom: 1px solid @border1;
+    display: flex;
+    height: 60px;
+    margin: 0 -20px; /*lpList padding */
+    position: relative;
 
-.lpList {
-    .lpListName {
-        font-size: 24px;
-        font-weight: 600;
-        border: none;
-        margin-left: 30px;
-        padding: 3px 8px;
-        width: 500px;
+    * {
+        box-sizing: inherit;
+    }
+
+    .fullBleedLeft();
+    .fullBleedRight();
+
+    &:before {
+        .lpTransition();
+        opacity: 1;
+
+        .lpHasSidebar & {
+            opacity: 0;
+        }
     }
 }
 
-#topRight {
-    position: absolute;
-    top: 20px;
-    right: 0;
+#lpListName {
+    font-size: 24px;
+    font-weight: 600;
+    padding: 12px 15px;
 }
+
+.headerItem {
+    border-left: 1px solid @border1;
+    flex: 0 0 auto;
+    height: 100%;
+    padding: 17px 12px;
+    position: relative;
+
+    .lpFlyout {
+        height: 100%;
+    }
+
+    .lpTarget {
+        height: 100%;
+        padding: 17px 12px;
+
+        &:hover {
+            background: #FFF;
+        }
+    }
+
+    &#lpListName {
+        flex: 1 0 auto;
+    }
+
+    &:first-child {
+        border-left: none;
+    }
+
+    &.hasFlyout {
+        padding: 0;
+    }
+
+}
+
+#lpOptionalFields {
+    margin: 0;
+    padding: 0;
+}
+
+.lpOptionalField {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#share .lpContent {
+    width: 300px;
+}
+
+#settings .lpContent {
+    width: 200px;
+}
+
+#account {
+    .lpTarget {
+        border-right: 1px solid transparent;
+    }
+
+    &:hover .lpTarget {
+        border-right-color: @border1;
+    }
+}
+
+.signedOut {
+    display: none;
+}
+
+/* Body */
 
 .lpLegend {
     &:hover {
@@ -273,86 +385,26 @@
     }
 }
 
-.lpCategory {
-    border: 2px solid transparent;
-    &.dropAccept {
-        background: @yellow2;
+.lpItem {
+    &:hover, &.ui-sortable-helper {
+        background: #FFF;
+
+        .lpRemove, .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpHandle, .lpArrows, .lpStar {
+            visibility: visible;
+        }
     }
-    &.dropHover {
-        background: @green2;
-    }
-}
-.lpCategoryNameContainer {
-    display: block;
-    height: 31px;
-    position: relative;
-}
 
-input.lpCategoryName {
-    border: 1px solid transparent;
-    font-size: 16px;
-    font-weight: 600;
-    margin-left: 5px;
-    padding-bottom: 0;
-    position: absolute;
-    width: 300px;
-}
-
-.addCategory {
-    margin-left: 16px;
-}
-
-.lpDataTable input, .lpDataTable select {
-    padding: 3px;
-}
-
-.lpDataTable .lpCell.lpHandleCell {
-    padding-left: 4px;
-    padding-right: 0;
-    width: 12px;
-}
-.lpName {
-    margin-left: 5px;
-    width: 180px;
-}
-.lpDescription {
-    width: 100%;
-}
-
-.lpWeight {
-    width: 50px;
-}
-.lpQty {
-    width: 49px;
-}
-.lpRemoveCell {
-    padding: 0;
-    width: 20px;
-}
-.lpActionsCell {
-    width: 130px;
-    i:last-child {
-        margin-right: 0;
+    input, select {
+        padding: 3px;
     }
 }
 
-.lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpStar {
-    cursor: pointer;
-    margin-right: 8px;
-    opacity: 0.5;
-    visibility: hidden;
-    &:hover {
-        opacity: 1;    
-    }
-
-    &.lpActive, &.lpStar1, &.lpStar2, &.lpStar3 {
-        opacity: 1;
-        visibility: visible;
-    }
+.addCategory, .lpAddItem {
+    margin-left: 10px;
 }
 
 .lpQtySubtotal {
-    padding-right: 25px;
+    padding-right: 25px; /*Accommodates delete column */
 }
 
 /* TODO */
@@ -421,7 +473,7 @@ input.lpCategoryName {
     padding: 30px 0;
     position: absolute;
     width: 100%;
-    z-index: 11;
+    z-index: @aboveSidebar+1;
     h2 {
         font-size: 30px;
     }
@@ -434,19 +486,6 @@ input.lpCategoryName {
     overflow: hidden;
     position: absolute;
     left: -999px;
-}
-
-#share {
-    opacity: 0.5;
-    &:hover {
-        opacity: 1;
-    }
-
-    .lpContent {
-        left: auto;
-        width: 300px;
-        right: 0;
-    }
 }
 
 .lpHref.close {
@@ -509,127 +548,6 @@ input.lpCategoryName {
     width: 800px;
 }
 
-/*
- * CSS Styles that are needed by jScrollPane for it to operate correctly.
- *
- * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
- * may not operate correctly without them.
- */
-
-.jspContainer
-{
-    overflow: hidden;
-    position: relative;
-}
-
-.jspPane
-{
-    position: absolute;
-}
-
-.jspVerticalBar
-{
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 8px;
-    height: 100%;
-    background: transparent;
-}
-
-.jspHorizontalBar
-{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 16px;
-    background: transparent;
-}
-
-.jspVerticalBar *,
-.jspHorizontalBar *
-{
-    margin: 0;
-    padding: 0;
-}
-
-.jspCap
-{
-    display: none;
-}
-
-.jspHorizontalBar .jspCap
-{
-    float: left;
-}
-
-.jspTrack
-{
-    background: transparent;
-    position: relative;
-}
-
-.jspDrag
-{
-    background: rgba(255,255,255,0.5);
-    border-radius: 3px;
-    position: relative;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-}
-
-.jspHorizontalBar .jspTrack,
-.jspHorizontalBar .jspDrag
-{
-    float: left;
-    height: 100%;
-}
-
-.jspArrow
-{
-    background: #50506d;
-    text-indent: -20000px;
-    display: block;
-    cursor: pointer;
-}
-
-.jspArrow.jspDisabled
-{
-    cursor: default;
-    background: #80808d;
-}
-
-.jspVerticalBar .jspArrow
-{
-    height: 16px;
-}
-
-.jspHorizontalBar .jspArrow
-{
-    width: 16px;
-    float: left;
-    height: 100%;
-}
-
-.jspVerticalBar .jspArrow:focus
-{
-    outline: none;
-}
-
-.jspCorner
-{
-    background: #eeeef4;
-    float: left;
-    height: 100%;
-}
-
-/* Yuk! CSS Hack for IE6 3 pixel bug :( */
-* html .jspCorner
-{
-    margin: 0 -3px 0 0;
-}
 
 .farbtastic {
   position: relative;

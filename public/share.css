@@ -6,3 +6,7 @@
 .lpActionsCell {
     width: 75px;
 }
+
+.lpItem:hover {
+	background: #FFF;
+}

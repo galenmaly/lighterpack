@@ -1,19 +1,15 @@
-<li class="lpRow lpItem {{classes}}" id="{{id}}">
-    <span class="lpCell lpHandleCell">
+<li class="lpItem {{classes}}" id="{{id}}">
+    <span class="lpHandleCell">
         <div class="lpItemHandle lpHandle" title="Reorder this item"></div>
     </span>
-    <span class="lpCell lpImageCell">
+    <span class="lpImageCell">
         {{#image}}
             <img class="lpItemImage" src="https://i.imgur.com/{{image}}s.jpg" />
         {{/image}}
     </span>
-    <span class="lpCell lpNameCell">
-        <input type="text" value="{{name}}" class="lpName lpSilent" placeholder="Name" />
-    </span>
-    <span class="lpCell lpDescriptionCell">
-        <input type="text" value="{{description}}" class="lpDescription lpSilent" placeholder="Description" />
-    </span>
-    <span class="lpCell lpActionsCell">
+    <input type="text" value="{{name}}" class="lpName lpSilent" placeholder="Name" />
+    <input type="text" value="{{description}}" class="lpDescription lpSilent" placeholder="Description" />
+    <span class="lpActionsCell">
         <i class="lpSprite lpCamera" title="Upload a photo"></i>
 
         {{#url}}
@@ -40,18 +36,18 @@
 
         <i class="lpSprite lpStar {{starClass}}" title="Star this item"></i>
     </span>
-    <span class="lpCell lpWeightCell lpNumber">
+    <span class="lpWeightCell lpNumber">
         <input type="text" value="{{displayWeight}}" class="lpWeight lpNumber lpSilent" />
         {{{unitSelect}}}
     </span>
-    <span class="lpCell lpQtyCell">
+    <span class="lpQtyCell">
         <input type="text" value="{{qty}}" class="lpQty lpNumber lpSilent" />
         <span class="lpArrows">
             <span class="lpSprite lpUp"></span>
             <span class="lpSprite lpDown"></span>
         </span>
     </span>
-    <span class="lpCell lpRemoveCell">
+    <span class="lpRemoveCell">
         <a class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
     </span>
 </li>

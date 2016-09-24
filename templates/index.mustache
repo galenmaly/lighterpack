@@ -6,13 +6,6 @@
         <link href="edit.css?v=2" rel="stylesheet" type="text/css" />
         <link href="print.css?v=2" rel="stylesheet" type="text/css" media="print" />
         <link rel="shortcut icon" href="/favicon.png" />
-        <script type="text/html" id="unitSelect">{{{t_unitSelect}}}</script>
-        <script type="text/html" id="categoryTemplate">{{{t_categoryEdit}}}</script>
-        <script type="text/html" id="itemTemplate">{{{t_itemEdit}}}</script>
-        <script type="text/html" id="libraryItem">{{{t_libraryItem}}}</script>
-        <script type="text/html" id="libraryListTemplate">{{{t_libraryList}}}</script>
-        <script type="text/html" id="totalsTemplate">{{{t_totals}}}</script>
-        <script type="text/html" id="importValidateTemplate">{{{t_importValidate}}}</script>
         <title>LighterPack</title>
     </head>
     <body>
@@ -22,64 +15,69 @@
                 <div id="scrollable">
                     <h1>LighterPack <span>(beta)</span></h1>
 
-                    <section>
+                    <section id="listContainer">
                         <h2>Lists</h2>
                         <span id="addListFlyout" class="lpFlyout">
                             <span class="lpTarget"><a id="addList" href="#" class="lpAdd"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
                             <div class="lpContent">
-                                <a href="#" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a><br />
-                                <a href="#" id="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a>
+                                <div><a href="#" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
+                                <div><a href="#" id="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
                             </div>
                         </span>
                         
                         <ul id="lists"></ul>
                     </section>
 
-                    <section>
+                    <section id="libraryContainer">
                         <h2>Gear</h2>
                         <input type="text" id="librarySearch" placeholder="search items"/>
                         <ul id="library"></ul>
                     </section>
-
-                    <hr />
-
-                    <a class="lpHref lpSmall" href="#" id="toggleImages">Toggle item images</a>
                 </div>
             </div>
             <div class="lpList">
-                <div id="header">
-                    <a id="hamburger"><i class="lpSprite lpHamburger"></i></a>
-                    <input type="text" class="lpSilent lpListName" value="New List" placeholder="List Name"/>
-                    <div id="topRight">
-                        <div class="signedIn">
-                            <span id="share" class="lpFlyout">
-                                <span class="lpTarget"><i class="lpSprite lpLinkBig" title="Share this list"></i></span>
-                                <div class="lpContent">
-                                    <h3>Share your list</h3>
-                                    <input type="text" id="shareUrl" />
-                                    <h3>Embed your list</h3>
-                                    <textarea id="embedUrl"></textarea>
-                                    <a href="#"  id="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload"></i>Export to CSV</a>
-                                </div>
-                            </span>
-                            &nbsp; &nbsp;
-                            <span class="lpFlyout">
-                                <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
-                                <div class="lpContent">
-                                    <a href="#" class="lpHref accountSettings">Account Settings</a><br />
-                                    <a href="#" class="lpHref help">Help</a><br />
-                                    <a class="lpHref" id="showTODO" href="#">Bugs / TODO</a><br />
-                                    <a href="#" class="lpHref signout">Sign Out</a>
-                                </div>
-                            </span>
-                        </div>
-                        <div class="signedOut" style="display:none">
-                            <a href="#" class="lpButton lpSmall showRegister">Register</a> or <a href="#" class="lpButton lpSmall showSignin">Sign In</a>
-                        </div>
-                    </div>
+                <div id="header" class="clearfix">
+                    <span class="headerItem">
+                        <a id="hamburger"><i class="lpSprite lpHamburger"></i></a>
+                    </span>
+                    <input id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
+                    <span class="headerItem hasFlyout signedIn">
+                        <span id="share" class="lpFlyout">
+                            <span class="lpTarget"><i class="lpSprite lpLink"></i> Share</span>
+                            <div class="lpContent">
+                                <h3>Share your list</h3>
+                                <input type="text" id="shareUrl" />
+                                <h3>Embed your list</h3>
+                                <textarea id="embedUrl"></textarea>
+                                <a href="#"  id="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload"></i>Export to CSV</a>
+                            </div>
+                        </span>
+                    </span>
+                    <span id="settings" class="headerItem hasFlyout signedIn">
+                        <span class="lpFlyout">
+                            <span class="lpTarget"><i class="lpSprite lpSettings"></i> Settings</span>
+                            <div class="lpContent">
+                                <ul id="lpOptionalFields"></ul>
+                            </div>
+                        </span>
+                    </span>
+                    <span id="account" class="headerItem hasFlyout signedIn">
+                        <span class="lpFlyout">
+                            <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
+                            <div class="lpContent">
+                                <a href="#" class="lpHref accountSettings">Account Settings</a><br />
+                                <a href="#" class="lpHref help">Help</a><br />
+                                <a class="lpHref" id="showTODO" href="#">Bugs / TODO</a><br />
+                                <a href="#" class="lpHref signout">Sign Out</a>
+                            </div>
+                        </span>
+                    </span>
+                    <span class="headerItem signedOut">
+                        <a href="#" class="lpButton lpSmall showRegister">Register</a> or <a href="#" class="lpButton lpSmall showSignin">Sign In</a>
+                    </span>
+                    <span class="clearfix"></span>
                 </div>
                 
-                <div style="clear:both"></div>
                 <div id="getStarted">
                     <h2>Welcome to LighterPack!</h2>
                     <p>Here's what you need to get started:</p>
@@ -110,7 +108,7 @@
                 <div id="lpFooter">
                     <div id="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
                     <div id="lpContact">
-                        Copyleft LighterPack 2013 
+                        Copyleft LighterPack 2016
                         -
                         <a href="https://github.com/galenmaly/lighterpack" class="lpHref">Fork me on GitHub</a>
                         -
@@ -286,17 +284,12 @@
 
                 <h2>TODO Features</h2>
                 <ul>
-                    <li class="high">Add "consumable" flag + accommodate it in weight calculations.</li>
-                    <li class="high">Make "list options" dropdown in top right, move "image toggle" feature to it.</li>
-                    <li class="high">Make gear library in sidebar larger, prettier, and easier to use.</li>
-                    <li class="medium">Pie chart should start at top, not right.</li>
                     <li class="medium">Add utility to convert all items to a certain unit.</li>
                     <li class="medium">Guided "tour" for new users</li>
                     <li class="medium">Additional optional field: price.</li>
                     <li class="medium">Additional optional field: secondary description.</li>
                     <li class="medium">Support for mobile devices</li>
                     <li class="medium">Make qty/weight validation nicer</li>
-                    <li class="medium">Allow users viewing a list to toggle images on/off</li>
                     <li class="low">Collapse categories</li>
                     <li class="low">Add progress bar / spinner for file uploads</li>
                     <li class="low">IE7/IE8 support for report/widget view.</li>
@@ -306,10 +299,16 @@
             </div>
         </div>
         <div id="lpModalOverlay"></div>
+        <script type="text/html" id="unitSelect">{{{t_unitSelect}}}</script>
+        <script type="text/html" id="categoryTemplate">{{{t_categoryEdit}}}</script>
+        <script type="text/html" id="itemTemplate">{{{t_itemEdit}}}</script>
+        <script type="text/html" id="libraryItem">{{{t_libraryItem}}}</script>
+        <script type="text/html" id="libraryListTemplate">{{{t_libraryList}}}</script>
+        <script type="text/html" id="totalsTemplate">{{{t_totals}}}</script>
+        <script type="text/html" id="importValidateTemplate">{{{t_importValidate}}}</script>
+        <script type="text/html" id="optionalFieldsTemplate">{{{t_optionalFields}}}</script>
         <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
         <script type="text/javascript" src="jquery-ui-1.10.3.custom.min.js"></script>
-        <script type="text/javascript" src="jquery.mousewheel.js"></script>
-        <script type="text/javascript" src="jquery.jscrollpane.min.js"></script>
         <script type="text/javascript" src="farbtastic.js"></script>
         <script type="text/javascript" src="mustache.js"></script>
         <script type="text/javascript" src="sha3.js"></script>

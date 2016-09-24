@@ -1,0 +1,222 @@
+@import "globals.less";
+
+.lpList {
+    background: inherit;
+    min-height: 100%;
+    padding: 0 20px;
+    position: relative;
+    z-index: @aboveSidebar;
+    .lpHasSidebar & {
+        margin-left: 320px;
+    }
+}
+
+#totals {
+    margin: 0;
+    padding: 0 0 0 10px;
+    text-align: left;
+}
+
+#chart.activeHover { 
+    cursor: pointer;
+}
+
+.lpCategories {
+    margin: 0;
+    padding: 0;
+}
+
+.lpCategory {
+    border: 2px solid transparent;
+    list-style: none;
+    margin: 0 0 20px;
+
+    &.dropAccept {
+        background: @yellow2;
+    }
+    &.dropHover {
+        background: @green2;
+    }
+    &.ui-sortable-helper {
+        background: #F7F7F7;
+    }
+}
+
+.lpConsumableWeight {
+    display: none;
+
+    .lpShowConsumable & {
+        display: block;
+
+        &.lpRow {
+            display: table-row;
+        }
+    }
+}
+
+.lpWornWeight {
+    display: none;
+
+    .lpShowWorn & {
+        display: block;
+        
+        &.lpRow {
+            display: table-row;
+        }
+    }
+}
+
+input.lpCategoryName { /* specificity */
+    border: 1px solid transparent;
+    flex: 1 0 300px;
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 0;
+}
+
+.lpSubtotal {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.lpSubtotalUnit {
+    border-left: 1px solid transparent;
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 23px;
+    width: 15px;
+}
+
+.lpDisplaySubtotal, .lpTotalValue {
+    padding-right: 4px;
+}
+
+.lpItems {
+    display: table;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.lpItem, .lpItemsHeader, .lpItemsFooter {
+    border-top: 1px dotted #AAA;
+    display: flex;
+
+    .lpHandleCell {
+        flex: 0 0 12px;
+        padding-right: 4px;
+    }
+
+    .lpImageCell {
+        display: none;
+        flex: 0 0 90px;
+
+       .lpShowImages & {
+            display: block;
+        }
+
+        .lpItemImage {
+            cursor: pointer;
+            position:relative;
+            top: 3px;
+        }
+    }
+
+    .lpName {
+        flex: 1 0 150px;
+        margin-right: 4px;
+    }
+
+    .lpDescription {
+        flex: 2 0 200px;
+    }
+
+    .lpActionsCell {
+        flex: 0 0 130px;
+    }
+
+    .lpWeightCell {
+        margin-left: auto;
+        flex: 0 0 110px;
+
+        .lpWeight {
+            width: 50px;
+        }
+    }
+
+    .lpQtyCell {
+        flex: 0 0 70px;
+
+        .lpQty {
+            width: 49px;
+        }
+    }
+
+    .lpRemoveCell {
+        flex: 0 0 20px;
+    }
+
+    .lpCategoryName { /* Header */
+        flex: 1 1 auto;
+    }
+
+    .lpAddItemCell { /* Footer */
+        flex: 1 1 auto;
+    }
+
+    .lpWorn {
+        display: none;
+
+        .lpShowWorn & {
+            display: inline-block;
+        }
+    }
+
+    .lpConsumable {
+        display: none;
+
+        .lpShowConsumable & {
+            display: inline-block;
+        }
+    }
+}
+
+.lpItemsHeader {
+    align-items: flex-end;
+    border-bottom: 1px solid #AAA;
+    border-top: none;
+    height: 31px;
+}
+
+.lpItemsFooter {
+    border-top-style: solid;
+}
+
+.lpActionsCell {
+    .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpStar {
+        cursor: pointer;
+        margin-right: 8px;
+        opacity: 0.5;
+        visibility: hidden;
+        &:hover {
+            opacity: 1;    
+        }
+
+        &.lpActive, &.lpStar1, &.lpStar2, &.lpStar3 {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    i:last-child {
+        margin-right: 0;
+    }
+}
+
+
+
+.lpHeader {
+    .lpWeightCell, .lpQtyCell {
+        text-align: center;
+    }
+}

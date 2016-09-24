@@ -1,10 +1,10 @@
-<li class="lpRow lpItem {{classes}}" id="{{id}}">
-    <span class="lpCell lpImageCell">
+<li class="lpItem {{classes}}" id="{{id}}">
+    <span class="lpImageCell">
         {{#image}}
             <img class="lpItemImage" src="https://i.imgur.com/{{image}}s.jpg" href="https://i.imgur.com/{{image}}l.jpg"/>
         {{/image}}
     </span>
-    <span class="lpCell lpNameCell">
+    <span class="lpName">
         {{#url}}
             <a href="{{url}}" class="lpHref">
         {{/url}}
@@ -15,19 +15,19 @@
             </a>
         {{/url}}
     </span>
-    <span class="lpCell lpDescriptionCell">
+    <span class="lpDescription">
         {{description}}
     </span>
-    <span class="lpCell lpActionsCell">
-        <i class="lpSprite lpWorn lpActive {{wornClass}} {{^worn}}hidden{{/worn}}" title="This item is worn and not counted in pack weight."></i>
-        <i class="lpSprite lpConsumable lpActive {{consumableClass}} {{^consumable}}hidden{{/consumable}}" title="This item is a consumable and not counted in pack weight."></i>
-        <i class="lpSprite lpStar {{starClass}} {{^starClass}}hidden{{/starClass}}" title="This item is starred"></i>
+    <span class="lpActionsCell">
+        <i class="lpSprite lpWorn {{#worn}}lpActive{{/worn}} {{wornClass}}" title="This item is worn and not counted in pack weight."></i>
+        <i class="lpSprite lpConsumable {{#consumable}}lpActive{{/consumable}} {{consumableClass}}" title="This item is a consumable and not counted in pack weight."></i>
+        <i class="lpSprite lpStar {{starClass}} {{^starClass}}lpHidden{{/starClass}}" title="This item is starred"></i>
     </span>
-    <span class="lpCell lpWeightCell lpNumber">
+    <span class="lpWeightCell lpNumber">
         <span class="lpWeight">{{displayWeight}}</span>
         {{{unitSelect}}}
     </span>
-    <span class="lpCell lpQtyCell lpNumber">
+    <span class="lpQtyCell lpNumber">
         {{qty}}
     </span>
 </li>

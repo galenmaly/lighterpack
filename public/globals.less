@@ -14,3 +14,52 @@
 @yellow2: #FCEFA9;
 
 @darkYellow: #A58C00;
+
+
+/* z-index stack */
+
+
+@belowSidebar: 10;
+@sidebar: 20;
+@aboveSidebar: 30;
+
+@belowDialog: 90;
+@dialog: 100;
+@aboveDialog: 110;
+
+.lpTransition() {
+    -webkit-transition: all 1s ease-in-out;
+    -moz-transition: all 1s ease-in-out;
+    -o-transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out;
+}
+
+.fullBleedLeft() {
+	&:before {
+        background: inherit;
+        border-bottom: inherit;
+        bottom: -1px;
+        content: "";
+        display: block;
+        position: absolute;
+        right: 100%;
+        top: 0;
+        width: 999px;
+        z-index: @belowSidebar;
+    }
+}
+
+.fullBleedRight() {
+	&:after {
+        background: inherit;
+        border-bottom: inherit;
+        bottom: -1px;
+        content: "";
+        display: block;
+        left: 100%;
+        position: absolute;
+        top: 0;
+        width: 999px;
+        z-index: @belowSidebar;
+    }
+}

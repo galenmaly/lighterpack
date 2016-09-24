@@ -287,7 +287,7 @@ List.prototype.load = function(input) {
 }
 
 Library = function(args) {
-    this.version = "0.1";
+    this.version = "0.2";
     this.items = {};
     this.categories = {};
     this.lists = {};
@@ -297,9 +297,15 @@ Library = function(args) {
     this.itemUnit = "oz";
     this.showSidebar = true;
     this.showImages = false;
+    this.optionalFields = {
+            images: false,
+            worn: true,
+            consumable: true
+        };
     this.firstRun();
     return this;
 }
+
 
 Library.prototype.firstRun = function() {
     var firstList = this.newList();
@@ -418,7 +424,7 @@ Library.prototype.renderLists = function(template) {
 }
 
 Library.prototype.renderLibrary = function(template) {
-    out = "";
+    var out = "";
     var itemsInCurrentList = this.getItemsInCurrentList();
     for (var i in this.items) {
         var item = this.items[i]
@@ -519,12 +525,13 @@ Library.prototype.nextSequence = function() {
 Library.prototype.save = function() {
     var out = {};
 
+    out.version = this.version;
     out.totalUnit = this.totalUnit;
     out.itemUnit = this.itemUnit;
     out.defaultListId = this.defaultListId;
     out.sequence = this.sequence;
     out.showSidebar = this.showSidebar;
-    out.showImages = this.showImages;
+    out.optionalFields = this.optionalFields;
 
     out.items = [];
     for (var i in this.items) {
@@ -544,8 +551,11 @@ Library.prototype.save = function() {
     return out;
 }
 
-Library.prototype.load = function (input) {
+Library.prototype.load = function(input) {
     this.items = [];
+
+    extend(this.optionalFields, input.optionalFields);
+
     for (var i in input.items) {
         var temp = new Item({id: input.items[i].id, library: this});
         temp.load(input.items[i]);
@@ -569,9 +579,20 @@ Library.prototype.load = function (input) {
     if (input.showSidebar) this.showSidebar = input.showSidebar;
     if (input.totalUnit) this.totalUnit = input.totalUnit;
     if (input.itemUnit) this.itemUnit = input.itemUnit;
-    if (input.showImages) this.showImages = input.showImages;
     this.sequence = input.sequence;
     this.defaultListId = input.defaultListId;
+
+    if (input.version === "0.1" || !input.version) {
+        this.upgrade01to02(input);
+    }
+}
+
+Library.prototype.upgrade01to02 = function(input) {
+    if (input.showImages) {
+        this.optionalFields.images = true;
+    } else {
+        this.optionalFields.images = false;
+    }
 }
 
 function WeightToMg(value, unit) {

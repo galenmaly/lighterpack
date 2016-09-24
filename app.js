@@ -85,10 +85,10 @@ app.get('/r/:id', function(req, res) {
         }
 
         var chartData = escape(JSON.stringify(list.renderChart("total", false)));
-        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, showImages: library.showImages, unitSelectTemplate: templates.t_unitSelect});
+        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, optionalFields: library.optionalFields, unitSelectTemplate: templates.t_unitSelect});
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
-        var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, showImages: library.showImages};
+        var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};
         model = extend(model, templates);
         res.send(Mustache.render(shareTemplate, model));
     });
@@ -133,10 +133,10 @@ app.get("/e/:id", function(req, res) {
 
         var chartData = escape(JSON.stringify(list.renderChart("total", false)));
 
-        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, showImages: library.showImages, unitSelectTemplate: templates.t_unitSelect});
+        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, optionalFields: library.optionalFields, unitSelectTemplate: templates.t_unitSelect});
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect);
 
-        var model = {externalId: id, listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals};
+        var model = {externalId: id, listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));

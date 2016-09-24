@@ -1,33 +1,22 @@
 <li class="lpCategory" id="{{id}}">
-    <ul class="lpItems lpTable lpDataTable">
-        <li class="lpRow lpHeader">
-            <span class="lpCell lpHandleCell">
+    <ul class="lpItems lpDataTable">
+        <li class="lpHeader lpItemsHeader">
+            <span class="lpHandleCell">
                 <div class="lpHandle lpCategoryHandle" title="Reorder this category"></div>
             </span>
-            <span class="lpCell lpImageCell"></span>
-            <span class="lpCell lpNameCell">
-                <span class="lpCategoryNameContainer">
-                    <input type="text" value="{{name}}" placeholder="Category Name" class="lpCategoryName lpSilent"/>
-                </span>
-            </span>
-            <span class="lpCell"></span>
-            <span class="lpCell"></span>
-            <span class="lpCell lpWeightCell">Weight</span>
-            <span class="lpCell lpQtyCell">qty</span>
-            <span class="lpCell lpRemoveCell"><a class="lpRemove lpRemoveCategory speedbump" title="Remove this category" data-speedbump="removeCategory"><i class="lpSprite lpSpriteRemove"></i></a></span>
+            <input type="text" value="{{name}}" placeholder="Category Name" class="lpCategoryName lpSilent"/>
+            <span class="lpWeightCell">Weight</span>
+            <span class="lpQtyCell">qty</span>
+            <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory speedbump" title="Remove this category" data-speedbump="removeCategory"><i class="lpSprite lpSpriteRemove"></i></a></span>
         </li>
         {{{items}}}
-        <li class="lpRow lpFooter">
-            <span class="lpCell"></span>
-            <span class="lpCell lpImageCell"></span>
-            <span class="lpCell lpNameCell">
+        <li class="lpFooter lpItemsFooter">
+            <span class="lpAddItemCell">
                 <a href="#" class="lpAdd lpAddItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
             </span>
-            <span class="lpCell"></span>
-            <span class="lpCell"></span>
-            <span class="lpCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
-            <span class="lpCell"><div class="lpSubtotal"><span class="lpQtySubtotal">{{qtySubtotal}}</span></div></span>
-            <span class="lpCell"></span>
+            <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
+            <span class="lpQtyCell"><div class="lpSubtotal"><span class="lpQtySubtotal">{{qtySubtotal}}</span></div></span>
+            <span class="lpRemoveCell"></span>
         </li>
     </ul>
 </li>

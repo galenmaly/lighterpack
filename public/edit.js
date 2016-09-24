@@ -23,6 +23,7 @@ editLists = function() {
         unitSelectTemplate = $("#unitSelect").html(),
         totalsTemplate = $("#totalsTemplate").html(),
         importValidateTemplate = $("#importValidateTemplate").html(),
+        optionalFieldsTemplate = $("#optionalFieldsTemplate").html(),
         numStars = 4,
         fullUnitToUnit = {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"},
         speedBumps = {
@@ -38,7 +39,20 @@ editLists = function() {
                 action: "Delete Item",
                 message: "Are you sure you want to delete this item? This cannot be undone."
             }
-        };
+        },
+        optionalFieldsLookup = [{
+            name: "images",
+            displayName: "Item images",
+            cssClass: "lpShowImages"
+        }, {
+            name: "worn",
+            displayName: "Worn items",
+            cssClass: "lpShowWorn"
+        }, {
+            name: "consumable",
+            displayName: "Consumable items",
+            cssClass: "lpShowConsumable"
+        }];
 
 
     function init() {
@@ -106,16 +120,35 @@ editLists = function() {
         updateSubtotals();
         $listsContainer.html(library.renderLists(libraryListTemplate));
         displayDefaultList();
+        renderAndApplyOptionalFields();
         $libraryContainer.html(library.renderLibrary(itemLibraryTemplate));
-        $libraryContainer.jScrollPane({mouseWheelSpeed: 20, verticalGutter: -10});
         updateItemLibrary();
         fragileListEvents();
-        //diagnostics();
-        if (library.showImages) $list.addClass("lpShowImages");
+        //if (library.showImages) $list.addClass("lpShowImages");
         if (library.showSidebar) $("#main").addClass("lpHasSidebar");
         setTimeout(function() {
             $("#main, #sidebar, .lpList, #hamburger").addClass("lpTransition");
         }, 500);
+    }
+
+    function renderAndApplyOptionalFields() {
+        var $main = $("#main"),
+            addClasses = "",
+            removeClasses = "",
+            optionalFieldsDisplay = optionalFieldsLookup.slice();
+
+        for (var i = 0; i < optionalFieldsDisplay.length; i++) {
+            optionalFieldsDisplay[i].enabled = library.optionalFields[optionalFieldsDisplay[i].name];
+
+            if (optionalFieldsDisplay[i].enabled) {
+                addClasses += optionalFieldsDisplay[i].cssClass + " ";
+            } else {
+                removeClasses += optionalFieldsDisplay[i].cssClass + " ";
+            }
+        }
+
+        $main.addClass(addClasses).removeClass(removeClasses);
+        $("#lpOptionalFields").html(Mustache.render(optionalFieldsTemplate, {optionalFields: optionalFieldsDisplay}));
     }
 
     function renderDefaultList() {
@@ -156,7 +189,6 @@ editLists = function() {
     function renderEdit() {
         $categories.html(library.render({itemTemplate: itemTemplate, categoryTemplate: categoryTemplate, showImages: library.showImages, unitSelectTemplate: unitSelectTemplate}));
     }
-
 
     function updateSubtotals() {
         var list = library.getListById(library.defaultListId);
@@ -587,12 +619,6 @@ editLists = function() {
             })
         });
 
-        $("#toggleImages").on("click", function(evt) {
-            evt.preventDefault();
-            library.showImages = !library.showImages;
-            $list.toggleClass("lpShowImages");
-            saveLocally();
-        });
         $categories.on("click", ".lpItemImage", function() {
             var item = library.getItemById($(this).parents(".lpItem").attr("id"));
             
@@ -707,7 +733,7 @@ editLists = function() {
                 data: data,
                 method: "POST",
                 error: function(data, textStatus, jqXHR) {
-                    var error = "An error occurred.";
+                    var error = "An error occurred while trying to save your account information.";
                     if (data.responseText) error = data.responseText;
                     $(".lpError", form).text(error).show();
                 },
@@ -715,15 +741,6 @@ editLists = function() {
                     $("#accountSettings, #lpModalOverlay").fadeOut("slow");
                 }
             });
-        });
-
-        $(document).on("scroll", function(evt) {
-            var scrollTop = $(document).scrollTop();
-            var height = $(".lpList").height();
-            var sHeight = $("#scrollable").height();
-            var offset = scrollTop;
-            if (offset + sHeight > height)offset = height - sHeight-20;
-            $("#scrollable").css("top", offset);
         });
 
         $list.on("click", ".lpLegend", function(evt) {
@@ -790,8 +807,6 @@ editLists = function() {
         var newLibraryItem = item.render({itemTemplate: itemLibraryTemplate, unitSelectTemplate: unitSelectTemplate});
         $("li", $libraryContainer).last().after(newLibraryItem);
         $("li:last-child", $libraryContainer).draggable({handle: ".lpHandle", revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
-        var jsp = $libraryContainer.data('jsp');
-        jsp.reinitialise();
     }
 
     function incrementField($this, decrement) {
@@ -905,7 +920,6 @@ editLists = function() {
         $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
         $newCategory.droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
         $(".lpCategoryName", $newCategory).focus();
-        //$(".lpCategory" ).droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
     }
 
     function newList() {
@@ -989,8 +1003,6 @@ editLists = function() {
         $("li", $listsContainer).last().after($newLibraryList);
         displayDefaultList();
         renderDefaultList();
-        var jsp = $libraryContainer.data('jsp');
-        jsp.reinitialise();
         saveLocally();
     }
 
@@ -1045,8 +1057,6 @@ editLists = function() {
         $("li", $listsContainer).last().after($newLibraryList);
         displayDefaultList();
         renderDefaultList();
-        var jsp = $libraryContainer.data('jsp');
-        jsp.reinitialise();
         saveLocally();
     }
 
@@ -1070,7 +1080,7 @@ editLists = function() {
                     method: "POST",
                     data: {data: librarySave},
                     error: function(data, textStatus, jqXHR) {
-                        var error = "An error occurred.";
+                        var error = "An error occurred while attempting to save your data.";
                         if (data.responseText) error = data.responseText;
                         if (data.status == 400) {
                             showSigninModal({error: error});
@@ -1266,6 +1276,16 @@ editLists = function() {
             });
 
         });
+
+        $("#lpOptionalFields").on("click", "input", function() {
+            var $this = $(this),
+                optionalFieldName = $this.closest(".lpOptionalField").data("optionalField");
+
+            library.optionalFields[optionalFieldName] = $this.is(":checked");
+
+            renderAndApplyOptionalFields();
+            saveLocally();
+        });
     }
 
     function showSigninModal(args) {
@@ -1337,8 +1357,6 @@ editLists = function() {
     function librarySearch() {
         var val = $("#librarySearch").val().toLowerCase();
         if (val !== "") {
-            var jsp = $libraryContainer.data('jsp');
-            jsp.scrollToY(0);
             $libraryContainer.addClass("lpSearching");
             $(".lpLibraryItem").removeClass("lpHit");
             for (var i in library.items) {
@@ -1370,7 +1388,7 @@ editLists = function() {
                 showShareBox(data);
             },
             error: function() {
-                alert("An error occurred. Please try again later.");
+                alert("An error occurred while trying to fetch an ID for your list. Please try again later.");
             }
         });
     }

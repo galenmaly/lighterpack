@@ -13,8 +13,8 @@
     </head>
     <body>
         <div id="main" class="">
-            <div class="lpList {{#showImages}}lpShowImages{{/showImages}}">
-                <h1 class="lpListName" >{{listName}}</h1>
+            <div class="lpList {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}}">
+                <h1 class="lpListName">{{listName}}</h1>
                 <div class="lpHalf lpAlignRight">
                     <canvas class="lpChart" height="260" width="260"></canvas>
                 </div>
