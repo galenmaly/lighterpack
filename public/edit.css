@@ -380,6 +380,9 @@ body {
   padding-right: 25px;
   /*Accommodates delete column */
 }
+.lpPriceSubtotal {
+  padding-right: 4px;
+}
 /* TODO */
 #TODO {
   margin-left: -300px;

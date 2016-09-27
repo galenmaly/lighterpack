@@ -210,6 +210,7 @@ editLists = function() {
             $(".lpDisplaySubtotal", this).text(category.displaySubtotal);
             $(".lpSubtotalUnit", this).text(category.subtotalUnit);
             $(".lpQtySubtotal", this).text(category.qtySubtotal);
+            $(".lpPriceSubtotal", this).text(category.priceSubtotal);
         });
     }
 
@@ -220,7 +221,7 @@ editLists = function() {
             if (chart) {
                 chart.update({processedData: chartData});
             } else {
-                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});
             }
             $chartContainer.css("visibility", "visible");
         } else {
@@ -301,7 +302,6 @@ editLists = function() {
                 $(this).val("0");
             }
         });
-
 
         $categories.on("click", ".lpRemoveItem", function(evt) {
             var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
@@ -790,7 +790,7 @@ editLists = function() {
         $(".lpItems .lpFooter", $category).before($item);
         $(ui.draggable).removeClass("lpItemNotInList");
         updateSubtotals();
-        saveLocally();  
+        saveLocally();
     }
 
     function newItem(category, focus, deleteIfEmpty) {
@@ -836,6 +836,8 @@ editLists = function() {
         var item = library.getItemById(id);
         var weight = parseFloat($(".lpWeight", $row).val()) || 0;
         var qty = parseFloat($(".lpQty", $row).val());
+        var price = parseFloat($(".lpPrice", $row).val()) || 0;
+        var authorUnit = $(".lpUnit", $row).val();
 
         if (weight < 0) {
             alert("Please enter a valid weight.");
@@ -845,11 +847,16 @@ editLists = function() {
             alert("Please enter a valid quantity.");
             return;
         }
+         if (price < 0) {
+            alert("Please enter a valid price.");
+            return;
+        }
 
         item.name = $(".lpName", $row).val();
         item.description = $(".lpDescription", $row).val();
-        item.weight = WeightToMg(weight, $(".lpUnit", $row).val());
-        item.authorUnit = $(".lpUnit", $row).val();
+        item.weight = WeightToMg(weight, authorUnit);
+        item.price = price;
+        item.authorUnit = authorUnit;
         item.deleteIfEmpty = false;
 
         var category = library.getCategoryById($row.parents(".lpCategory").attr("id"));
@@ -1085,7 +1092,7 @@ editLists = function() {
                         if (data.status == 400) {
                             showSigninModal({error: error});
                         } else {
-                            alert(error);    
+                            alert(error);
                         }
                     }
                 });
@@ -1292,8 +1299,8 @@ editLists = function() {
         $("#signin .lpSuccess, #signin .lpError").hide();
 
         if (args) {
-            if (args.success) $("#signin .lpSuccess").text(args.success).show();    
-            if (args.error) $("#signin .lpError").text(args.error).show();    
+            if (args.success) $("#signin .lpSuccess").text(args.success).show();
+            if (args.error) $("#signin .lpError").text(args.error).show();
         }
 
         $(".lpDialog:visible").fadeOut();

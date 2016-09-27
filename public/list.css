@@ -77,7 +77,6 @@ input.lpCategoryName {
   padding-right: 4px;
 }
 .lpItems {
-  display: table;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -87,6 +86,8 @@ input.lpCategoryName {
 .lpItemsFooter {
   border-top: 1px dotted #AAA;
   display: flex;
+  flex-direction: row;
+  justify-content: stretch;
 }
 .lpItem .lpHandleCell,
 .lpItemsHeader .lpHandleCell,
@@ -131,13 +132,22 @@ input.lpCategoryName {
 .lpItem .lpWeightCell,
 .lpItemsHeader .lpWeightCell,
 .lpItemsFooter .lpWeightCell {
-  margin-left: auto;
   flex: 0 0 110px;
 }
 .lpItem .lpWeightCell .lpWeight,
 .lpItemsHeader .lpWeightCell .lpWeight,
 .lpItemsFooter .lpWeightCell .lpWeight {
   width: 50px;
+}
+.lpItem .lpPriceCell,
+.lpItemsHeader .lpPriceCell,
+.lpItemsFooter .lpPriceCell {
+  flex: 0 0 49px;
+}
+.lpItem .lpPriceCell .lpPrice,
+.lpItemsHeader .lpPriceCell .lpPrice,
+.lpItemsFooter .lpPriceCell .lpPrice {
+  width: 49px;
 }
 .lpItem .lpQtyCell,
 .lpItemsHeader .lpQtyCell,
@@ -195,6 +205,11 @@ input.lpCategoryName {
 .lpItemsFooter {
   border-top-style: solid;
 }
+.lpItemsHeader .lpWeightCell,
+.lpItemsFooter .lpWeightCell {
+  margin-left: auto;
+  /* Right-align this and everything to the right */
+}
 .lpActionsCell .lpWorn,
 .lpActionsCell .lpConsumable,
 .lpActionsCell .lpCamera,
@@ -239,6 +254,7 @@ input.lpCategoryName {
   margin-right: 0;
 }
 .lpHeader .lpWeightCell,
-.lpHeader .lpQtyCell {
+.lpHeader .lpQtyCell,
+.lpHeader .lpPriceCell {
   text-align: center;
 }

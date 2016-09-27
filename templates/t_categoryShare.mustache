@@ -6,11 +6,13 @@
                     <h2 class="lpCategoryName">{{name}}</h2>
             </span>
             <span class="lpWeightCell">Weight</span>
+            <span class="lpPriceCell">Price</span>
             <span class="lpQtyCell">qty</span>
         </li>
         {{{items}}}
         <li class="lpFooter lpItemsFooter">
             <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal" mg="{{subtotal}}">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
+            <span class="lpPriceCell lpNumber"><div class="lpPriceSubtotal">{{priceSubtotal}}</div></span>
             <span class="lpQtyCell lpNumber"><div class="lpSubtotal"><span class="lpQtySubtotal">{{qtySubtotal}}</span></div></span>
         </li>
     </ul>
