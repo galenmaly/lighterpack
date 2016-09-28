@@ -556,6 +556,12 @@ input.lpCategoryName {
 .lpItemsHeader .lpPriceCell,
 .lpItemsFooter .lpPriceCell {
   flex: 0 0 49px;
+  display: none;
+}
+.lpShowPrices .lpItem .lpPriceCell,
+.lpShowPrices .lpItemsHeader .lpPriceCell,
+.lpShowPrices .lpItemsFooter .lpPriceCell {
+  display: inline-block;
 }
 .lpItem .lpPriceCell .lpPrice,
 .lpItemsHeader .lpPriceCell .lpPrice,

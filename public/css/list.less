@@ -146,6 +146,11 @@ input.lpCategoryName { /* specificity */
 
     .lpPriceCell {
         flex: 0 0 49px;
+        display: none;
+
+        .lpShowPrices & {
+            display: inline-block;
+        }
 
         .lpPrice {
             width: 49px;

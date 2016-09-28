@@ -45,6 +45,11 @@ editLists = function() {
             displayName: "Item images",
             cssClass: "lpShowImages"
         }, {
+            name: "price",
+            displayName: "Item prices",
+            cssClass: "lpShowPrices"
+        },
+        {
             name: "worn",
             displayName: "Worn items",
             cssClass: "lpShowWorn"
@@ -124,7 +129,6 @@ editLists = function() {
         $libraryContainer.html(library.renderLibrary(itemLibraryTemplate));
         updateItemLibrary();
         fragileListEvents();
-        //if (library.showImages) $list.addClass("lpShowImages");
         if (library.showSidebar) $("#main").addClass("lpHasSidebar");
         setTimeout(function() {
             $("#main, #sidebar, .lpList, #hamburger").addClass("lpTransition");
@@ -607,7 +611,8 @@ editLists = function() {
                     $(".lpImageCell", $item).html("<img class='lpItemImage' src='https://i.imgur.com/"+item.image+"s.jpg' />");
 
                     library.showImages = true;
-                    $list.addClass("lpShowImages");
+                    library.optionalFields.images = true;
+                    renderAndApplyOptionalFields();
                     saveLocally();
                 },
                 error: errorHandler = function() {

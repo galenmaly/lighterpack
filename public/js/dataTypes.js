@@ -304,6 +304,7 @@ Library = function(args) {
     this.showImages = false;
     this.optionalFields = {
             images: false,
+            price: false,
             worn: true,
             consumable: true
         };
