@@ -126,6 +126,7 @@ editLists = function() {
         $listsContainer.html(library.renderLists(libraryListTemplate));
         displayDefaultList();
         renderAndApplyOptionalFields();
+        updateCurrencySymbol();
         $libraryContainer.html(library.renderLibrary(itemLibraryTemplate));
         updateItemLibrary();
         fragileListEvents();
@@ -153,6 +154,10 @@ editLists = function() {
 
         $main.addClass(addClasses).removeClass(removeClasses);
         $("#lpOptionalFields").html(Mustache.render(optionalFieldsTemplate, {optionalFields: optionalFieldsDisplay}));
+    }
+
+    function updateCurrencySymbol() {
+        $(".lpCurrencySymbol").text(library.currencySymbol);
     }
 
     function renderDefaultList() {
@@ -214,7 +219,7 @@ editLists = function() {
             $(".lpDisplaySubtotal", this).text(category.displaySubtotal);
             $(".lpSubtotalUnit", this).text(category.subtotalUnit);
             $(".lpQtySubtotal", this).text(category.qtySubtotal);
-            $(".lpPriceSubtotal", this).text(category.priceSubtotal);
+            $(".lpDisplayPriceSubtotal", this).text(category.displayPriceSubtotal);
         });
     }
 
@@ -769,6 +774,23 @@ editLists = function() {
             $(document).on("click", closePicker);
             
         });
+
+        $("#lpOptionalFields").on("click", "input", function() {
+            var $this = $(this),
+                optionalFieldName = $this.closest(".lpOptionalField").data("optionalField");
+
+            library.optionalFields[optionalFieldName] = $this.is(":checked");
+
+            renderAndApplyOptionalFields();
+            saveLocally();
+        });
+
+        $("#currencySymbol").on("keyup input", function() {
+            var $this = $(this);
+            library.currencySymbol = $this.val();
+            updateCurrencySymbol();
+            saveLocally();
+        });
     }
 
     function closePicker(evt) {
@@ -1287,16 +1309,6 @@ editLists = function() {
                 }
             });
 
-        });
-
-        $("#lpOptionalFields").on("click", "input", function() {
-            var $this = $(this),
-                optionalFieldName = $this.closest(".lpOptionalField").data("optionalField");
-
-            library.optionalFields[optionalFieldName] = $this.is(":checked");
-
-            renderAndApplyOptionalFields();
-            saveLocally();
         });
     }
 

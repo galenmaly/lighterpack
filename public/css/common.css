@@ -536,10 +536,12 @@ input.lpCategoryName {
 .lpItemsHeader .lpDescription,
 .lpItemsFooter .lpDescription {
   flex: 2 0 200px;
+  margin-right: 10px;
 }
 .lpItem .lpActionsCell,
 .lpItemsHeader .lpActionsCell,
 .lpItemsFooter .lpActionsCell {
+  align-self: center;
   flex: 0 0 130px;
 }
 .lpItem .lpWeightCell,
@@ -555,7 +557,7 @@ input.lpCategoryName {
 .lpItem .lpPriceCell,
 .lpItemsHeader .lpPriceCell,
 .lpItemsFooter .lpPriceCell {
-  flex: 0 0 49px;
+  flex: 0 0 66px;
   display: none;
 }
 .lpShowPrices .lpItem .lpPriceCell,
@@ -566,7 +568,7 @@ input.lpCategoryName {
 .lpItem .lpPriceCell .lpPrice,
 .lpItemsHeader .lpPriceCell .lpPrice,
 .lpItemsFooter .lpPriceCell .lpPrice {
-  width: 49px;
+  width: 66px;
 }
 .lpItem .lpQtyCell,
 .lpItemsHeader .lpQtyCell,
@@ -581,6 +583,7 @@ input.lpCategoryName {
 .lpItem .lpRemoveCell,
 .lpItemsHeader .lpRemoveCell,
 .lpItemsFooter .lpRemoveCell {
+  align-self: center;
   flex: 0 0 20px;
 }
 .lpItem .lpCategoryName,

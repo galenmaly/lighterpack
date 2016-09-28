@@ -28,7 +28,7 @@
         {{{unitSelect}}}
     </span>
     <span class="lpPriceCell lpNumber">
-        {{price}}
+        {{#displayPrice}}{{currencySymbol}}{{displayPrice}}{{/displayPrice}}
     </span>
     <span class="lpQtyCell lpNumber">
         {{qty}}

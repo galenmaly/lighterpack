@@ -28,10 +28,12 @@ Item.prototype.render = function(args) {
 
     var displayWeight = MgToWeight(this.weight, unit);
 
+    var displayPrice = this.price ? this.price.toFixed(2) : "";
+
     var unitSelect = renderUnitSelect(unit, args.unitSelectTemplate, this.weight);
 
     var starClass = this.star ? "lpStar" + this.star : "";
-    var out = {classes: classes, unit: unit, displayWeight: displayWeight, unitSelect: unitSelect, showImages: showImages, starClass: starClass};
+    var out = {classes: classes, unit: unit, displayWeight: displayWeight, unitSelect: unitSelect, showImages: showImages, starClass: starClass, displayPrice: displayPrice, currencySymbol: args.currencySymbol};
     extend(out, this);
 
     return Mustache.render(args.itemTemplate, out);
@@ -91,6 +93,7 @@ Category.prototype.calculateSubtotal = function() {
         this.qtySubtotal += item.qty;
         this.priceSubtotal += item.price;
     }
+    this.displayPriceSubtotal = this.priceSubtotal.toFixed(2);
 }
 
 Category.prototype.render = function (args) {
@@ -106,7 +109,7 @@ Category.prototype.render = function (args) {
     this.calculateSubtotal();
     this.displaySubtotal = MgToWeight(this.subtotal, args.totalUnit);
 
-    var temp = extend({}, this, {items:items, subtotalUnit: args.totalUnit});
+    var temp = extend({}, this, {items:items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol});
 
     return Mustache.render(args.categoryTemplate, temp);
 }
@@ -308,6 +311,7 @@ Library = function(args) {
             worn: true,
             consumable: true
         };
+    this.currencySymbol = "$";
     this.firstRun();
     return this;
 }
@@ -537,6 +541,7 @@ Library.prototype.save = function() {
     out.sequence = this.sequence;
     out.showSidebar = this.showSidebar;
     out.optionalFields = this.optionalFields;
+    out.currencySymbol = this.currencySymbol;
 
     out.items = [];
     for (var i in this.items) {
@@ -584,6 +589,7 @@ Library.prototype.load = function(input) {
     if (input.showSidebar) this.showSidebar = input.showSidebar;
     if (input.totalUnit) this.totalUnit = input.totalUnit;
     if (input.itemUnit) this.itemUnit = input.itemUnit;
+    if (input.currencySymbol) this.currencySymbol = input.currencySymbol;
     this.sequence = input.sequence;
     this.defaultListId = input.defaultListId;
 

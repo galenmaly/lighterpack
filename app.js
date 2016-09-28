@@ -85,7 +85,13 @@ app.get('/r/:id', function(req, res) {
         }
 
         var chartData = escape(JSON.stringify(list.renderChart("total", false)));
-        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, optionalFields: library.optionalFields, unitSelectTemplate: templates.t_unitSelect});
+        var renderedCategories = library.render({
+            itemTemplate: templates.t_itemShare,
+            categoryTemplate: templates.t_categoryShare,
+            optionalFields: library.optionalFields,
+            unitSelectTemplate: templates.t_unitSelect,
+            currencySymbol: library.currencySymbol});
+        
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
         var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};
@@ -133,7 +139,13 @@ app.get("/e/:id", function(req, res) {
 
         var chartData = escape(JSON.stringify(list.renderChart("total", false)));
 
-        var renderedCategories = library.render({itemTemplate: templates.t_itemShare, categoryTemplate: templates.t_categoryShare, optionalFields: library.optionalFields, unitSelectTemplate: templates.t_unitSelect});
+        var renderedCategories = library.render({
+                itemTemplate: templates.t_itemShare,
+                categoryTemplate: templates.t_categoryShare,
+                optionalFields: library.optionalFields,
+                unitSelectTemplate: templates.t_unitSelect,
+                currencySymbol: library.currencySymbol});
+
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect);
 
         var model = {externalId: id, listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};

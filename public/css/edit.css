@@ -326,6 +326,17 @@ body {
   margin: 0;
   padding: 0;
 }
+#lpPriceSettings {
+  display: none;
+}
+.lpShowPrices #lpPriceSettings {
+  display: block;
+}
+#lpPriceSettings input {
+  display: inline-block;
+  margin-left: 10px;
+  width: 50px;
+}
 #share .lpContent {
   width: 300px;
 }
