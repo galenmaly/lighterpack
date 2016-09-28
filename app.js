@@ -26,9 +26,9 @@ var formidable = require('formidable');
 
 
 //I'm pretty sure there's a better way to do this:
-eval(fs.readFileSync(rootPath+'public/sha3.js')+'');
-eval(fs.readFileSync(rootPath+'public/pies.js')+'');
-eval(fs.readFileSync(rootPath+'public/dataTypes.js')+'');
+eval(fs.readFileSync(rootPath+'public/js/sha3.js')+'');
+eval(fs.readFileSync(rootPath+'public/js/pies.js')+'');
+eval(fs.readFileSync(rootPath+'public/js/dataTypes.js')+'');
 
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 

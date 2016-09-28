@@ -120,7 +120,7 @@ html.lp,
   opacity: 1;
 }
 .lpHandle {
-  background: url(handle.png);
+  background: url(/images/handle.png);
   cursor: move;
   cursor: -webkit-grab;
   cursor: -moz-grab;
@@ -672,7 +672,7 @@ input.lpCategoryName {
   text-align: center;
 }
 .lpSprite {
-  background-image: url(/sprite.png?v=1);
+  background-image: url(/images/sprite.png?v=1);
   display: inline-block;
   height: 14px;
   overflow: hidden;

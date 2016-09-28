@@ -1,6 +1,6 @@
 /* z-index stack */
 .lpSprite {
-  background-image: url(/sprite.png?v=1);
+  background-image: url(/images/sprite.png?v=1);
   display: inline-block;
   height: 14px;
   overflow: hidden;
