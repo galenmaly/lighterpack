@@ -90,7 +90,7 @@ Category.prototype.calculateSubtotal = function() {
             this.consumableSubtotal += item.weight * item.qty;
         }
         this.qtySubtotal += item.qty;
-        this.priceSubtotal += item.price;
+        this.priceSubtotal += item.price * item.qty;
     }
     this.displayPriceSubtotal = this.priceSubtotal.toFixed(2);
 }

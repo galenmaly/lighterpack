@@ -274,14 +274,14 @@ editLists = function() {
         });
 
         $categories.on("click", ".lpUp", function(evt) {
-            var $this = $("input",$(this).parents(".lpCell"));
+            var $this = $("input",$(this).parents(".lpQtyCell"));
             incrementField($this);
             var item = $this.parents(".lpItem");
             updateItem(item);
         });
 
         $categories.on("click", ".lpDown", function(evt) {
-            var $this = $("input",$(this).parents(".lpCell"));
+            var $this = $("input",$(this).parents(".lpQtyCell"));
             incrementField($this, true);
             var item = $this.parents(".lpItem");
             updateItem(item);
