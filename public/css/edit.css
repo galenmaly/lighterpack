@@ -245,7 +245,7 @@ body {
   border-bottom: 1px solid #CCCCCC;
   display: flex;
   height: 60px;
-  margin: 0 -20px;
+  margin: 0 -20px 20px;
   /*lpList padding */
   position: relative;
 }

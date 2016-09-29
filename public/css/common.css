@@ -400,7 +400,7 @@ html.lp,
 }
 #lpFooter {
   color: #777;
-  padding-top: 150px;
+  padding: 150px 0 20px;
 }
 #lpFooter #lpSiteBy {
   float: right;
