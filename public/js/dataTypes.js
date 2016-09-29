@@ -59,7 +59,6 @@ Category.prototype.addItem = function (args) {
     var temp = {
         qty: 1,
         worn: 0,
-        price: 0,
         consumable: false,
         star: 0,
         itemId: null
@@ -138,6 +137,12 @@ Category.prototype.save = function() {
 
 Category.prototype.load = function(input) {
     extend(this, input);
+
+    for (var i = 0; i < this.itemIds.length; i++) {
+        if (typeof this.itemIds[i].price !== "undefined") {
+            delete this.itemIds[i].price;
+        }
+    }
 }
 
 

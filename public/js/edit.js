@@ -123,10 +123,10 @@ editLists = function() {
     function initWithLibrary() {
         renderEdit();
         updateSubtotals();
+        updateCurrencySymbol();
         $listsContainer.html(library.renderLists(libraryListTemplate));
         displayDefaultList();
         renderAndApplyOptionalFields();
-        updateCurrencySymbol();
         $libraryContainer.html(library.renderLibrary(itemLibraryTemplate));
         updateItemLibrary();
         fragileListEvents();
@@ -170,6 +170,7 @@ editLists = function() {
         updateItemLibrary();
         renderEdit();
         updateSubtotals();
+        updateCurrencySymbol();
         fragileListEvents();
         saveLocally();
     }
