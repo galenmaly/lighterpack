@@ -157,6 +157,7 @@ editLists = function() {
     }
 
     function updateCurrencySymbol() {
+        $("#currencySymbol").val(library.currencySymbol);
         $(".lpCurrencySymbol").text(library.currencySymbol);
     }
 
