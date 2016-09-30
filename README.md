@@ -9,7 +9,7 @@ How to run Lighterpack
 
 1. Install node.js, npm and mongo
 2. ```$ git clone https://github.com/galenmaly/lighterpack.git```
-3. Create a config.js and extIds.txt based on the wiki: https://github.com/galenmaly/lighterpack/wiki
+3. Create a config.js and extIds.txt based on the wiki: https://github.com/galenmaly/lighterpack/wiki/Config-files
 4. Install dependancies ```$ npm install```
 5. start mongo ```$ mongod```
 6. Start app ```$ node app.js```
@@ -20,7 +20,7 @@ Running with Vagrant
 1. Install Vagrant and VirtualBox
 2. Download Vagrantfile and node-bootstrap.sh from vagrant folder to a folder on your local machine
 3. Run ```$ vagrant up``` in the folder where you downloaded the two files.
-4. Create a config.js and extIds.txt based on the wiki: https://github.com/galenmaly/lighterpack/wiki
+4. Create a config.js and extIds.txt based on the wiki: https://github.com/galenmaly/lighterpack/wiki/Config-files
 
 You can then ssh to the machine on port 2222 or open a web browser to http://localhost:8080.
 
