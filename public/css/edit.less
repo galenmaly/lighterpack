@@ -1,9 +1,5 @@
 @import "globals.less";
 
-body {
-    overflow-x: hidden;
-}
-
 .lpSilent {
     background: transparent;
     border: 1px solid transparent;
@@ -65,7 +61,7 @@ body {
     }
 
     ul {
-        background: #666;
+        background: #606060;
         box-sizing: content-box;
         margin: 0;
         -moz-box-sizing: content-box;
@@ -90,15 +86,15 @@ body {
 
 
         &:hover .lpTarget{
-            background: #666;
+            background: #444;
             border: 1px solid #999;
             border-bottom: none;
             display: block;
         }
 
         .lpContent {
-            background: #666;
-            border-color: #999;
+            background: #444;
+            border: 1px solid #999;
             border-top: none;
             left: 0;
             padding: 0 5px 5px;
@@ -278,9 +274,7 @@ body {
 /* Top Nav */
 
 #header {
-    background: #FBFBFB;
     box-sizing: border-box;
-    border-bottom: 1px solid @border1;
     display: flex;
     height: 60px;
     margin: 0 -20px 20px; /*lpList padding */
@@ -288,18 +282,6 @@ body {
 
     * {
         box-sizing: inherit;
-    }
-
-    .fullBleedLeft();
-    .fullBleedRight();
-
-    &:before {
-        .lpTransition();
-        opacity: 1;
-
-        .lpHasSidebar & {
-            opacity: 0;
-        }
     }
 }
 
@@ -310,22 +292,60 @@ body {
 }
 
 .headerItem {
-    border-left: 1px solid @border1;
     flex: 0 0 auto;
     height: 100%;
-    padding: 17px 12px;
+    padding: 17px 16px;
     position: relative;
+
+    &:first-child {
+        padding-left: 20px;
+    }
 
     .lpFlyout {
         height: 100%;
+
+        &:hover .lpTarget {
+            color: @blue1;
+        }
     }
 
     .lpTarget {
+        font-weight: 600;
         height: 100%;
-        padding: 17px 12px;
+        padding: 17px 16px;
+    }
 
-        &:hover {
+    .lpContent {
+        background-color: #FFF;
+        box-shadow: 0 0 6px rgba(0,0,0,0.25);
+        left: 50%;
+        transform: translateX(-50%);
+
+        &:before {
+            background-color: #FFF;
+            box-shadow: 0 0 6px rgba(0,0,0,0.25);
+            content: "";
+            display: block;
+            height: 20px;
+            position: absolute;
+            left: 50%;
+            margin-left: -10px;
+            top: -10px;
+            transform: rotate(45deg);
+            width: 20px;
+            z-index: @dialog - 1;
+        }
+
+        &:after {
             background: #FFF;
+            content: "";
+            display: block;
+            height: 15px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: @dialog + 1;
         }
     }
 
@@ -333,14 +353,14 @@ body {
         flex: 1 0 auto;
     }
 
-    &:first-child {
-        border-left: none;
-    }
-
     &.hasFlyout {
         padding: 0;
     }
+}
 
+#csvUrl {
+    display: block;
+    margin-top: 15px;
 }
 
 #lpOptionalFields {
@@ -369,21 +389,11 @@ body {
 
 }
 #share .lpContent {
-    width: 300px;
+    width: 330px;
 }
 
 #settings .lpContent {
     width: 200px;
-}
-
-#account {
-    .lpTarget {
-        border-right: 1px solid transparent;
-    }
-
-    &:hover .lpTarget {
-        border-right-color: @border1;
-    }
 }
 
 .signedOut {

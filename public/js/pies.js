@@ -45,7 +45,7 @@ pies = function(args) {
         if (args.clickCallback) clickCallback = args.clickCallback;
         if (args.hoverCallback) hoverCallback = args.hoverCallback;
         drawGraph();
-        $tooltip = $("<div class='tooltip' style='position:absolute;display:none;border:1px solid #FFF;background:#444;color:#FFF;box-shadow:0 0 5px rgba(0,0,0,0.25);padding:3px;z-index:5;'></tooltip>");
+        $tooltip = $("<div class='tooltip' style='position:absolute;display:none;border:1px solid #FFF;background:#444;color:#FFF;box-shadow:0 0 5px rgba(0,0,0,0.25);padding:3px;z-index:105;'></tooltip>");
         $("body").append($tooltip);
     }
 

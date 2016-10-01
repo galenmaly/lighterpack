@@ -261,14 +261,13 @@ html.lp,
 .lpFlyout .lpContent {
   -moz-box-sizing: border-box;
   background: #FFF;
-  border: 1px solid #CCCCCC;
   box-sizing: border-box;
   color: #333333;
   display: none;
   left: -1px;
   margin-top: -1px;
   min-width: 100%;
-  padding: 10px;
+  padding: 12px;
   position: absolute;
   top: 100%;
   white-space: nowrap;
@@ -292,9 +291,6 @@ html.lp,
   padding: 0;
 }
 .lpFlyout:hover .lpTarget {
-  background: #FFF;
-  border-color: #CCCCCC;
-  border-bottom-color: #FFF;
   z-index: 110;
 }
 .lpFlyout:hover .lpContent {
