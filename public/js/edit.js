@@ -6,6 +6,7 @@ editLists = function() {
         $libraryContainer = $("#library"),
         $modalOverlay = $("#lpModalOverlay"),
         $listName = $(".lpListName", $list),
+        $listDescription = $("#listDescription"),
         chart = null,
         list = null,
         library = null,
@@ -48,8 +49,7 @@ editLists = function() {
             name: "price",
             displayName: "Item prices",
             cssClass: "lpShowPrices"
-        },
-        {
+        }, {
             name: "worn",
             displayName: "Worn items",
             cssClass: "lpShowWorn"
@@ -57,6 +57,10 @@ editLists = function() {
             name: "consumable",
             displayName: "Consumable items",
             cssClass: "lpShowConsumable"
+        }, {
+            name: "listDescription",
+            displayName: "List descriptions",
+            cssClass: "lpShowListDescription"
         }];
 
 
@@ -166,6 +170,7 @@ editLists = function() {
             var list = library.getListById(library.defaultListId);
             $list.attr("id", list.id);
             $listName.val(list.name);
+            $listDescription.val(list.description);
         }
         updateItemLibrary();
         renderEdit();
@@ -184,6 +189,7 @@ editLists = function() {
         var list = library.getListById(library.defaultListId);
         $list.attr("id", list.id);
         $listName.val(list.name);
+        $listDescription.val(list.description);
         $(".lpActive", $listsContainer).removeClass("lpActive");
         $("[list="+library.defaultListId+"]", $listsContainer).addClass("lpActive");
     }
@@ -293,7 +299,7 @@ editLists = function() {
         });
 
         $listName.on("change keyup", function(evt) {
-            var id = $(this).parents(".lpList").attr("id")
+            var id = $(this).parents(".lpList").attr("id");
             var list = library.getListById(id);
             list.name = $(this).val();
             var name = list.name;
@@ -793,6 +799,14 @@ editLists = function() {
             updateCurrencySymbol();
             saveLocally();
         });
+
+        $listDescription.on("keyup", function() {
+            var id = $(this).parents(".lpList").attr("id"),
+                list = library.getListById(id);
+
+            list.description = $listDescription.val();
+            saveLocally();
+        });
     }
 
     function closePicker(evt) {
@@ -1106,7 +1120,7 @@ editLists = function() {
         librarySave = getSaveData();
         if (saveType == "remote") {
             var temp = new Date();
-            if (temp.getTime() - lastSave > 5000) {
+            if (temp.getTime() - lastSave > 10000) {
                 if (saveTimeout) {
                     clearTimeout(saveTimeout);
                     saveTimeout = null;
@@ -1127,7 +1141,7 @@ editLists = function() {
                 });
             } else {
                 if (saveTimeout) return;
-                saveTimeout = setTimeout(saveLocally, 5001)
+                saveTimeout = setTimeout(saveLocally, 10001)
             }
         } else if (saveType =="local") {
             localStorage.library = librarySave;

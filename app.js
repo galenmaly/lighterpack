@@ -23,6 +23,7 @@ var nodemailer = require("nodemailer");
 var sendmailTransport = require('nodemailer-sendmail-transport');
 var transport = nodemailer.createTransport(sendmailTransport({}));
 var formidable = require('formidable');
+var markdown = require( "markdown" ).markdown;
 
 
 //I'm pretty sure there's a better way to do this:
@@ -94,7 +95,13 @@ app.get('/r/:id', function(req, res) {
         
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
-        var model = {listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};
+        var model = {listName: list.name,
+            chartData: chartData,
+            renderedCategories: renderedCategories,
+            renderedTotals: renderedTotals,
+            optionalFields: library.optionalFields,
+            renderedDescription: markdown.toHTML(list.description)};
+
         model = extend(model, templates);
         res.send(Mustache.render(shareTemplate, model));
     });
@@ -144,11 +151,18 @@ app.get("/e/:id", function(req, res) {
                 categoryTemplate: templates.t_categoryShare,
                 optionalFields: library.optionalFields,
                 unitSelectTemplate: templates.t_unitSelect,
+                renderedDescription: markdown.toHTML(list.description),
                 currencySymbol: library.currencySymbol});
 
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect);
 
-        var model = {externalId: id, listName: list.name, chartData: chartData, renderedCategories: renderedCategories, renderedTotals: renderedTotals, optionalFields: library.optionalFields};
+        var model = {externalId: id,
+            listName: list.name,
+            chartData: chartData,
+            renderedCategories: renderedCategories,
+            renderedTotals: renderedTotals,
+            optionalFields: library.optionalFields,
+            renderedDescription: markdown.toHTML(list.description)};
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));

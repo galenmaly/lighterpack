@@ -343,6 +343,25 @@
   display: none;
 }
 /* Body */
+#listDescriptionContainer {
+  display: none;
+  margin: 25px 0;
+}
+.lpShowListDescription #listDescriptionContainer {
+  display: block;
+}
+#listDescriptionContainer h3,
+#listDescriptionContainer p {
+  display: inline-block;
+  margin: 0 0 5px;
+}
+#listDescriptionContainer h3 {
+  margin-right: 10px;
+}
+#listDescriptionContainer textarea {
+  height: 65px;
+  width: 100%;
+}
 .lpLegend:hover {
   border-color: #666;
   cursor: pointer;

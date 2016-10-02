@@ -152,6 +152,7 @@ List = function(args) {
     this.name = "";
     this.categoryIds = [];
     this.chart = null;
+    this.description = "";
     return this;
 }
 
@@ -314,7 +315,8 @@ Library = function(args) {
             images: false,
             price: false,
             worn: true,
-            consumable: true
+            consumable: true,
+            listDescription: false
         };
     this.currencySymbol = "$";
     this.firstRun();
