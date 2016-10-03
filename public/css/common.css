@@ -462,6 +462,9 @@ html.lp,
 .lpShowWorn .lpWornWeight.lpRow {
   display: table-row;
 }
+#lpListDescription h2 {
+  border-bottom: 1px solid #aaa;
+}
 input.lpCategoryName {
   /* specificity */
   border: 1px solid transparent;
@@ -533,7 +536,7 @@ input.lpCategoryName {
 .lpItemsHeader .lpDescription,
 .lpItemsFooter .lpDescription {
   flex: 2 0 200px;
-  margin-right: 10px;
+  margin-right: 4px;
   min-width: 100px;
 }
 .lpItem .lpActionsCell,
