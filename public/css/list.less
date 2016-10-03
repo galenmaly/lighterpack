@@ -124,13 +124,15 @@ input.lpCategoryName { /* specificity */
     }
 
     .lpName {
-        flex: 1 0 150px;
+        flex: 1 1 150px;
         margin-right: 4px;
+        min-width: 50px;
     }
 
     .lpDescription {
         flex: 2 0 200px;
-        margin-right: 10px;
+        margin-right: 4px;
+        min-width: 100px;
     }
 
     .lpActionsCell {
@@ -147,8 +149,9 @@ input.lpCategoryName { /* specificity */
     }
 
     .lpPriceCell {
-        flex: 0 0 66px;
         display: none;
+        flex: 0 0 66px;
+        margin-right: 4px;
 
         .lpShowPrices & {
             display: inline-block;
@@ -160,10 +163,10 @@ input.lpCategoryName { /* specificity */
     }
 
     .lpQtyCell {
-        flex: 0 0 70px;
+        flex: 0 0 60px;
 
         .lpQty {
-            width: 49px;
+            width: 39px;
         }
     }
 

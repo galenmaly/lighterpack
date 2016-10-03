@@ -116,14 +116,16 @@ input.lpCategoryName {
 .lpItem .lpName,
 .lpItemsHeader .lpName,
 .lpItemsFooter .lpName {
-  flex: 1 0 150px;
+  flex: 1 1 150px;
   margin-right: 4px;
+  min-width: 50px;
 }
 .lpItem .lpDescription,
 .lpItemsHeader .lpDescription,
 .lpItemsFooter .lpDescription {
   flex: 2 0 200px;
-  margin-right: 10px;
+  margin-right: 4px;
+  min-width: 100px;
 }
 .lpItem .lpActionsCell,
 .lpItemsHeader .lpActionsCell,
@@ -144,8 +146,9 @@ input.lpCategoryName {
 .lpItem .lpPriceCell,
 .lpItemsHeader .lpPriceCell,
 .lpItemsFooter .lpPriceCell {
-  flex: 0 0 66px;
   display: none;
+  flex: 0 0 66px;
+  margin-right: 4px;
 }
 .lpShowPrices .lpItem .lpPriceCell,
 .lpShowPrices .lpItemsHeader .lpPriceCell,
@@ -160,12 +163,12 @@ input.lpCategoryName {
 .lpItem .lpQtyCell,
 .lpItemsHeader .lpQtyCell,
 .lpItemsFooter .lpQtyCell {
-  flex: 0 0 70px;
+  flex: 0 0 60px;
 }
 .lpItem .lpQtyCell .lpQty,
 .lpItemsHeader .lpQtyCell .lpQty,
 .lpItemsFooter .lpQtyCell .lpQty {
-  width: 49px;
+  width: 39px;
 }
 .lpItem .lpRemoveCell,
 .lpItemsHeader .lpRemoveCell,
