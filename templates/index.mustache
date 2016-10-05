@@ -2,9 +2,9 @@
 <html class="lp">
     <head>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css' />
-        <link href="/css/common.css?v=2" rel="stylesheet" type="text/css" />
-        <link href="/css/edit.css?v=2" rel="stylesheet" type="text/css" />
-        <link href="/css/print.css?v=2" rel="stylesheet" type="text/css" media="print" />
+        <link href="/css/common.css?v=3" rel="stylesheet" type="text/css" />
+        <link href="/css/edit.css?v=3" rel="stylesheet" type="text/css" />
+        <link href="/css/print.css?v=3" rel="stylesheet" type="text/css" media="print" />
         <link rel="shortcut icon" href="/favicon.png" />
         <title>LighterPack</title>
     </head>
@@ -94,10 +94,13 @@
                         <li>When you're done, share your list with others!</li>
                     </ol>
                 </div>
-                <div class="lpHalf lpAlignRight">
-                    <canvas class="lpChart" height="260" width="260"></canvas>
-                </div>
-                <div class="lpHalf lpAlignLeft lpTotalsContainer">
+                <div class="lpListSummary">
+                    <div class="lpChartContainer">
+                        <canvas class="lpChart" height="260" width="260"></canvas>
+                    </div>
+                    <div class="lpTotalsContainer">
+                        {{{renderedTotals}}}
+                    </div>
                 </div>
 
                 <div style="clear:both"></div>
@@ -298,13 +301,10 @@
                 <ul>
                     <li class="medium">Add utility to convert all items to a certain unit.</li>
                     <li class="medium">Guided "tour" for new users</li>
-                    <li class="medium">Additional optional field: price.</li>
-                    <li class="medium">Additional optional field: secondary description.</li>
                     <li class="medium">Support for mobile devices</li>
                     <li class="medium">Make qty/weight validation nicer</li>
                     <li class="low">Collapse categories</li>
                     <li class="low">Add progress bar / spinner for file uploads</li>
-                    <li class="low">IE7/IE8 support for report/widget view.</li>
                     <li class="low">Gear sorting?</li>
                     <li class="low">Better accomodate long names.</li>
                 </ul>
@@ -324,8 +324,8 @@
         <script type="text/javascript" src="/js/farbtastic.js"></script>
         <script type="text/javascript" src="/js/mustache.js"></script>
         <script type="text/javascript" src="/js/sha3.js"></script>
-        <script type="text/javascript" src="/js/pies.js?v=2"></script>
-        <script type="text/javascript" src="/js/dataTypes.js?v=2"></script>
-        <script type="text/javascript" src="/js/edit.js?v=2"></script>
+        <script type="text/javascript" src="/js/pies.js?v=3"></script>
+        <script type="text/javascript" src="/js/dataTypes.js?v=3"></script>
+        <script type="text/javascript" src="/js/edit.js?v=3"></script>
     </body>
 </html>

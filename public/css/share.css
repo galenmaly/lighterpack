@@ -19,7 +19,7 @@
     position: relative;
   }
   .lpItems .lpWeightCell {
-    flex-basis: 95px;
+    flex-basis: 100px;
   }
   .lpItems .lpPriceCell {
     flex-basis: 65px;
