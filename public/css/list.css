@@ -219,11 +219,7 @@ input.lpCategoryName {
 }
 .lpItemsFooter {
   border-top-style: solid;
-}
-.lpItemsHeader .lpWeightCell,
-.lpItemsFooter .lpWeightCell {
-  margin-left: auto;
-  /* Right-align this and everything to the right */
+  justify-content: flex-end;
 }
 .lpActionsCell .lpWorn,
 .lpActionsCell .lpConsumable,

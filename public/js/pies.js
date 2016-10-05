@@ -36,7 +36,7 @@ pies = function(args) {
             data = args.processedData;
         }
 
-        bounds = {x: container.width(), y: container.height()};
+        bounds = {x: context.canvas.width, y: context.canvas.height};
         center = {x: bounds.x/2, y: bounds.y/2};
 
         if (center.x < center.y) radius = center.x;
@@ -50,7 +50,6 @@ pies = function(args) {
     }
 
     function update(args) {
-        //console.log("update");
         var oldVisibleRings = getVisibleRings(data);
 
         if (args.data) {
@@ -149,20 +148,13 @@ pies = function(args) {
                 y: center.y + Math.sin(slice.maxAngle)*slice.minRadius
             }
 
-            /*slice.controlPoint = {
-                x: slice.outsideMinPoint.x - Math.sin(lastAngle)*(Math.sin(slice.myAngle/2)*(maxRadius/Math.cos(slice.myAngle/2))),
-                y: slice.outsideMinPoint.y + Math.cos(lastAngle)*(Math.sin(slice.myAngle/2)*(maxRadius/Math.cos(slice.myAngle/2)))
-            }*/
-
             if (!slice.color) {
                 slice.color = getColor(count, parentColor);
             }
 
             slice.startAngle = lastAngle
 
-
-            drawSlice(slice);
-            
+            drawSlice(slice);            
 
             lastAngle = slice.maxAngle;
             count++;
@@ -179,11 +171,9 @@ pies = function(args) {
         }
         
         context.fillStyle = rgbToString(slice.color);
-        
 
         context.beginPath();
         context.moveTo(slice.outsideMinPoint.x, slice.outsideMinPoint.y);
-        //context.arcTo(slice.controlPoint.x, slice.controlPoint.y, slice.maxPoint.x, slice.maxPoint.y, slice.maxRadius);
         context.arc(center.x, center.y, slice.maxRadius, slice.minAngle, slice.maxAngle);
         context.lineTo(slice.insideMaxPoint.x, slice.insideMaxPoint.y);
         context.arc(center.x, center.y, slice.minRadius, slice.maxAngle, slice.minAngle, true);
@@ -260,9 +250,10 @@ pies = function(args) {
 
     function hoverHandle(evt) {
         var containerOffset = container.offset();
-        var offset = {x: evt.pageX - containerOffset.left, y: evt.pageY - containerOffset.top};
-        var dX = offset.x - center.x;
-        var dY = offset.y - center.y;
+        var size = {x: container.width(), y: container.height()};
+        var offset = {x: (evt.pageX - containerOffset.left) * (bounds.x / size.x), y: (evt.pageY - containerOffset.top) * (bounds.y / size.y)};
+        var dX = (offset.x - center.x);
+        var dY = (offset.y - center.y);
         var angle = Math.atan( dY / dX );
         if (dX < 0) angle += Math.PI;
         else if (dY < 0) angle += Math.PI*2
@@ -297,8 +288,6 @@ pies = function(args) {
             recursivelySetAttribute(data, "visiblePoints", false);
             data.visiblePoints = true;
             context.clearRect ( 0 , 0 , bounds.x , bounds.y );
-            //drawGraph();
-            //var rings = getVisibleRings(data);
             animateAdd()
             return;
         }
@@ -308,7 +297,6 @@ pies = function(args) {
         hovered.parent.visiblePoints = true;
         hovered.visiblePoints = true;
         
-        //render(hovered, secondRing.inner, secondRing.outer);
         animateAdd();
         if (clickCallback) clickCallback(hovered);
     }
@@ -351,8 +339,6 @@ pies = function(args) {
     }
 
     function drawGraph() {
-        //console.log("drawGraph")
-        //console.log(data);
         data.visiblePoints = true;
         var rings = getVisibleRings(data);
 

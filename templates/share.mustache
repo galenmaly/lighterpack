@@ -5,21 +5,19 @@
         <link href="/css/common.css?v=2" rel="stylesheet" type="text/css" />
         <link href="/css/share.css?v=2" rel="stylesheet" type="text/css" />
         <link rel="shortcut icon" href="/favicon.png" />
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script type="text/javascript" src="/js/pies.js"></script>
-        <script type="text/javascript" src="/js/dataTypes.js"></script>
-        <script type="text/javascript" src="/js/share.js"></script>
-        <script type="text/javascript">chartData="{{{chartData}}}";</script>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0">
     </head>
     <body>
         <div id="main" class="">
             <div class="lpList {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
                 <h1 class="lpListName">{{listName}}</h1>
-                <div class="lpHalf lpAlignRight">
-                    <canvas class="lpChart" height="260" width="260"></canvas>
-                </div>
-                <div class="lpHalf lpAlignLeft">
-                    {{{renderedTotals}}}
+                <div class="lpListSummary">
+                    <div class="lpChartContainer">
+                        <canvas class="lpChart" height="260" width="260"></canvas>
+                    </div>
+                    <div class="lpTotalsContainer">
+                        {{{renderedTotals}}}
+                    </div>
                 </div>
 
                 <div style="clear:both"></div>
@@ -36,5 +34,10 @@
         </div>
         <div class="lpDialog" id="lpImageDialog"></div>
         <div id="lpModalOverlay"></div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/pies.js"></script>
+        <script type="text/javascript" src="/js/dataTypes.js"></script>
+        <script type="text/javascript" src="/js/share.js"></script>
+        <script type="text/javascript">chartData="{{{chartData}}}";</script>
     </body>
 </html>
