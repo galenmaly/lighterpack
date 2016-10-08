@@ -405,7 +405,6 @@
 }
 /* TODO */
 #TODO {
-  margin-left: -300px;
   width: 600px;
 }
 .high {
@@ -427,8 +426,6 @@ h2 .alternateAction {
   margin-top: 0;
 }
 #welcome {
-  margin-left: -300px;
-  margin-top: -185px;
   width: 560px;
 }
 #welcome .lpOr {
@@ -447,7 +444,6 @@ h2 .alternateAction {
   margin: 0;
 }
 #forgotPassword {
-  margin-left: -300px;
   width: 560px;
 }
 #getStarted {
@@ -496,11 +492,9 @@ h2 .alternateAction {
   top: 11px;
 }
 #importValidate {
-  width: 650px;
-  margin-left: -350px;
-  height: 500px;
-  margin-top: -300px;
   overflow-y: scroll;
+  height: 500px;
+  width: 650px;
 }
 #importValidate .lpButton {
   margin-bottom: 30px;
@@ -519,7 +513,6 @@ h2 .alternateAction {
   padding: 10px;
 }
 #help {
-  margin-left: -400px;
   width: 800px;
 }
 .farbtastic {
