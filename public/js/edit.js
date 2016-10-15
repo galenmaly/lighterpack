@@ -1449,8 +1449,8 @@ editLists = function() {
     }
 
     function showShareBox(externalId) {
-	var l = window.location;
-	var baseUrl = l.origin ? l.origin : l.protocol + '//' + l.hostname;
+	var location = window.location;
+	var baseUrl = location.origin ? location.origin : location.protocol + '//' + location.hostname;
 	
         $("#shareUrl").val(baseUrl+"/r/"+externalId).focus().select();
         $("#embedUrl").val("<script src=\""+baseUrl+"/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");

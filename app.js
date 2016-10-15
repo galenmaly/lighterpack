@@ -164,7 +164,7 @@ app.get("/e/:id", function(req, res) {
             renderedTotals: renderedTotals,
             optionalFields: library.optionalFields,
             renderedDescription: markdown.toHTML(list.description),
-	    baseUrl : config.get('deployUrl')};
+            baseUrl : config.get('deployUrl')};
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));
