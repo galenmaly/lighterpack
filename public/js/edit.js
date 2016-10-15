@@ -1449,9 +1449,12 @@ editLists = function() {
     }
 
     function showShareBox(externalId) {
-        $("#shareUrl").val("https://lighterpack.com/r/"+externalId).focus().select();
-        $("#embedUrl").val("<script src=\"https://lighterpack.com/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
-        $("#csvUrl").attr("href","https://lighterpack.com/csv/"+externalId);
+	var l = window.location;
+	var baseUrl = l.origin ? l.origin : l.protocol + '//' + l.hostname;
+	
+        $("#shareUrl").val(baseUrl+"/r/"+externalId).focus().select();
+        $("#embedUrl").val("<script src=\""+baseUrl+"/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
+        $("#csvUrl").attr("href",baseUrl+"/csv/"+externalId);
     }
 
 

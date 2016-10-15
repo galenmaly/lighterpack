@@ -94,8 +94,8 @@ function centerDialog() {
 init_{{externalId}} = function() {
     var $ = jQuery;
     $.when(
-        $.getScript("https://lighterpack.com/js/pies.js"),
-        $.getScript("https://lighterpack.com/js/dataTypes.js"),
+        $.getScript("{{baseUrl}}/js/pies.js"),
+        $.getScript("{{baseUrl}}/js/dataTypes.js"),
         $.Deferred(function( deferred ){
             $( deferred.resolve );
         })
@@ -112,7 +112,7 @@ if (typeof jQuery === "undefined") {
         jq = document.createElement("script");
 
     jq.type = "text/javascript";
-    jq.src = "https://lighterpack.com/js/jquery-2.0.3.min.js";
+    jq.src = "{{baseUrl}}/js/jquery-2.0.3.min.js";
     jq.onload = init_{{externalId}};
     head.appendChild(jq);
 } else {
