@@ -218,7 +218,7 @@ editLists = function() {
             } else {
                 hideChart();
             }
-            
+
         } else {
             hideChart();
         }
@@ -595,10 +595,27 @@ editLists = function() {
 
         $categories.on("click", ".lpCamera", function() {
             selectedItem = $(this).parents(".lpItem").attr("id");
-            $("#image").click();
+            var item = library.getItemById(selectedItem);
+            $("#itemImageDialog, #lpModalOverlay").fadeIn();
+            $("#itemImageUrl").val(item.imageUrl).focus();
+        });
+
+        $("#itemImageUrlForm").on("submit", function(evt) {
+            evt.preventDefault();
+            var item = library.getItemById(selectedItem);
+            var $item = $("#"+item.id);
+            item.imageUrl = $("#itemImageUrl").val();
+            $("#itemImageDialog, #lpModalOverlay").fadeOut();
+            if (item.imageUrl) {
+                $(".lpImageUrl", $item).addClass("lpActive");
+            } else {
+                $(".lpImageUrl", $item).removeClass("lpActive");
+            }
+            saveLocally();
         });
 
         $("#image").on("change", function() {
+            var self = this;
             if (!FormData) {
                 alert("Your browser is not supported for file uploads. Please get a newer browser.");
                 return;
@@ -621,6 +638,9 @@ editLists = function() {
             }
             var formData = new FormData($("#imageUpload")[0]);
 
+            $(self).hide();
+            $("#uploadingText").show();
+
             $.ajax({
                 data: formData,
                 url: "/imageUpload",
@@ -637,6 +657,7 @@ editLists = function() {
                     var $item = $("#"+selectedItem);
                     item.image = data.data.id;
                     $(".lpImageCell", $item).html("<img class='lpItemImage' src='https://i.imgur.com/"+item.image+"s.jpg' />");
+                    $("#itemImageDialog, #lpModalOverlay").fadeOut();
 
                     library.showImages = true;
                     library.optionalFields.images = true;
@@ -645,6 +666,10 @@ editLists = function() {
                 },
                 error: errorHandler = function() {
                     alert("Upload failed! If this issue persists please file a bug.");
+                },
+                complete: function() {
+                    $(self).show();
+                    $("#uploadingText").hide();
                 },
                 cache: false,
                 contentType: false,
@@ -685,27 +710,6 @@ editLists = function() {
         $("#librarySearch").on("keyup", function(evt) {
             librarySearch();
         });
-
-        $categories.on("click", ".lpImageUrl", function(evt) {
-            selectedItem = $(this).parents(".lpItem").attr("id");
-            var item = library.getItemById(selectedItem);
-            $("#itemImageUrlDialog, #lpModalOverlay").fadeIn();
-            $("#itemImageUrl").val(item.imageUrl).focus();
-        });
-
-        $("#itemImageUrlForm").on("submit", function(evt) {
-            evt.preventDefault();
-            var item = library.getItemById(selectedItem);
-            var $item = $("#"+item.id);
-            item.imageUrl = $("#itemImageUrl").val();
-            $("#itemImageUrlDialog, #lpModalOverlay").fadeOut();
-            if (item.imageUrl) {
-                $(".lpImageUrl", $item).addClass("lpActive");
-            } else {
-                $(".lpImageUrl", $item).removeClass("lpActive");
-            }
-            saveLocally();
-        })
 
         $categories.on("click", ".lpLink", function(evt) {
             selectedItem = $(this).parents(".lpItem").attr("id");
@@ -1472,7 +1476,7 @@ editLists = function() {
     function showShareBox(externalId) {
 	var location = window.location;
 	var baseUrl = location.origin ? location.origin : location.protocol + '//' + location.hostname;
-	
+
         $("#shareUrl").val(baseUrl+"/r/"+externalId).focus().select();
         $("#embedUrl").val("<script src=\""+baseUrl+"/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
         $("#csvUrl").attr("href",baseUrl+"/csv/"+externalId);

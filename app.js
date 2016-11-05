@@ -527,16 +527,16 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.send("upload failed :(");
+                    res.status(500).send("upload failed :(");
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    res.send("upload failed :((");
+                    res.status(500).send("upload failed :((");
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.send("upload failed :(((");
+                    res.status(500).send("upload failed :(((");
                 } else {
                     res.send(body);
                 }

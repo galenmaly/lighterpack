@@ -234,7 +234,6 @@ input.lpCategoryName {
 .lpActionsCell .lpWorn:hover,
 .lpActionsCell .lpConsumable:hover,
 .lpActionsCell .lpCamera:hover,
-.lpActionsCell .lpImageUrl:hover,
 .lpActionsCell .lpLink:hover,
 .lpActionsCell .lpStar:hover {
   opacity: 1;
@@ -242,25 +241,21 @@ input.lpCategoryName {
 .lpActionsCell .lpWorn.lpActive,
 .lpActionsCell .lpConsumable.lpActive,
 .lpActionsCell .lpCamera.lpActive,
-.lpActionsCell .lpImageUrl.lpActive,
 .lpActionsCell .lpLink.lpActive,
 .lpActionsCell .lpStar.lpActive,
 .lpActionsCell .lpWorn.lpStar1,
 .lpActionsCell .lpConsumable.lpStar1,
 .lpActionsCell .lpCamera.lpStar1,
-.lpActionsCell .lpImageUrl.lpStar1,
 .lpActionsCell .lpLink.lpStar1,
 .lpActionsCell .lpStar.lpStar1,
 .lpActionsCell .lpWorn.lpStar2,
 .lpActionsCell .lpConsumable.lpStar2,
 .lpActionsCell .lpCamera.lpStar2,
-.lpActionsCell .lpImageUrl.lpStar2,
 .lpActionsCell .lpLink.lpStar2,
 .lpActionsCell .lpStar.lpStar2,
 .lpActionsCell .lpWorn.lpStar3,
 .lpActionsCell .lpConsumable.lpStar3,
 .lpActionsCell .lpCamera.lpStar3,
-.lpActionsCell .lpImageUrl.lpStar3,
 .lpActionsCell .lpLink.lpStar3,
 .lpActionsCell .lpStar.lpStar3 {
   opacity: 1;

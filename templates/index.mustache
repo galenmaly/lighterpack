@@ -113,9 +113,6 @@
                 <ul class="lpCategories"></ul>
                 <hr />
                 <a href="#" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
-                <form id="imageUpload">
-                    <input type="file" name="image" id="image" />
-                </form>
                 <form id="csvUpload">
                     <input type="file" name="csv" id="csv" />
                 </form>
@@ -249,12 +246,18 @@
         </div>
         <div class="lpDialog" id="lpImageDialog">
         </div>
-        <div class="lpDialog" id="itemImageUrlDialog">
-            <h2>Add an image from the web for this item</h2>
+        <div class="lpDialog" id="itemImageDialog">
+            <h2>Add an image from the web</h2>
             <form id="itemImageUrlForm">
                 <input type="text" id="itemImageUrl" placeholder="Image URL"/>
                 <input type="submit" class="lpButton" value="Save" />
                 <a href="#" class="lpHref close">Cancel</a>
+            </form>
+            <br />
+            <h2>Upload an image</h2>
+            <form id="imageUpload">
+                <p id="uploadingText" style="display:none;">Uploading image...</p>
+                <input type="file" name="image" id="image" />
             </form>
         </div>
         <div class="lpDialog" id="itemLinkDialog">
