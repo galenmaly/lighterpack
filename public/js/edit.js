@@ -210,16 +210,17 @@ editLists = function() {
     function updateSubtotals() {
         var list = library.getListById(library.defaultListId);
 
+
         if (list.categoryIds.length) {
-            $("#getStarted").hide();
-            $("#totalsContainer").css("visibility", "visible");
-            updateChart();
-            $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
+            var chartData = updateChart();
+            if (chartData) {
+                showChart();
+            } else {
+                hideChart();
+            }
+            
         } else {
-            $("#getStarted").show();
-            $("#totalsContainer").css("visibility", "hidden");
-            $chartContainer.css("visibility", "hidden");
-            $(".lpTotalsContainer").html("");
+            hideChart();
         }
 
         $(".lpCategory", $categories).each(function() {
@@ -229,6 +230,19 @@ editLists = function() {
             $(".lpQtySubtotal", this).text(category.qtySubtotal);
             $(".lpDisplayPriceSubtotal", this).text(category.displayPriceSubtotal);
         });
+    }
+
+    function showChart() {
+        $("#getStarted").hide();
+        $("#totalsContainer").css("visibility", "visible");
+        $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
+    }
+
+    function hideChart() {
+        $("#getStarted").show();
+        $("#totalsContainer").css("visibility", "hidden");
+        $chartContainer.css("visibility", "hidden");
+        $(".lpTotalsContainer").html("");
     }
 
     function updateChart(type) {
@@ -244,6 +258,7 @@ editLists = function() {
         } else {
             $chartContainer.css("visibility", "hidden");
         }
+        return chartData;
     }
 
     function chartHover(chartItem) {
@@ -1455,9 +1470,12 @@ editLists = function() {
     }
 
     function showShareBox(externalId) {
-        $("#shareUrl").val("https://lighterpack.com/r/"+externalId).focus().select();
-        $("#embedUrl").val("<script src=\"https://lighterpack.com/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
-        $("#csvUrl").attr("href","https://lighterpack.com/csv/"+externalId);
+	var location = window.location;
+	var baseUrl = location.origin ? location.origin : location.protocol + '//' + location.hostname;
+	
+        $("#shareUrl").val(baseUrl+"/r/"+externalId).focus().select();
+        $("#embedUrl").val("<script src=\""+baseUrl+"/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
+        $("#csvUrl").attr("href",baseUrl+"/csv/"+externalId);
     }
 
 

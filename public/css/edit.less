@@ -119,6 +119,8 @@
 
     #listContainer {
         flex: 0 0 auto;
+        max-height: 400px;
+        overflow-y: auto;
     }
 
     #libraryContainer {
@@ -461,7 +463,6 @@
 /* TODO */
 
 #TODO {
-    margin-left: -300px;
     width: 600px;
 }
 
@@ -488,8 +489,6 @@
 }
 
 #welcome {
-    margin-left: -300px;
-    margin-top: -185px;
     width: 560px;
 
     .lpOr {
@@ -512,7 +511,6 @@
 }
 
 #forgotPassword {
-    margin-left: -300px;
     width: 560px;
 }
 
@@ -523,7 +521,6 @@
     height: 160px;
     padding: 30px 0;
     position: absolute;
-    width: 100%;
     z-index: @aboveSidebar+1;
     h2 {
         font-size: 30px;
@@ -569,11 +566,10 @@
 }
 
 #importValidate {
-    width: 650px;
-    margin-left: -350px;
-    height: 500px;
-    margin-top: -300px;
     overflow-y: scroll;
+    height: 500px;
+    width: 650px;
+
     .lpButton {
         margin-bottom: 30px;
     }
@@ -595,7 +591,6 @@
 }
 
 #help {
-    margin-left: -400px;
     width: 800px;
 }
 

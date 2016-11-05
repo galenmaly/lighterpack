@@ -4,14 +4,14 @@ app.enable('trust proxy');
 var oneDay = 86400000;
 var rootPath = __dirname + "/";
 
-var fs = require("fs");
-eval(fs.readFileSync(rootPath+'config.js')+'');
+// Read in config file(s)
+var config = require('config')
 
 var collections = ["users", "libraries"];
 
 
 var mongojs = require('mongojs');
-var db = mongojs(databaseUrl, collections);
+var db = mongojs(config.get('databaseUrl'), collections);
 var connect = require('connect');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -27,6 +27,7 @@ var markdown = require( "markdown" ).markdown;
 
 
 //I'm pretty sure there's a better way to do this:
+var fs = require("fs");
 eval(fs.readFileSync(rootPath+'public/js/sha3.js')+'');
 eval(fs.readFileSync(rootPath+'public/js/pies.js')+'');
 eval(fs.readFileSync(rootPath+'public/js/dataTypes.js')+'');
@@ -112,7 +113,7 @@ app.get("/e/:id", function(req, res) {
     awesomeLog(req);
 
     if (!id) {
-        res.statu(400).send("No list specified!");
+        res.status(400).send("No list specified!");
         return;
     }
 
@@ -162,7 +163,8 @@ app.get("/e/:id", function(req, res) {
             renderedCategories: renderedCategories,
             renderedTotals: renderedTotals,
             optionalFields: library.optionalFields,
-            renderedDescription: markdown.toHTML(list.description)};
+            renderedDescription: markdown.toHTML(list.description),
+            baseUrl : config.get('deployUrl')};
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));
@@ -518,7 +520,7 @@ function imageUpload(req, res, user) {
         var path = files.image.path;
         var imgurRequest = request.defaults({json: true});
         fs.readFile(path, function(e, img_data) {
-            var temp = { uri: "https://api.imgur.com/3/image", headers: {"Authorization": "Client-ID " + imgurClientID}};
+            var temp = { uri: "https://api.imgur.com/3/image", headers: {"Authorization": "Client-ID " + config.get('imgurClientID')}};
             temp.body = img_data.toString("base64");
             imgurRequest.post(temp, function(e, r, body) {
                 if (e) {
@@ -648,9 +650,12 @@ function init() {
 }
 
 init();
-app.listen(3000);
+
+// Default port is 3000
+app.listen(config.get('port'));
+
 var d = new Date();
 var time = d.toString().substr(0,24);
 console.log("-------");
 console.log(time);
-console.log('Listening on port 3000');
+console.log('Listening on port ' + config.get('port'));

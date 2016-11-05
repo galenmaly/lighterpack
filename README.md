@@ -17,10 +17,13 @@ How to run Lighterpack
 
 Running with Vagrant
 -----------
+
 1. Install Vagrant and VirtualBox
 2. Download Vagrantfile and node-bootstrap.sh from vagrant folder to a folder on your local machine
-3. Run ```$ vagrant up``` in the folder where you downloaded the two files.
-4. Create a config.js and extIds.txt based on the wiki: https://github.com/galenmaly/lighterpack/wiki/Config-files
+3. Run $ vagrant up in the folder where you downloaded the two files.
+4. Create a config.js and extIds.txt in /var/www/lighterpack based on the wiki: https://github.com/galenmaly/lighterpack/wiki/Config-files
+5. Install dependencies $ sudo npm install
+6. Start app $ nodejs app.js
 
 You can then ssh to the machine on port 2222 or open a web browser to http://localhost:8080.
 

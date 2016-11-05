@@ -1,17 +1,22 @@
 <div class="lpList lp {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
-	<link href="http://lighterpack.com/css/common.css?v=1" rel="stylesheet" type="text/css" />
+	<link href="{{baseUrl}}/css/common.css?v=1" rel="stylesheet" type="text/css" />
     <h2 class="lpListName" >{{listName}}</h2>
-    <div class="lpHalf lpAlignRight">
-        <canvas class="lpChart" height="260" width="260"></canvas>
-    </div>
-    <div class="lpHalf lpAlignLeft">
-        {{{renderedTotals}}}
+    <div class="lpListSummary">
+        <div class="lpChartContainer">
+            <canvas class="lpChart" height="260" width="260"></canvas>
+        </div>
+        <div class="lpTotalsContainer">
+            {{{renderedTotals}}}
+        </div>
     </div>
 
     <div style="clear:both"></div>
 
     {{#renderedDescription}}
-        <div id="lpListDescription">{{{renderedDescription}}}</div>
+        <div id="lpListDescription">
+            <h2>Description</h2>
+            {{{renderedDescription}}}
+        </div>
     {{/renderedDescription}}
 
     <ul class="lpCategories">{{{renderedCategories}}}</ul>

@@ -209,7 +209,11 @@ List.prototype.renderChart = function (type, linkParent) {
     }
 
     if (!total) return false;
-
+    
+    var getTooltipText = function(name, valueMg, unit) {
+      return name + ": " + MgToWeight(valueMg, unit) + " " + unit;
+    };
+    
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
@@ -232,18 +236,18 @@ List.prototype.renderChart = function (type, linkParent) {
 
             for (var j in category.itemIds) {
                 var item = category.getExtendedItemByIndex(j);
-                var value = item.weight * item.qty
-                var name = item.name;
+                var value = item.weight * item.qty;
+                if (!value) value = 0;
+                var name = getTooltipText(item.name, value, item.authorUnit);
                 var color = getColor(j, tempColor);
                 if (item.qty > 1) name += " x "+item.qty;
-                if (!value) value = 0;
                 var percent = value / categoryTotal;
                 var tempItem =  { value: value, id: item.id, name: name, color: color, percent: percent };
                 if (linkParent) tempItem.parent = tempCategory;
                 points[j] = tempItem;
             }
             var percent = categoryTotal / total;
-            var tempCategoryData = {points: points, color: category.color, id:category.id, name:category.name, total: categoryTotal, percent: percent, visiblePoints: false};
+            var tempCategoryData = {points: points, color: category.color, id:category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent: percent, visiblePoints: false};
             if (linkParent) tempCategoryData.parent = chartData;
             extend(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;

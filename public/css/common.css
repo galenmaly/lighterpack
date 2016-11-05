@@ -199,13 +199,12 @@ html.lp,
   background: #F7F7F7;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
   display: none;
-  margin-left: -200px;
-  margin-top: -250px;
   left: 50%;
   padding: 25px;
   position: fixed;
   text-align: left;
   top: 50%;
+  transform: translateX(-50%) translateY(-50%);
   width: 350px;
   z-index: 100;
 }
@@ -310,6 +309,7 @@ html.lp,
   width: 100%;
 }
 .lp .lpButton {
+  /* TODO: find out why this specificity is needed */
   box-shadow: inset 0 1px 0 0 #ffbb47;
   -moz-box-shadow: inset 0 1px 0 0 #ffbb47;
   -webkit-box-shadow: inset 0 1px 0 0 #ffbb47;
@@ -346,8 +346,16 @@ html.lp,
 .lp .lpButton::-moz-focus-inner {
   border: none;
 }
+.lpListSummary {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
 .lpTable {
   display: table;
+  margin: 0;
+  padding: 0;
 }
 .lpRow {
   display: table-row;
@@ -391,7 +399,6 @@ html.lp,
   color: #7AB317;
 }
 #lpImageDialog {
-  margin-left: -350px;
   width: 640px;
 }
 #lpFooter {
@@ -462,6 +469,9 @@ html.lp,
 .lpShowWorn .lpWornWeight.lpRow {
   display: table-row;
 }
+#lpListDescription h2 {
+  border-bottom: 1px solid #aaa;
+}
 input.lpCategoryName {
   /* specificity */
   border: 1px solid transparent;
@@ -525,14 +535,16 @@ input.lpCategoryName {
 .lpItem .lpName,
 .lpItemsHeader .lpName,
 .lpItemsFooter .lpName {
-  flex: 1 0 150px;
+  flex: 1 1 150px;
   margin-right: 4px;
+  min-width: 50px;
 }
 .lpItem .lpDescription,
 .lpItemsHeader .lpDescription,
 .lpItemsFooter .lpDescription {
   flex: 2 0 180px;
-  margin-right: 10px;
+  margin-right: 4px;
+  min-width: 100px;
 }
 .lpItem .lpActionsCell,
 .lpItemsHeader .lpActionsCell,
@@ -553,8 +565,9 @@ input.lpCategoryName {
 .lpItem .lpPriceCell,
 .lpItemsHeader .lpPriceCell,
 .lpItemsFooter .lpPriceCell {
-  flex: 0 0 66px;
   display: none;
+  flex: 0 0 66px;
+  margin-right: 4px;
 }
 .lpShowPrices .lpItem .lpPriceCell,
 .lpShowPrices .lpItemsHeader .lpPriceCell,
@@ -569,12 +582,12 @@ input.lpCategoryName {
 .lpItem .lpQtyCell,
 .lpItemsHeader .lpQtyCell,
 .lpItemsFooter .lpQtyCell {
-  flex: 0 0 70px;
+  flex: 0 0 60px;
 }
 .lpItem .lpQtyCell .lpQty,
 .lpItemsHeader .lpQtyCell .lpQty,
 .lpItemsFooter .lpQtyCell .lpQty {
-  width: 49px;
+  width: 39px;
 }
 .lpItem .lpRemoveCell,
 .lpItemsHeader .lpRemoveCell,
@@ -622,11 +635,7 @@ input.lpCategoryName {
 }
 .lpItemsFooter {
   border-top-style: solid;
-}
-.lpItemsHeader .lpWeightCell,
-.lpItemsFooter .lpWeightCell {
-  margin-left: auto;
-  /* Right-align this and everything to the right */
+  justify-content: flex-end;
 }
 .lpActionsCell .lpWorn,
 .lpActionsCell .lpConsumable,
