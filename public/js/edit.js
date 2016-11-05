@@ -86,7 +86,7 @@ editLists = function() {
             addBlackout();
             initWithLibrary();
         }
-        
+
     }
 
     function signin() {
@@ -347,7 +347,7 @@ editLists = function() {
                     categoryItem.worn = true;
                 }
             }
-            
+
             $(this).removeClass("lpActive")
 
             var wornClass = "";
@@ -561,7 +561,7 @@ editLists = function() {
             library.showSidebar = $("#main").hasClass("lpHasSidebar");
             saveLocally();
         });
-        
+
         $(".lpList").css("min-height", $("#sidebar").height());
 
         $(document).on("click", function() {
@@ -639,7 +639,7 @@ editLists = function() {
 
         $categories.on("click", ".lpItemImage", function() {
             var item = library.getItemById($(this).parents(".lpItem").attr("id"));
-            
+
             var $modalImage = $("<img src='https://i.imgur.com/"+item.image+"l.png' />");
             $("#lpImageDialog").empty().append($modalImage);
             $modalImage.load(function() {
@@ -647,7 +647,7 @@ editLists = function() {
                 $modalOverlay.show();
                 centerDialog();
             });
-            
+
         });
         $("#library").on("click", ".lpRemoveLibraryItem.confirmed", function(evt) {
             var id = $(this).parents(".lpLibraryItem").attr("item");
@@ -670,6 +670,27 @@ editLists = function() {
         $("#librarySearch").on("keyup", function(evt) {
             librarySearch();
         });
+
+        $categories.on("click", ".lpImageUrl", function(evt) {
+            selectedItem = $(this).parents(".lpItem").attr("id");
+            var item = library.getItemById(selectedItem);
+            $("#itemImageUrlDialog, #lpModalOverlay").fadeIn();
+            $("#itemImageUrl").val(item.imageUrl).focus();
+        });
+
+        $("#itemImageUrlForm").on("submit", function(evt) {
+            evt.preventDefault();
+            var item = library.getItemById(selectedItem);
+            var $item = $("#"+item.id);
+            item.imageUrl = $("#itemImageUrl").val();
+            $("#itemImageUrlDialog, #lpModalOverlay").fadeOut();
+            if (item.imageUrl) {
+                $(".lpImageUrl", $item).addClass("lpActive");
+            } else {
+                $(".lpImageUrl", $item).removeClass("lpActive");
+            }
+            saveLocally();
+        })
 
         $categories.on("click", ".lpLink", function(evt) {
             selectedItem = $(this).parents(".lpItem").attr("id");
@@ -780,7 +801,7 @@ editLists = function() {
             f.setColor(rgbToHex(rgbStringToRgb(category.displayColor)));
 
             $(document).on("click", closePicker);
-            
+
         });
 
         $("#lpOptionalFields").on("click", "input", function() {
@@ -818,7 +839,7 @@ editLists = function() {
     function fragileListEvents() {
         $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
         $categories.sortable({handle: ".lpCategoryHandle", stop: sortCategories, axis: "y"});
-        
+
         $(".lpLibraryItem").draggable({handle: ".lpHandle",  revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
         $(".lpCategory" ).droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
     }
@@ -933,7 +954,7 @@ editLists = function() {
             if (!categoryItem) categoryItem = movedCategoryItem;
             tempCategoryItems.push(categoryItem);
         });
-        
+
         category.itemIds = tempCategoryItems;
 
         updateSubtotals();
@@ -949,7 +970,7 @@ editLists = function() {
             var categoryId = $(this).attr("id");
             tempListItems.push(categoryId);
         });
-        
+
         list.categoryIds = tempListItems;
 
         updateSubtotals();
@@ -1405,7 +1426,7 @@ editLists = function() {
                     var $item = $("[item="+item.id+"]", $libraryContainer);
                     $item.addClass("lpHit");
                 } else {
-                    
+
                 }
             }
         } else {

@@ -1,3 +1,4 @@
 config.js
 extIds.txt
 node_modules
+.DS_Store

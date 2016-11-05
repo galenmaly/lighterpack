@@ -11,6 +11,7 @@ Item = function(args) {
     if (args.unit) this.authorUnit = args.unit;
     this.price = 0;
     this.image = "";
+    this.imageUrl = "";
     this.url = "";
     return this;
 }

@@ -378,6 +378,8 @@
 .lpItem.ui-sortable-helper .lpConsumable,
 .lpItem:hover .lpCamera,
 .lpItem.ui-sortable-helper .lpCamera,
+.lpItem:hover .lpImageUrl,
+.lpItem.ui-sortable-helper .lpImageUrl,
 .lpItem:hover .lpLink,
 .lpItem.ui-sortable-helper .lpLink,
 .lpItem:hover .lpHandle,

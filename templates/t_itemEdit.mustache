@@ -4,7 +4,13 @@
     </span>
     <span class="lpImageCell">
         {{#image}}
+            <!-- <img class="lpItemImage" src="{{imageUrl}}" /> -->
             <img class="lpItemImage" src="https://i.imgur.com/{{image}}s.jpg" />
+        {{/image}}
+        {{^image}}
+          {{#imageUrl}}
+              <img class="lpItemImage" src="{{imageUrl}}" />
+          {{/imageUrl}}
         {{/image}}
     </span>
     <input type="text" value="{{name}}" class="lpName lpSilent" placeholder="Name" />
@@ -12,13 +18,20 @@
     <span class="lpActionsCell">
         <i class="lpSprite lpCamera" title="Upload a photo"></i>
 
+        {{#imageUrl}}
+            <i class="lpSprite lpImageUrl lpActive" title="Use a photo from the web"></i>
+        {{/imageUrl}}
+        {{^imageUrl}}
+            <i class="lpSprite lpImageUrl" title="Use a photo from the web"></i>
+        {{/imageUrl}}
+
         {{#url}}
             <i class="lpSprite lpLink lpActive" title="Add a link for this item"></i>
         {{/url}}
         {{^url}}
             <i class="lpSprite lpLink" title="Add a link for this item"></i>
         {{/url}}
-        
+
 
         {{#worn}}
             <i class="lpSprite lpWorn lpActive" title="Mark this item as worn"></i>

@@ -24,7 +24,7 @@
                                 <div><a href="#" id="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
                             </div>
                         </span>
-                        
+
                         <ul id="lists"></ul>
                     </section>
 
@@ -84,7 +84,7 @@
                     </span>
                     <span class="clearfix"></span>
                 </div>
-                
+
                 <div id="getStarted">
                     <h2>Welcome to LighterPack!</h2>
                     <p>Here's what you need to get started:</p>
@@ -164,7 +164,7 @@
                 Register an Account
                 <a class="lpHref alternateAction" href="#signin">Already registered?</a>
             </h2>
-            
+
             <span class="info existingData">
                 Your existing data will be saved to your new account upon creation.
             </span>
@@ -183,7 +183,7 @@
                 Sign in
                 <a class="lpHref alternateAction" href="#register">Need to register?</a>
             </h2>
-            
+
             <p class="lpSuccess"></p>
             <form class="signin">
                 <div class="lpError"></div>
@@ -200,7 +200,7 @@
                     <h3>
                         Forgot Your Password?
                     </h3>
-                    
+
                     <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
                     <form class="forgotPassword">
                         <div class="lpError"></div>
@@ -214,7 +214,7 @@
                     <h3>
                         Forgot Your Username?
                     </h3>
-                    
+
                     <p>If you've forgotten your username we will email it to you. Please enter your email address.</p>
                     <form class="forgotUsername">
                         <div class="lpError"></div>
@@ -246,6 +246,14 @@
         </div>
         <div class="lpDialog" id="lpImageDialog">
         </div>
+        <div class="lpDialog" id="itemImageUrlDialog">
+            <h2>Add an image from the web for this item</h2>
+            <form id="itemImageUrlForm">
+                <input type="text" id="itemImageUrl" placeholder="Image URL"/>
+                <input type="submit" class="lpButton" value="Save" />
+                <a href="#" class="lpHref close">Cancel</a>
+            </form>
+        </div>
         <div class="lpDialog" id="itemLinkDialog">
             <h2>Add a link for this item</h2>
             <form id="itemLinkForm">
@@ -269,7 +277,7 @@
         </div>
         <div class="lpDialog" id="help">
             <h2>Help</h2>
-            
+
             <p>Getting Started:</p>
             <ol>
                 <li>Click on things to edit them. Give your list and category a name.</li>
