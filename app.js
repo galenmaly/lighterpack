@@ -93,7 +93,7 @@ app.get('/r/:id', function(req, res) {
             optionalFields: library.optionalFields,
             unitSelectTemplate: templates.t_unitSelect,
             currencySymbol: library.currencySymbol});
-        
+
         var renderedTotals = library.renderTotals(templates.t_totals, templates.t_unitSelect, library.totalUnit);
 
         var model = {listName: list.name,
@@ -224,7 +224,7 @@ app.get("/csv/:id", function(req, res) {
                     var field = temp[k];
                     if (k > 0) out += ",";
                     if (typeof(field) == "string") {
-                        if (field.indexOf(",") > -1) out += "\"" + field.replace(/\"/g,"\"\"") + "\"";    
+                        if (field.indexOf(",") > -1) out += "\"" + field.replace(/\"/g,"\"\"") + "\"";
                         else out += field;
                     } else out += field;
                 }
@@ -243,7 +243,7 @@ app.get("/csv/:id", function(req, res) {
 });
 
 app.post("/register", function(req, res) {
-    
+
     var username = req.body.username;
     var password = req.body.password;
     var email = req.body.email;
@@ -266,6 +266,7 @@ app.post("/register", function(req, res) {
 
     db.users.find({username: username}, function(err, users) {
         if( err || users.length) {
+            awesomeLog(req, "User Exists.");
             res.status(400).send("User Exists.");
             return;
         }
@@ -278,6 +279,7 @@ app.post("/register", function(req, res) {
                 token: token,
                 library: JSON.parse(req.body.library)
             }
+            awesomeLog(req, "Saving new user.");
             db.users.save(newUser);
             var out = {username: username, library: JSON.stringify(newUser.library)};
             res.cookie("lp", token,  { path: "/", maxAge: 365*24*60*1000 });
@@ -318,7 +320,7 @@ app.get("/fixdb", function(req, res) {
 
 
 app.post("/signin", function(req, res) {
-    authenticateUser(req, res, returnLibrary);      
+    authenticateUser(req, res, returnLibrary);
 });
 
 function returnLibrary(req, res, user) {
@@ -525,16 +527,16 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.send("upload failed :(");
+                    res.status(500).send("upload failed :(");
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    res.send("upload failed :((");
+                    res.status(500).send("upload failed :((");
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.send("upload failed :(((");
+                    res.status(500).send("upload failed :(((");
                 } else {
                     res.send(body);
                 }
@@ -594,14 +596,14 @@ function awesomeLog(req, data) {
     var d = new Date();
     var time = d.toISOString();
     var ua = req.get("user-agent");
-    
+
     console.log(time + " - " + req.ip + " - " + req.path + " - " + ua + " - " + data);
 }
 
 
 function init() {
     fs.readdir(rootPath+"templates", function(err, files) {
-        files.filter(function(file) { return (file.substr(0,2) == "t_" && file.substr(-9) == '.mustache'); }).forEach(function(file) { 
+        files.filter(function(file) { return (file.substr(0,2) == "t_" && file.substr(-9) == '.mustache'); }).forEach(function(file) {
             var fileShort = file.substr(0, file.length-9);
             var data = fs.readFileSync(rootPath+"templates/"+file);
             templates[fileShort] = data.toString();
@@ -611,8 +613,8 @@ function init() {
             if (!err) {
                 indexTemplate = data.toString();
                 indexTemplate = Mustache.render(indexTemplate, templates);
-            } else { 
-                console.log("ERROR reading index.mustache"); 
+            } else {
+                console.log("ERROR reading index.mustache");
             }
         });
 
