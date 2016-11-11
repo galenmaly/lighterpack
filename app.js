@@ -649,11 +649,16 @@ function init() {
 
 init();
 
-// Default port is 3000
-app.listen(config.get('port'));
-
 var d = new Date();
 var time = d.toString().substr(0,24);
 console.log("-------");
 console.log(time);
-console.log('Listening on port ' + config.get('port'));
+
+// Default port is 3000; we can have multiple bindings
+config.get('bindings').map(
+    function(bind) {
+	app.listen(config.get('port'),bind);
+	console.log('Listening on [' + bind + ']:' +config.get('port'));
+    }
+)
+

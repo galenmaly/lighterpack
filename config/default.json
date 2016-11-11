@@ -11,6 +11,16 @@
     /* Port to run node server on */
     "port"          : 3000,
 
+    /* By default bind to all available interfaces on both ipv6 and ipv4
+       Each element of `bindings` gets passed to to `app.listen(port, element)`
+
+       Examples:
+       Both ipv4+ipv6 on all interfaces: [""] 
+       Only ipv6, on all interfaces    : ["::"]
+       Both loopback interfaces        : ["127.0.0.1","::1"]
+    */
+    "bindings"      : [""],
+
     /* Mongo connect URI */
     "databaseUrl"   : "localhost/lighterpack",
 
