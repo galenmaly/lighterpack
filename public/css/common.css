@@ -399,7 +399,10 @@ html.lp,
   color: #7AB317;
 }
 #lpImageDialog {
-  width: 640px;
+  width: auto;
+}
+#lpImageDialog img {
+  max-width: 800px;
 }
 #lpFooter {
   color: #777;
@@ -503,6 +506,7 @@ input.lpCategoryName {
 .lpItem,
 .lpItemsHeader,
 .lpItemsFooter {
+  align-items: center;
   border-top: 1px dotted #AAA;
   display: flex;
   flex-direction: row;
@@ -531,6 +535,7 @@ input.lpCategoryName {
   cursor: pointer;
   position: relative;
   top: 3px;
+  max-width: 90px;
 }
 .lpItem .lpName,
 .lpItemsHeader .lpName,

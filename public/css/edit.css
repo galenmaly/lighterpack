@@ -459,7 +459,14 @@ h2 .alternateAction {
 #getStarted h2 {
   font-size: 30px;
 }
-#csv {
+#itemImageDialog {
+  width: 600px;
+}
+#itemImageDialog .imageUploadDescription {
+  margin-bottom: 19px;
+}
+#csv,
+#image {
   width: 1px;
   height: 1px;
   overflow: hidden;

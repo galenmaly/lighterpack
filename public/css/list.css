@@ -87,6 +87,7 @@ input.lpCategoryName {
 .lpItem,
 .lpItemsHeader,
 .lpItemsFooter {
+  align-items: center;
   border-top: 1px dotted #AAA;
   display: flex;
   flex-direction: row;
@@ -115,6 +116,7 @@ input.lpCategoryName {
   cursor: pointer;
   position: relative;
   top: 3px;
+  max-width: 90px;
 }
 .lpItem .lpName,
 .lpItemsHeader .lpName,

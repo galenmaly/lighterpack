@@ -583,7 +583,8 @@ editLists = function() {
             $(".lpOpen").removeClass("lpOpen");
         });
 
-        $(document).on("click", ".lpDialog .close", function() {
+        $(document).on("click", ".lpDialog .close", function(evt) {
+            evt.preventDefault();
             $("#lpModalOverlay, .lpDialog").fadeOut();
         });
 
@@ -606,18 +607,19 @@ editLists = function() {
             var $item = $("#"+item.id);
             item.imageUrl = $("#itemImageUrl").val();
             $("#itemImageDialog, #lpModalOverlay").fadeOut();
-            if (item.imageUrl) {
-                $(".lpImageUrl", $item).addClass("lpActive");
-            } else {
-                $(".lpImageUrl", $item).removeClass("lpActive");
-            }
+            $(".lpImageCell", $item).html("<img class='lpItemImage' src='" + encodeURI(item.imageUrl) + "' />");
+
             saveLocally();
+        });
+
+        $("#itemImageUpload").on("click", function() {
+            $("#image").click();
         });
 
         $("#image").on("change", function() {
             var self = this;
             if (!FormData) {
-                alert("Your browser is not supported for file uploads. Please get a newer browser.");
+                alert("Your browser is not supported for file uploads. Please update to a more modern browser.");
                 return;
             }
             var file = this.files[0];
@@ -628,8 +630,8 @@ editLists = function() {
             if(file.name.length < 1) {
                 return;
             }
-            else if(file.size > 1000000) {
-                alert("File is too big");
+            else if(file.size > 2500000) {
+                alert("Please upload a file less than 2.5mb");
                 return;
             }
             else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
@@ -678,14 +680,22 @@ editLists = function() {
         });
 
         $categories.on("click", ".lpItemImage", function() {
-            var item = library.getItemById($(this).parents(".lpItem").attr("id"));
+            var item = library.getItemById($(this).parents(".lpItem").attr("id")),
+                imageUrl;
 
-            var $modalImage = $("<img src='https://i.imgur.com/"+item.image+"l.png' />");
+            if (item.image) {
+                imageUrl = "https://i.imgur.com/"+item.image+"l.png";
+            } else if (item.imageUrl) {
+                imageUrl = item.imageUrl;
+            } else {
+                return;
+            }
+
+            var $modalImage = $("<img src='" + imageUrl + "' />");
             $("#lpImageDialog").empty().append($modalImage);
             $modalImage.load(function() {
                 $("#lpImageDialog").show();
                 $modalOverlay.show();
-                centerDialog();
             });
 
         });
@@ -1451,11 +1461,6 @@ editLists = function() {
         } else {
             $libraryContainer.removeClass("lpSearching");
         }
-    }
-
-    function centerDialog() {
-        var $dialog = $(".lpDialog:visible");
-        $dialog.css("margin-top", ""+(-1*$dialog.outerHeight()/2)+"px");
     }
 
     function getExternalId(list) {

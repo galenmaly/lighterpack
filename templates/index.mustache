@@ -247,18 +247,26 @@
         <div class="lpDialog" id="lpImageDialog">
         </div>
         <div class="lpDialog" id="itemImageDialog">
-            <h2>Add an image from the web</h2>
-            <form id="itemImageUrlForm">
-                <input type="text" id="itemImageUrl" placeholder="Image URL"/>
-                <input type="submit" class="lpButton" value="Save" />
-                <a href="#" class="lpHref close">Cancel</a>
-            </form>
-            <br />
-            <h2>Upload an image</h2>
-            <form id="imageUpload">
-                <p id="uploadingText" style="display:none;">Uploading image...</p>
-                <input type="file" name="image" id="image" />
-            </form>
+            <div class="columns">
+                <div class="lpHalf">
+                    <h2>Add image by URL</h2>
+                    <form id="itemImageUrlForm">
+                        <input type="text" id="itemImageUrl" placeholder="Image URL"/>
+                        <input type="submit" class="lpButton" value="Save" />
+                        <a href="#" class="lpHref close">Cancel</a>
+                    </form>
+                </div>
+                <div class="lpHalf">
+                    <h2>Upload image from disk</h2>
+                    <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
+                    <button class="lpButton" id="itemImageUpload">Upload Image</button>
+                    <a href="#" class="lpHref close">Cancel</a>
+                    <p id="uploadingText" style="display:none;">Uploading image...</p>
+                    <form id="imageUpload">
+                        <input type="file" name="image" id="image" />
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="lpDialog" id="itemLinkDialog">
             <h2>Add a link for this item</h2>
