@@ -3,3 +3,5 @@ extIds.txt
 node_modules
 .DS_Store
 /config/local.json
+.vagrant/
+*.log

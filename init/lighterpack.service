@@ -1,0 +1,9 @@
+[Unit]
+Description=LighterPack
+
+[Service]
+Environment=NODE_ENV=development
+WorkingDirectory=/vagrant
+ExecStart=/vagrant/node_modules/nodemon/bin/nodemon.js -L -e js,mustache,json -i /vagrant/public /vagrant/app.js
+Type=simple
+Restart=always
