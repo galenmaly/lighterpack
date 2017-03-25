@@ -301,6 +301,23 @@ pies = function(args) {
         if (clickCallback) clickCallback(hovered);
     }
 
+    function open() {
+        if (!hovered) {
+            return;
+        }
+        recursivelySetAttribute(hovered.parent, "visiblePoints", false);
+        hovered.parent.visiblePoints = true;
+        hovered.visiblePoints = true;
+        animateAdd();
+    }
+
+    function close() {
+        recursivelySetAttribute(data, "visiblePoints", false);
+        data.visiblePoints = true;
+        context.clearRect ( 0 , 0 , bounds.x , bounds.y );
+        animateAdd()
+    }
+
     function findHovered(data, angle, radius) {
         for (var key in data.points) {
             var i = data.points[key];
@@ -403,7 +420,7 @@ pies = function(args) {
     }
 
     init();
-    return {update: update};
+    return {update: update, open: open, close: close};
 }
 
 function HSVtoRGB(hsv) {

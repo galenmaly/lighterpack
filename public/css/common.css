@@ -2,7 +2,7 @@
 html.lp,
 .lp body {
   background: #F7F7F7;
-  color: #333333;
+  color: #282828;
   font-family: 'Open Sans', sans-serif;
   font-size: 13px;
   line-height: 1.65em;
@@ -21,7 +21,7 @@ html.lp,
 .lp textarea {
   font-family: 'Open Sans', sans-serif;
   font-size: 13px;
-  color: #333333;
+  color: #282828;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -209,7 +209,7 @@ html.lp,
   z-index: 100;
 }
 .lpDialog .lpHalf {
-  padding: 0 40px;
+  padding: 0 20px;
 }
 .lpDialog .lpHalf:first-child {
   padding-left: 0;
@@ -243,8 +243,8 @@ html.lp,
   width: 100%;
   z-index: 90;
 }
-#lpModalOverlay.blackout {
-  background: url("/lp_bg1.jpg") 50% 50%;
+.lpHasBlackout #lpModalOverlay {
+  background: url("/2013-06-19_11-50-35.jpg") 50% 50%;
   background-size: cover;
 }
 .lpFlyout {
@@ -261,7 +261,7 @@ html.lp,
   -moz-box-sizing: border-box;
   background: #FFF;
   box-sizing: border-box;
-  color: #333333;
+  color: #282828;
   display: none;
   left: -1px;
   margin-top: -1px;
@@ -310,14 +310,10 @@ html.lp,
 }
 .lp .lpButton {
   /* TODO: find out why this specificity is needed */
-  box-shadow: inset 0 1px 0 0 #ffbb47;
-  -moz-box-shadow: inset 0 1px 0 0 #ffbb47;
-  -webkit-box-shadow: inset 0 1px 0 0 #ffbb47;
-  background-color: #ff8d00;
-  background-image: linear-gradient(bottom, #ff8600 0, #ff9400 100%);
-  background-color: #ff8600;
-  border: 1px solid #bc532b;
+  background-image: linear-gradient(to bottom, #FCAF40 0%, #FF9D0F 100%);
+  border: 1px solid #fca222;
   border-radius: 3px;
+  box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, 0.5);
   color: #fff;
   cursor: pointer;
   display: inline-block;
@@ -325,6 +321,7 @@ html.lp,
   font-weight: 600;
   line-height: 23px;
   padding: 6px 14px;
+  text-align: center;
   text-decoration: none;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
   width: auto;
@@ -337,14 +334,17 @@ html.lp,
   line-height: 16px;
 }
 .lp .lpButton:hover {
-  background-color: #ff9e00;
-  background-image: linear-gradient(bottom, #ff9100 0, #fa0 100%);
+  background-image: linear-gradient(to bottom, #fca222 0%, #ef8e00 100%);
 }
 .lp .lpButton:focus {
   outline: none;
 }
 .lp .lpButton::-moz-focus-inner {
   border: none;
+}
+.lpButtons .lpButton {
+  box-sizing: border-box;
+  width: 100%;
 }
 .lpListSummary {
   align-items: center;
@@ -410,6 +410,24 @@ html.lp,
 }
 #lpFooter #lpSiteBy {
   float: right;
+}
+#lpWelcomeFooter {
+  background: rgba(255, 255, 255, 0.7);
+  bottom: 0;
+  display: none;
+  left: 0;
+  padding: 5px;
+  position: fixed;
+  right: 0;
+  z-index: 999999999;
+}
+.lpHasBlackout #lpWelcomeFooter {
+  display: block;
+}
+#lpWelcomeFooter .lpSiteBy,
+#lpWelcomeFooter .lpContact {
+  display: inline-block;
+  padding: 0 15px;
 }
 .lpLibraryList:hover .lpRemove,
 .lpCategory .lpHeader:hover .lpRemove,

@@ -231,7 +231,7 @@
     z-index: @dialog;
 
     .lpHalf {
-        padding: 0 40px;
+        padding: 0 20px;
         &:first-child {
             padding-left: 0;
         }
@@ -273,8 +273,8 @@
     width: 100%;
     z-index: @belowDialog;
 
-    &.blackout {
-        background: url("/lp_bg1.jpg") 50% 50%;
+    .lpHasBlackout & {
+        background: url("/2013-06-19_11-50-35.jpg") 50% 50%;
         background-size: cover;
     }
 }
@@ -348,13 +348,10 @@
 }
 
 .lp .lpButton { /* TODO: find out why this specificity is needed */
-    box-shadow:inset 0 1px 0 0 #ffbb47;
-    -moz-box-shadow:inset 0 1px 0 0 #ffbb47;
-    -webkit-box-shadow:inset 0 1px 0 0 #ffbb47;
-    background-color:#ff8d00;
-    background-image: linear-gradient(bottom,#ff8600 0,#ff9400 100%);
-    background-color:#ff8600;border:1px solid #bc532b;
+    background-image: linear-gradient(to bottom, @orange2 0%, @orange1 100%);
+    border: 1px solid darken(@orange2, 6%);
     border-radius: 3px;
+    box-shadow: inset 0 0 2px 0 rgba(255,255,255,0.5);
     color:#fff;
     cursor: pointer;
     display: inline-block;
@@ -362,6 +359,7 @@
     font-weight: 600;
     line-height: 23px;
     padding: 6px 14px;
+    text-align: center;
     text-decoration: none;
     text-shadow:1px 1px 0 rgba(0,0,0,0.25);
     width: auto;
@@ -373,8 +371,7 @@
     }
 
     &:hover {
-        background-color:#ff9e00;
-        background-image:linear-gradient(bottom,#ff9100 0,#fa0 100%); 
+        background-image: linear-gradient(to bottom, darken(@orange2, 6%) 0%, darken(@orange1, 6%) 100%);
     }
 
      /* Remove IE8 dotted outline when button is clicked */
@@ -386,6 +383,11 @@
     &::-moz-focus-inner {
         border: none;
     }
+}
+
+.lpButtons .lpButton {
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .lpListSummary {
@@ -472,6 +474,26 @@
 
     #lpSiteBy {
         float: right;
+    }
+}
+
+#lpWelcomeFooter {
+    background: rgba(255,255,255,0.7);
+    bottom: 0;
+    display: none;
+    left: 0;
+    padding: 5px;
+    position: fixed;
+    right: 0;
+    z-index: 999999999;
+
+    .lpHasBlackout & {
+        display: block;
+    }
+
+    .lpSiteBy, .lpContact {
+        display: inline-block;
+        padding: 0 15px;
     }
 }
 

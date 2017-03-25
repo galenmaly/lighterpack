@@ -1,12 +1,18 @@
 @background1: #F7F7F7;
-@content: #333333;
+@content: #282828;
+@content2: #666666;
+
 @border1: #CCCCCC;
 
 @blue1: #1B77D3;
 @blue2: #3DB7FF;
+@darkBlue: #064989;
 
 @green1: #7AB317;
 @green2: #A8D46F;
+
+@orange1: #FF9D0F;
+@orange2: #FCAF40;
 
 @red1: #CE1836;
 
@@ -17,8 +23,6 @@
 
 
 /* z-index stack */
-
-
 @belowSidebar: 10;
 @sidebar: 20;
 @aboveSidebar: 30;
@@ -35,7 +39,7 @@
 }
 
 .fullBleedLeft() {
-	&:before {
+    &:before {
         background: inherit;
         border-bottom: inherit;
         bottom: -1px;
@@ -50,7 +54,7 @@
 }
 
 .fullBleedRight() {
-	&:after {
+    &:after {
         background: inherit;
         border-bottom: inherit;
         bottom: -1px;

@@ -482,38 +482,55 @@
     font-weight: normal;
     margin-left: 10px;
 
-    h2 &{
+    h2 & {
         float: right;
         margin-top: 0;
     }
 }
 
 #welcome {
-    width: 560px;
+    width: 600px;
 
-    .lpOr {
-        position: absolute;
-        left: 47%;
-        top: 45%;
+    h2 {
+        font-weight: normal;
+        strong {
+            font-size: 24px;
+        }
     }
 
     .lpHalf {
         min-height: 260px;
-        padding-bottom: 30px;
         position: relative;
+    }
 
-        .lpButtons {
-            position: absolute;
-            bottom: 0;
-            margin: 0;
-        }
+    input[type="text"], input[type="email"], input[type="password"] {
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #999;
+        width: 100%;
+    }
+
+    .lpHref {
+        display: block;
+        font-size: 15px;
+        font-weight: bold;
+        margin: 15px 0 0;
+        text-shadow: 0 0 4px rgba(255,255,255,0.8);
+    }
+}
+
+#lpValueProp {
+    margin: 0;
+    padding: 0;
+
+    li {
+        list-style-type: none;
+        margin: 0 0 15px;
     }
 }
 
 #forgotPassword {
     width: 560px;
 }
-
 
 #getStarted {
     background: @background1;
@@ -599,6 +616,24 @@
 
 #help {
     width: 800px;
+}
+
+.signedOut {
+    .lpSignedIn & {
+        display: none;
+    }
+
+    .lpHasWelcomeMessage & {
+        display: none;
+
+        .lpHasSidebar& {
+            display: block;
+        }
+    }
+}
+
+.lpSignedOut .signedIn {
+    display: none;
 }
 
 

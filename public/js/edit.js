@@ -80,13 +80,13 @@ editLists = function() {
             initWithLibrary();
             saveType = "local";
         } else {
+            addBlackout();
             signedOut();
             $modalOverlay.show();
             $("#welcome").show();
             addBlackout();
             initWithLibrary();
         }
-
     }
 
     function signin() {
@@ -94,9 +94,11 @@ editLists = function() {
             url: "/signin",
             method: "POST",
             error: function(data) {
+                addBlackout();
                 showSigninModal({error: data.responseText});
             },
             success: function(data, textStatus, jqXHR) {
+                removeBlackout();
                 signedIn(data.username);
                 library.load(JSON.parse(data.library));
                 initWithLibrary();
@@ -585,12 +587,12 @@ editLists = function() {
 
         $(document).on("click", ".lpDialog .close", function(evt) {
             evt.preventDefault();
-            $("#lpModalOverlay, .lpDialog").fadeOut();
+            $("#lpModalOverlay, .lpDialog").fadeOut(removeBlackout);
         });
 
         $modalOverlay.on("click", function() {
             if (!$(".lpDialog:visible").hasClass("sticky")) {
-                $("#lpModalOverlay, .lpDialog").fadeOut();
+                $("#lpModalOverlay, .lpDialog").fadeOut(removeBlackout);
             }
         });
 
@@ -1410,14 +1412,41 @@ editLists = function() {
             saveType = "local";
             $("#welcome, #lpModalOverlay").fadeOut("slow", removeBlackout);
         });
+        var data = {
+                Clothes: {
+                    cake: 30,
+                    cupcake: 60,
+                    pie: 15,
+                    cookies: 45,
+                    brownies: 72
+                },
+                vegetables: {
+                    carrots: 200,
+                    letuce: 42,
+                    celery: 67
+                },
+                fruit: {
+                    "champagne grapes": 300,
+                    strawberries: 27,
+                    watermelon: 90
+                }
+            }
+
+        var chart = pies({data: data, container: $(".valueChart"), hoverCallback: function() {
+
+        }});
+
+        setTimeout(function() { chart.open();}, 2000);
+        setTimeout(function() { chart.close();}, 3000);
+        
     }
 
     function addBlackout() {
-        $("#lpModalOverlay").addClass("blackout");
+        $("body").addClass("lpHasBlackout");
     }
 
     function removeBlackout() {
-        $("#lpModalOverlay").removeClass("blackout");
+        $("body").removeClass("lpHasBlackout");
     }
 
     function readCookie(name) {
