@@ -27,6 +27,26 @@ Running with Vagrant
 
 You can then ssh to the machine on port 2222 or open a web browser to http://localhost:8080.
 
+# Running with Docker
+
+1. Install docker
+2. sudo docker run --name lighterpack-run --privileged=true -p 8080:3000 madrussian/lighterpack
+
+## Web
+
+Go to http://localhost:8080
+
+## Shell Access
+
+sudo docker exec -it lighterpack-run /bin/bash
+
+## Stop
+
+1. sudo docker stop lighterpack-run
+2. sudo docker rm lighterpack-run
+
+NOTE: The **docker rm** is done so that a future run can use the same name.
+
 Future non-feature initiatives
 -----------
 - Migrate to postgres document store from mongo
