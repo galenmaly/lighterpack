@@ -1,8 +1,5 @@
 <style lang="scss">
-#dashboard .hello-world {
-    font-size: 15px;
-    line-height: 1.8;
-}
+
 </style>
 
 <template>
@@ -21,7 +18,7 @@
             <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer"></item>
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
-                    <a href="#" class="lpAdd lpAddItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
+                    <a class="lpAdd lpAddItem" v-on:click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
                 </span>
                 <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber"><div class="lpPriceSubtotal"><span class="lpCurrencySymbol">{{library.currencySymbol}}</span><span class="lpDisplayPriceSubtotal">{{category.priceSubtotal}}</span></div></span>
                 <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal">{{category.displaySubtotal}}</span> <span class="lpSubtotalUnit">{{category.subtotalUnit}}</span></div></span>
@@ -49,6 +46,11 @@ module.exports = {
             return this.category.itemIds.map((categoryItem) => {
                 return {categoryItem: categoryItem, item: this.library.getItemById(categoryItem.itemId)};
             });
+        }
+    },
+    methods: {
+        newItem() {
+            this.$store.commit("newItem", this.category);
         }
     }
 }

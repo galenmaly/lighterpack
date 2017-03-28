@@ -36,6 +36,9 @@ const store = new Vuex.Store({
         toggleOptionalField(state, optionalField) {
             state.library.optionalFields[optionalField] = !state.library.optionalFields[optionalField];
         },
+        newItem(state, category) {
+            state.library.newItem({category});
+        },
         updateItem(state, item) {
             //state.library.getItemById(item.id);
         }
