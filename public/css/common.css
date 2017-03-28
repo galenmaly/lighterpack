@@ -55,6 +55,7 @@ html.lp,
 .lpAdd,
 .lpCopy {
   color: #7AB317;
+  cursor: pointer;
   display: inline-block;
   padding: 5px 10px;
   text-decoration: none;

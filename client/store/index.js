@@ -39,6 +39,9 @@ const store = new Vuex.Store({
         newItem(state, category) {
             state.library.newItem({category});
         },
+        newCategory(state, list) {
+            state.library.newCategory({list});
+        },
         updateItem(state, item) {
             //state.library.getItemById(item.id);
         }

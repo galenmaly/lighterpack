@@ -43,7 +43,7 @@
                 <category v-for="category in categories" :category="category"></category>
             </ul>
             <hr />
-            <a href="#" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
+            <a v-on:click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
             <form id="csvUpload">
                 <input type="file" name="csv" id="csv" />
             </form>
@@ -159,6 +159,11 @@ module.exports = {
                 return true;
             }
             return false;
+        }
+    },
+    methods: {
+        newCategory() {
+            this.$store.commit("newCategory", this.list);
         }
     }
 }
