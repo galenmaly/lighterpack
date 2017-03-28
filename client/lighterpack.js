@@ -41,5 +41,4 @@ store.dispatch('init').then(() => {
             this.path = router.currentRoute.path;
         }
     }).$mount("#lp");
-
 });

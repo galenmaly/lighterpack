@@ -33,7 +33,14 @@ webpackCompiler = webpack(webpackConfig);
 var fs = require("fs");
 eval(fs.readFileSync(rootPath+'public/js/sha3.js')+'');
 eval(fs.readFileSync(rootPath+'public/js/pies.js')+'');
-eval(fs.readFileSync(rootPath+'public/js/dataTypes.js')+'');
+
+
+const dataTypes = require("./client/dataTypes.js");
+const Item = dataTypes.Item;
+const Category = dataTypes.Category;
+const List = dataTypes.List;
+const Library = dataTypes.Library;
+
 
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 

@@ -15,7 +15,7 @@
                 <span class="lpQtyCell">qty</span>
                 <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory speedbump" title="Remove this category" data-speedbump="removeCategory"><i class="lpSprite lpSpriteRemove"></i></a></span>
             </li>
-            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer"></item>
+            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category"></item>
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
                     <a class="lpAdd lpAddItem" v-on:click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
@@ -43,7 +43,7 @@ module.exports = {
             return this.$store.state.library;
         },
         itemContainers() {
-            return this.category.itemIds.map((categoryItem) => {
+            return this.category.categoryItems.map((categoryItem) => {
                 return {categoryItem: categoryItem, item: this.library.getItemById(categoryItem.itemId)};
             });
         }

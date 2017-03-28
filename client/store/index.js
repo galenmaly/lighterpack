@@ -48,7 +48,10 @@ const store = new Vuex.Store({
             state.library.defaultListId = list.id;
         },
         updateItem(state, item) {
-            //state.library.getItemById(item.id);
+            state.library.updateItem(item);
+        },
+        updateCategoryItem(state, args) {
+            args.category.updateCategoryItem(args.categoryItem);
         }
     },
     actions: {

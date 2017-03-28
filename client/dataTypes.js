@@ -51,7 +51,7 @@ const Category = function(args) {
     this.library = args.library;
     this.id = args.id;
     this.name = "";
-    this.itemIds = []; //this is actual items, not itemIds. Rename?
+    this.categoryItems = [];
     return this;
 }
 
@@ -64,13 +64,18 @@ Category.prototype.addItem = function (args) {
         itemId: null
     }
     Vue.util.extend(temp, args);
-    this.itemIds.push(temp);
+    this.categoryItems.push(temp);
 }
+
+Category.prototype.updateCategoryItem = function (categoryItem) {
+    var oldCategoryItem = this.getCategoryItemById(categoryItem.id);
+    this.categoryItems[this.categoryItems.indexOf(oldCategoryItem)] = categoryItem;
+}   
 
 Category.prototype.removeItem = function (itemId) {
     var categoryItem = this.getCategoryItemById(itemId);
-    var index = this.itemIds.indexOf(categoryItem);
-    this.itemIds.splice(index,1);
+    var index = this.categoryItems.indexOf(categoryItem);
+    this.categoryItems.splice(index,1);
 }
 
 Category.prototype.calculateSubtotal = function() {
@@ -79,8 +84,8 @@ Category.prototype.calculateSubtotal = function() {
     this.consumableSubtotal = 0;
     this.qtySubtotal = 0;
     this.priceSubtotal = 0;
-    for (var i in this.itemIds) {
-        var categoryItem = this.itemIds[i];
+    for (var i in this.categoryItems) {
+        var categoryItem = this.categoryItems[i];
         var item = this.library.getItemById(categoryItem.itemId);
         this.subtotal += item.weight*categoryItem.qty;
         if (categoryItem.worn) {
@@ -96,15 +101,15 @@ Category.prototype.calculateSubtotal = function() {
 }
 
 Category.prototype.getCategoryItemById = function(id) {
-    for (var i in this.itemIds) {
-        var categoryItem = this.itemIds[i];
+    for (var i in this.categoryItems) {
+        var categoryItem = this.categoryItems[i];
         if (categoryItem.itemId == id) return categoryItem;
     }
     return null;
 }
 
 Category.prototype.getExtendedItemByIndex = function(index) {
-    var categoryItem = this.itemIds[index];
+    var categoryItem = this.categoryItems[index];
     var item = this.library.getItemById(categoryItem.itemId);
     Vue.util.extend(item, categoryItem);
     return item;
@@ -120,9 +125,18 @@ Category.prototype.save = function() {
 Category.prototype.load = function(input) {
     Vue.util.extend(this, input);
 
-    for (var i = 0; i < this.itemIds.length; i++) {
-        if (typeof this.itemIds[i].price !== "undefined") {
-            delete this.itemIds[i].price;
+    if (typeof this.itemIds !== "undefined") {
+        if (this.categoryItems.length === 0) {
+            this.categoryItems = this.itemIds;
+            delete this.itemIds;
+        } else {
+            delete this.itemIds;
+        }
+    }
+
+    for (var i = 0; i < this.categoryItems.length; i++) {
+        if (typeof this.categoryItems[i].price !== "undefined") {
+            delete this.categoryItems[i].price;
         }
     }
 }
@@ -214,7 +228,7 @@ List.prototype.renderChart = function (type, linkParent) {
             category.displayColor = colorUtils.rgbToString(tempColor);
             var tempCategory = {};
 
-            for (var j in category.itemIds) {
+            for (var j in category.categoryItems) {
                 var item = category.getExtendedItemByIndex(j);
                 var value = item.weight * item.qty;
                 if (!value) value = 0;
@@ -317,6 +331,13 @@ Library.prototype.newItem = function(args) {
     return temp;
 }
 
+Library.prototype.updateItem = function(item) {
+    var oldItem = this.getItemById(item.id);
+    this.items[this.items.indexOf(oldItem)] = item;
+    this.idMap[item.id] = item;
+    return item;
+}
+
 Library.prototype.removeItem = function(id) {
     var item = this.getItemById(id);
     for (var i in this.lists) {
@@ -405,8 +426,8 @@ Library.prototype.copyList = function(id) {
 
         copiedCategory.name = oldCategory.name;
 
-        for (var j in oldCategory.itemIds) {
-            copiedCategory.addItem(oldCategory.itemIds[j]);
+        for (var j in oldCategory.categoryItems) {
+            copiedCategory.addItem(oldCategory.categoryItems[j]);
         }
     }
 
@@ -415,7 +436,7 @@ Library.prototype.copyList = function(id) {
 
 Library.prototype.render = function(args) {
     Vue.util.extend(args, {itemUnit: this.itemUnit, totalUnit: this.totalUnit})
-    return this.itemIds[this.defaultListId].render(args);
+    return this.categoryItems[this.defaultListId].render(args);
 }
 
 Library.prototype.renderLists = function(template) {
@@ -462,8 +483,8 @@ Library.prototype.getItemsInCurrentList = function() {
     for (var i in list.categoryIds) {
         var category = this.getCategoryById(list.categoryIds[i]);
         if (category) {
-            for (var j in category.itemIds) {
-                var categoryItem = category.itemIds[j];
+            for (var j in category.categoryItems) {
+                var categoryItem = category.categoryItems[j];
                 out.push(categoryItem.itemId);
             }
         }
@@ -477,8 +498,8 @@ Library.prototype.findCategoryWithItemById = function(itemId, listId) {
         for (i in list.categoryIds) {
             var category = this.getCategoryById(list.categoryIds[i]);
             if (category) {
-                for (var j in category.itemIds) {
-                    var categoryItem = category.itemIds[j];
+                for (var j in category.categoryItems) {
+                    var categoryItem = category.categoryItems[j];
                     if (categoryItem.itemId == itemId) return category;
                 }
             }
@@ -487,8 +508,8 @@ Library.prototype.findCategoryWithItemById = function(itemId, listId) {
         for (var i in this.categories) {
             var category = this.categories[i];
             if (category) {
-                for (var j in category.itemIds) {
-                    var categoryItem = category.itemIds[j];
+                for (var j in category.categoryItems) {
+                    var categoryItem = category.categoryItems[j];
                     if (categoryItem.itemId == itemId) return category;
                 }
             }
