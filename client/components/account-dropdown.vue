@@ -1,0 +1,37 @@
+<style lang="scss">
+
+</style>
+
+<template>
+    <span id="account">
+        <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
+            <span class="lpFlyout">
+                <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
+                <div class="lpContent">
+                    <a href="#" class="lpHref accountSettings">Account Settings</a><br />
+                    <a href="#" class="lpHref help">Help</a><br />
+                    <a class="lpHref" id="showTODO" href="#">Bugs / TODO</a><br />
+                    <a href="#" class="lpHref signout">Sign Out</a>
+                </div>
+            </span>
+        </span>
+        <span v-if="!isSignedIn" class="headerItem">
+            <a href="#" class="lpButton lpSmall showRegister">Register</a> or <a href="#" class="lpButton lpSmall showSignin">Sign In</a>
+        </span>
+    </span>
+</template>
+
+<script>
+
+module.exports = {
+    name: "accountDropdown",
+    computed: {
+        library: function() {
+            return this.$store.state.library;
+        },
+        isSignedIn: function() {
+            return this.$store.state.loggedIn;
+        }
+    }
+}
+</script>

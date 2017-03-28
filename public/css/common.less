@@ -220,7 +220,6 @@
 .lpDialog {
     background: @background1;
     box-shadow: 0 0 30px rgba(0,0,0,0.4);
-    display: none;
     left: 50%;
     padding: 25px;
     position: fixed;
@@ -263,9 +262,8 @@
 }
  
 
-#lpModalOverlay {
+.lpModalOverlay {
     background: rgba(0,0,0,0.5);
-    display: none;
     height: 100%;
     left: 0;
     position: fixed;
@@ -273,7 +271,7 @@
     width: 100%;
     z-index: @belowDialog;
 
-    .lpHasBlackout & {
+    &.lpBlackout {
         background: url("/2013-06-19_11-50-35.jpg") 50% 50%;
         background-size: cover;
     }
@@ -480,7 +478,6 @@
 #lpWelcomeFooter {
     background: rgba(255,255,255,0.7);
     bottom: 0;
-    display: none;
     left: 0;
     padding: 5px;
     position: fixed;

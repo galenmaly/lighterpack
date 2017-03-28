@@ -42,30 +42,6 @@
     }
 }
 
-.lpConsumableWeight {
-    display: none;
-
-    .lpShowConsumable & {
-        display: block;
-
-        &.lpRow {
-            display: table-row;
-        }
-    }
-}
-
-.lpWornWeight {
-    display: none;
-
-    .lpShowWorn & {
-        display: block;
-
-        &.lpRow {
-            display: table-row;
-        }
-    }
-}
-
 #lpListDescription {
     h2 {
         border-bottom: 1px solid #aaa;
@@ -116,12 +92,7 @@ input.lpCategoryName { /* specificity */
     }
 
     .lpImageCell {
-        display: none;
         flex: 0 0 90px;
-
-       .lpShowImages & {
-            display: block;
-        }
 
         .lpItemImage {
             cursor: pointer;
@@ -157,13 +128,9 @@ input.lpCategoryName { /* specificity */
     }
 
     .lpPriceCell {
-        display: none;
         flex: 0 0 66px;
         margin-right: 4px;
 
-        .lpShowPrices & {
-            display: inline-block;
-        }
 
         .lpPrice {
             width: 66px;
@@ -189,22 +156,6 @@ input.lpCategoryName { /* specificity */
 
     .lpAddItemCell { /* Footer */
         flex: 1 1 auto;
-    }
-
-    .lpWorn {
-        display: none;
-
-        .lpShowWorn & {
-            display: inline-block;
-        }
-    }
-
-    .lpConsumable {
-        display: none;
-
-        .lpShowConsumable & {
-            display: inline-block;
-        }
     }
 }
 

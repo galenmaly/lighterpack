@@ -1,8 +1,7 @@
-if (typeof $ != "undefined") {
-    extend = $.extend;
-}
+const colorUtils = require("./utils/color.js");
+const weightUtils = require("./utils/weight.js");
 
-Item = function(args) {
+const Item = function(args) {
     this.id = args.id;
     this.name = "";
     this.description = "";
@@ -27,15 +26,15 @@ Item.prototype.render = function(args) {
     var showImages = false;
     if (args.showImages) showImages = true;
 
-    var displayWeight = MgToWeight(this.weight, unit);
+    var displayWeight = weightUtils.MgToWeight(this.weight, unit);
 
     var displayPrice = this.price ? this.price.toFixed(2) : "";
 
-    var unitSelect = renderUnitSelect(unit, args.unitSelectTemplate, this.weight);
+    var unitSelect = "";
 
     var starClass = this.star ? "lpStar" + this.star : "";
     var out = {classes: classes, unit: unit, displayWeight: displayWeight, unitSelect: unitSelect, showImages: showImages, starClass: starClass, displayPrice: displayPrice, currencySymbol: args.currencySymbol};
-    extend(out, this);
+    Vue.util.extend(out, this);
 
     return Mustache.render(args.itemTemplate, out);
 }
@@ -45,10 +44,10 @@ Item.prototype.save = function() {
 }
 
 Item.prototype.load = function(input) {
-    extend(this, input);
+    Vue.util.extend(this, input);
 }
 
-Category = function(args) {
+const Category = function(args) {
     this.library = args.library;
     this.id = args.id;
     this.name = "";
@@ -64,7 +63,7 @@ Category.prototype.addItem = function (args) {
         star: 0,
         itemId: null
     }
-    extend(temp, args);
+    Vue.util.extend(temp, args);
     this.itemIds.push(temp);
 }
 
@@ -96,24 +95,6 @@ Category.prototype.calculateSubtotal = function() {
     this.displayPriceSubtotal = this.priceSubtotal.toFixed(2);
 }
 
-Category.prototype.render = function (args) {
-    var items = "";
-    for (var i in this.itemIds) {
-        var categoryItem = this.itemIds[i];
-        var item = this.library.getItemById(categoryItem.itemId);
-        extend(item, categoryItem);
-        items += item.render(args);
-    }
-
-
-    this.calculateSubtotal();
-    this.displaySubtotal = MgToWeight(this.subtotal, args.totalUnit);
-
-    var temp = extend({}, this, {items:items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol});
-
-    return Mustache.render(args.categoryTemplate, temp);
-}
-
 Category.prototype.getCategoryItemById = function(id) {
     for (var i in this.itemIds) {
         var categoryItem = this.itemIds[i];
@@ -125,19 +106,19 @@ Category.prototype.getCategoryItemById = function(id) {
 Category.prototype.getExtendedItemByIndex = function(index) {
     var categoryItem = this.itemIds[index];
     var item = this.library.getItemById(categoryItem.itemId);
-    extend(item, categoryItem);
+    Vue.util.extend(item, categoryItem);
     return item;
 }
 
 Category.prototype.save = function() {
-    var out = extend({}, this);
+    var out = Vue.util.extend({}, this);
     delete out.library;
     delete out.template;
     return out;
 }
 
 Category.prototype.load = function(input) {
-    extend(this, input);
+    Vue.util.extend(this, input);
 
     for (var i = 0; i < this.itemIds.length; i++) {
         if (typeof this.itemIds[i].price !== "undefined") {
@@ -146,8 +127,7 @@ Category.prototype.load = function(input) {
     }
 }
 
-
-List = function(args) {
+const List = function(args) {
     this.library = args.library;
     this.id = args.id;
     this.name = "";
@@ -211,7 +191,7 @@ List.prototype.renderChart = function (type, linkParent) {
     if (!total) return false;
     
     var getTooltipText = function(name, valueMg, unit) {
-      return name + ": " + MgToWeight(valueMg, unit) + " " + unit;
+      return name + ": " + weightUtils.MgToWeight(valueMg, unit) + " " + unit;
     };
     
     for (var i in this.categoryIds) {
@@ -230,8 +210,8 @@ List.prototype.renderChart = function (type, linkParent) {
               categoryTotal = category.subtotal;
             }
 
-            var tempColor = category.color || getColor(i);
-            category.displayColor = rgbToString(tempColor);
+            var tempColor = category.color || colorUtils.getColor(i);
+            category.displayColor = colorUtils.rgbToString(tempColor);
             var tempCategory = {};
 
             for (var j in category.itemIds) {
@@ -239,7 +219,7 @@ List.prototype.renderChart = function (type, linkParent) {
                 var value = item.weight * item.qty;
                 if (!value) value = 0;
                 var name = getTooltipText(item.name, value, item.authorUnit);
-                var color = getColor(j, tempColor);
+                var color = colorUtils.getColor(j, tempColor);
                 if (item.qty > 1) name += " x "+item.qty;
                 var percent = value / categoryTotal;
                 var tempItem =  { value: value, id: item.id, name: name, color: color, percent: percent };
@@ -249,7 +229,7 @@ List.prototype.renderChart = function (type, linkParent) {
             var percent = categoryTotal / total;
             var tempCategoryData = {points: points, color: category.color, id:category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent: percent, visiblePoints: false};
             if (linkParent) tempCategoryData.parent = chartData;
-            extend(tempCategory, tempCategoryData);
+            Vue.util.extend(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;
         }
     }
@@ -258,7 +238,7 @@ List.prototype.renderChart = function (type, linkParent) {
     return chartData;
 }
 
-List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit) {
+List.prototype.calculateTotals = function() {
     var total = 0,
         wornTotal = 0,
         consumableTotal = 0,
@@ -269,8 +249,6 @@ List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit)
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         category.calculateSubtotal();
-        category.displaySubtotal = MgToWeight(category.subtotal, unit);
-        category.subtotalUnit = unit;
 
         total += category.subtotal;
         wornTotal += category.wornSubtotal;
@@ -280,36 +258,32 @@ List.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate, unit)
     }
 
     packTotal = total - (wornTotal + consumableTotal);
-    out.total = MgToWeight(total, unit);
-    out.totalUnit = renderUnitSelect(unit, unitSelectTemplate, total);
-    out.subtotalUnit = unit;
-    out.wornTotal = wornTotal;
-    out.wornDisplayTotal = MgToWeight(wornTotal, unit);
-    out.consumableTotal = consumableTotal;
-    out.consumableDisplayTotal = MgToWeight(consumableTotal, unit);
-    out.packTotal = packTotal;
-    out.packDisplayTotal = MgToWeight(packTotal, unit);
-    out.qtyTotal = qtyTotal;
 
-    return Mustache.render(totalsTemplate, out);
+    this.total = total;
+    this.packTotal = packTotal;
+    this.qtyTotal = qtyTotal;
+    this.wornTotal = wornTotal;
+    this.consumableTotal = consumableTotal;
 }
 
 List.prototype.save = function() {
-    var out = extend({}, this);
+    var out = Vue.util.extend({}, this);
     delete out.library;
     delete out.chart;
     return out;
 }
 
 List.prototype.load = function(input) {
-    extend(this, input);
+    Vue.util.extend(this, input);
+    this.calculateTotals();
 }
 
-Library = function(args) {
-    this.version = "0.2";
-    this.items = {};
-    this.categories = {};
-    this.lists = {};
+const Library = function(args) {
+    this.version = "0.3";
+    this.idMap = {};
+    this.items = [];
+    this.categories = [];
+    this.lists = [];
     this.sequence = 0;
     this.defaultListId = 1;
     this.totalUnit = "oz";
@@ -337,12 +311,14 @@ Library.prototype.firstRun = function() {
 
 Library.prototype.newItem = function(args) {
     var temp = new Item({id: this.nextSequence(), library: this, unit: this.itemUnit});
-    this.items[temp.id] = temp;
+    this.items.push(temp);
+    this.idMap[temp.id] = temp;
     if (args.category) args.category.addItem({itemId: temp.id});
     return temp;
 }
 
 Library.prototype.removeItem = function(id) {
+    var item = this.getItemById(id);
     for (var i in this.lists) {
         var category = this.findCategoryWithItemById(id, i);
         if (category) {
@@ -350,13 +326,16 @@ Library.prototype.removeItem = function(id) {
         }
     }
 
-    delete this.items[id];
+    this.items.splice(this.items.indexOf[item], 1);
+    delete this.idMap[id];
+
     return true;
 }
 
 Library.prototype.newCategory = function(args) {
     var temp = new Category({id: this.nextSequence(), library: this});
-    this.categories[temp.id] = temp;
+    this.categories.push(temp);
+    this.idMap[temp.id] = temp;
     if (args.list) args.list.addCategory(temp.id);
     return temp;
 }
@@ -378,13 +357,16 @@ Library.prototype.removeCategory = function(id, force) {
         }
     }
 
-    delete this.categories[id];
+    this.categories.splice(this.categories.indexOf[category], 1);
+    delete this.idMap[id];
+
     return true;
 }
 
 Library.prototype.newList = function() {
     var temp = new List({id: this.nextSequence(), library: this});
-    this.lists[temp.id] = temp;
+    this.lists.push(temp);
+    this.idMap[temp.id] = temp;
     if (!this.defaultListId) this.defaultListId = temp.id;
     return temp;
 }
@@ -397,7 +379,8 @@ Library.prototype.removeList = function(id) {
         this.removeCategory(list.categoryIds[i], true);
     }
 
-    delete this.lists[id];
+    this.lists.splice(this.lists.indexOf[list], 1);
+    delete this.idMap[id];
 
     if (this.defaultListId == id) {
         var newId = -1;
@@ -431,8 +414,8 @@ Library.prototype.copyList = function(id) {
 }
 
 Library.prototype.render = function(args) {
-    extend(args, {itemUnit: this.itemUnit, totalUnit: this.totalUnit})
-    return this.lists[this.defaultListId].render(args);
+    Vue.util.extend(args, {itemUnit: this.itemUnit, totalUnit: this.totalUnit})
+    return this.itemIds[this.defaultListId].render(args);
 }
 
 Library.prototype.renderLists = function(template) {
@@ -451,35 +434,31 @@ Library.prototype.renderLibrary = function(template) {
         var item = this.items[i]
         var temp = {itemInCurrentList: false};
         if (itemsInCurrentList.indexOf(item.id) > -1) temp.itemInCurrentList = true;
-        extend(temp, item)
+        Vue.util.extend(temp, item)
         out += item.render({itemTemplate: template});
     }
     return out;
 }
 
 Library.prototype.renderChart = function(type) {
-    return this.lists[this.defaultListId].renderChart(type);
-}
-
-Library.prototype.renderTotals = function(totalsTemplate, unitSelectTemplate) {
-    return this.lists[this.defaultListId].renderTotals(totalsTemplate, unitSelectTemplate, this.totalUnit);
+    return this.getListById(this.defaultListId).renderChart(type);
 }
 
 Library.prototype.getCategoryById = function(id) {
-    return this.categories[id];
+    return this.idMap[id];
 }
 
 Library.prototype.getItemById = function(id) {
-    return this.items[id];
+    return this.idMap[id];
 }
 
 Library.prototype.getListById = function(id) {
-    return this.lists[id];
+    return this.idMap[id];
 }
 
 Library.prototype.getItemsInCurrentList = function() {
     var out = [];
-    var list = this.lists[this.defaultListId];
+    var list = this.itemIds[this.defaultListId];
     for (var i in list.categoryIds) {
         var category = this.getCategoryById(list.categoryIds[i]);
         if (category) {
@@ -576,26 +555,29 @@ Library.prototype.save = function() {
 Library.prototype.load = function(input) {
     this.items = [];
 
-    extend(this.optionalFields, input.optionalFields);
+    Vue.util.extend(this.optionalFields, input.optionalFields);
 
     for (var i in input.items) {
         var temp = new Item({id: input.items[i].id, library: this});
         temp.load(input.items[i]);
-        this.items[temp.id] = temp;
+        this.items.push(temp);
+        this.idMap[temp.id] = temp;
     }
 
     this.categories = [];
     for (var i in input.categories) {
         var temp = new Category({id: input.categories[i].id, library: this});
         temp.load(input.categories[i]);
-        this.categories[temp.id] = temp;
+        this.categories.push(temp);
+        this.idMap[temp.id] = temp;
     }
 
     this.lists = [];
     for (var i in input.lists) {
         var temp = new List({id: input.lists[i].id, library: this});
         temp.load(input.lists[i]);
-        this.lists[temp.id] = temp;
+        this.lists.push(temp);
+        this.idMap[temp.id] = temp;
     }
 
     if (input.showSidebar) this.showSidebar = input.showSidebar;
@@ -619,52 +601,17 @@ Library.prototype.upgrade01to02 = function(input) {
     this.version == "0.2";
 }
 
-function WeightToMg(value, unit) {
-    if (unit == "g") {
-        return value*1000;
-    } else if (unit == "kg") {
-        return value*1000000;
-    } else if (unit == "oz") {
-        return value*28349.5;
-    } else if (unit == "lb") {
-        return value*453592;
-    }
-}
-
-function MgToWeight(value, unit, display) {
-    if (typeof display == "undefined") display = false;
-    if (unit == "g") {
-        return Math.round(100*value/1000.0)/100;
-    } else if (unit == "kg") {
-        return  Math.round(100*value/1000000.0,2)/100;
-    } else if (unit == "oz") {
-        return Math.round(100*value/28349.5,2)/100;
-    } else if (unit == "lb") {
-        if (display) {
-            var out = "";
-            var poundsFloat = value/453592.0
-            var pounds = Math.floor(poundsFloat);
-            var oz = Math.round((poundsFloat%1)*16*100)/100
-            if (pounds) {
-
-                out += "lb"
-                if (pounds > 1) out += "s"
-            }
-        } else {
-            return Math.round(100*value/453592.0,2)/100;
-        }
-    }
-}
-
-function renderUnitSelect(unit, unitSelectTemplate, weight) {
-    var temp = {unit: unit, units: [{unit: "oz", selected: (unit=="oz")}, {unit: "lb", selected: (unit=="lb")}, {unit: "g", selected: (unit=="g")}, {unit: "kg", selected: (unit=="kg")}], weight: weight};
-    return Mustache.render(unitSelectTemplate, temp);
-}
-
 Object.size = function(obj) {
     var size = 0, key;
     for (key in obj) {
         if (obj.hasOwnProperty(key)) size++;
     }
     return size;
+};
+
+module.exports = {
+    Library,
+    List,
+    Category,
+    Item
 };

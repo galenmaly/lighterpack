@@ -198,7 +198,6 @@ html.lp,
 .lpDialog {
   background: #F7F7F7;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-  display: none;
   left: 50%;
   padding: 25px;
   position: fixed;
@@ -233,9 +232,8 @@ html.lp,
   max-height: 400px;
   overflow-y: scroll;
 }
-#lpModalOverlay {
+.lpModalOverlay {
   background: rgba(0, 0, 0, 0.5);
-  display: none;
   height: 100%;
   left: 0;
   position: fixed;
@@ -243,7 +241,7 @@ html.lp,
   width: 100%;
   z-index: 90;
 }
-.lpHasBlackout #lpModalOverlay {
+.lpModalOverlay.lpBlackout {
   background: url("/2013-06-19_11-50-35.jpg") 50% 50%;
   background-size: cover;
 }
@@ -414,7 +412,6 @@ html.lp,
 #lpWelcomeFooter {
   background: rgba(255, 255, 255, 0.7);
   bottom: 0;
-  display: none;
   left: 0;
   padding: 5px;
   position: fixed;
@@ -472,24 +469,6 @@ html.lp,
 .lpCategory.ui-sortable-helper {
   background: #F7F7F7;
 }
-.lpConsumableWeight {
-  display: none;
-}
-.lpShowConsumable .lpConsumableWeight {
-  display: block;
-}
-.lpShowConsumable .lpConsumableWeight.lpRow {
-  display: table-row;
-}
-.lpWornWeight {
-  display: none;
-}
-.lpShowWorn .lpWornWeight {
-  display: block;
-}
-.lpShowWorn .lpWornWeight.lpRow {
-  display: table-row;
-}
 #lpListDescription h2 {
   border-bottom: 1px solid #aaa;
 }
@@ -539,13 +518,7 @@ input.lpCategoryName {
 .lpItem .lpImageCell,
 .lpItemsHeader .lpImageCell,
 .lpItemsFooter .lpImageCell {
-  display: none;
   flex: 0 0 90px;
-}
-.lpShowImages .lpItem .lpImageCell,
-.lpShowImages .lpItemsHeader .lpImageCell,
-.lpShowImages .lpItemsFooter .lpImageCell {
-  display: block;
 }
 .lpItem .lpImageCell .lpItemImage,
 .lpItemsHeader .lpImageCell .lpItemImage,
@@ -588,14 +561,8 @@ input.lpCategoryName {
 .lpItem .lpPriceCell,
 .lpItemsHeader .lpPriceCell,
 .lpItemsFooter .lpPriceCell {
-  display: none;
   flex: 0 0 66px;
   margin-right: 4px;
-}
-.lpShowPrices .lpItem .lpPriceCell,
-.lpShowPrices .lpItemsHeader .lpPriceCell,
-.lpShowPrices .lpItemsFooter .lpPriceCell {
-  display: inline-block;
 }
 .lpItem .lpPriceCell .lpPrice,
 .lpItemsHeader .lpPriceCell .lpPrice,
@@ -629,26 +596,6 @@ input.lpCategoryName {
 .lpItemsFooter .lpAddItemCell {
   /* Footer */
   flex: 1 1 auto;
-}
-.lpItem .lpWorn,
-.lpItemsHeader .lpWorn,
-.lpItemsFooter .lpWorn {
-  display: none;
-}
-.lpShowWorn .lpItem .lpWorn,
-.lpShowWorn .lpItemsHeader .lpWorn,
-.lpShowWorn .lpItemsFooter .lpWorn {
-  display: inline-block;
-}
-.lpItem .lpConsumable,
-.lpItemsHeader .lpConsumable,
-.lpItemsFooter .lpConsumable {
-  display: none;
-}
-.lpShowConsumable .lpItem .lpConsumable,
-.lpShowConsumable .lpItemsHeader .lpConsumable,
-.lpShowConsumable .lpItemsFooter .lpConsumable {
-  display: inline-block;
 }
 .lpItemsHeader {
   align-items: flex-end;

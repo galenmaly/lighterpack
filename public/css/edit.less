@@ -119,8 +119,11 @@
 
     #listContainer {
         flex: 0 0 auto;
-        max-height: 400px;
         overflow-y: auto;
+
+        #lists {
+            max-height: 400px;
+        }
     }
 
     #libraryContainer {
@@ -398,19 +401,10 @@
     width: 200px;
 }
 
-.signedOut {
-    display: none;
-}
-
 /* Body */
 
 #listDescriptionContainer {
-    display: none;
     margin: 25px 0;
-
-    .lpShowListDescription & {
-        display: block;
-    }
 
     h3, p {
         display: inline-block;
@@ -617,25 +611,6 @@
 #help {
     width: 800px;
 }
-
-.signedOut {
-    .lpSignedIn & {
-        display: none;
-    }
-
-    .lpHasWelcomeMessage & {
-        display: none;
-
-        .lpHasSidebar& {
-            display: block;
-        }
-    }
-}
-
-.lpSignedOut .signedIn {
-    display: none;
-}
-
 
 .farbtastic {
   position: relative;
