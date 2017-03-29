@@ -132,6 +132,10 @@ module.exports = {
     watch: {
         "$store.state.library.defaultListId": function(to, from) {
             this.updateChart();
+        },
+        "list.total": function(to, from) {
+            //TODO: this doesn't cover all cases
+            this.updateChart();
         }
     }
 }

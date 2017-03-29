@@ -125,7 +125,6 @@ module.exports = {
         incrementWeight: function(evt) {
             evt.stopImmediatePropagation();
             this.weight = parseFloat(this.weight) + 1;
-            console.log(this.weight)
             this.saveWeight();
         },
         decrementWeight: function(evt) {
