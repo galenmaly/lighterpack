@@ -68,8 +68,8 @@ Category.prototype.addItem = function (args) {
 }
 
 Category.prototype.updateCategoryItem = function (categoryItem) {
-    var oldCategoryItem = this.getCategoryItemById(categoryItem.id);
-    this.categoryItems[this.categoryItems.indexOf(oldCategoryItem)] = categoryItem;
+    var oldCategoryItem = this.getCategoryItemById(categoryItem.itemId);
+    Vue.util.extend(oldCategoryItem, categoryItem);
 }   
 
 Category.prototype.removeItem = function (itemId) {
@@ -137,6 +137,9 @@ Category.prototype.load = function(input) {
     for (var i = 0; i < this.categoryItems.length; i++) {
         if (typeof this.categoryItems[i].price !== "undefined") {
             delete this.categoryItems[i].price;
+        }
+        if (!this.categoryItems[i].star) {
+            this.categoryItems[i].star = 0;
         }
     }
 }
@@ -333,9 +336,8 @@ Library.prototype.newItem = function(args) {
 
 Library.prototype.updateItem = function(item) {
     var oldItem = this.getItemById(item.id);
-    this.items[this.items.indexOf(oldItem)] = item;
-    this.idMap[item.id] = item;
-    return item;
+    Vue.util.extend(oldItem, item);
+    return oldItem;
 }
 
 Library.prototype.removeItem = function(id) {
