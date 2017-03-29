@@ -54,6 +54,10 @@ const store = new Vuex.Store({
         updateCategoryItem(state, args) {
             args.category.updateCategoryItem(args.categoryItem);
             state.library.getListById(state.library.defaultListId).calculateTotals();
+        },
+        removeItemFromCategory(state, args) {
+            args.category.removeItem(args.itemId);
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         }
     },
     actions: {

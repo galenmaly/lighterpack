@@ -35,7 +35,7 @@
             </span>
         </span>
         <span class="lpRemoveCell">
-            <a class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
+            <a v-on:click="removeItem" class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
         </span>
     </li>
 </template>
@@ -132,6 +132,9 @@ module.exports = {
             evt.stopImmediatePropagation();
             this.weight = parseFloat(this.weight) - 1;
             this.saveWeight();
+        },
+        removeItem: function() {
+            this.$store.commit("removeItemFromCategory", {itemId: this.item.id, category: this.category});
         }
     },
     watch: {
