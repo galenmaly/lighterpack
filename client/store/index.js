@@ -1,6 +1,7 @@
 const Vue = require("vue");
 const Vuex = require('vuex').default;
 
+const weightUtils = require("../utils/weight.js");
 const dataTypes = require("../dataTypes.js");
 const Item = dataTypes.Item;
 const Category = dataTypes.Category;
@@ -64,6 +65,39 @@ const store = new Vuex.Store({
         copyList(state, listId) {
             var copiedList = state.library.copyList(listId);
             state.library.defaultListId = copiedList.id;
+        },
+        importCSV(state, importData) {
+            var list = state.library.newList({}),
+                category,
+                newCategories = {},
+                item,
+                categoryItem,
+                row,
+                i;
+
+            list.name = importData.name;
+
+            for (i in importData.data) {
+                row = importData.data[i];
+                if (newCategories[row.category]) {
+                    category = newCategories[row.category];
+                } else {
+                    category = state.library.newCategory({list: list});
+                    newCategories[row.category] = category;
+                }
+
+                item = state.library.newItem({category: category});
+                categoryItem = category.getCategoryItemById(item.id);
+
+                item.name = row.name;
+                item.description = row.description;
+                categoryItem.qty = parseFloat(row.qty);
+                item.weight = weightUtils.WeightToMg(parseFloat(row.weight), row.unit);
+                item.authorUnit = row.unit;
+                category.name = row.category;
+            }
+            list.calculateTotals();
+            state.library.defaultListId = list.id;
         }
     },
     actions: {

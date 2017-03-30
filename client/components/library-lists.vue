@@ -7,7 +7,7 @@
         <span id="addListFlyout" class="lpFlyout">
             <span class="lpTarget"><a id="addList" class="lpAdd" v-on:click="newList"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
             <div class="lpContent">
-                <div><a id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
+                <div><a v-on:click="importCSV" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
                 <div><a v-on:click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
             </div>
         </span>
@@ -48,6 +48,9 @@ export default {
         },
         copyList: function() {
             bus.$emit("copyList");
+        },
+        importCSV: function() {
+            bus.$emit("importCSV");
         }
     }
 }

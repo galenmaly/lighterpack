@@ -44,9 +44,6 @@
             </ul>
             <hr />
             <a v-on:click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
-            <form id="csvUpload">
-                <input type="file" name="csv" id="csv" />
-            </form>
             <div id="lpPickerContainer"><div id="lpPicker"></div></div>
             <div id="lpFooter">
                 <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
@@ -59,6 +56,7 @@
             </div>
         </div>
         <copyList></copyList>
+        <importCSV></importCSV>
         <!--<account></account>
         <image-dialog></image-dialog>-->
        
@@ -92,12 +90,6 @@
                 <a href="#" class="lpHref close">Cancel</a>
             </form>
         </div>
-        <div class="lpDialog" id="importValidate">
-            <h2>Confirm your import</h2>
-            <div id="importData"></div>
-            <a href="#" class="lpButton" id="importConfirm">Import List</a>
-            <a href="#" class="lpButton close">Cancel Import</a>
-        </div>
         
         <div id="lpModalOverlay"></div>-->
     </div>
@@ -116,6 +108,7 @@ const imageDialog = require("./imageDialog.vue");
 const listSummary = require("../components/list-summary.vue");
 const category = require("../components/category.vue");
 
+const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
 
 module.exports = {
@@ -133,7 +126,8 @@ module.exports = {
         imageDialog: imageDialog,
         listSummary: listSummary,
         category: category,
-        copyList: copyList
+        copyList: copyList,
+        importCSV: importCSV
     },
     data: function() {
         return {
