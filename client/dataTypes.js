@@ -419,7 +419,7 @@ Library.prototype.copyList = function(id) {
     var oldList = this.getListById(id);
     if (!oldList) return;
 
-    copiedList = this.newList();
+    var copiedList = this.newList();
 
     copiedList.name = "Copy of " + oldList.name;
     for (var i in oldList.categoryIds) {

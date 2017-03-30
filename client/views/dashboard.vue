@@ -58,6 +58,7 @@
                     <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a></div>
             </div>
         </div>
+        <copyList></copyList>
         <!--<account></account>
         <image-dialog></image-dialog>-->
        
@@ -97,13 +98,7 @@
             <a href="#" class="lpButton" id="importConfirm">Import List</a>
             <a href="#" class="lpButton close">Cancel Import</a>
         </div>
-        <div class="lpDialog" id="copyListDialog">
-            <h2>Choose the list to copy</h2>
-            <select id="listToCopy"></select><br /><br />
-            <p class="warning"><b>Note:</b> copying a list will link the items between your lists. Updating an item in one list will alter that item in all other lists that item is in.</p>
-            <a href="#" class="lpButton" id="copyConfirm">Copy List</a>
-            <a href="#" class="lpButton close">Cancel</a>
-        </div>
+        
         <div id="lpModalOverlay"></div>-->
     </div>
 </template>
@@ -121,6 +116,8 @@ const imageDialog = require("./imageDialog.vue");
 const listSummary = require("../components/list-summary.vue");
 const category = require("../components/category.vue");
 
+const copyList = require("../components/copy-list.vue");
+
 module.exports = {
     name: "dashboard",
     mixins: [],
@@ -135,7 +132,8 @@ module.exports = {
         help: help,
         imageDialog: imageDialog,
         listSummary: listSummary,
-        category: category
+        category: category,
+        copyList: copyList
     },
     data: function() {
         return {

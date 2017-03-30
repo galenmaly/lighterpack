@@ -60,6 +60,10 @@ const store = new Vuex.Store({
         removeItemFromCategory(state, args) {
             args.category.removeItem(args.itemId);
             state.library.getListById(state.library.defaultListId).calculateTotals();
+        },
+        copyList(state, listId) {
+            var copiedList = state.library.copyList(listId);
+            state.library.defaultListId = copiedList.id;
         }
     },
     actions: {

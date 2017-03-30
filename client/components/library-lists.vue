@@ -8,7 +8,7 @@
             <span class="lpTarget"><a id="addList" class="lpAdd" v-on:click="newList"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
             <div class="lpContent">
                 <div><a id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
-                <div><a id="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
+                <div><a v-on:click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
             </div>
         </span>
            
@@ -43,8 +43,11 @@ export default {
         setDefaultList: function(list) {
             this.$store.commit("setDefaultList", list);
         },
-        newList: function(list) {
+        newList: function() {
             this.$store.commit("newList");
+        },
+        copyList: function() {
+            bus.$emit("copyList");
         }
     }
 }
