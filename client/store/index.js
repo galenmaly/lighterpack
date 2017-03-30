@@ -50,6 +50,14 @@ const store = new Vuex.Store({
             list.calculateTotals();
             state.library.defaultListId = list.id;
         },
+        updateListName(state, updatedList) {
+            var list = state.library.getListById(updatedList.id);
+            list.name = updatedList.name;
+        },
+        updateCategoryName(state, updatedCategory) {
+            var category = state.library.getCategoryById(updatedCategory.id);
+            category.name = updatedCategory.name;
+        },
         updateItem(state, item) {
             state.library.updateItem(item);
             state.library.getListById(state.library.defaultListId).calculateTotals();

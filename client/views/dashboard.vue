@@ -13,7 +13,7 @@
                 <span class="headerItem">
                     <a id="hamburger"><i class="lpSprite lpHamburger"></i></a>
                 </span>
-                <input id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
+                <input v-on:input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
                 <share></share>
                 <listSettings></listSettings>
                 <accountDropdown></accountDropdown>
@@ -156,6 +156,9 @@ module.exports = {
     methods: {
         newCategory() {
             this.$store.commit("newCategory", this.list);
+        },
+        updateListName(evt) {
+            this.$store.commit("updateListName", {id: this.list.id, name: evt.target.value});
         }
     }
 }

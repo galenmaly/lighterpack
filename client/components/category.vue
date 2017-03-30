@@ -9,7 +9,7 @@
                 <span class="lpHandleCell">
                     <div class="lpHandle lpCategoryHandle" title="Reorder this category"></div>
                 </span>
-                <input type="text" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent"/>
+                <input type="text" v-on:input="updateCategoryName" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent"/>
                 <span v-if="library.optionalFields['price']" class="lpPriceCell">Price</span>
                 <span class="lpWeightCell">Weight</span>
                 <span class="lpQtyCell">qty</span>
@@ -53,6 +53,9 @@ module.exports = {
     methods: {
         newItem() {
             this.$store.commit("newItem", this.category);
+        },
+        updateCategoryName(evt) {
+            this.$store.commit("updateCategoryName", {id: this.category.id, name: evt.target.value});
         }
     }
 }
