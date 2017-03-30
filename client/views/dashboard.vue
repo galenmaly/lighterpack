@@ -35,7 +35,7 @@
             <div style="clear:both"></div>
 
             <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
-                <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank">Markdown</a> supported)</p>
+                <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>
                 <textarea id="listDescription"></textarea>
             </div>
 
@@ -57,6 +57,7 @@
         </div>
         <copyList></copyList>
         <importCSV></importCSV>
+        <itemLink></itemLink>
         <!--<account></account>
         <image-dialog></image-dialog>-->
        
@@ -82,14 +83,6 @@
                 </div>
             </div>
         </div>
-        <div class="lpDialog" id="itemLinkDialog">
-            <h2>Add a link for this item</h2>
-            <form id="itemLinkForm">
-                <input type="text" id="itemLink" placeholder="Item Link"/>
-                <input type="submit" class="lpButton" value="Save" />
-                <a href="#" class="lpHref close">Cancel</a>
-            </form>
-        </div>
         
         <div id="lpModalOverlay"></div>-->
     </div>
@@ -108,6 +101,7 @@ const imageDialog = require("./imageDialog.vue");
 const listSummary = require("../components/list-summary.vue");
 const category = require("../components/category.vue");
 
+const itemLink = require("../components/item-link.vue");
 const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
 
@@ -126,6 +120,7 @@ module.exports = {
         imageDialog: imageDialog,
         listSummary: listSummary,
         category: category,
+        itemLink: itemLink,
         copyList: copyList,
         importCSV: importCSV
     },

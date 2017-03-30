@@ -62,6 +62,10 @@ const store = new Vuex.Store({
             state.library.updateItem(item);
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
+        updateItemLink(state, args) {
+            var item = state.library.getItemById(args.item.id);
+            item.url = args.url;
+        },
         updateCategoryItem(state, args) {
             args.category.updateCategoryItem(args.categoryItem);
             state.library.getListById(state.library.defaultListId).calculateTotals();

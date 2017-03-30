@@ -30,6 +30,7 @@ html.lp,
 }
 .lpHref {
   color: #1B77D3;
+  cursor: pointer;
   text-decoration: none;
 }
 .lpHref:hover {

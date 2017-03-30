@@ -15,7 +15,7 @@
         <input v-on:input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
         <span class="lpActionsCell">
             <i class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
-            <i class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
+            <i v-on:click="updateItemLink" class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
             <i v-if="library.optionalFields['worn']" v-on:click="toggleWorn" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn"></i>
             <i v-if="library.optionalFields['consumable']" v-on:click="toggleConsumable" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable"></i>
             <i :class="'lpSprite lpStar lpStar' + categoryItem.star" v-on:click="cycleStar" title="Star this item"></i>
@@ -88,6 +88,9 @@ module.exports = {
             this.item.weight = weightUtils.WeightToMg(parseFloat(this.weight), this.item.authorUnit);
             this.saveItem();
         },
+        updateItemLink: function() {
+            bus.$emit("updateItemLink", this.item);
+        },
         toggleWorn: function() {
             if (this.categoryItem.consumable) {
                 return;
@@ -134,7 +137,7 @@ module.exports = {
         },
         removeItem: function() {
             this.$store.commit("removeItemFromCategory", {itemId: this.item.id, category: this.category});
-        }
+        },
     },
     watch: {
         item: function() {
