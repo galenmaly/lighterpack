@@ -465,8 +465,6 @@ h2 .alternateAction {
   font-size: 18px;
   height: 160px;
   padding: 30px 0;
-  position: absolute;
-  z-index: 31;
 }
 #getStarted h2 {
   font-size: 30px;

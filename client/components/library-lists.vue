@@ -13,7 +13,7 @@
         </span>
            
         <ul id="lists">
-            <li v-for="list in library.lists" class="lpLibraryList">
+            <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
                 <span class='lpLibraryListSwitch lpListName' v-on:click="setDefaultList(list)">
                     {{list | listName}}
                 </span>
