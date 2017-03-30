@@ -1,17 +1,14 @@
 <style lang="scss">
-#dashboard .hello-world {
-    font-size: 15px;
-    line-height: 1.8;
-}
+
 </style>
 
 <template>
-    <div id="main" class="lpHasSidebar" v-if="isLoaded">
+    <div id="main" :class="{lpHasSidebar: library.showSidebar, lpTransition: true}" v-if="isLoaded">
         <sidebar></sidebar>
-        <div class="lpList">
+        <div class="lpList lpTransition">
             <div id="header" class="clearfix">
                 <span class="headerItem">
-                    <a id="hamburger"><i class="lpSprite lpHamburger"></i></a>
+                    <a v-on:click="toggleSidebar" id="hamburger" class="lpTransition"><i class="lpSprite lpHamburger"></i></a>
                 </span>
                 <input v-on:input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
                 <share></share>
@@ -149,6 +146,9 @@ module.exports = {
         }
     },
     methods: {
+        toggleSidebar() {
+            this.$store.commit("toggleSidebar");
+        },
         newCategory() {
             this.$store.commit("newCategory", this.list);
         },

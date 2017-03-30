@@ -28,6 +28,9 @@ const store = new Vuex.Store({
             library.load(JSON.parse(libraryData));
             state.library = library;
         },
+        toggleSidebar(state) {
+            state.library.showSidebar = !state.library.showSidebar;
+        },
         setDefaultList(state, list) {
             state.library.defaultListId = list.id;
         },

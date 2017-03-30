@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <div id="sidebar">
+    <div id="sidebar" class="lpTransition">
         <div id="scrollable">
             <h1>LighterPack <span>(beta)</span></h1>
 
