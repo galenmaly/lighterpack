@@ -6,12 +6,12 @@
     <span id="account">
         <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
             <span class="lpFlyout">
-                <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
+                <span class="lpTarget">Signed in as <span class="username">{{username}}</span> <i class="lpSprite lpExpand"></i></span>
                 <div class="lpContent">
                     <a href="#" class="lpHref accountSettings">Account Settings</a><br />
                     <a v-on:click="showHelp" class="lpHref">Help</a><br />
                     <a v-on:click="showTodo" class="lpHref">Bugs / TODO</a><br />
-                    <a href="#" class="lpHref signout">Sign Out</a>
+                    <a v-on:click="signout" class="lpHref signout">Sign Out</a>
                 </div>
             </span>
         </span>
@@ -31,6 +31,9 @@ module.exports = {
         },
         isSignedIn: function() {
             return this.$store.state.loggedIn;
+        },
+        username: function() {
+            return this.$store.state.loggedIn;
         }
     },
     methods: {
@@ -39,6 +42,10 @@ module.exports = {
         },
         showTodo: function() {
             bus.$emit("showTodo");
+        },
+        signout: function() {
+            this.$store.commit("signout");
+            router.push("/signin");
         }
     }
 }

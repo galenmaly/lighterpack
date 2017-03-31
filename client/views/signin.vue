@@ -12,7 +12,7 @@
 
             <p class="lpSuccess"></p>
             <form class="signin" v-on:submit="signin($event)">
-                <div class="lpError"></div>
+                <div v-if="error" class="lpError">{{error}}</div>
                 <input type="text" placeholder="Username" name="username" class="username" v-model="username"/>
                 <input type="password" placeholder="Password" name="password" class="password" v-model="password"/>
                 <input type="submit" value="Sign in" class="lpButton" />
@@ -59,16 +59,19 @@ export default {
                 body: JSON.stringify({username: username, password: hash})
             })
             .then((response) => {
-                library.load(JSON.parse(response.data.library));
-                context.commit('loadLibrary', library);
+                this.$store.commit('loadLibraryData', response.library);
+                this.$store.commit('setSaveType', "remote");
+                this.$store.commit('setLoggedIn', response.username)
+                router.push("/");
             })
             .catch((response) => {
+                console.log(response);
                 var error = "An error occurred.";
-                if (data.responseText) {
-                    error = data.responseText;
+                if (response.responseText) {
+                    error = response.responseText;
                 }
                 this.error = error;
-                $(".password", form).val("").focus();
+                //$(".password", form).val("").focus(); //TODO
             });
         }
     }

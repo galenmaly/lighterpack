@@ -20,6 +20,11 @@ const store = new Vuex.Store({
         setSaveType(state, saveType) {
             state.saveType = saveType;
         },
+        signout(state) {
+            createCookie("lp","",-1);
+            state.library = false; //duplicate logic
+            state.loggedIn = false; //duplicate logic
+        },
         setLoggedIn(state, loggedIn) {
             state.loggedIn = loggedIn;
         },
@@ -27,6 +32,9 @@ const store = new Vuex.Store({
             const library = new Library();
             library.load(JSON.parse(libraryData));
             state.library = library;
+        },
+        clearLibraryData(state) {
+            state.library = false;
         },
         toggleSidebar(state) {
             state.library.showSidebar = !state.library.showSidebar;
@@ -123,15 +131,16 @@ const store = new Vuex.Store({
                 return context.dispatch("loadLocal");
             } else {
                 return new Promise((resolve, reject) => {
-                    context.commit("setLoggedIn", false)
-                    context.commit("loadLibrary", false)
+                    context.commit("setLoggedIn", false);
+                    context.commit("clearLibraryData");
+                    resolve();
                 });
             }
         },
         loadLocal: function(context) {
             var libraryData = JSON.parse(localStorage.library);
             context.commit('loadLibraryData', libraryData);
-            context.commit('setSaveType', "remote");
+            context.commit('setSaveType', "local");
             context.commit("setLoggedIn", false)
         },
         loadRemote: function(context) {
@@ -145,7 +154,7 @@ const store = new Vuex.Store({
             .then((response) => {
                 context.commit('loadLibraryData', response.library);
                 context.commit('setSaveType', "remote");
-                context.commit("setLoggedIn", true)
+                context.commit("setLoggedIn", response.username)
             })
             .catch((response) => {
                 console.log(response)
