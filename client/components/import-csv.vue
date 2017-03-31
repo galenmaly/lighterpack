@@ -29,6 +29,7 @@
             <a v-on:click="importList" class="lpButton" id="importConfirm">Import List</a>
             <a v-on:click="closeModal" class="lpButton close">Cancel Import</a>
         </div>
+        <div v-if="shown" v-on:click="closeModal" class="lpModalOverlay"></div>
         <form id="csvUpload">
             <input type="file" name="csv" id="csv" />
         </form>
@@ -136,7 +137,7 @@ export default {
             if (!this.importData.data.length) {
                 alert("Unable to load spreadsheet - please verify the format.");
             } else {
-                this.shown = true;
+                this.openModal();
             }
         },
         importList: function() {

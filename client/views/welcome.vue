@@ -41,20 +41,18 @@
         </div>
 
         <blackoutFooter></blackoutFooter>
-        <modalBlackout></modalBlackout>
+        <div class="lpModalOverlay lpBlackout"></div>
     </div>
 </template>
 
 <script>
 import blackoutFooter from "../components/blackout-footer.vue";
-import modalBlackout from "../components/modal-blackout.vue";
 
 export default {
     name: "welcome",
     mixins: [],
     components: {
-        blackoutFooter: blackoutFooter,
-        modalBlackout: modalBlackout
+        blackoutFooter: blackoutFooter
     },
     data: function() {
         return {

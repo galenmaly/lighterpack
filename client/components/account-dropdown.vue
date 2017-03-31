@@ -9,8 +9,8 @@
                 <span class="lpTarget">Signed in as <span class="username"></span> <i class="lpSprite lpExpand"></i></span>
                 <div class="lpContent">
                     <a href="#" class="lpHref accountSettings">Account Settings</a><br />
-                    <a href="#" class="lpHref help">Help</a><br />
-                    <a class="lpHref" id="showTODO" href="#">Bugs / TODO</a><br />
+                    <a v-on:click="showHelp" class="lpHref">Help</a><br />
+                    <a v-on:click="showTodo" class="lpHref">Bugs / TODO</a><br />
                     <a href="#" class="lpHref signout">Sign Out</a>
                 </div>
             </span>
@@ -31,6 +31,14 @@ module.exports = {
         },
         isSignedIn: function() {
             return this.$store.state.loggedIn;
+        }
+    },
+    methods: {
+        showHelp: function() {
+            bus.$emit("showHelp");
+        },
+        showTodo: function() {
+            bus.$emit("showTodo");
         }
     }
 }

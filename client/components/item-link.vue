@@ -3,18 +3,20 @@
 </style>
 
 <template>
-    <div v-if="shown" class="lpDialog" id="itemLinkDialog">
-        <h2>Add a link for this item</h2>
-        <form v-on:submit="addLink" id="itemLinkForm">
-            <input v-model="url" type="text" id="itemLink" placeholder="Item Link"/>
-            <input type="submit" class="lpButton" value="Save" />
-            <a v-on:click="closeModal" class="lpHref close">Cancel</a>
-        </form>
+    <div v-if="shown">
+        <div class="lpDialog" id="itemLinkDialog">
+            <h2>Add a link for this item</h2>
+            <form v-on:submit="addLink" id="itemLinkForm">
+                <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
+                <input type="submit" class="lpButton" value="Save" />
+                <a v-on:click="closeModal" class="lpHref close">Cancel</a>
+            </form>
+        </div>
+        <div v-on:click="closeModal" class="lpModalOverlay"></div>
     </div>
 </template>
 
 <script>
-
 const modalMixin = require("../mixins/modal-mixin.js");
 
 export default {
@@ -34,7 +36,7 @@ export default {
     },
     beforeMount: function() {
         bus.$on("updateItemLink", (item) => {
-            this.shown = true;
+            this.openModal();
             this.item = item;
             this.url = item.url;
         });

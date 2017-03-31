@@ -55,6 +55,8 @@
         <copyList></copyList>
         <importCSV></importCSV>
         <itemLink></itemLink>
+        <todo></todo>
+        <help></help>
         <!--<account></account>
         <image-dialog></image-dialog>-->
        
@@ -92,8 +94,8 @@ const listSettings = require("../components/list-settings.vue");
 const accountDropdown = require("../components/account-dropdown.vue");
 const forgotPassword = require("./forgotPassword.vue");
 const account = require("./account.vue");
-const todo = require("./todo.vue");
-const help = require("./help.vue");
+const todo = require("../components/todo.vue");
+const help = require("../components/help.vue");
 const imageDialog = require("./imageDialog.vue");
 const listSummary = require("../components/list-summary.vue");
 const category = require("../components/category.vue");
