@@ -69,6 +69,10 @@ const store = new Vuex.Store({
             var category = state.library.getCategoryById(updatedCategory.id);
             category.name = updatedCategory.name;
         },
+        updateCategoryColor(state, updatedCategory) {
+            var category = state.library.getCategoryById(updatedCategory.id);
+            category.color = updatedCategory.color;
+        },
         updateItem(state, item) {
             state.library.updateItem(item);
             state.library.getListById(state.library.defaultListId).calculateTotals();

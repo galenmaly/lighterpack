@@ -41,7 +41,6 @@
             </ul>
             <hr />
             <a v-on:click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
-            <div id="lpPickerContainer"><div id="lpPicker"></div></div>
             <div id="lpFooter">
                 <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
                 <div class="lpContact">
@@ -59,6 +58,7 @@
         <todo></todo>
         <help></help>
         <account></account>
+        <colorPicker></colorPicker>
 
         <!--<image-dialog></image-dialog>-->
        
@@ -102,6 +102,7 @@ const imageDialog = require("./imageDialog.vue");
 const listSummary = require("../components/list-summary.vue");
 const category = require("../components/category.vue");
 
+const colorPicker = require("../components/colorpicker.vue");
 const itemLink = require("../components/item-link.vue");
 const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
@@ -121,6 +122,7 @@ module.exports = {
         imageDialog: imageDialog,
         listSummary: listSummary,
         category: category,
+        colorPicker: colorPicker,
         itemLink: itemLink,
         copyList: copyList,
         importCSV: importCSV

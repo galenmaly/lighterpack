@@ -521,8 +521,14 @@ h2 .alternateAction {
   background: #FFF;
   border: 1px solid #999;
   display: none;
-  padding: 10px;
   position: absolute;
+  z-index: 105;
+}
+#lpPickerContainer.lpOpen {
+  display: block;
+}
+#lpPickerContainer canvas {
+  display: block;
 }
 .warning {
   border: 1px solid #777;

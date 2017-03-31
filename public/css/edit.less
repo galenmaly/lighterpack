@@ -595,8 +595,16 @@
     background: #FFF;
     border: 1px solid #999;
     display: none;
-    padding: 10px;
     position: absolute;
+    z-index: 105;
+
+    &.lpOpen {
+        display: block;
+    }
+
+    canvas {
+        display: block;
+    }
 }
 
 .warning {

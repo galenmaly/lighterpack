@@ -20,7 +20,7 @@
                 </li>
                 <li v-for="category in categories" :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
-                        <span class="lpLegend" :style="{'background-color': list.displayColor}"></span>
+                        <span v-on:click="showColorPicker($event, category)" class="lpLegend" :style="{'background-color': category.displayColor}"></span>
                     </span>
                     <span class="lpCell">
                         {{category.name}}
@@ -80,6 +80,7 @@
 const pies = require("../pies.js");
 const utilsMixin = require("../mixins/utils-mixin.js");
 const unitSelect = require("./unit-select.vue");
+const colorUtils = require("../utils/color.js");
 
 module.exports = {
     name: "list-summary",
@@ -128,6 +129,19 @@ module.exports = {
         },
         setTotalUnit: function(unit) {
             this.$store.commit("setTotalUnit", unit);
+        },
+        showColorPicker: function(evt, category) {
+            var self = this;
+            var callback = function(color) {
+                self.updateColor(category, color);
+            }
+            bus.$emit("showColorPicker", {evt, category, callback});
+        },
+        updateColor: function(category, color) {
+            category.color = color;
+            category.displayColor = colorUtils.rgbToString(color);
+            this.$store.commit("updateCategoryColor", category)
+            this.updateChart();
         }
     },
     mounted: function() {
@@ -143,4 +157,5 @@ module.exports = {
         }
     }
 }
+
 </script>
