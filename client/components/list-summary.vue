@@ -18,7 +18,7 @@
                         Weight
                     </span>
                 </li>
-                <li v-for="category in categories" class="lpTotalCategory lpRow">
+                <li v-for="category in categories" :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
                         <span class="lpLegend" :style="{'background-color': list.displayColor}"></span>
                     </span>
@@ -90,7 +90,8 @@ module.exports = {
     },
     data: function() {
         return {
-            chart: null
+            chart: null,
+            hoveredCategoryId: null
         }
     },
     computed: {
@@ -99,7 +100,9 @@ module.exports = {
         },
         categories() {
             return this.list.categoryIds.map((id) => {
-                return this.library.getCategoryById(id);
+                var category = this.library.getCategoryById(id);
+                category.activeHover = (this.hoveredCategoryId === category.id);
+                return category;
             });
         }
     },
@@ -111,15 +114,16 @@ module.exports = {
                 if (this.chart) {
                     this.chart.update({processedData: chartData});
                 } else {
-                    this.chart = pies({processedData: chartData, container: $(".lpChart"), hoverCallback: this.chartHover});
+                    this.chart = pies({processedData: chartData, container: document.getElementsByClassName("lpChart")[0], hoverCallback: this.chartHover});
                 }
             }
             return chartData;
         },
         chartHover: function(chartItem) {
-            $(".hover").removeClass("hover");
             if (chartItem && chartItem.id) {
-                $("#total_"+chartItem.id).addClass("hover");
+                this.hoveredCategoryId = chartItem.id;
+            } else {
+                this.hoveredCategoryId = null;
             }
         },
         setTotalUnit: function(unit) {

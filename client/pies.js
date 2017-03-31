@@ -2,7 +2,6 @@ const colorUtils = require("./utils/color.js");
 
 module.exports = function(args) {
     var container,
-        canvas,
         context,
         srcData,
         data = {},
@@ -17,19 +16,18 @@ module.exports = function(args) {
         backgroundColor = "rgb(245,245,245)",
         firstRing = {inner: 25, outer: 70},
         secondRing = {inner: 80, outer: 120},
-        $tooltip,
+        tooltip,
         isAnimating = false,
         frameRate = 10;
 
     function init() {
-        if (!args.container.length || (!args.data && !args.processedData)) {
+        if (!args.container || (!args.data && !args.processedData)) {
             console.warn("invalid params!!");
             return;
         }
         container = args.container;
-        container.css("position", "relative");
-        canvas = container[0];
-        context = canvas.getContext('2d');
+        container.style.position = "relative";
+        context = container.getContext('2d');
         if (args.data) {
             srcData = args.data;
             data = preprocess(srcData)
@@ -47,8 +45,10 @@ module.exports = function(args) {
         if (args.clickCallback) clickCallback = args.clickCallback;
         if (args.hoverCallback) hoverCallback = args.hoverCallback;
         drawGraph();
-        $tooltip = $("<div class='tooltip' style='position:absolute;display:none;border:1px solid #FFF;background:#444;color:#FFF;box-shadow:0 0 5px rgba(0,0,0,0.25);padding:3px;z-index:105;'></tooltip>");
-        $("body").append($tooltip);
+
+        tooltip = document.createElement("div");
+        tooltip.classList.add("tooltip");
+        document.getElementsByTagName("body")[0].appendChild(tooltip);
     }
 
     function update(args) {
@@ -246,14 +246,14 @@ module.exports = function(args) {
     }
 
     function attachEvents() {
-        container.off("mousemove").on("mousemove", hoverHandle);
-        container.off("click").on("click", clickHandle);
+        container.addEventListener("mousemove", hoverHandle);
+        container.addEventListener("click", clickHandle);
     }
 
     function hoverHandle(evt) {
-        var containerOffset = container.offset();
-        var size = {x: container.width(), y: container.height()};
-        var offset = {x: (evt.pageX - containerOffset.left) * (bounds.x / size.x), y: (evt.pageY - containerOffset.top) * (bounds.y / size.y)};
+        var containerRect = container.getBoundingClientRect();
+        var size = {x: containerRect.width, y: containerRect.height};
+        var offset = {x: (evt.pageX - containerRect.left) * (bounds.x / size.x), y: (evt.pageY - containerRect.top) * (bounds.y / size.y)};
         var dX = (offset.x - center.x);
         var dY = (offset.y - center.y);
         var angle = Math.atan( dY / dX );
@@ -268,19 +268,21 @@ module.exports = function(args) {
                 if (hovered) drawSlice(hovered);
                 hovered = newHovered
                 drawSlice(hovered, "rgb(50,50,50)");
-                container.addClass("activeHover");
+                container.classList.add("activeHover");
                 if (hoverCallback) hoverCallback(newHovered);
             }
-            $tooltip.show().text(newHovered.name);
-            $tooltip.css({top:evt.pageY-10, left:evt.pageX+15});
+            tooltip.style.display = "block";
+            tooltip.innerText = newHovered.name;
+            tooltip.style.top = evt.pageY - 10 + "px";
+            tooltip.style.left = evt.pageX + 15 + "px";
         } else {
             if (hovered) {
                 drawSlice(hovered);
                 if (hoverCallback) hoverCallback(newHovered);
             }
             hovered = 0;
-            container.removeClass("activeHover");
-            $tooltip.hide();
+            container.classList.remove("activeHover");
+            tooltip.style.display = "none";
         }
 
     }
