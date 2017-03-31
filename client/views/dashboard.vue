@@ -52,13 +52,15 @@
                     <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a></div>
             </div>
         </div>
+
         <copyList></copyList>
         <importCSV></importCSV>
         <itemLink></itemLink>
         <todo></todo>
         <help></help>
-        <!--<account></account>
-        <image-dialog></image-dialog>-->
+        <account></account>
+
+        <!--<image-dialog></image-dialog>-->
        
         <!--<div class="lpDialog" id="itemImageDialog">
             <div class="columns">
@@ -93,7 +95,7 @@ const share = require("../components/share.vue");
 const listSettings = require("../components/list-settings.vue");
 const accountDropdown = require("../components/account-dropdown.vue");
 const forgotPassword = require("./forgotPassword.vue");
-const account = require("./account.vue");
+const account = require("../components/account.vue");
 const todo = require("../components/todo.vue");
 const help = require("../components/help.vue");
 const imageDialog = require("./imageDialog.vue");

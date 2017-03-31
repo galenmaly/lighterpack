@@ -8,7 +8,7 @@
             <span class="lpFlyout">
                 <span class="lpTarget">Signed in as <span class="username">{{username}}</span> <i class="lpSprite lpExpand"></i></span>
                 <div class="lpContent">
-                    <a href="#" class="lpHref accountSettings">Account Settings</a><br />
+                    <a v-on:click="showAccount" class="lpHref accountSettings">Account Settings</a><br />
                     <a v-on:click="showHelp" class="lpHref">Help</a><br />
                     <a v-on:click="showTodo" class="lpHref">Bugs / TODO</a><br />
                     <a v-on:click="signout" class="lpHref signout">Sign Out</a>
@@ -37,6 +37,9 @@ module.exports = {
         }
     },
     methods: {
+        showAccount: function() {
+            bus.$emit("showAccount");
+        },
         showHelp: function() {
             bus.$emit("showHelp");
         },
