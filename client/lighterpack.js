@@ -21,10 +21,25 @@ window.router = new VueRouter({
     routes: routes
 });
 
-store.dispatch('init').then(() => {
+bus.$on("unauthorized", (error) => {
+    router.push("/signin"); //todo: route error message
+});
+
+store.dispatch('init')
+.then(() => {
     if (!store.state.library) {
         router.push("/welcome");
     }
+    initLighterPack();
+})
+.catch((error) => {
+    if (!store.state.library) {
+        router.push("/welcome");
+    }
+    initLighterPack();
+});
+
+var initLighterPack = function() {
     window.LighterPack = new Vue({
         router,
         store,
@@ -41,4 +56,4 @@ store.dispatch('init').then(() => {
             this.path = router.currentRoute.path;
         }
     }).$mount("#lp");
-});
+}

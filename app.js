@@ -43,7 +43,7 @@ const Library = dataTypes.Library;
 
 
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
-
+app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({

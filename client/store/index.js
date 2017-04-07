@@ -14,11 +14,29 @@ const store = new Vuex.Store({
     state: {
         library: false,
         saveType: null,
+        saveTimeout: null,
+        lastSaveTime: 0,
+        lastSaveData: null,
         loggedIn: false
     },
     mutations: {
         setSaveType(state, saveType) {
             state.saveType = saveType;
+        },
+        setLastSaveTime(state, lastSaveTime) {
+            state.lastSaveTime = lastSaveTime;
+        },
+        setLastSaveData(state, lastSaveData) {
+            state.lastSaveData = lastSaveData;
+        },
+        setSaveTimeout(state, saveTimeout) {
+            state.saveTimeout = saveTimeout
+        },
+        clearSaveTimeout(state) {
+            if (state.saveTimeout) {
+                clearTimeout(state.saveTimeout);
+                state.saveTimeout = null;
+            }
         },
         signout(state) {
             createCookie("lp","",-1);
@@ -32,6 +50,7 @@ const store = new Vuex.Store({
             const library = new Library();
             library.load(JSON.parse(libraryData));
             state.library = library;
+            state.lastSaveData = JSON.stringify(library.save());
         },
         clearLibraryData(state) {
             state.library = false;
@@ -161,13 +180,76 @@ const store = new Vuex.Store({
                 context.commit("setLoggedIn", response.username)
             })
             .catch((response) => {
-                console.log(response)
-                return new Promise((resolve, reject) => {
-                    reject("Unable to fetch connections.");
-                });
+                if (response.status == 401) {
+                    bus.$emit("unauthorized");
+                } else {
+                   return new Promise((resolve, reject) => {
+                        reject("An error occurred while fetching your data, please try again later.");
+                    });
+                }
             });
         }
-    }
+    },
+    plugins: [
+        function save(store) {
+            store.subscribe((mutation, state) => {
+                const ignore = ["setSaveType", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"]
+                if (!state.library || ignore.indexOf(mutation.type) > -1) {
+                    return;
+                }
+                var saveData = JSON.stringify(state.library.save());
+
+                if (saveData == state.lastSaveData) {
+                    return;
+                }
+
+                function saveRemotely(saveData) {
+                    if (!saveData) {
+                        saveData = JSON.stringify(state.library.save());
+                    }
+
+                    store.commit("setLastSaveTime", date.getTime());
+                    store.commit("setLastSaveData", saveData);
+
+                    return fetchJson("/saveLibrary/", {
+                        method: "POST",
+                        body:  JSON.stringify({data: saveData}),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                    }).catch((response) => {
+                        var error = "An error occurred while attempting to save your data.";
+                        if (response.json && response.json.status) {
+                            error = response.json.status;
+                        }
+                        if (response.status == 401) {
+                            bus.$emit("unauthorized", error);
+                        } else {
+                            alert(error); //TODO
+                        }
+                    });
+                }
+                
+                if (state.saveType == "remote") {
+                    var date = new Date();
+                    if (date.getTime() - state.lastSaveTime > 5000) {
+                        if (state.saveTimeout) {
+                            store.commit("clearSaveTimeout");
+                        }
+                        saveRemotely(saveData);
+                    } else {
+                        if (state.saveTimeout) {
+                            return;
+                        }
+                        store.commit("setSaveTimeout", setTimeout(saveRemotely, 5001));
+                    }
+                } else if (store.saveType =="local") {
+                    localStorage.library = saveData;
+                }
+            });
+        }
+    ]
 });
 
 module.exports = store;

@@ -315,9 +315,10 @@ function saveLibrary(req, res, user) {
     try {
         user.library = JSON.parse(req.body.data);
         db.users.save(user);
-        res.send("success");
+        res.status(200).json({status:"success"});
         awesomeLog(req, user.username);
     } catch(e) {
+        res.status(400).json({status:"error"});
         awesomeLog(req, user.username + " - " + e);
     }
 }
@@ -526,17 +527,17 @@ function imageUpload(req, res, user) {
 
 function authenticateUser(req, res, callback) {
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
-        res.status(400).send("Please Authenticate");
+        res.status(401).json({status: "Please Authenticate"});
         return;
     }
     if (req.body.username) {
         db.users.find({username: req.body.username, password: req.body.password}, function(err, users) {
             if (err) {
-                res.status(500).send(":(");
+                res.status(500).json({status: "An error occurred, please try again later."});
                 awesomeLog(req, "Error on authenticateUser for:" + req.body.username + ", " + req.body.password )
                 return;
             } else if (!users || !users.length) {
-                    res.status(400).send("Invalid username and/or password.");
+                    res.status(401).json({status: "Invalid username and/or password."});
                     awesomeLog(req, "Bad password for: "+req.body.username);
                     return;
             }
@@ -552,12 +553,12 @@ function authenticateUser(req, res, callback) {
     } else {
         db.users.find({token: req.cookies.lp}, function(err, users) {
             if (err) {
-                res.status(500).send(":(");
+                res.status(500).json({status: "An error occurred, please try again later."});
                 awesomeLog(req, "Error on authenticateUser else for:" + req.body.username + ", " + req.body.password )
                 return;
             } else if (!users || !users.length) {
                     awesomeLog(req, "bad cookie!");
-                    res.status(400).send("Please log in again.");
+                    res.status(401).json({status: "Please log in again."});
                     return;
             }
             callback(req, res, users[0]);

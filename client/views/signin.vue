@@ -67,8 +67,8 @@ export default {
             .catch((response) => {
                 console.log(response);
                 var error = "An error occurred.";
-                if (response.responseText) {
-                    error = response.responseText;
+                if (response.json && response.json.status) {
+                    error = response.json.status;
                 }
                 this.error = error;
                 //$(".password", form).val("").focus(); //TODO
