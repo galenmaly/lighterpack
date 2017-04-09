@@ -15,7 +15,7 @@
             </span>
             <form class="register">
                 <div class="lpError"></div>
-                <input type="text" placeholder="Username" name="username" class="username"/>
+                <input v-focus-on-create type="text" placeholder="Username" name="username" class="username"/>
                 <input type="email" placeholder="Email" name="email" class="email"/>
                 <input type="password" placeholder="Password" name="password" class="password"/>
                 <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>

@@ -4,13 +4,13 @@
 
 <template>
     <span v-if="isSignedIn" class="headerItem hasFlyout">
-        <span id="share" class="lpFlyout">
+        <span id="share" class="lpFlyout" v-on:mouseenter="focusShare">
             <span class="lpTarget"><i class="lpSprite lpLink"></i> Share</span>
             <div class="lpContent">
                 <h3>Share your list</h3>
-                <input type="text" id="shareUrl" :value="shareUrl"/>
+                <input type="text" id="shareUrl" :value="shareUrl" v-select-on-bus="'show-share-box'"/>
                 <h3>Embed your list</h3>
-                <textarea id="embedUrl">&lt;script src="{{this.baseUrl}}/e/{{this.externalId}}"&gt;&lt;/script&gt;&lt;div id="{{this.externalId}}"&gt;&lt;/div&gt;</textarea>
+                <textarea id="embedUrl" v-select-on-focus>&lt;script src="{{this.baseUrl}}/e/{{this.externalId}}"&gt;&lt;/script&gt;&lt;div id="{{this.externalId}}"&gt;&lt;/div&gt;</textarea>
                 <a :href="csvUrl"  id="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload"></i>Export to CSV</a>
             </div>
         </span>
@@ -21,8 +21,6 @@
 
 module.exports = {
     name: "header",
-    mixins: [],
-   
     computed: {
         library: function() {
             return this.$store.state.library;
@@ -42,6 +40,11 @@ module.exports = {
         },
         csvUrl: function() {
             return this.baseUrl + "/csv/" + this.externalId;
+        }
+    },
+    methods: {
+        focusShare: function(evt) {
+            bus.$emit('show-share-box');
         }
     }
 }

@@ -13,7 +13,7 @@
             <p class="lpSuccess"></p>
             <form class="signin" v-on:submit="signin($event)">
                 <div v-if="error" class="lpError">{{error}}</div>
-                <input type="text" placeholder="Username" name="username" class="username" v-model="username"/>
+                <input v-focus-on-create type="text" placeholder="Username" name="username" class="username" v-model="username"/>
                 <input type="password" placeholder="Password" name="password" class="password" v-model="password"/>
                 <input type="submit" value="Sign in" class="lpButton" />
                 <span class="status"></span>

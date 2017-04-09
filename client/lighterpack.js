@@ -2,6 +2,7 @@ const Vue = require("vue");
 const Vuex = require('vuex').default;
 const VueRouter = require("vue-router").default;
 
+const focusDirectives = require("./utils/focus.js");
 const dataTypes = require("./dataTypes.js");
 const Item = dataTypes.Item;
 const Category = dataTypes.Category;
