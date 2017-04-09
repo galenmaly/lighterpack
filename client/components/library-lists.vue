@@ -11,9 +11,9 @@
                 <div><a v-on:click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
             </div>
         </span>
-           
         <ul id="lists">
             <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
+                <div class="lpHandle" title="Reorder this item"></div>
                 <span class='lpLibraryListSwitch lpListName' v-on:click="setDefaultList(list)">
                     {{list | listName}}
                 </span>
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+const dragula = require("dragula");
 
 export default {
     name: "libraryItem",
@@ -51,7 +52,25 @@ export default {
         },
         importCSV: function() {
             bus.$emit("importCSV");
+        },
+        handleListReorder: function() {
+            var $lists = document.getElementById("lists");
+            var drake = dragula([$lists], {
+                moves: function ($el, $source, $handle, $sibling) {
+                    return $handle.classList.contains("lpHandle");
+                }
+            });
+            drake.on("drag", ($el, $target, $source, $sibling) => {
+                this.dragStartIndex = getElementIndex($el);
+            });
+            drake.on("drop", ($el, $target, $source, $sibling) => {
+                this.$store.commit("reorderList", {before: this.dragStartIndex, after: getElementIndex($el)});
+                drake.cancel(true);
+            });
         }
+    },
+    mounted: function() {
+        this.handleListReorder();
     }
 }
 </script>

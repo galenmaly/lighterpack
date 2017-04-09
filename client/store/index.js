@@ -80,6 +80,43 @@ const store = new Vuex.Store({
             list.calculateTotals();
             state.library.defaultListId = list.id;
         },
+        reorderList(state, args) {
+            state.library.lists = arrayMove(state.library.lists, args.before, args.after);
+        },
+        reorderCategory(state, args) {
+            var list = state.library.getListById(args.list.id);
+            list.categoryIds = arrayMove(list.categoryIds, args.before, args.after);
+        },
+        reorderItem(state, args) {
+            var item = state.library.getItemById(args.itemId);
+            var dropCategory = state.library.getCategoryById(args.categoryId);
+            var list = state.library.getListById(args.list.id);
+            var originalCategory = state.library.findCategoryWithItemById(item.id, list.id);
+            var oldCategoryItem = originalCategory.getCategoryItemById(item.id);
+            var oldIndex = originalCategory.categoryItems.indexOf(oldCategoryItem);
+
+            if (originalCategory === dropCategory) {
+                dropCategory.categoryItems = arrayMove(dropCategory.categoryItems, oldIndex, args.dropIndex);
+            } else {
+                originalCategory.categoryItems.splice(oldIndex, 1);
+                dropCategory.categoryItems.splice(args.dropIndex, 0, oldCategoryItem);
+            }
+        },
+        addItemToCategory(state, args) {
+            console.log(args);
+
+            var item = state.library.getItemById(args.itemId);
+            var dropCategory = state.library.getCategoryById(args.categoryId);
+
+            if (item && dropCategory) {
+                dropCategory.addItem(item);
+                var categoryItem = dropCategory.getCategoryItemById(item.id);
+                var categoryItemIndex = dropCategory.categoryItems.indexOf(categoryItem);
+                if (categoryItem && categoryItemIndex !== -1) {
+                    dropCategory.categoryItems = arrayMove(dropCategory.categoryItems, categoryItemIndex, args.dropIndex);
+                }
+            }
+        },
         updateListName(state, updatedList) {
             var list = state.library.getListById(updatedList.id);
             list.name = updatedList.name;

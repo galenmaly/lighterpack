@@ -123,20 +123,18 @@
 }
 .lpLibraryList {
   border-top: 1px dotted #999;
+  display: flex;
   list-style: none;
-  margin: 0 10px 4px;
-  padding: 4px 0;
+  margin: 0 10px;
+  padding: 6px 0;
   position: relative;
 }
 .lpLibraryList:first-child {
   padding-top: 10px;
   border-top: none;
 }
-.lpLibraryList::last-child {
+.lpLibraryList:last-child {
   border-bottom: none;
-}
-.lpLibraryList .lpRemove {
-  float: right;
 }
 .lpLibraryList.lpActive {
   font-weight: bold;
@@ -145,9 +143,32 @@
 .lpLibraryList.lpActive .lpRemove {
   display: none;
 }
-.lpLibraryList .lpLibraryListSwitch:hover {
+.lpLibraryList.gu-mirror {
+  border: 1px solid #999;
+  background: #606060;
+  color: #FFF;
+}
+.lpLibraryList .lpHandle {
+  height: 18px;
+  flex: 0 0 12px;
+  margin-right: 5px;
+}
+.lpLibraryList:hover .lpHandle {
+  visibility: visible;
+}
+.lpLibraryList .lpListName {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lpLibraryList .lpListName:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+.lpLibraryList .lpRemove {
+  flex: 0 0 8px;
+  margin-bottom: 0;
 }
 #library {
   flex: 1 0 300px;
@@ -159,15 +180,20 @@
   margin: 0 10px 5px;
   min-height: 43px;
   overflow: hidden;
-  padding: 5px 15px 0 5px;
+  padding: 5px 5px 0 15px;
   position: relative;
 }
 .lpLibraryItem:first-child {
   padding-top: 10px;
   border-top: none;
 }
-.lpLibraryItem::last-child {
+.lpLibraryItem:last-child {
   border-bottom: none;
+}
+.lpLibraryItem.gu-mirror {
+  border: 1px solid #999;
+  background: #606060;
+  color: #FFF;
 }
 .lpLibraryItem .lpName {
   float: left;
@@ -191,15 +217,13 @@
   width: 235px;
 }
 .lpLibraryItem .lpHandle {
-  display: none;
   height: 80px;
+  left: 0;
   position: absolute;
-  right: 0;
   top: 5px;
 }
 .lpLibraryItem .lpRemove {
   bottom: 0;
-  display: none;
   position: absolute;
   right: 14px;
 }
@@ -214,10 +238,6 @@
   color: #FFF;
   padding: 10px;
   width: 235px;
-}
-.lpLibraryItem.lpItemNotInList .lpHandle,
-.lpLibraryItem.lpItemNotInList .lpRemove {
-  display: block;
 }
 #librarySearch {
   background: #666;
@@ -539,37 +559,25 @@ h2 .alternateAction {
 #help {
   width: 800px;
 }
-.farbtastic {
-  position: relative;
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
 }
-.farbtastic * {
-  position: absolute;
-  cursor: crosshair;
+.gu-hide {
+  display: none !important;
 }
-.farbtastic,
-.farbtastic .wheel {
-  width: 195px;
-  height: 195px;
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
-.farbtastic .color,
-.farbtastic .overlay {
-  top: 47px;
-  left: 47px;
-  width: 101px;
-  height: 101px;
-}
-.farbtastic .wheel {
-  background: url(/images/wheel.png) no-repeat;
-  width: 195px;
-  height: 195px;
-}
-.farbtastic .overlay {
-  background: url(/images/mask.png) no-repeat;
-}
-.farbtastic .marker {
-  width: 17px;
-  height: 17px;
-  margin: -8px 0 0 -8px;
-  overflow: hidden;
-  background: url(/images/marker.png) no-repeat;
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
 }

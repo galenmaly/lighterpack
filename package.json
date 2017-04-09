@@ -21,6 +21,7 @@
     "config": "^1.21.0",
     "connect": "^3.4.0",
     "cookie-parser": "^1.4.0",
+    "dragula": "^3.7.2",
     "express": "^4.13.3",
     "formidable": "^1.0.17",
     "markdown": "^0.5.0",

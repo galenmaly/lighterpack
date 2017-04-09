@@ -481,8 +481,8 @@ Library.prototype.getListById = function(id) {
 
 Library.prototype.getItemsInCurrentList = function() {
     var out = [];
-    var list = this.itemIds[this.defaultListId];
-    for (var i in list.categoryIds) {
+    var list = this.getListById(this.defaultListId);
+    for (var i = 0; i < list.categoryIds.length; i++) {
         var category = this.getCategoryById(list.categoryIds[i]);
         if (category) {
             for (var j in category.categoryItems) {

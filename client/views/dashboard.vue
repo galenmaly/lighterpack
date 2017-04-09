@@ -17,30 +17,8 @@
                 <span class="clearfix"></span>
             </div>
 
-            <div v-if="isListNew" id="getStarted">
-                <h2>Welcome to LighterPack!</h2>
-                <p>Here's what you need to get started:</p>
-                <ol>
-                    <li>Click on things to edit them. Give your list and category a name.</li>
-                    <li>Add new categories and items to your list.</li>
-                    <li>When you're done, share your list with others!</li>
-                </ol>
-            </div>
-            <list-summary v-if="!isListNew" :list="list"></list-summary>
+            <list></list>
             
-
-            <div style="clear:both"></div>
-
-            <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
-                <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>
-                <textarea id="listDescription"></textarea>
-            </div>
-
-            <ul class="lpCategories">
-                <category v-for="category in categories" :category="category"></category>
-            </ul>
-            <hr />
-            <a v-on:click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
             <div id="lpFooter">
                 <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
                 <div class="lpContact">
@@ -99,8 +77,7 @@ const account = require("../components/account.vue");
 const todo = require("../components/todo.vue");
 const help = require("../components/help.vue");
 const imageDialog = require("./imageDialog.vue");
-const listSummary = require("../components/list-summary.vue");
-const category = require("../components/category.vue");
+const list = require("../components/list.vue");
 
 const colorPicker = require("../components/colorpicker.vue");
 const itemLink = require("../components/item-link.vue");
@@ -120,8 +97,7 @@ module.exports = {
         todo: todo,
         help: help,
         imageDialog: imageDialog,
-        listSummary: listSummary,
-        category: category,
+        list: list,
         colorPicker: colorPicker,
         itemLink: itemLink,
         copyList: copyList,
@@ -138,25 +114,11 @@ module.exports = {
         },
         list() {
             return this.library.getListById(this.library.defaultListId);
-        },
-        categories() {
-            return this.list.categoryIds.map((id) => {
-                return this.library.getCategoryById(id);
-            });
-        },
-        isListNew() {
-            if (this.list.total === 0) {
-                return true;
-            }
-            return false;
         }
     },
     methods: {
         toggleSidebar() {
             this.$store.commit("toggleSidebar");
-        },
-        newCategory() {
-            this.$store.commit("newCategory", this.list);
         },
         updateListName(evt) {
             this.$store.commit("updateListName", {id: this.list.id, name: evt.target.value});

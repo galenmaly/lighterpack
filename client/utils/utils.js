@@ -32,7 +32,7 @@ window.readCookie = function(name) {
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
-}
+};
 
 window.createCookie = function(name,value,days) {
     if (days) {
@@ -42,7 +42,23 @@ window.createCookie = function(name,value,days) {
     }
     else var expires = "";
     document.cookie = name+"="+value+expires+"; path=/";
-}
+};
+
+window.getElementIndex = function(node) {
+    var index = 0;
+    while ( (node = node.previousElementSibling) ) {
+        index++;
+    }
+    return index;
+};
+
+window.arrayMove = function(inputArray, oldIndex, newIndex) {
+    var array = inputArray.slice();
+    var element = array[oldIndex];
+    array.splice(oldIndex, 1);
+    array.splice(newIndex, 0, element);
+    return array;
+};
 
 /*
 CryptoJS v3.1.2

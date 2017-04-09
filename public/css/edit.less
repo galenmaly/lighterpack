@@ -136,9 +136,10 @@
 
 .lpLibraryList {
     border-top: 1px dotted #999;
+    display: flex;
     list-style: none;
-    margin: 0 10px 4px;
-    padding: 4px 0;
+    margin: 0 10px;
+    padding: 6px 0;
     position: relative;
 
     &:first-child {
@@ -146,12 +147,8 @@
         border-top: none;
     }
 
-    &::last-child {
+    &:last-child {
         border-bottom: none;
-    }
-
-    .lpRemove {
-        float: right;
     }
 
     &.lpActive {
@@ -163,9 +160,37 @@
         }
     }
 
-    .lpLibraryListSwitch:hover {
-        cursor: pointer;
-        text-decoration: underline;
+    &.gu-mirror {
+        border: 1px solid #999;
+        background: #606060;
+        color: #FFF;
+    }
+
+    .lpHandle {
+        height: 18px;
+        flex: 0 0 12px;
+        margin-right: 5px;
+    }
+
+    &:hover .lpHandle {
+        visibility: visible;
+    }
+
+    .lpListName {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    .lpRemove {
+        flex: 0 0 8px;
+        margin-bottom: 0;
     }
 }
 
@@ -180,7 +205,7 @@
     margin: 0 10px 5px;
     min-height: 43px;
     overflow: hidden;
-    padding: 5px 15px 0 5px;
+    padding: 5px 5px 0 15px;
     position: relative;
 
     &:first-child {
@@ -188,8 +213,14 @@
         border-top: none;
     }
 
-    &::last-child {
+    &:last-child {
         border-bottom: none;
+    }
+
+    &.gu-mirror {
+        border: 1px solid #999;
+        background: #606060;
+        color: #FFF;
     }
 
     .lpName {
@@ -218,16 +249,14 @@
     }
 
     .lpHandle {
-        display: none;
         height: 80px;
+        left: 0;
         position: absolute;
-        right: 0;
         top: 5px;
     }
 
      .lpRemove {
         bottom: 0;
-        display: none;
         position: absolute;
         right: 14px;
     }
@@ -245,10 +274,6 @@
         color: #FFF;
         padding: 10px;
         width: 235px;
-    }
-
-    &.lpItemNotInList .lpHandle, &.lpItemNotInList .lpRemove{
-        display: block;
     }
 }
 
@@ -618,35 +643,25 @@
     width: 800px;
 }
 
-.farbtastic {
-  position: relative;
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
 }
-.farbtastic * {
-  position: absolute;
-  cursor: crosshair;
+.gu-hide {
+  display: none !important;
 }
-.farbtastic, .farbtastic .wheel {
-  width: 195px;
-  height: 195px;
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
-.farbtastic .color, .farbtastic .overlay {
-  top: 47px;
-  left: 47px;
-  width: 101px;
-  height: 101px;
-}
-.farbtastic .wheel {
-  background: url(/images/wheel.png) no-repeat;
-  width: 195px;
-  height: 195px;
-}
-.farbtastic .overlay {
-  background: url(/images/mask.png) no-repeat;
-}
-.farbtastic .marker {
-  width: 17px;
-  height: 17px;
-  margin: -8px 0 0 -8px;
-  overflow: hidden;
-  background: url(/images/marker.png) no-repeat;
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
 }

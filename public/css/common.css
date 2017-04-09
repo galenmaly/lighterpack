@@ -9,7 +9,6 @@ html.lp,
   height: 100%;
   margin: 0;
   padding: 0;
-  text-align: center;
 }
 .lp hr {
   border: none;
@@ -484,7 +483,8 @@ html.lp,
 .lpCategory.dropHover {
   background: #A8D46F;
 }
-.lpCategory.ui-sortable-helper {
+.lpCategory.gu-mirror {
+  border: 1px solid #999;
   background: #F7F7F7;
 }
 #lpListDescription h2 {
@@ -526,6 +526,12 @@ input.lpCategoryName {
   display: flex;
   flex-direction: row;
   justify-content: stretch;
+}
+.lpItem.gu-mirror,
+.lpItemsHeader.gu-mirror,
+.lpItemsFooter.gu-mirror {
+  border: 1px solid #999;
+  background: #F7F7F7;
 }
 .lpItem .lpHandleCell,
 .lpItemsHeader .lpHandleCell,
