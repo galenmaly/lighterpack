@@ -32,6 +32,7 @@
 
         <copyList></copyList>
         <importCSV></importCSV>
+        <itemImage></itemImage>
         <itemLink></itemLink>
         <todo></todo>
         <help></help>
@@ -39,31 +40,6 @@
         <colorPicker></colorPicker>
 
         <!--<image-dialog></image-dialog>-->
-       
-        <!--<div class="lpDialog" id="itemImageDialog">
-            <div class="columns">
-                <div class="lpHalf">
-                    <h2>Add image by URL</h2>
-                    <form id="itemImageUrlForm">
-                        <input type="text" id="itemImageUrl" placeholder="Image URL"/>
-                        <input type="submit" class="lpButton" value="Save" />
-                        <a href="#" class="lpHref close">Cancel</a>
-                    </form>
-                </div>
-                <div class="lpHalf">
-                    <h2>Upload image = require(disk</h2>
-                    <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
-                    <button class="lpButton" id="itemImageUpload">Upload Image</button>
-                    <a href="#" class="lpHref close">Cancel</a>
-                    <p id="uploadingText" style="display:none;">Uploading image...</p>
-                    <form id="imageUpload">
-                        <input type="file" name="image" id="image" />
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div id="lpModalOverlay"></div>-->
     </div>
 </template>
 
@@ -80,6 +56,7 @@ const imageDialog = require("./imageDialog.vue");
 const list = require("../components/list.vue");
 
 const colorPicker = require("../components/colorpicker.vue");
+const itemImage = require("../components/item-image.vue");
 const itemLink = require("../components/item-link.vue");
 const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
@@ -101,7 +78,8 @@ module.exports = {
         colorPicker: colorPicker,
         itemLink: itemLink,
         copyList: copyList,
-        importCSV: importCSV
+        importCSV: importCSV,
+        itemImage: itemImage
     },
     data: function() {
         return {

@@ -14,7 +14,7 @@
         <input v-on:input="saveItem" type="text" v-model="item.name" class="lpName lpSilent" placeholder="Name" />
         <input v-on:input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
         <span class="lpActionsCell">
-            <i class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
+            <i v-on:click="updateItemImage" class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
             <i v-on:click="updateItemLink" class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
             <i v-if="library.optionalFields['worn']" v-on:click="toggleWorn" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn"></i>
             <i v-if="library.optionalFields['consumable']" v-on:click="toggleConsumable" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable"></i>
@@ -90,6 +90,9 @@ module.exports = {
         },
         updateItemLink: function() {
             bus.$emit("updateItemLink", this.item);
+        },
+        updateItemImage: function() {
+            bus.$emit("updateItemImage", this.item);
         },
         toggleWorn: function() {
             if (this.categoryItem.consumable) {

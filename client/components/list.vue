@@ -24,7 +24,7 @@
         </div>
 
         <ul class="lpCategories">
-            <category v-for="category in categories" :category="category" v-drag="category"></category>
+            <category v-for="category in categories" :category="category"></category>
         </ul>
 
         <hr />
