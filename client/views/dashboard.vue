@@ -33,13 +33,12 @@
         <copyList></copyList>
         <importCSV></importCSV>
         <itemImage></itemImage>
+        <itemViewImage></itemViewImage>
         <itemLink></itemLink>
         <todo></todo>
         <help></help>
         <account></account>
         <colorPicker></colorPicker>
-
-        <!--<image-dialog></image-dialog>-->
     </div>
 </template>
 
@@ -57,6 +56,7 @@ const list = require("../components/list.vue");
 
 const colorPicker = require("../components/colorpicker.vue");
 const itemImage = require("../components/item-image.vue");
+const itemViewImage = require("../components/item-view-image.vue");
 const itemLink = require("../components/item-link.vue");
 const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
@@ -79,7 +79,8 @@ module.exports = {
         itemLink: itemLink,
         copyList: copyList,
         importCSV: importCSV,
-        itemImage: itemImage
+        itemImage: itemImage,
+        itemViewImage: itemViewImage
     },
     data: function() {
         return {

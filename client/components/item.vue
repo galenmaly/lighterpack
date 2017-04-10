@@ -8,8 +8,7 @@
             <div class="lpItemHandle lpHandle" title="Reorder this item"></div>
         </span>
         <span v-if="library.optionalFields['images']" class="lpImageCell">
-            <img v-if="item.image" class="lpItemImage" :src="'https://i.imgur.com/' + item.image + 's.jpg'" />
-            <img v-if="!item.image && item.imageUrl" class="lpItemImage" :src="item.imageUrl" />
+            <img v-on:click="viewItemImage()" v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" />
         </span>
         <input v-on:input="saveItem" type="text" v-model="item.name" class="lpName lpSilent" placeholder="Name" />
         <input v-on:input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
@@ -67,6 +66,24 @@ module.exports = {
         },
         categoryItem() {
             return Vue.util.extend({}, this.itemContainer.categoryItem);
+        },
+        thumbnailImage() {
+            if (this.item.image) {
+                return "https://i.imgur.com/" + this.item.image + "s.jpg";
+            } else if (this.item.imageUrl) {
+                return this.item.imageUrl;
+            } else {
+                return "";
+            }
+        },
+        fullImage() {
+            if (this.item.image) {
+                return "https://i.imgur.com/" + this.item.image + "l.jpg";
+            } else if (this.item.imageUrl) {
+                return this.item.imageUrl;
+            } else {
+                return "";
+            }
         }
     },
     methods: {
@@ -93,6 +110,9 @@ module.exports = {
         },
         updateItemImage: function() {
             bus.$emit("updateItemImage", this.item);
+        },
+        viewItemImage: function() {
+            bus.$emit("viewItemImage", this.fullImage);
         },
         toggleWorn: function() {
             if (this.categoryItem.consumable) {
