@@ -140,6 +140,12 @@ const store = new Vuex.Store({
         updateItemImageUrl(state, args) {
             var item = state.library.getItemById(args.item.id);
             item.imageUrl = args.imageUrl;
+            state.library.optionalFields["images"] = true;
+        },
+        updateItemImage(state, args) {
+            var item = state.library.getItemById(args.item.id);
+            item.image = args.image;
+            state.library.optionalFields["images"] = true;
         },
         updateCategoryItem(state, args) {
             args.category.updateCategoryItem(args.categoryItem);

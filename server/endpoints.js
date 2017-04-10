@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 
+var fs = require("fs");
 var request = require("request");
 var Mustache = require("mustache");
 var extend = require('node.extend');
@@ -227,7 +228,7 @@ router.post("/register", function(req, res) {
     var password = req.body.password;
     var email = req.body.email;
     if (!username || username.length < 1 || username.length > 24) {
-        res.status(400).send("Invalid username.");
+        res.status(400).send({status: "Invalid username."});
         awesomeLog(req, "invalid username");
         return;
     }
@@ -246,7 +247,7 @@ router.post("/register", function(req, res) {
     db.users.find({username: username}, function(err, users) {
         if( err || users.length) {
             awesomeLog(req, "User Exists.");
-            res.status(400).send("User Exists.");
+            res.status(400).send({status: "That user already exists."});
             return;
         }
         require('crypto').randomBytes(48, function(ex, buf) {
@@ -267,37 +268,6 @@ router.post("/register", function(req, res) {
     });
 });
 
-/*app.get("/fixdb", function(req, res) {
-    db.users.find({}, function(err, users) {
-        if (!users.length) {
-            res.send(500, "fff");
-            return;
-        }
-        for (var i in users) {
-            var user = users[i];
-            user.library = JSON.parse(user.library);
-            db.users.save(user);
-        }
-        res.send("done");
-    });
-});*/
-/*
-app.get("/fixdb", function(req, res) {
-    db.users.find({username: "galen"}, function(err, users) {
-        if (!users.length) {
-            res.send(500, "fff");
-            return;
-        }
-        for (var i in users) {
-            var user = users[i];
-            user.password = "";
-            db.users.save(user);
-        }
-        res.send("done");
-    });
-});*/
-
-
 router.post("/signin", function(req, res) {
     authenticateUser(req, res, returnLibrary);
 });
@@ -315,10 +285,10 @@ function saveLibrary(req, res, user) {
     try {
         user.library = JSON.parse(req.body.data);
         db.users.save(user);
-        res.status(200).json({status:"success"});
+        res.status(200).json({status: "success"});
         awesomeLog(req, user.username);
     } catch(e) {
-        res.status(400).json({status:"error"});
+        res.status(400).json({status: "error"});
         awesomeLog(req, user.username + " - " + e);
     }
 }
@@ -332,18 +302,18 @@ router.post("/forgotPassword", function(req, res) {
     awesomeLog(req);
     var username = req.body.username;
     if (!username || username.length < 1 || username.length > 24) {
-        res.status(400).send("Invalid username.");
+        res.status(400).send({status: "Invalid username."});
         awesomeLog(req, "Bad forgot password:" + username);
         return;
     }
 
     db.users.find({username: username}, function(err, users) {
         if( err ) {
-            res.status(500).send(":(");
+            res.status(500).send({status: "An error occurred"});
             awesomeLog(req, "Forgot password lookup error for:" + username)
             return;
         } else if ( !users.length ) {
-            res.status(400).send("error.");
+            res.status(400).send({status: "An error occurred."});
             awesomeLog(req, "Forgot password for unknown user:" + username)
             return;
         }
@@ -386,18 +356,18 @@ router.post("/forgotUsername", function(req, res) {
     awesomeLog(req);
     var email = req.body.email;
     if (!email || email.length < 1) {
-        res.status(400).send("Invalid email.");
+        res.status(400).send({status: "Invalid email."});
         awesomeLog(req, "Bad forgot username:" + email);
         return;
     }
 
     db.users.find({email: email}, function(err, users) {
         if( err ) {
-            res.status(500).send(":(");
+            res.status(500).send({status: "An error occurred"});
             awesomeLog(req, "Forgot email lookup error for:" + email)
             return;
         } else if ( !users.length ) {
-            res.status(400).send("error.");
+            res.status(400).send({status: "An error occurred"});
             awesomeLog(req, "Forgot email for unknown user:" + email)
             return;
         }
@@ -445,7 +415,7 @@ function account(req, res, user) {
 
     db.users.save(user);
 
-    res.send("success");
+    res.status(200).send({status: "success"});
     return;
 };
 
@@ -492,8 +462,13 @@ function imageUpload(req, res, user) {
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         if (err) {
-            awesomelog(req, "form parse error");
-            res.status(500).send("an error occurred");
+            awesomeLog(req, "form parse error");
+            res.status(500).send({status: "An error occurred"});
+            return;
+        }
+        if (!files || !files.image) {
+            awesomeLog(req, "No image in upload");
+            res.status(500).send({status: "An error occurred"});
             return;
         }
 
@@ -507,17 +482,18 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.status(500).send("upload failed :(");
+                    res.status(500).send({status: "An error occurred."});
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    res.status(500).send("upload failed :((");
+                    res.status(500).send({status: "An error occurred."});
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.status(500).send("upload failed :(((");
+                    res.status(500).send({status: "An error occurred."});
                 } else {
+                    awesomeLog(req, body);
                     res.send(body);
                 }
             });
@@ -571,7 +547,12 @@ function awesomeLog(req, data) {
         console.log("awesome log but no req? why!?");
         return;
     }
-    if (!data) data = "";
+    if (!data) {
+        data = "";
+    }
+    if (data instanceof Object) {
+        data = JSON.stringify(data);
+    }
 
     var d = new Date();
     var time = d.toISOString();

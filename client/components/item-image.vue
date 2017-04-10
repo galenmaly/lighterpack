@@ -18,8 +18,8 @@
                     <h2>Upload image from disk</h2>
                     <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
                     <button v-on:click="triggerImageUpload" class="lpButton" id="itemImageUpload">Upload Image</button>
-                    <a href="#" class="lpHref close">Cancel</a>
-                    <p id="uploadingText" style="display:none;">Uploading image...</p>
+                    <a v-on:click="closeModal" class="lpHref close">Cancel</a>
+                    <p v-if="uploading">Uploading image...</p>
 
                     
                 </div>
@@ -41,7 +41,8 @@ export default {
     data: function() {
         return {
             imageInput: false,
-            item: false
+            item: false,
+            uploading: false
         }
     },
     methods: {
@@ -52,6 +53,45 @@ export default {
         },
         triggerImageUpload: function() {
             this.imageInput.click();
+        },
+        uploadImage: function(evt) {
+            if (!FormData) {
+                alert("Your browser is not supported for file uploads. Please update to a more modern browser.");
+                return;
+            }
+            var file = evt.target.files[0];
+            var name = file.name;
+            var size = file.size;
+            var type = file.type;
+
+            if (name.length < 1) {
+                return;
+            }
+            else if (size > 2500000) {
+                alert("Please upload a file less than 2.5mb");
+                return;
+            }
+            else if(type != 'image/png' && type != 'image/jpg' && !type != 'image/gif' && type != 'image/jpeg' ) {
+                alert("File doesnt match png, jpg or gif.");
+                return;
+            }
+            var formData = new FormData(document.getElementById("imageUpload"));
+
+            this.uploading = true;
+
+            return fetchJson("/imageUpload", {
+                method: "POST",
+                body:  formData,
+                credentials: 'same-origin',
+            })
+            .then((response) => {
+                this.uploading = false;
+                this.$store.commit("updateItemImage", {image: response.data.id, item: this.item});
+                this.closeModal();
+            }).catch((response) => {
+                this.uploading = false;
+                alert("Upload failed! If this issue persists please file a bug.");
+            });
         }
     },
     mounted: function() {
