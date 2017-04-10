@@ -343,13 +343,13 @@ Library.prototype.updateItem = function(item) {
 Library.prototype.removeItem = function(id) {
     var item = this.getItemById(id);
     for (var i in this.lists) {
-        var category = this.findCategoryWithItemById(id, i);
+        var category = this.findCategoryWithItemById(id, this.lists[i].id);
         if (category) {
             category.removeItem(id);
         }
     }
 
-    this.items.splice(this.items.indexOf[item], 1);
+    this.items.splice(this.items.indexOf(item), 1);
     delete this.idMap[id];
 
     return true;
@@ -365,22 +365,18 @@ Library.prototype.newCategory = function(args) {
 
 Library.prototype.removeCategory = function(id, force) {
     var category = this.getCategoryById(id);
-
     var list = this.findListWithCategoryById(id);
+
     if (list && list.categoryIds.length == 1 && !force) {
         alert("Can't remove the last category in a list!");
         return false;
-    } else if (list) {
-        var result = list.removeCategory(id);
-        if (result) {
-            delete this.categories[id];
-            return true;
-        } else {
-            return false;
-        }
     }
 
-    this.categories.splice(this.categories.indexOf[category], 1);
+    if (list) {
+        list.removeCategory(id);
+    }
+
+    this.categories.splice(this.categories.indexOf(category), 1);
     delete this.idMap[id];
 
     return true;
@@ -402,7 +398,7 @@ Library.prototype.removeList = function(id) {
         this.removeCategory(list.categoryIds[i], true);
     }
 
-    this.lists.splice(this.lists.indexOf[list], 1);
+    this.lists.splice(this.lists.indexOf(list), 1);
     delete this.idMap[id];
 
     if (this.defaultListId == id) {

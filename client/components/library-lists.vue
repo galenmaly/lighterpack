@@ -17,7 +17,7 @@
                 <span class='lpLibraryListSwitch lpListName' v-on:click="setDefaultList(list)">
                     {{list | listName}}
                 </span>
-                <a class='lpRemove speedbump' title="Remove this list" data-speedbump="removeList"><i class="lpSprite lpSpriteRemove"></i></a>
+                <a v-on:click="removeList(list)" class="lpRemove" title="Remove this list"><i class="lpSprite lpSpriteRemove"></i></a>
             </li>
         </ul>
     </section>
@@ -67,6 +67,15 @@ export default {
                 this.$store.commit("reorderList", {before: this.dragStartIndex, after: getElementIndex($el)});
                 drake.cancel(true);
             });
+        },
+        removeList: function(list) {
+            var callback = function() {
+                this.$store.commit("removeList", list);
+            };
+            var speedbumpOptions = {
+                body: "Are you sure you want to delete this list? This cannot be undone."
+            };
+            bus.$emit("initSpeedbump", callback, speedbumpOptions);
         }
     },
     mounted: function() {

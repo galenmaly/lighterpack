@@ -30,6 +30,7 @@
             </div>
         </div>
 
+        <speedbump></speedbump>
         <copyList></copyList>
         <importCSV></importCSV>
         <itemImage></itemImage>
@@ -60,6 +61,7 @@ const itemViewImage = require("../components/item-view-image.vue");
 const itemLink = require("../components/item-link.vue");
 const importCSV = require("../components/import-csv.vue");
 const copyList = require("../components/copy-list.vue");
+const speedbump = require("../components/speedbump.vue");
 
 module.exports = {
     name: "dashboard",
@@ -80,7 +82,8 @@ module.exports = {
         copyList: copyList,
         importCSV: importCSV,
         itemImage: itemImage,
-        itemViewImage: itemViewImage
+        itemViewImage: itemViewImage,
+        speedbump: speedbump
     },
     data: function() {
         return {

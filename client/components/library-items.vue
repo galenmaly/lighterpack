@@ -16,7 +16,7 @@
                 <span class="lpDescription">
                     {{item.description}}
                 </span>
-                <a class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently" data-speedbump="removeItem"><i class="lpSprite lpSpriteRemove"></i></a>
+                <a v-on:click="removeItem(item)" class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently"><i class="lpSprite lpSpriteRemove"></i></a>
                 <div class="lpHandle lpLibraryItemHandle" title="Reorder this item"></div>
             </li>
         </ul>
@@ -88,6 +88,15 @@ export default {
                 this.$store.commit("addItemToCategory", {itemId: this.itemDragId, categoryId: categoryId, dropIndex: getElementIndex($el) - 1});
                 drake.cancel(true);
             });
+        },
+        removeItem(item) {
+            var callback = function() {
+                this.$store.commit("removeItem", item);
+            };
+            var speedbumpOptions = {
+                body: "Are you sure you want to delete this item? This cannot be undone."
+            };
+            bus.$emit("initSpeedbump", callback, speedbumpOptions);
         }
     },
     mounted: function() {

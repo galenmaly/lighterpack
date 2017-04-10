@@ -80,6 +80,15 @@ const store = new Vuex.Store({
             list.calculateTotals();
             state.library.defaultListId = list.id;
         },
+        removeItem(state, item) {
+            state.library.removeItem(item.id);
+        },
+        removeCategory(state, category) {
+            state.library.removeCategory(category.id);
+        },
+        removeList(state, list) {
+            state.library.removeList(list.id);
+        },
         reorderList(state, args) {
             state.library.lists = arrayMove(state.library.lists, args.before, args.after);
         },

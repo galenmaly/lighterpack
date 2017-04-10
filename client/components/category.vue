@@ -13,7 +13,7 @@
                 <span v-if="library.optionalFields['price']" class="lpPriceCell">Price</span>
                 <span class="lpWeightCell">Weight</span>
                 <span class="lpQtyCell">qty</span>
-                <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory speedbump" title="Remove this category" data-speedbump="removeCategory"><i class="lpSprite lpSpriteRemove"></i></a></span>
+                <span class="lpRemoveCell"><a v-on:click="removeCategory(category)" class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
             </li>
             <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category"></item>
             <li class="lpFooter lpItemsFooter">
@@ -56,6 +56,15 @@ module.exports = {
         },
         updateCategoryName(evt) {
             this.$store.commit("updateCategoryName", {id: this.category.id, name: evt.target.value});
+        },
+        removeCategory(category) {
+            var callback = function() {
+                this.$store.commit("removeCategory", category);
+            };
+            var speedbumpOptions = {
+                body: "Are you sure you want to delete this category? This cannot be undone."
+            };
+            bus.$emit("initSpeedbump", callback, speedbumpOptions);
         }
     }
 }
