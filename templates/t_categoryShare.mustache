@@ -2,13 +2,13 @@
     <ul class="lpItems lpDataTable">
         <li class="lpHeader lpItemsHeader">
             <h2 class="lpCategoryName">{{name}}</h2>
-            <span class="lpPriceCell">Price</span>
+            {{#showPrices}}<span class="lpPriceCell">Price</span>{{/showPrices}}
             <span class="lpWeightCell">Weight</span>
             <span class="lpQtyCell">qty</span>
         </li>
         {{{items}}}
         <li class="lpFooter lpItemsFooter">
-            <span class="lpPriceCell lpNumber"><div class="lpPriceSubtotal">{{currencySymbol}}{{displayPriceSubtotal}}</div></span>
+            {{#showPrices}}<span class="lpPriceCell lpNumber"><div class="lpPriceSubtotal">{{currencySymbol}}{{displayPriceSubtotal}}</div></span>{{/showPrices}}
             <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal" mg="{{subtotal}}">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
             <span class="lpQtyCell lpNumber"><div class="lpSubtotal"><span class="lpQtySubtotal">{{qtySubtotal}}</span></div></span>
         </li>

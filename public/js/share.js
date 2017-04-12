@@ -2,6 +2,8 @@ listReport = function() {
     var $list = $(".lpList"),
         $categories = $(".lpCategories"),
         $chartContainer = $(".lpChart"),
+        $imageModal = $("#lpImageDialog"),
+        $modalOverlay = $(".lpModalOverlay"),
         chart = null,
         list = null,
         library = null;
@@ -13,6 +15,43 @@ listReport = function() {
             chartData = JSON.parse(unescape(chartData));
             addParents(chartData, false);
             chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+        }
+    }
+
+    function WeightToMg(value, unit) {
+        if (unit == "g") {
+            return value*1000;
+        } else if (unit == "kg") {
+            return value*1000000;
+        } else if (unit == "oz") {
+            return value*28349.5;
+        } else if (unit == "lb") {
+            return value*453592;
+        }
+    }
+
+    function MgToWeight(value, unit, display) {
+        if (typeof display == "undefined") display = false;
+        if (unit == "g") {
+            return Math.round(100*value/1000.0)/100;
+        } else if (unit == "kg") {
+            return  Math.round(100*value/1000000.0,2)/100;
+        } else if (unit == "oz") {
+            return Math.round(100*value/28349.5,2)/100;
+        } else if (unit == "lb") {
+            if (display) {
+                var out = "";
+                var poundsFloat = value/453592.0
+                var pounds = Math.floor(poundsFloat);
+                var oz = Math.round((poundsFloat%1)*16*100)/100
+                if (pounds) {
+
+                    out += "lb"
+                    if (pounds > 1) out += "s"
+                }
+            } else {
+                return Math.round(100*value/453592.0,2)/100;
+            }
         }
     }
 
@@ -68,17 +107,18 @@ listReport = function() {
             var imageUrl = $(this).attr("href");
             
             var $modalImage = $("<img src='"+imageUrl+"' />");
-            $("#lpImageDialog").empty().append($modalImage);
+            $imageModal.empty().append($modalImage);
             $modalImage.load(function() {
-                $("#lpImageDialog").show();
-                $("#lpModalOverlay").show();
+                $imageModal.show();
+                $modalOverlay.show();
                 centerDialog();
             });
         });
 
-        $("#lpModalOverlay").on("click", function() {
+        $modalOverlay.on("click", function() {
             if (!$(".lpDialog:visible").hasClass("sticky")) {
-                $("#lpModalOverlay, .lpDialog").fadeOut();
+                $modalOverlay.fadeOut();
+                $imageModal.fadeOut();
             }
         });
 

@@ -1,21 +1,20 @@
+const path = require("path");
+const fs = require("fs");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const config = require('config')
+const express = require('express');
 
-
-var express = require('express');
-var app = express();
+const app = express();
 app.enable('trust proxy');
-var oneDay = 86400000;
-var rootPath = __dirname + "/";
+const oneDay = 86400000;
 
-var extend = require('node.extend');
+const extend = require('node.extend');
 
 // Read in config file(s)
-var config = require('config')
-
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var compression = require('compression');
 
 var webpackConfig;
 var webpackCompiler;
@@ -30,17 +29,9 @@ webpackCompiler = webpack(webpackConfig);
 
 
 //I'm pretty sure there's a better way to do this:
-var fs = require("fs");
-eval(fs.readFileSync(rootPath+'public/js/sha3.js')+'');
-eval(fs.readFileSync(rootPath+'public/js/pies.js')+'');
+eval(fs.readFileSync(path.join(__dirname, 'public/js/sha3.js'))+'');
 
-
-const dataTypes = require("./client/dataTypes.js");
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
-
+const pies = require("./client/pies.js");
 
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));
 app.use(compression());
@@ -51,11 +42,10 @@ app.use(bodyParser.urlencoded({
   limit: '50mb'
 }));
 
-
-
 const endpoints = require("./server/endpoints.js");
+const views = require("./server/views.js");
 app.use("/", endpoints);
-
+app.use("/", views);
 
 var d = new Date();
 var time = d.toString().substr(0,24);
@@ -69,8 +59,6 @@ console.log(time);
         console.log('Listening on [' + bind + ']:' +config.get('port'));
     }
 )*/
-
-
 
 if (true) {
     webpackConfig = require("./webpack.development.config");
@@ -95,9 +83,9 @@ new WebpackDevServer(webpack(webpackConfig), {
         cachedAssets: false,
         colors: { level: 2 } }
 }).listen(8080, function(err, result) {
-if (err) {
-    return console.log(err);
-}
+    if (err) {
+        return console.log(err);
+    }
 
-console.log("Webpack dev server listening on port 8080");
+    console.log("Webpack dev server listening on port 8080");
 });

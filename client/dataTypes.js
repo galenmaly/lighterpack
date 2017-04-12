@@ -1,3 +1,7 @@
+if (typeof Vue === "undefined") {
+    var Vue = require("vue");
+}
+
 const colorUtils = require("./utils/color.js");
 const weightUtils = require("./utils/weight.js");
 
@@ -13,30 +17,6 @@ const Item = function(args) {
     this.imageUrl = "";
     this.url = "";
     return this;
-}
-
-Item.prototype.render = function(args) {
-    var classes = "";
-    if (args.classes) classes = args.classes;
-    if (this.deleteIfEmpty) classes += " deleteIfEmpty";
-
-    var unit = this.authorUnit;
-    if (args.unit) unit = args.unit;
-
-    var showImages = false;
-    if (args.showImages) showImages = true;
-
-    var displayWeight = weightUtils.MgToWeight(this.weight, unit);
-
-    var displayPrice = this.price ? this.price.toFixed(2) : "";
-
-    var unitSelect = "";
-
-    var starClass = this.star ? "lpStar" + this.star : "";
-    var out = {classes: classes, unit: unit, displayWeight: displayWeight, unitSelect: unitSelect, showImages: showImages, starClass: starClass, displayPrice: displayPrice, currencySymbol: args.currencySymbol};
-    Vue.util.extend(out, this);
-
-    return Mustache.render(args.itemTemplate, out);
 }
 
 Item.prototype.save = function() {
@@ -171,15 +151,6 @@ List.prototype.removeCategory = function (categoryId) {
 
     this.categoryIds.splice(index,1);
     return true;
-}
-
-List.prototype.render = function (args) {
-    var out = "";
-    for (var i in this.categoryIds) {
-        var category = this.library.getCategoryById(this.categoryIds[i]);
-        if (category) out += category.render(args);
-    }
-    return out;
 }
 
 List.prototype.renderChart = function (type, linkParent) {
@@ -430,33 +401,6 @@ Library.prototype.copyList = function(id) {
     }
 
     return copiedList;
-}
-
-Library.prototype.render = function(args) {
-    Vue.util.extend(args, {itemUnit: this.itemUnit, totalUnit: this.totalUnit})
-    return this.categoryItems[this.defaultListId].render(args);
-}
-
-Library.prototype.renderLists = function(template) {
-    var out = "";
-    for (var i in this.lists) {
-        var list = this.lists[i];
-        out += Mustache.render(template, list);
-    }
-    return out
-}
-
-Library.prototype.renderLibrary = function(template) {
-    var out = "";
-    var itemsInCurrentList = this.getItemsInCurrentList();
-    for (var i in this.items) {
-        var item = this.items[i]
-        var temp = {itemInCurrentList: false};
-        if (itemsInCurrentList.indexOf(item.id) > -1) temp.itemInCurrentList = true;
-        Vue.util.extend(temp, item)
-        out += item.render({itemTemplate: template});
-    }
-    return out;
 }
 
 Library.prototype.renderChart = function(type) {
