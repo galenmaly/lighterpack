@@ -237,15 +237,6 @@ function init() {
             templates[fileShort] = data.toString();
         });
 
-        fs.readFile(path.join(__dirname, "../templates/index.mustache"), function(err, data) {
-            if (!err) {
-                indexTemplate = data.toString();
-                indexTemplate = Mustache.render(indexTemplate, templates);
-            } else {
-                console.log("ERROR reading index.mustache");
-            }
-        });
-
         fs.readFile(path.join(__dirname, "../templates/share.mustache"), function(err, data) {
             if (!err) {
                 shareTemplate = data.toString();
