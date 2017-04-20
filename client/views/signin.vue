@@ -12,9 +12,9 @@
 
             <p class="lpSuccess"></p>
             <form class="signin" v-on:submit="signin($event)">
-                <div v-if="error" class="lpError">{{error}}</div>
+                <p v-if="error" class="lpError">{{error}}</p>
                 <input v-focus-on-create type="text" placeholder="Username" name="username" class="username" v-model="username"/>
-                <input type="password" placeholder="Password" name="password" class="password" v-model="password"/>
+                <input type="password" placeholder="Password" name="password" class="password" v-model="password" v-select-on-bus="'focus-signin-password'"/>
                 <input type="submit" value="Sign in" class="lpButton" />
                 <span class="status"></span>
                 <router-link to="/forgotPassword"><a class="lpHref alternateAction">Forgot username/password?</a></router-link>
@@ -46,7 +46,7 @@ export default {
         signin: function(evt) {
             evt.preventDefault();
 
-            var username = this.username.toLowerCase();
+            var username = this.username.toLowerCase().trim();
             var hash = CryptoJS.SHA3(this.password+username);
             hash = hash.toString(CryptoJS.enc.Base64);
 
@@ -71,7 +71,8 @@ export default {
                     error = response.json.status;
                 }
                 this.error = error;
-                //$(".password", form).val("").focus(); //TODO
+                bus.$emit("focus-signin-password");
+                this.password = "";
             });
         }
     }

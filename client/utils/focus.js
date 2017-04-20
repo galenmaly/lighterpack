@@ -14,6 +14,14 @@ Vue.directive("focus-on-create", {
     }
 });
 
+Vue.directive("focus-on-bus", {
+    inserted: function (el, args) {
+        bus.$on(args.value, () => {
+            el.focus();
+        });
+    }
+});
+
 Vue.directive("select-on-bus", {
     inserted: function (el, args) {
         bus.$on(args.value, () => {
