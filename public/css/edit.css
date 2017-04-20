@@ -586,3 +586,13 @@ h2 .alternateAction {
   overflow: hidden;
   background: url(/images/marker.png) no-repeat;
 }
+/* Sorting */
+.lpHeader .lpSprite {
+  opacity: 0;
+}
+.lpHeader .sorted .lpSprite {
+  opacity: 1;
+}
+.lpHeader .sorted.desc .lpSprite {
+  transform: rotate(-180deg);
+}

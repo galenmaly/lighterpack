@@ -89,6 +89,81 @@ editLists = function() {
         }
     }
 
+    function shouldSort(list, sortProp) {
+        for(var i = 1; i < list.length; i++) {
+            if (Number($(list[i]).find('.' + sortProp).val()) !== 
+                Number($(list[0]).find('.' + sortProp).val())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    var sorted =  false,
+        newList = [];
+    function sort(event) {
+        var list = $(event.target).closest('ul.lpItems'),
+            listItems = list.find('li.lpItem'),
+            titleRow = list.find('.lpHeader'),
+            headerClass = $(this).attr('class'),
+            sortProp;
+        
+        switch(true) {
+            case headerClass.indexOf('Price') != -1:
+                sortProp = 'lpWeight'
+            break;
+            case headerClass.indexOf('Weight') != -1:
+                sortProp = 'lpWeight'
+            break;
+            case headerClass.indexOf('Qty') != -1:
+                sortProp =  'lpQty';
+            break;
+        };
+
+        if (shouldSort(listItems, sortProp)) {
+            if (!sorted || !$(this).hasClass('sorted')) {
+
+                newList = listItems.sort(function(a, b) {
+                    a = Number($(a).find('.' + sortProp).val());
+                    b = Number($(b).find('.' + sortProp).val());
+                    return b - a;
+                });
+                
+                listItems.each(function(idx, item) {
+                    if ($(item).hasClass('lpItem')) {
+                        $(item).remove();
+                    }
+                });
+
+                newList.each(function(idx, item) {
+                    $(item).insertAfter(titleRow);
+                });
+
+                sorted = true;
+                $(this).removeClass('desc');
+                $(this).addClass('asc');
+            } else {
+                newList = $(newList).get().reverse();
+                
+                $(newList).each(function(idx, item) {
+                    $(item).insertAfter(titleRow)
+                });
+
+                sorted = false;
+                $(this).removeClass('asc');
+                $(this).addClass('desc');
+            }
+        }
+
+        $(this).addClass('sorted');
+        $(this).siblings().removeClass('sorted');
+    }
+
+    function bindSortEvents() {
+        $('.lpHeader .lpWeightCell').on('click', sort);
+        $('.lpHeader .lpQtyCell').on('click', sort);
+    }
+
     function signin() {
         $.ajax({
             url: "/signin",
@@ -102,6 +177,7 @@ editLists = function() {
                 signedIn(data.username);
                 library.load(JSON.parse(data.library));
                 initWithLibrary();
+                bindSortEvents();
             }
         });
     }
@@ -1597,6 +1673,7 @@ editLists = function() {
 
     init();
 };
+
 
 $(function() {
     editLists();
