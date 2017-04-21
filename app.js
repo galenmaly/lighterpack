@@ -26,11 +26,6 @@ if (true) { //TODO
 }
 webpackCompiler = webpack(webpackConfig);
 
-
-
-//I'm pretty sure there's a better way to do this:
-eval(fs.readFileSync(path.join(__dirname, 'public/js/sha3.js'))+'');
-
 const pies = require("./client/pies.js");
 
 app.use(express.static(__dirname + '/public', { maxAge: oneDay }));

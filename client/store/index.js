@@ -13,6 +13,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         library: false,
+        syncToken: false,
         saveType: null,
         saveTimeout: null,
         lastSaveTime: 0,
@@ -22,6 +23,9 @@ const store = new Vuex.Store({
     mutations: {
         setSaveType(state, saveType) {
             state.saveType = saveType;
+        },
+        setSyncToken(state, syncToken) {
+            state.syncToken = syncToken;
         },
         setLastSaveTime(state, lastSaveTime) {
             state.lastSaveTime = lastSaveTime;
@@ -112,8 +116,6 @@ const store = new Vuex.Store({
             }
         },
         addItemToCategory(state, args) {
-            console.log(args);
-
             var item = state.library.getItemById(args.itemId);
             var dropCategory = state.library.getCategoryById(args.categoryId);
 
@@ -223,7 +225,7 @@ const store = new Vuex.Store({
             context.commit("setLoggedIn", false)
         },
         loadRemote: function(context) {
-            return fetchJson("/signin/", {
+            return fetchJson("/signin", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -231,6 +233,7 @@ const store = new Vuex.Store({
                 credentials: 'same-origin'
             })
             .then((response) => {
+                context.commit('setSyncToken', response.syncToken);
                 context.commit('loadLibraryData', response.library);
                 context.commit('setSaveType', "remote");
                 context.commit("setLoggedIn", response.username)
@@ -249,7 +252,7 @@ const store = new Vuex.Store({
     plugins: [
         function save(store) {
             store.subscribe((mutation, state) => {
-                const ignore = ["setSaveType", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"]
+                const ignore = ["setSaveType", "setSyncToken", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"]
                 if (!state.library || ignore.indexOf(mutation.type) > -1) {
                     return;
                 }
@@ -269,12 +272,16 @@ const store = new Vuex.Store({
 
                     return fetchJson("/saveLibrary/", {
                         method: "POST",
-                        body:  JSON.stringify({data: saveData}),
+                        body:  JSON.stringify({syncToken: state.syncToken, username: state.loggedIn, data: saveData}),
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         credentials: 'same-origin',
-                    }).catch((response) => {
+                    })
+                    .then((response) => {
+                        store.commit("setSyncToken", response.syncToken);
+                    })
+                    .catch((response) => {
                         var error = "An error occurred while attempting to save your data.";
                         if (response.json && response.json.status) {
                             error = response.json.status;

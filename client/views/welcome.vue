@@ -9,19 +9,10 @@
             <div class="columns">
                 <div class="lpHalf">
                     <h3>Register an Account</h3>
-                    <form class="register">
-                        <div class="lpError"></div>
-                        <input v-focus-on-create type="text" placeholder="Username" name="username" class="username"/>
-                        <input type="email" placeholder="Email" name="email" class="email"/>
-                        <input type="password" placeholder="Password" name="password" class="password"/>
-                        <input type="password" placeholder="Confirm Password" name="passwordConfirm" class="passwordConfirm"/>
-                        <div class="lpButtons">
-                            <input type="submit" value="Register" class="lpButton" />
-                            <a class="lpHref lpGetStarted" href="#">Skip Registration</a>
-                            <span class="status"></span>
-                            <router-link to="/signin"><a class="lpHref alternateAction">Already registered?</a></router-link>
-                        </div>
-                    </form>
+
+                    <registerForm></registerForm>
+                    <a class="lpHref lpGetStarted" href="#">Skip Registration</a>
+                    <router-link to="/signin" class="lpHref">Already registered?</router-link>
                 </div>
                 <div class="lpHalf">
                     <ul id="lpValueProp">
@@ -47,12 +38,14 @@
 
 <script>
 import blackoutFooter from "../components/blackout-footer.vue";
+import registerForm from "../components/register-form.vue";
 
 export default {
     name: "welcome",
     mixins: [],
     components: {
-        blackoutFooter: blackoutFooter
+        blackoutFooter: blackoutFooter,
+        registerForm: registerForm
     },
     data: function() {
         return {

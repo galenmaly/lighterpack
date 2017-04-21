@@ -46,17 +46,13 @@ export default {
         signin: function(evt) {
             evt.preventDefault();
 
-            var username = this.username.toLowerCase().trim();
-            var hash = CryptoJS.SHA3(this.password+username);
-            hash = hash.toString(CryptoJS.enc.Base64);
-
             return fetchJson("/signin/", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify({username: username, password: hash})
+                body: JSON.stringify({username: this.username, password: this.password})
             })
             .then((response) => {
                 this.$store.commit('loadLibraryData', response.library);

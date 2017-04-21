@@ -16,6 +16,7 @@
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
     "babel-preset-es2015": "^6.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.14.2",
     "compression": "^1.6.0",
     "config": "^1.21.0",

@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const crypto = require("crypto");
 const path = require("path");
 const express = require("express");
 const router = express.Router();
@@ -20,47 +22,86 @@ const Category = dataTypes.Category;
 const List = dataTypes.List;
 const Library = dataTypes.Library;
 
+//one day in many years this can go away.
+eval(fs.readFileSync(path.join(__dirname, '../public/js/sha3.js'))+'');
+
 router.post("/register", function(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var email = req.body.email;
-    if (!username || username.length < 1 || username.length > 24) {
-        res.status(400).send({status: "Invalid username."});
-        awesomeLog(req, "invalid username");
-        return;
+    const username = req.body.username.trim();
+    const password = req.body.password;
+    const email = req.body.email;
+
+    var errors = [];
+
+    if (!username) {
+        errors.push({field: "username", message: "Please enter a username."});
     }
-    if (!password) {
-        res.status(400).send("Invalid password.");
-        awesomeLog(req, "invalid Password");
-        return;
+
+    if (username && (username.length < 3 || username.length > 32)) {
+        errors.push({field: "username", message: "Please enter a username between 3 and 32 characters."});
     }
+
     if (!email) {
-        res.status(400).send("Invalid email.");
-        awesomeLog(req, "invalid Email");
-        return;
+        errors.push({field: "email", message: "Please enter an email."});
     }
+
+    if (!password) {
+        errors.push({field: "password", message: "Please enter a password."});
+    }
+
+    if (password && (password.length < 5 || password.length > 60)) {
+        errors.push({field: "password", message: "Please enter a password between 5 and 60 characters."});
+    }
+
+    if (errors.length) {
+        return res.status(400).json({errors});
+    }
+
     awesomeLog(req, username);
 
     db.users.find({username: username}, function(err, users) {
-        if( err || users.length) {
-            awesomeLog(req, "User Exists.");
-            res.status(400).send({status: "That user already exists."});
-            return;
+        if (err || users.length) {
+            awesomeLog(req, "User exists.");
+            return res.status(400).send({errors: [{field: "username", message: "That username already exists, please pick a different username."}]});
         }
-        require('crypto').randomBytes(48, function(ex, buf) {
-            var token = buf.toString('hex');
-            var newUser = {
-                username: username,
-                password: password,
-                email: email,
-                token: token,
-                library: JSON.parse(req.body.library)
+
+        db.users.find({email: email}, function(err, users) {
+            if (err || users.length) {
+                awesomeLog(req, "User email exists.");
+                return res.status(400).send({errors: [{field: "email", message: "A user with that email already exists."}]});
             }
-            awesomeLog(req, "Saving new user.");
-            db.users.save(newUser);
-            var out = {username: username, library: JSON.stringify(newUser.library)};
-            res.cookie("lp", token,  { path: "/", maxAge: 365*24*60*1000 });
-            res.send(out);
+
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(password, salt, function(err, hash) {
+                    crypto.randomBytes(48, function(ex, buf) {
+                        var token = buf.toString('hex');
+                        var library;
+                        if (req.body.library) {
+                            try {
+                               library = JSON.parse(req.body.library)
+                            }
+                            catch (e) {
+                               return res.status(400).send({errors: [{message: "Unable to parse your library. Contact support."}]});
+                            } 
+                        } else {
+                            library = new Library().save();
+                        }
+
+                        var newUser = {
+                            username: username,
+                            password: hash,
+                            email: email,
+                            token: token,
+                            library: library,
+                            syncToken: 0
+                        }
+                        awesomeLog(req, "Saving new user.");
+                        db.users.save(newUser);
+                        var out = {username: username, library: JSON.stringify(newUser.library), syncToken: 0};
+                        res.cookie("lp", token,  { path: "/", maxAge: 365*24*60*1000 });
+                        return res.status(200).json(out);
+                    });
+                });
+            });
         });
     });
 });
@@ -70,8 +111,8 @@ router.post("/signin", function(req, res) {
 });
 
 function returnLibrary(req, res, user) {
-    res.send({username: user.username, library: JSON.stringify(user.library)});
     awesomeLog(req, user.username);
+    return res.send({username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken});
 }
 
 router.post("/saveLibrary", function(req, res) {
@@ -79,15 +120,30 @@ router.post("/saveLibrary", function(req, res) {
 });
 
 function saveLibrary(req, res, user) {
-    try {
-        user.library = JSON.parse(req.body.data);
-        db.users.save(user);
-        res.status(200).json({status: "success"});
-        awesomeLog(req, user.username);
-    } catch(e) {
-        res.status(400).json({status: "error"});
-        awesomeLog(req, user.username + " - " + e);
+    if (!req.body.username || typeof req.body.syncToken === "undefined" || !req.body.data) {
+        return res.status(400).json({status: "An error occurred while saving your data."});
     }
+
+    if (req.body.username != user.username) {
+        return res.status(401).json({status: "Please login again."});
+    }
+
+    if (req.body.syncToken != user.syncToken) {
+        return res.status(400).json({status: "Your list is out of date - please refresh your browser."});
+    }
+
+    var library;
+    try {
+        library = JSON.parse(req.body.data)
+    } catch(e) {
+        return res.status(400).json({errors: [{message: "An error occurred while saving your data - unable to parse library. If this persists, please contact support."}]});
+    }
+
+    user.library = library;
+    user.syncToken++;
+    db.users.save(user);
+    awesomeLog(req, user.username);
+    return res.status(200).json({status: "success", syncToken: user.syncToken});
 }
 
 router.post("/externalId", function(req, res) {
@@ -99,20 +155,17 @@ router.post("/forgotPassword", function(req, res) {
     awesomeLog(req);
     var username = req.body.username;
     if (!username || username.length < 1 || username.length > 24) {
-        res.status(400).send({status: "Invalid username."});
         awesomeLog(req, "Bad forgot password:" + username);
-        return;
+        return res.status(400).send({status: "Invalid username."});
     }
 
     db.users.find({username: username}, function(err, users) {
         if( err ) {
-            res.status(500).send({status: "An error occurred"});
             awesomeLog(req, "Forgot password lookup error for:" + username)
-            return;
+            return res.status(500).send({status: "An error occurred"});
         } else if ( !users.length ) {
-            res.status(400).send({status: "An error occurred."});
             awesomeLog(req, "Forgot password for unknown user:" + username)
-            return;
+            return res.status(400).send({status: "An error occurred."});
         }
         var user = users[0];
         require('crypto').randomBytes(12, function(ex, buf) {
@@ -140,9 +193,9 @@ router.post("/forgotPassword", function(req, res) {
                 } else {
                     db.users.save(user);
                     var out = {username: username};
-                    res.send(out);
                     awesomeLog(req, "Message sent: " + response.message);
                     awesomeLog(req, "password changed for user:" + username);
+                    return res.send(out);
                 }
             });
         });
@@ -153,20 +206,17 @@ router.post("/forgotUsername", function(req, res) {
     awesomeLog(req);
     var email = req.body.email;
     if (!email || email.length < 1) {
-        res.status(400).send({status: "Invalid email."});
         awesomeLog(req, "Bad forgot username:" + email);
-        return;
+        return res.status(400).send({status: "Invalid email."});
     }
 
     db.users.find({email: email}, function(err, users) {
-        if( err ) {
-            res.status(500).send({status: "An error occurred"});
+        if (err) {
             awesomeLog(req, "Forgot email lookup error for:" + email)
-            return;
+            return res.status(500).send({status: "An error occurred"});
         } else if ( !users.length ) {
-            res.status(400).send({status: "An error occurred"});
             awesomeLog(req, "Forgot email for unknown user:" + email)
-            return;
+            return res.status(400).send({status: "An error occurred"});
         }
         var user = users[0];
         var username = user.username;
@@ -186,9 +236,9 @@ router.post("/forgotUsername", function(req, res) {
                 awesomeLog(req, error);
             } else {
                 var out = {email: email};
-                res.send(out);
                 awesomeLog(req, "Message sent: " + response.message);
                 awesomeLog(req, "sent username message for user:" + username);
+                return res.send(out);
             }
         });
     });
@@ -199,52 +249,78 @@ router.post("/account", function(req, res) {
 });
 
 function account(req, res, user) {
-    awesomeLog(req, user.name);
-    if (req.body.newPassword) {
-        user.password = req.body.newPassword;
-        awesomeLog(req, "Changing PW - " + user.username);
-    }
+    //TODO: check for duplicate emails
 
-    if (req.body.newEmail) {
-        user.email = req.body.newEmail;
-        awesomeLog(req, "Changing Email - " + user.username);
-    }
+    verifyPassword(user.username, req.body.currentPassword)
+    .then((user) => {
+        if (req.body.newPassword) {
+            var errors = [];
 
-    db.users.save(user);
+            if (req.body.newPassword.length < 5 || req.body.newPassword.length > 60) {
+                errors.push({field: "newPassword", message: "Please enter a password between 5 and 60 characters."});
+            }
 
-    res.status(200).send({status: "success"});
-    return;
-};
+            if (errors.length) {
+                return res.status(400).json({errors});
+            }
 
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(req.body.newPassword, salt, function(err, hash) {
+                    user.password = hash;
+                    awesomeLog(req, "Changing PW - " + user.username);
+
+                    if (req.body.newEmail) {
+                        user.email = req.body.newEmail;
+                        awesomeLog(req, "Changing Email - " + user.username);
+                    }
+
+                    db.users.save(user);
+                    return res.status(200).send({status: "success"});
+                });
+            });
+        } else if (req.body.newEmail) {
+            user.email = req.body.newEmail;
+            awesomeLog(req, "Changing Email - " + user.username);
+            db.users.save(user);
+            return res.status(200).send({status: "success"});
+        }
+    })
+    .catch((err) => {
+        res.status(400).send({errors: [{field: "currentPassword", message: "Your current password is incorrect."}]});
+    });
+}
 
 function externalId(req, res, user) {
     var filePath = path.join(__dirname, "extIds.txt");
 
-    fs.readFile(filePath, function(err, data) { // read file to memory
+    fs.readFile(filePath, function(err, data) {
         if (!err) {
-            data = data.toString(); // stringify buffer
-            var position = data.indexOf('\n'); // find position of new line element
-            if (position != -1) { // if new line element found
-                var myId = data.substr(0, position);
-                data = data.substr(position + 1); // subtract string based on first line length
-                fs.writeFile(filePath, data, function(err) { // write file
-                    if (err) { // if error, report
+            data = data.toString();
+            var position = data.indexOf('\n');
+            if (position != -1) {
+                var myId = data.substr(0, position).trim();
+                data = data.substr(position + 1);
+                fs.writeFile(filePath, data, function(err) {
+                    if (err) {
                         awesomeLog(req, err);
                     }
                 });
-                res.send(myId);
                 awesomeLog(req, user.username + " - " + myId);
 
                 if (typeof user.externalIds == "undefined") user.externalIds = [myId];
                 else user.externalIds.push(myId);
 
                 db.users.save(user);
+
+                return res.status(200).send(myId);
             } else {
                 awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
+                return res.status(500).send({status: "An error occurred, please try again later."});
             }
         } else {
             awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
             awesomeLog(req, err);
+            return res.status(500).send({status: "An error occurred, please try again later."});
         }
     });
 }
@@ -260,13 +336,11 @@ function imageUpload(req, res, user) {
     form.parse(req, function(err, fields, files) {
         if (err) {
             awesomeLog(req, "form parse error");
-            res.status(500).send({status: "An error occurred"});
-            return;
+            return res.status(500).send({status: "An error occurred"});
         }
         if (!files || !files.image) {
             awesomeLog(req, "No image in upload");
-            res.status(500).send({status: "An error occurred"});
-            return;
+            return res.status(500).send({status: "An error occurred"});
         }
 
         var path = files.image.path;
@@ -279,19 +353,19 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.status(500).send({status: "An error occurred."});
+                    return res.status(500).send({status: "An error occurred."});
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    res.status(500).send({status: "An error occurred."});
+                    return res.status(500).send({status: "An error occurred."});
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    res.status(500).send({status: "An error occurred."});
+                    return res.status(500).send({status: "An error occurred."});
                 } else {
                     awesomeLog(req, body);
-                    res.send(body);
+                    return res.send(body);
                 }
             });
         });
@@ -300,43 +374,82 @@ function imageUpload(req, res, user) {
 
 function authenticateUser(req, res, callback) {
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
-        res.status(401).json({status: "Please Authenticate"});
-        return;
+        return res.status(401).json({status: "Please log in."});
     }
-    if (req.body.username) {
-        db.users.find({username: req.body.username, password: req.body.password}, function(err, users) {
-            if (err) {
-                res.status(500).json({status: "An error occurred, please try again later."});
-                awesomeLog(req, "Error on authenticateUser for:" + req.body.username + ", " + req.body.password )
-                return;
-            } else if (!users || !users.length) {
-                    res.status(401).json({status: "Invalid username and/or password."});
-                    awesomeLog(req, "Bad password for: "+req.body.username);
-                    return;
+    if (req.body.username && req.body.password) {
+        const username = req.body.username.toLowerCase().trim();
+        const password = req.body.password;
+        verifyPassword(username, password)
+        .then((user) => {
+            generateSession(req, res, user, callback);
+        })
+        .catch((err) => {
+            console.log(err);
+            if (err.code && err.status) {
+                awesomeLog(req, err.status)
+                res.status(err.code).send({status: err.status});
+            } else {
+                res.status(500).send("An error occurred, please try again later.");
             }
-            var user = users[0]
-            require("crypto").randomBytes(48, function(ex, buf) {
-                    var token = buf.toString("hex");
-                    user.token = token;
-                    db.users.save(user);
-                    res.cookie("lp", token, { path: "/", maxAge: 365*24*60*1000 });
-                    callback(req, res, user);
-            });
         });
     } else {
         db.users.find({token: req.cookies.lp}, function(err, users) {
             if (err) {
-                res.status(500).json({status: "An error occurred, please try again later."});
                 awesomeLog(req, "Error on authenticateUser else for:" + req.body.username + ", " + req.body.password )
-                return;
+                return res.status(500).json({status: "An error occurred, please try again later."});;
             } else if (!users || !users.length) {
-                    awesomeLog(req, "bad cookie!");
-                    res.status(401).json({status: "Please log in again."});
-                    return;
+                awesomeLog(req, "bad cookie!");
+                return res.status(401).json({status: "Please log in again."});
             }
             callback(req, res, users[0]);
         });
     }
+}
+
+function verifyPassword(username, password) {
+    return new Promise((resolve, reject) => {
+        const sha3password = CryptoJS.SHA3(password + username).toString(CryptoJS.enc.Base64);
+
+        db.users.find({username: username}, function(err, users) {
+            if (err) {
+                reject({code: 500, status: "An error occurred, please try again later."});
+            } else if (!users || !users.length) {
+                reject({code: 404, status: "Invalid username and/or password."});
+            }
+
+            const user = users[0];
+
+            bcrypt.compare(password, user.password, function(err, result) {
+                if (err) {
+                    reject({code: 500, status: "An error occurred, please try again later."});
+                }
+                if (!result) {
+                    bcrypt.compare(sha3password, user.password, function(err, result) {
+                        if (err) {
+                            reject({code: 500, status: "An error occurred, please try again later."});
+                        }
+                        if (!result) {
+                            reject({code: 404, status: "Invalid username and/or password."});
+                        } else {
+                            resolve(user);
+                        }
+                    });
+                } else {
+                    resolve(user);
+                }
+            });
+        });
+    });
+}
+
+function generateSession(req, res, user, callback) {
+    crypto.randomBytes(48, function(ex, buf) {
+        var token = buf.toString("hex");
+        user.token = token;
+        db.users.save(user);
+        res.cookie("lp", token, { path: "/", maxAge: 365*24*60*1000 });
+        callback(req, res, user);
+    });
 }
 
 module.exports = router;

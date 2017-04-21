@@ -11,7 +11,6 @@
             <h2>Account Settings</h2>
 
             <form id="accountForm" v-on:submit="updateAccount($event)">
-                <div class="lpError"></div>
                 <input type="text" name="username" class="username" disabled :value="username"/>
                 <input v-model="currentPassword" type="password" placeholder="Current Password" name="currentPassword" class="currentPassword"/>
                 <hr>
@@ -20,8 +19,12 @@
                 <input v-model="newPassword" type="password" placeholder="New Password" name="newPassword" class="newPassword"/>
                 <input v-model="confirmNewPassword" type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword"/>
 
+                <ul class="lpError" v-if="errors">
+                    <li v-for="error in errors">{{error.message}}</li>
+                </ul>
+
                 <input type="submit" value="Submit" class="lpButton" />
-                <a href="#" class="lpHref close">Cancel</a>
+                <a v-on:click="closeModal" class="lpHref">Cancel</a>
                 <span class="status"></span>
             </form>
         </div>
@@ -37,7 +40,7 @@ export default {
     mixins: [modalMixin],
     data: function() {
         return {
-            error: false,
+            errors: [],
             currentPassword: "",
             newEmail: "",
             newPassword: "",
@@ -56,25 +59,31 @@ export default {
         updateAccount: function(evt) {
             evt.preventDefault();
 
-            this.error = "";
-            if (!this.currentPassword) this.error = "Please enter a password.";
-            if (this.newPassword && this.newPassword != this.confirmNewPassword) this.error = "New passwords don't match!";
+            this.errors = [];
 
-            if (this.error) {
+            if (!this.currentPassword) {
+                this.errors.push({field:"currentPassword", message: "Please enter your current password."});
+            }
+
+            if (this.newPassword && this.newPassword != this.confirmNewPassword) {
+                this.errors.push({field:"newPassword", message: "Your passwords don't match."});
+            }
+
+            if (this.newPassword && (this.newPassword.length < 5 || this.newPassword.length > 60)) {
+                this.errors.push({field:"newPassword", message: "Please enter a password between 5 and 60 characters."});
+            }
+
+            if (this.errors.length) {
                 return;
             }
 
-            var hash = CryptoJS.SHA3(this.currentPassword+this.username);
-            hash = hash.toString(CryptoJS.enc.Base64);
-            var data = {username: this.username, password: hash}
+            var data = {username: this.username, currentPassword: this.currentPassword}
 
             var dirty = false;
 
             if (this.newPassword) {
                 dirty = true;
-                var newHash = CryptoJS.SHA3(this.newPassword+this.username);
-                newHash = newHash.toString(CryptoJS.enc.Base64);
-                data.newPassword = newHash;
+                data.newPassword = this.newPassword;
             }
             if (this.newEmail) {
                 dirty = true;
@@ -85,7 +94,7 @@ export default {
 
             this.currentPassword = "";
 
-            fetch("/account", {
+            fetchJson("/account", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -97,11 +106,11 @@ export default {
                 this.closeModal();
             })
             .catch((response) => {
-                var error = "An error occurred while trying to save your account information.";
-                if (response.responseText) {
-                    this.error = response.responseText;
+                if (response.json && response.json.errors) {
+                    this.errors = response.json.errors;
+                } else {
+                    this.errors = [{message: "An error occurred while registering. Please try again later."}];
                 }
-                this.error = error;
             });
         }
     },
