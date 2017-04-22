@@ -412,22 +412,21 @@ function authenticateUser(req, res, callback) {
 
 function verifyPassword(username, password) {
     return new Promise((resolve, reject) => {
-        const sha3password = CryptoJS.SHA3(password + username).toString(CryptoJS.enc.Base64);
-
         db.users.find({username: username}, function(err, users) {
             if (err) {
-                reject({code: 500, status: "An error occurred, please try again later."});
+                return reject({code: 500, status: "An error occurred, please try again later."});
             } else if (!users || !users.length) {
-                reject({code: 404, status: "Invalid username and/or password."});
+                return reject({code: 404, status: "Invalid username and/or password."});
             }
 
             const user = users[0];
 
             bcrypt.compare(password, user.password, function(err, result) {
                 if (err) {
-                    reject({code: 500, status: "An error occurred, please try again later."});
+                    return reject({code: 500, status: "An error occurred, please try again later."});
                 }
                 if (!result) {
+                    const sha3password = CryptoJS.SHA3(password + username).toString(CryptoJS.enc.Base64);
                     bcrypt.compare(sha3password, user.password, function(err, result) {
                         if (err) {
                             reject({code: 500, status: "An error occurred, please try again later."});
@@ -435,7 +434,19 @@ function verifyPassword(username, password) {
                         if (!result) {
                             reject({code: 404, status: "Invalid username and/or password."});
                         } else {
-                            resolve(user);
+                            bcrypt.genSalt(10, function(err, salt) {
+                                if (err) {
+                                    return reject({code: 500, status: "An error occurred, please try again later."});
+                                }
+                                bcrypt.hash(password, salt, function(err, hash) {
+                                    if (err) {
+                                        return reject({code: 500, status: "An error occurred, please try again later."});
+                                    }
+                                    user.password = hash;
+                                    db.users.save(user);
+                                    resolve(user);
+                                });
+                            });
                         }
                     });
                 } else {
