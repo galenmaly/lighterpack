@@ -112,6 +112,10 @@ router.post("/signin", function(req, res) {
 
 function returnLibrary(req, res, user) {
     awesomeLog(req, user.username);
+    if (!user.syncToken) {
+        user.syncToken = 0;
+        db.users.save(user);
+    }
     return res.send({username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken});
 }
 
