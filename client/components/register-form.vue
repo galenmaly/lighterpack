@@ -69,18 +69,29 @@ export default {
                 return;
             }
 
+            var registerData = {username: this.username, email: this.email, password: this.password};
+
+            if (localStorage.library) {
+                registerData.library = localStorage.library;
+            }
+
             return fetchJson("/register", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify({username: this.username, email: this.email, password: this.password})
+                body: JSON.stringify(registerData)
             })
             .then((response) => {
                 this.$store.commit('loadLibraryData', response.library);
                 this.$store.commit('setSaveType', "remote");
                 this.$store.commit('setLoggedIn', response.username)
+
+                if (registerData.library) {
+                    localStorage.registeredLibrary = localStorage.library;
+                    delete localStorage.library;
+                }
                 router.push("/");
             })
             .catch((response) => {

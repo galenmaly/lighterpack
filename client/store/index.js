@@ -52,8 +52,13 @@ const store = new Vuex.Store({
         },
         loadLibraryData(state, libraryData) {
             const library = new Library();
-            library.load(JSON.parse(libraryData));
-            state.library = library;
+            try {
+                libraryData = JSON.parse(libraryData);
+                library.load(libraryData);
+                state.library = library;
+            } catch (err) {
+                alert("An error occurred while loading your data.");
+            }
             state.lastSaveData = JSON.stringify(library.save());
         },
         clearLibraryData(state) {
@@ -219,7 +224,7 @@ const store = new Vuex.Store({
             }
         },
         loadLocal: function(context) {
-            var libraryData = JSON.parse(localStorage.library);
+            var libraryData = localStorage.library;
             context.commit('loadLibraryData', libraryData);
             context.commit('setSaveType', "local");
             context.commit("setLoggedIn", false)
@@ -294,7 +299,7 @@ const store = new Vuex.Store({
                     });
                 }
                 
-                if (state.saveType == "remote") {
+                if (state.saveType === "remote") {
                     var date = new Date();
                     if (date.getTime() - state.lastSaveTime > 5000) {
                         if (state.saveTimeout) {
@@ -307,7 +312,7 @@ const store = new Vuex.Store({
                         }
                         store.commit("setSaveTimeout", setTimeout(saveRemotely, 5001));
                     }
-                } else if (store.saveType =="local") {
+                } else if (state.saveType === "local") {
                     localStorage.library = saveData;
                 }
             });

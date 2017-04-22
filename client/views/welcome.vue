@@ -11,7 +11,7 @@
                     <h3>Register an Account</h3>
 
                     <registerForm></registerForm>
-                    <a class="lpHref lpGetStarted" href="#">Skip Registration</a>
+                    <a class="lpHref lpGetStarted" v-on:click="loadLocal">Skip Registration</a>
                     <router-link to="/signin" class="lpHref">Already registered?</router-link>
                 </div>
                 <div class="lpHalf">
@@ -39,6 +39,8 @@
 <script>
 import blackoutFooter from "../components/blackout-footer.vue";
 import registerForm from "../components/register-form.vue";
+const dataTypes = require("../dataTypes.js");
+const Library = dataTypes.Library;
 
 export default {
     name: "welcome",
@@ -51,7 +53,19 @@ export default {
         return {
         }
     },
+    methods: {
+        loadLocal: function() {
+            var library = new Library();
+            this.$store.commit('loadLibraryData', JSON.stringify(library.save()));
+            this.$store.commit('setSaveType', "local");
+            this.$store.commit("setLoggedIn", false)
+            router.push("/");
+        }
+    },
     beforeMount: function() {
+        if (this.$store.state.library) {
+            router.push("/");
+        }
     }
 }
 </script>

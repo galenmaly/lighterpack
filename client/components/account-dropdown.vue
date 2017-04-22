@@ -16,7 +16,9 @@
             </span>
         </span>
         <span v-if="!isSignedIn" class="headerItem">
-            <a href="#" class="lpButton lpSmall showRegister">Register</a> or <a href="#" class="lpButton lpSmall showSignin">Sign In</a>
+            <router-link to="/register" class="lpButton lpSmall">Register</router-link>
+            or
+            <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
         </span>
     </span>
 </template>
