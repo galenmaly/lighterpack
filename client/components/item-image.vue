@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        <div v-if="shown" class="lpDialog" id="itemImageDialog">
+        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="itemImageDialog">
             <div class="columns">
                 <div class="lpHalf">
                     <h2>Add image by URL</h2>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="shown" v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
         <form id="imageUpload">
             <input type="file" name="image" id="image" />
         </form>

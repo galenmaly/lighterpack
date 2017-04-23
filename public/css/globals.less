@@ -67,3 +67,26 @@
         z-index: @belowSidebar;
     }
 }
+
+.lpFadeInOut() {
+    @keyframes fadein {
+        from {
+            opacity: 0;
+        } to {
+            opacity: 1;
+        }
+    }
+    animation: fadein 0.25s linear 0s 1 forwards;
+    opacity: 0;
+
+    &.fadeout {
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            } to {
+                opacity: 0;
+            }
+        }
+        animation: fadeout 0.25s linear 0s 1 forwards;
+    }
+}

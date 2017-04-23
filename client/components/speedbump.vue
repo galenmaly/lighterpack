@@ -8,7 +8,7 @@
 
 <template>
     <div v-if="shown">
-        <div id="speedbump" class="lpDialog">
+        <div id="speedbump" :class="'lpDialog ' + modalClasses">
             <h2>{{messages.title}}</h2>
 
             <p>{{messages.body}}</p>
@@ -18,7 +18,7 @@
                 &nbsp;<button class="lpButton" v-on:click="closeModal()">{{messages.cancel}}</button>
             </div>
         </div>
-        <div v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
     </div>
 </template>
 

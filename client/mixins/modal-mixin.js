@@ -1,12 +1,18 @@
 var modalMixin = {
     data: function() {
         return {
-            shown: false
+            shown: false,
+            modalClasses: ''
         }
     },
     methods: {
         closeModal: function() {
-            this.shown = false;
+            this.modalClasses = 'fadeout';
+            setTimeout(() => {
+                this.shown = false;
+                this.modalClasses = '';
+            }, 250);
+            
             this.unbindEscapeToClose();
         },
         openModal: function() {

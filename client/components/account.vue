@@ -7,7 +7,7 @@
 
 <template>
     <div v-if="shown">
-        <div class="lpDialog" id="accountSettings">
+        <div :class="'lpDialog ' + modalClasses" id="accountSettings">
             <h2>Account Settings</h2>
 
             <form id="accountForm" v-on:submit="updateAccount($event)">
@@ -28,7 +28,7 @@
                 <span class="status"></span>
             </form>
         </div>
-        <div v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
     </div>
 </template>
 

@@ -4,7 +4,7 @@
 
 <template>
     <div v-if="shown">
-        <div class="lpDialog" id="help">
+        <div :class="'lpDialog ' + modalClasses" id="help">
             <h2>Help</h2>
 
             <p>Getting Started:</p>
@@ -22,7 +22,7 @@
             <hr />
             <p><a class="lpHref" href="mailto:info@lighterpack.com">More help available via email.</a></p>
         </div>
-        <div v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
     </div>
 </template>
 

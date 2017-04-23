@@ -4,7 +4,7 @@
 
 <template>
     <div v-if="shown">
-        <div class="lpDialog" id="itemLinkDialog">
+        <div :class="'lpDialog ' + modalClasses" id="itemLinkDialog">
             <h2>Add a link for this item</h2>
             <form v-on:submit="addLink" id="itemLinkForm">
                 <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
@@ -12,7 +12,7 @@
                 <a v-on:click="closeModal" class="lpHref close">Cancel</a>
             </form>
         </div>
-        <div v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
     </div>
 </template>
 

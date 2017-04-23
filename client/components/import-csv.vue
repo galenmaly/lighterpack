@@ -4,7 +4,7 @@
 
 <template>
     <div id="importCSV">
-        <div v-if="shown" class="lpDialog" id="importValidate">
+        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="importValidate">
             <h2>Confirm your import</h2>
             <div id="importData">
                 <ul class="lpTable lpDataTable">
@@ -29,7 +29,7 @@
             <a v-on:click="importList" class="lpButton" id="importConfirm">Import List</a>
             <a v-on:click="closeModal" class="lpButton close">Cancel Import</a>
         </div>
-        <div v-if="shown" v-on:click="closeModal" class="lpModalOverlay"></div>
+        <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
         <form id="csvUpload">
             <input type="file" name="csv" id="csv" />
         </form>
