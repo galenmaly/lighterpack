@@ -1,6 +1,11 @@
+const Promise = require('promise-polyfill');
+if (!window.Promise) {
+    window.Promise = Promise;
+}
+
 const Vue = require("vue");
-const Vuex = require('vuex').default;
-const VueRouter = require("vue-router").default;
+const Vuex = require("vuex");
+const VueRouter = require("vue-router");
 
 const focusDirectives = require("./utils/focus.js");
 const dataTypes = require("./dataTypes.js");
@@ -13,7 +18,7 @@ Vue.use(VueRouter);
 
 const utils = require("./utils/utils.js");
 const routes = require("./routes.js");
-const store = require("./store/index.js");
+const store = require("./store/store.js");
 
 window.Vue = Vue; //surfacing Vue globally for utils methods
 window.bus = new Vue(); //global event bus

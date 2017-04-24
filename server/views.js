@@ -20,6 +20,8 @@ const Category = dataTypes.Category;
 const List = dataTypes.List;
 const Library = dataTypes.Library;
 
+const templates = {};
+
 const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: "/" },
     { path: "/signin" },
@@ -27,12 +29,24 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: "/register" },
 ];
 
-const templates = {};
+var index = fs.readFileSync(path.join(__dirname, '../_index.html'), "utf8");
+
+if (config.get('environment') === "production") {
+    const scripts = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/dist/assets.json'), "utf8"));
+    var scriptsHtml = "";
+
+    for (scriptName in scripts) {
+        scriptsHtml += "<script src='/dist/" + scripts[scriptName] + "'></script>";
+    }
+    index = index.replace("{{scripts}}", scriptsHtml);
+} else {
+    index = index.replace("{{scripts}}", "<script src='/dist/build.js'></script>");
+}
 
 for (var i = 0; i < vueRoutes.length; i++) {
     router.get(vueRoutes[i].path, function(req, res) {
         awesomeLog(req);
-        res.sendFile(path.join(__dirname, "../public/index.html"));
+        res.send(index);
     });
 }
 
@@ -369,7 +383,6 @@ function renderUnitSelect(unit, unitSelectTemplate, weight) {
     var temp = {unit: unit, units: [{unit: "oz", selected: (unit=="oz")}, {unit: "lb", selected: (unit=="lb")}, {unit: "g", selected: (unit=="g")}, {unit: "kg", selected: (unit=="kg")}], weight: weight};
     return Mustache.render(unitSelectTemplate, temp);
 }
-
 
 init();
 

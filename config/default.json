@@ -3,6 +3,9 @@
   Use local.json to change for your deployment.
 */
 {
+    /* development or production */
+    "environment"   : "production",
+
     /* This is where clients connect to, typically something
        like: https://gearlist.example.com
     */
@@ -10,6 +13,9 @@
 
     /* Port to run node server on */
     "port"          : 3000,
+
+    /* Port to run webpack dev server on */
+    "devServerPort" : 8080,
 
     /* By default bind to all available interfaces on both ipv6 and ipv4
        Each element of `bindings` gets passed to to `app.listen(port, element)`

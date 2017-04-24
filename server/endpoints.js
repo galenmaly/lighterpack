@@ -23,7 +23,7 @@ const List = dataTypes.List;
 const Library = dataTypes.Library;
 
 //one day in many years this can go away.
-eval(fs.readFileSync(path.join(__dirname, '../public/js/sha3.js'))+'');
+eval(fs.readFileSync(path.join(__dirname, './sha3.js'))+'');
 
 router.post("/register", function(req, res) {
     const username = req.body.username.trim();

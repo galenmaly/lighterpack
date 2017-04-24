@@ -4,13 +4,14 @@ var webpack = require('webpack')
 module.exports = {
     entry: {
         app: [
+            'whatwg-fetch',
             './client/lighterpack.js'
             ]
     },
     output: {
-        path: path.resolve(__dirname, '../client/dist'),
+        path: path.resolve(__dirname, './public/dist'),
         publicPath: '/dist/',
-        filename: 'build.js'
+        filename: 'build.[chunkhash].js'
     },
     module: {
         rules: [
@@ -47,7 +48,8 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.common.js'
+            'vue$': 'vue/dist/vue.common.js',
+            'vue-router$': 'vue-router/dist/vue-router.common.js'
         }
     },
     performance: {
@@ -68,6 +70,13 @@ module.exports = {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true
-        })
+        }),
+        function() {
+            this.plugin("done", function(stats) {
+                require("fs").writeFileSync(
+                    path.join(__dirname, "./public/dist/", "assets.json"),
+                    JSON.stringify(stats.toJson().assetsByChunkName));
+            });
+        }
     ]
 }
