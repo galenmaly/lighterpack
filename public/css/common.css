@@ -722,7 +722,7 @@ input.lpCategoryName {
   text-align: center;
 }
 .lpSprite {
-  background-image: url(/images/sprite.png?v=1);
+  background-image: url(/images/sprite.png?v=2);
   display: inline-block;
   height: 14px;
   overflow: hidden;
@@ -732,6 +732,12 @@ input.lpCategoryName {
 }
 .lpSprite.hidden {
   visibility: hidden;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+  .lpSprite {
+    background-size: 400px;
+    background-image: url(/images/sprite2x.png?v=2);
+  }
 }
 .lpSpriteAdd {
   background-position: 0 0;
