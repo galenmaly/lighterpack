@@ -15,11 +15,11 @@
                         </label>
                     </li>
                 </ul>
-                <div id="lpPriceSettings">
+                <div id="lpPriceSettings" v-if="library.optionalFields['price']">
                     <hr />
                     <label>
                         Currency:
-                        <input id="currencySymbol" type="text" maxlength="4"/>
+                        <input id="currencySymbol" type="text" maxlength="4" :value="library.currencySymbol" v-on:input="updateCurrencySymbol($event)"/>
                     </label>
                 </div>
             </div>
@@ -70,6 +70,9 @@ module.exports = {
             evt.stopImmediatePropagation();
             evt.preventDefault();
             this.$store.commit("toggleOptionalField", optionalField);
+        },
+        updateCurrencySymbol: function(evt) {
+            this.$store.commit("updateCurrencySymbol", evt.target.value);
         }
     }
 }

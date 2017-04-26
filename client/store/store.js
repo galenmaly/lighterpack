@@ -76,6 +76,9 @@ const store = new Vuex.Store({
         toggleOptionalField(state, optionalField) {
             state.library.optionalFields[optionalField] = !state.library.optionalFields[optionalField];
         },
+        updateCurrencySymbol(state, currencySymbol) {
+            state.library.currencySymbol = currencySymbol
+        },
         newItem(state, category) {
             state.library.newItem({category});
         },
