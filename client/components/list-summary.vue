@@ -41,7 +41,7 @@
                         <span class="lpTotalUnit"><unitSelect :unit="library.totalUnit" :onChange="setTotalUnit"></unitSelect></span>
                     </span>
                 </li>
-                <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight">
+                <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight" v-if="list.consumableTotal">
                     <span class="lpCell"></span>
                     <span class="lpCell lpSubtotal">
                         Consumable
@@ -51,7 +51,7 @@
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
-                <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight">
+                <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight" v-if="list.wornTotal">
                     <span class="lpCell"></span>
                     <span class="lpCell lpSubtotal">
                         Worn
