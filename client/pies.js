@@ -305,7 +305,10 @@ module.exports = function(args) {
         if (clickCallback) clickCallback(hovered);
     }
 
-    function open() {
+    function open(key) {
+        if (key) {
+            hovered = data.points[key];
+        }
         if (!hovered) {
             return;
         }
