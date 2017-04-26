@@ -1,9 +1,5 @@
 <style lang="scss">
-#speedbump {
-    p {
-        margin: 30px 0;
-    }
-}
+
 </style>
 
 <template>
