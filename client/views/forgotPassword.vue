@@ -12,10 +12,12 @@
                     </h3>
 
                     <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
-                    <form class="forgotPassword">
-                        <div class="lpError"></div>
-                        <input type="text" placeholder="Username" name="username" class="username"/>
+                    <form class="forgotPassword" v-on:submit="resetPassword($event)"">
+                        <input type="text" placeholder="Username" name="username" class="username" v-model="forgotPasswordUsername"/>
                         <input type="submit" value="Submit" class="lpButton" />
+                        <ul class="lpError" v-if="forgotPasswordErrors">
+                            <li v-for="error in forgotPasswordErrors">{{error.message}}</li>
+                        </ul>
                         <span class="status"></span>
                         <router-link to="/signin" class="lpHref alternateAction">Return to sign in</router-link>
                     </form>
@@ -26,10 +28,12 @@
                     </h3>
 
                     <p>If you've forgotten your username we will email it to you. Please enter your email address.</p>
-                    <form class="forgotUsername">
-                        <div class="lpError"></div>
-                        <input type="text" placeholder="Email Address" name="email" class="email"/>
+                    <form class="forgotUsername" v-on:submit="forgotUsername($event)"">
+                        <input type="text" placeholder="Email Address" name="email" class="email" v-model="forgotUsernameEmail"/>
                         <input type="submit" value="Submit" class="lpButton" />
+                        <ul class="lpError" v-if="forgotUsernameErrors">
+                            <li v-for="error in forgotUsernameErrors">{{error.message}}</li>
+                        </ul>
                         <span class="status"></span>
                         <router-link to="/signin" class="lpHref alternateAction">Return to sign in</router-link>
                     </form>
@@ -47,9 +51,60 @@ export default {
     mixins: [],
     data: function() {
         return {
+            forgotPasswordUsername: "",
+            forgotPasswordErrors: [],
+            forgotUsernameEmail: "",
+            forgotUsernameErrors: []
         }
     },
-    beforeMount: function() {
+    methods: {
+        resetPassword: function(evt) {
+            evt.preventDefault();
+
+            this.forgotPasswordErrors = [];
+
+            return fetchJson("/forgotPassword", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({username: this.forgotPasswordUsername})
+            })
+            .then((response) => {
+                router.push("/signin/reset-password");
+            })
+            .catch((response) => {
+                var errors = [{message: "An error occurred, please try again later."}];
+                if (response.json && response.json.errors) {
+                    errors = response.json.errors;
+                }
+                this.forgotPasswordErrors = errors;
+            });
+        },
+        forgotUsername: function(evt) {
+            evt.preventDefault();
+            this.forgotUsernameErrors = [];
+
+            return fetchJson("/forgotUsername", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({email: this.forgotUsernameEmail})
+            })
+            .then((response) => {
+                router.push("/signin/forgot-username");
+            })
+            .catch((response) => {
+                var errors = [{message: "An error occurred, please try again later."}];
+                if (response.json && response.json.errors) {
+                    errors = response.json.errors;
+                }
+                this.forgotUsernameErrors = errors;
+            });
+        }
     }
 }
 </script>

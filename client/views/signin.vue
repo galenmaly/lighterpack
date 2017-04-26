@@ -13,6 +13,7 @@
             <p class="lpSuccess"></p>
             <form class="signin" v-on:submit="signin($event)">
                 <p v-if="error" class="lpError">{{error}}</p>
+                <p v-if="message" class="lpSuccess">{{message}}</p>
                 <input v-focus-on-create type="text" placeholder="Username" name="username" class="username" v-model="username"/>
                 <input type="password" placeholder="Password" name="password" class="password" v-model="password" v-select-on-bus="'focus-signin-password'"/>
                 <input type="submit" value="Sign in" class="lpButton" />
@@ -39,7 +40,8 @@ export default {
         return {
             error: false,
             username: "",
-            password: ""
+            password: "",
+            message: ""
         }
     },
     methods: {
@@ -62,7 +64,6 @@ export default {
                 router.push("/");
             })
             .catch((response) => {
-                console.log(response);
                 var error = "An error occurred.";
                 if (response.json && response.json.status) {
                     error = response.json.status;
@@ -71,6 +72,11 @@ export default {
                 bus.$emit("focus-signin-password");
                 this.password = "";
             });
+        }
+    },
+    beforeMount: function() {
+        if (this.$route.path.indexOf("/reset-password") > -1 || this.$route.path.indexOf("/forgot-username") > -1) {
+            this.message = "An email has been sent to the address associated with your account.";
         }
     }
 }

@@ -25,6 +25,8 @@ const templates = {};
 const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: "/" },
     { path: "/signin" },
+    { path: "/signin/reset-password" },
+    { path: "/signin/forgot-username" },
     { path: "/welcome" },
     { path: "/register" },
     { path: "/forgotPassword" }

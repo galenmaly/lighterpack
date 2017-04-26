@@ -36,9 +36,6 @@ bus.$on("unauthorized", (error) => {
 
 store.dispatch('init')
 .then(() => {
-    if (!store.state.library) {
-        router.push("/welcome");
-    }
     initLighterPack();
 })
 .catch((error) => {

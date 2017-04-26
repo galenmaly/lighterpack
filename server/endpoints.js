@@ -160,7 +160,7 @@ router.post("/forgotPassword", function(req, res) {
     var username = req.body.username;
     if (!username || username.length < 1 || username.length > 24) {
         awesomeLog(req, "Bad forgot password:" + username);
-        return res.status(400).send({status: "Invalid username."});
+        return res.status(400).send({errors: [{message: "Please enter a username."}]});
     }
 
     db.users.find({username: username}, function(err, users) {
@@ -169,7 +169,7 @@ router.post("/forgotPassword", function(req, res) {
             return res.status(500).send({status: "An error occurred"});
         } else if ( !users.length ) {
             awesomeLog(req, "Forgot password for unknown user:" + username)
-            return res.status(400).send({status: "An error occurred."});
+            return res.status(500).send({status: "An error occurred."});
         }
         var user = users[0];
         require('crypto').randomBytes(12, function(ex, buf) {
@@ -194,12 +194,13 @@ router.post("/forgotPassword", function(req, res) {
             transport.sendMail(mailOptions, function(error, response){
                 if (error) {
                     awesomeLog(req, error);
+                    return res.status(500).send({status: "An error occurred"});
                 } else {
                     db.users.save(user);
                     var out = {username: username};
                     awesomeLog(req, "Message sent: " + response.message);
                     awesomeLog(req, "password changed for user:" + username);
-                    return res.send(out);
+                    return res.status(200).send(out);
                 }
             });
         });
@@ -211,7 +212,7 @@ router.post("/forgotUsername", function(req, res) {
     var email = req.body.email;
     if (!email || email.length < 1) {
         awesomeLog(req, "Bad forgot username:" + email);
-        return res.status(400).send({status: "Invalid email."});
+        return res.status(400).send({errors: [{message: "Please enter a valid email."}]});
     }
 
     db.users.find({email: email}, function(err, users) {
@@ -238,11 +239,12 @@ router.post("/forgotUsername", function(req, res) {
         transport.sendMail(mailOptions, function(error, response){
             if (error) {
                 awesomeLog(req, error);
+                return res.status(500).send({status: "An error occurred"});
             } else {
                 var out = {email: email};
                 awesomeLog(req, "Message sent: " + response.message);
                 awesomeLog(req, "sent username message for user:" + username);
-                return res.send(out);
+                return res.status(200).send(out);
             }
         });
     });

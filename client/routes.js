@@ -8,6 +8,8 @@ module.exports = [
     { path: "/", component: dashboard },
     { path: "/welcome", component: welcome },
     { path: "/signin", component: signin },
+    { path: "/signin/reset-password", component: signin },
+    { path: "/signin/forgot-username", component: signin },
     { path: "/register", component: register },
     { path: "/forgotPassword", component: forgotPassword },
     { path: "*", component: dashboard }

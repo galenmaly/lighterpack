@@ -87,7 +87,7 @@ module.exports = {
     },
     data: function() {
         return {
-            isLoaded: true
+            isLoaded: false
         };
     },
     computed: {
@@ -104,6 +104,13 @@ module.exports = {
         },
         updateListName(evt) {
             this.$store.commit("updateListName", {id: this.list.id, name: evt.target.value});
+        }
+    },
+    beforeMount() {
+        if (!this.$store.state.library) {
+            router.push("/welcome");
+        } else {
+            this.isLoaded = true;
         }
     }
 }
