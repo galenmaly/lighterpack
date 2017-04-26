@@ -5,7 +5,10 @@ if (!window.Promise) {
 
 const Vue = require("vue");
 const Vuex = require("vuex");
-const VueRouter = require("vue-router");
+var VueRouter = require("vue-router");
+if (VueRouter.default) {
+    VueRouter = VueRouter.default;
+}
 
 const focusDirectives = require("./utils/focus.js");
 const dataTypes = require("./dataTypes.js");

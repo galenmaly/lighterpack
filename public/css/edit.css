@@ -451,6 +451,12 @@ h2 .alternateAction {
 #welcome h2 strong {
   font-size: 24px;
 }
+#welcome h3 {
+  margin-bottom: 9px;
+}
+#welcome ul {
+  margin: 0 0 12px;
+}
 #welcome .lpHalf {
   min-height: 260px;
   position: relative;
@@ -468,6 +474,9 @@ h2 .alternateAction {
   font-weight: bold;
   margin: 15px 0 0;
   text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+#welcome .lpButton {
+  width: 100%;
 }
 #lpValueProp {
   margin: 0;

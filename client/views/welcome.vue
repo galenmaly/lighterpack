@@ -18,6 +18,7 @@
                     <ul id="lpValueProp">
                         <li id="valueEnter">
                             <h3>Enter your packing lists</h3>
+                            <img src="/images/value-enter.gif"/>
                         </li>
                         <li id="valueVisualize">
                             <h3>Visualize your pack weights</h3>

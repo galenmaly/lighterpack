@@ -27,6 +27,7 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: "/signin" },
     { path: "/welcome" },
     { path: "/register" },
+    { path: "/forgotPassword" }
 ];
 
 var index = fs.readFileSync(path.join(__dirname, '../_index.html'), "utf8");

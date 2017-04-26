@@ -17,7 +17,7 @@
                 <input type="password" placeholder="Password" name="password" class="password" v-model="password" v-select-on-bus="'focus-signin-password'"/>
                 <input type="submit" value="Sign in" class="lpButton" />
                 <span class="status"></span>
-                <router-link to="/forgotPassword"><a class="lpHref alternateAction">Forgot username/password?</a></router-link>
+                <router-link to="/forgotPassword" class="lpHref alternateAction">Forgot username/password?</router-link>
             </form>
         </div>
 
