@@ -83,7 +83,8 @@ const store = new Vuex.Store({
             state.library.newItem({category});
         },
         newCategory(state, list) {
-            state.library.newCategory({list});
+            var category = state.library.newCategory({list});
+            var item = state.library.newItem({category});
         },
         newList(state) {
             var list = state.library.newList();
