@@ -495,16 +495,16 @@
 
 #lpFooter {
     color: #777;
+    display: flex;
+    justify-content: space-between;
     padding: 150px 0 20px;
-
-    #lpSiteBy {
-        float: right;
-    }
 }
 
 #lpWelcomeFooter {
     background: rgba(255,255,255,0.7);
     bottom: 0;
+    display: flex;
+    justify-content: space-between;
     left: 0;
     padding: 5px;
     position: fixed;
@@ -513,11 +513,6 @@
 
     .lpHasBlackout & {
         display: block;
-    }
-
-    .lpSiteBy, .lpContact {
-        display: inline-block;
-        padding: 0 15px;
     }
 }
 

@@ -6,7 +6,7 @@
     <div id="lpWelcomeFooter">
         <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
         <div class="lpContact">
-            Copyleft LighterPack 2016
+            Copyleft LighterPack 2017
             -
             <a class="lpHref" href="https://github.com/galenmaly/lighterpack">Fork me on GitHub</a>
             -
