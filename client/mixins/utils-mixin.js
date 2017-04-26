@@ -10,7 +10,7 @@ var utilsMixin = {
     },
     filters: {
         displayWeight: function (mg, unit) {
-            return weightUtils.MgToWeight(mg, unit);
+            return weightUtils.MgToWeight(mg, unit) || 0;
         }
     }
 };
