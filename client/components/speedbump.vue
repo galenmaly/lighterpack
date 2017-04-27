@@ -10,7 +10,7 @@
             <p>{{messages.body}}</p>
 
             <div class="buttons">
-                <button class="lpButton" v-on:click="confirmSpeedbump()">{{messages.confirm}}</button>
+                <button class="lpButton" v-on:click="confirmSpeedbump()" v-focus-on-create>{{messages.confirm}}</button>
                 &nbsp;<button class="lpButton" v-on:click="closeModal()">{{messages.cancel}}</button>
             </div>
         </div>

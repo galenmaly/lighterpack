@@ -394,8 +394,9 @@ html.lp,
   font-size: 13px;
   line-height: 16px;
 }
-.lp .lpButton:hover {
-  background-image: linear-gradient(to bottom, #fca222 0%, #ef8e00 100%);
+.lp .lpButton:hover,
+.lp .lpButton:focus {
+  background-image: linear-gradient(to bottom, #fb9809 0%, #d67f00 100%);
 }
 .lp .lpButton:focus {
   outline: none;
