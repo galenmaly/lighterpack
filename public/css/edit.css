@@ -114,11 +114,11 @@
   overflow-y: auto;
 }
 #scrollable #listContainer #lists {
-  max-height: 400px;
+  max-height: 25vh;
 }
 #scrollable #libraryContainer {
   display: flex;
-  flex: 2 0 400px;
+  flex: 2 0 30vh;
   flex-direction: column;
 }
 .lpLibraryList {
@@ -171,7 +171,7 @@
   margin-bottom: 0;
 }
 #library {
-  flex: 1 0 300px;
+  flex: 1 0 25vh;
   overflow-y: scroll;
 }
 .lpLibraryItem {
