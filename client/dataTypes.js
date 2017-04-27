@@ -131,6 +131,7 @@ const List = function(args) {
     this.categoryIds = [];
     this.chart = null;
     this.description = "";
+    this.externalId = "";
     return this;
 }
 

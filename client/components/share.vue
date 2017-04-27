@@ -25,11 +25,14 @@ module.exports = {
         library: function() {
             return this.$store.state.library;
         },
+        list: function() {
+            return this.library.getListById(this.library.defaultListId);
+        },
         isSignedIn: function() {
             return this.$store.state.loggedIn;
         },
         externalId: function() {
-            return this.library.getListById(this.library.defaultListId).externalId;
+            return this.list.externalId || "";
         },
         baseUrl: function() {
             var location = window.location;
@@ -44,7 +47,26 @@ module.exports = {
     },
     methods: {
         focusShare: function(evt) {
-            bus.$emit('show-share-box');
+            if (!this.list.externalId) {
+                return fetchJson("/externalId", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then((response) => {
+                    this.$store.commit('setExternalId', {externalId: response.externalId, list: this.list});
+                    setTimeout(() => {
+                        bus.$emit('show-share-box');
+                    },0);
+                })
+                .catch((response) => {
+                    alert("An error occurred while attempting to get an ID for your list. Please try again later."); //TODO
+                });
+            } else {
+                bus.$emit('show-share-box');
+            }
         }
     }
 }
