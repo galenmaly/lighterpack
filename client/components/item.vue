@@ -20,10 +20,10 @@
             <i :class="'lpSprite lpStar lpStar' + categoryItem.star" v-on:click="cycleStar" title="Star this item"></i>
         </span>
         <span v-if="library.optionalFields['price']" class="lpPriceCell">
-            <input type="text" :value="item.price" class="lpPrice lpNumber lpSilent" />
+            <input type="text" :value="item.price" class="lpPrice lpNumber lpSilent" v-empty-if-zero />
         </span>
         <span class="lpWeightCell lpNumber">
-            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)"  type="text" v-model="weight" class="lpWeight lpNumber lpSilent" />
+            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)"  type="text" v-model="weight" class="lpWeight lpNumber lpSilent" v-empty-if-zero />
             <unitSelect :unit="item.authorUnit" :onChange="setUnit"></unitSelect>
         </span>
         <span class="lpQtyCell">

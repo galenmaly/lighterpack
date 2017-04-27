@@ -29,3 +29,19 @@ Vue.directive("select-on-bus", {
         });
     }
 });
+
+Vue.directive("empty-if-zero", {
+    inserted: function (el, args) {
+        el.addEventListener("focus", (evt) => {
+            if (el.value === "0") {
+                el.value = "";
+            }
+        });
+
+        el.addEventListener("blur", (evt) => {
+            if (el.value === "") {
+                el.value = "0";
+            }
+        });
+    }
+});
