@@ -26,15 +26,17 @@ const Library = dataTypes.Library;
 eval(fs.readFileSync(path.join(__dirname, './sha3.js'))+'');
 
 router.post("/register", function(req, res) {
-    const username = req.body.username.trim();
+    var username = req.body.username;
     const password = req.body.password;
-    const email = req.body.email;
+    var email = req.body.email;
 
     var errors = [];
 
     if (!username) {
         errors.push({field: "username", message: "Please enter a username."});
     }
+
+    username = username.trim();
 
     if (username && (username.length < 3 || username.length > 32)) {
         errors.push({field: "username", message: "Please enter a username between 3 and 32 characters."});
@@ -43,6 +45,8 @@ router.post("/register", function(req, res) {
     if (!email) {
         errors.push({field: "email", message: "Please enter an email."});
     }
+
+    email = email.trim();
 
     if (!password) {
         errors.push({field: "password", message: "Please enter a password."});
@@ -61,13 +65,13 @@ router.post("/register", function(req, res) {
     db.users.find({username: username}, function(err, users) {
         if (err || users.length) {
             awesomeLog(req, "User exists.");
-            return res.status(400).send({errors: [{field: "username", message: "That username already exists, please pick a different username."}]});
+            return res.status(400).json({errors: [{field: "username", message: "That username already exists, please pick a different username."}]});
         }
 
         db.users.find({email: email}, function(err, users) {
             if (err || users.length) {
                 awesomeLog(req, "User email exists.");
-                return res.status(400).send({errors: [{field: "email", message: "A user with that email already exists."}]});
+                return res.status(400).json({errors: [{field: "email", message: "A user with that email already exists."}]});
             }
 
             bcrypt.genSalt(10, function(err, salt) {
@@ -80,7 +84,7 @@ router.post("/register", function(req, res) {
                                library = JSON.parse(req.body.library)
                             }
                             catch (e) {
-                               return res.status(400).send({errors: [{message: "Unable to parse your library. Contact support."}]});
+                               return res.status(400).json({errors: [{message: "Unable to parse your library. Contact support."}]});
                             } 
                         } else {
                             library = new Library().save();
@@ -116,7 +120,7 @@ function returnLibrary(req, res, user) {
         user.syncToken = 0;
         db.users.save(user);
     }
-    return res.send({username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken});
+    return res.json({username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken});
 }
 
 router.post("/saveLibrary", function(req, res) {
@@ -154,22 +158,63 @@ router.post("/externalId", function(req, res) {
     authenticateUser(req, res, externalId);
 });
 
+function externalId(req, res, user) {
+    var filePath = path.join(__dirname, "../extIds.txt");
+
+    fs.readFile(filePath, function(err, data) {
+        if (!err) {
+            data = data.toString();
+            var position = data.indexOf('\n');
+            if (position != -1) {
+                var myId = data.substr(0, position).trim();
+                data = data.substr(position + 1);
+                fs.writeFile(filePath, data, function(err) {
+                    if (err) {
+                        awesomeLog(req, err);
+                    }
+                });
+                awesomeLog(req, user.username + " - " + myId);
+
+                if (typeof user.externalIds == "undefined") user.externalIds = [myId];
+                else user.externalIds.push(myId);
+
+                db.users.save(user);
+
+                return res.status(200).json({externalId: myId});
+            } else {
+                awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
+                return res.status(500).json({status: "An error occurred, please try again later."});
+            }
+        } else {
+            awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
+            awesomeLog(req, err);
+            return res.status(500).json({status: "An error occurred, please try again later."});
+        }
+    });
+}
 
 router.post("/forgotPassword", function(req, res) {
     awesomeLog(req);
     var username = req.body.username;
-    if (!username || username.length < 1 || username.length > 24) {
+    if (!username) {
         awesomeLog(req, "Bad forgot password:" + username);
-        return res.status(400).send({errors: [{message: "Please enter a username."}]});
+        return res.status(400).json({errors: [{message: "Please enter a username."}]});
+    }
+
+    username = username.trim();
+
+    if (username.length < 1 || username.length > 32) {
+        awesomeLog(req, "Bad forgot password:" + username);
+        return res.status(400).json({errors: [{message: "Please enter a username."}]});
     }
 
     db.users.find({username: username}, function(err, users) {
         if( err ) {
             awesomeLog(req, "Forgot password lookup error for:" + username)
-            return res.status(500).send({status: "An error occurred"});
+            return res.status(500).json({status: "An error occurred"});
         } else if ( !users.length ) {
             awesomeLog(req, "Forgot password for unknown user:" + username)
-            return res.status(500).send({status: "An error occurred."});
+            return res.status(500).json({status: "An error occurred."});
         }
         var user = users[0];
         require('crypto').randomBytes(12, function(ex, buf) {
@@ -194,13 +239,13 @@ router.post("/forgotPassword", function(req, res) {
             transport.sendMail(mailOptions, function(error, response){
                 if (error) {
                     awesomeLog(req, error);
-                    return res.status(500).send({status: "An error occurred"});
+                    return res.status(500).json({status: "An error occurred"});
                 } else {
                     db.users.save(user);
                     var out = {username: username};
                     awesomeLog(req, "Message sent: " + response.message);
                     awesomeLog(req, "password changed for user:" + username);
-                    return res.status(200).send(out);
+                    return res.status(200).json(out);
                 }
             });
         });
@@ -210,18 +255,25 @@ router.post("/forgotPassword", function(req, res) {
 router.post("/forgotUsername", function(req, res) {
     awesomeLog(req);
     var email = req.body.email;
-    if (!email || email.length < 1) {
+    if (!email) {
         awesomeLog(req, "Bad forgot username:" + email);
-        return res.status(400).send({errors: [{message: "Please enter a valid email."}]});
+        return res.status(400).json({errors: [{message: "Please enter a valid email."}]});
+    }
+
+    email = email.trim();
+
+    if (email.length < 1) {
+        awesomeLog(req, "Bad forgot username:" + email);
+        return res.status(400).json({errors: [{message: "Please enter a valid email."}]});
     }
 
     db.users.find({email: email}, function(err, users) {
         if (err) {
             awesomeLog(req, "Forgot email lookup error for:" + email)
-            return res.status(500).send({status: "An error occurred"});
+            return res.status(500).json({status: "An error occurred"});
         } else if ( !users.length ) {
             awesomeLog(req, "Forgot email for unknown user:" + email)
-            return res.status(400).send({status: "An error occurred"});
+            return res.status(400).json({status: "An error occurred"});
         }
         var user = users[0];
         var username = user.username;
@@ -239,12 +291,12 @@ router.post("/forgotUsername", function(req, res) {
         transport.sendMail(mailOptions, function(error, response){
             if (error) {
                 awesomeLog(req, error);
-                return res.status(500).send({status: "An error occurred"});
+                return res.status(500).json({status: "An error occurred"});
             } else {
                 var out = {email: email};
                 awesomeLog(req, "Message sent: " + response.message);
                 awesomeLog(req, "sent username message for user:" + username);
-                return res.status(200).send(out);
+                return res.status(200).json(out);
             }
         });
     });
@@ -281,53 +333,18 @@ function account(req, res, user) {
                     }
 
                     db.users.save(user);
-                    return res.status(200).send({status: "success"});
+                    return res.status(200).json({status: "success"});
                 });
             });
         } else if (req.body.newEmail) {
             user.email = req.body.newEmail;
             awesomeLog(req, "Changing Email - " + user.username);
             db.users.save(user);
-            return res.status(200).send({status: "success"});
+            return res.status(200).json({status: "success"});
         }
     })
     .catch((err) => {
-        res.status(400).send({errors: [{field: "currentPassword", message: "Your current password is incorrect."}]});
-    });
-}
-
-function externalId(req, res, user) {
-    var filePath = path.join(__dirname, "extIds.txt");
-
-    fs.readFile(filePath, function(err, data) {
-        if (!err) {
-            data = data.toString();
-            var position = data.indexOf('\n');
-            if (position != -1) {
-                var myId = data.substr(0, position).trim();
-                data = data.substr(position + 1);
-                fs.writeFile(filePath, data, function(err) {
-                    if (err) {
-                        awesomeLog(req, err);
-                    }
-                });
-                awesomeLog(req, user.username + " - " + myId);
-
-                if (typeof user.externalIds == "undefined") user.externalIds = [myId];
-                else user.externalIds.push(myId);
-
-                db.users.save(user);
-
-                return res.status(200).send(myId);
-            } else {
-                awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
-                return res.status(500).send({status: "An error occurred, please try again later."});
-            }
-        } else {
-            awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
-            awesomeLog(req, err);
-            return res.status(500).send({status: "An error occurred, please try again later."});
-        }
+        res.status(400).json({errors: [{field: "currentPassword", message: "Your current password is incorrect."}]});
     });
 }
 
@@ -342,11 +359,11 @@ function imageUpload(req, res, user) {
     form.parse(req, function(err, fields, files) {
         if (err) {
             awesomeLog(req, "form parse error");
-            return res.status(500).send({status: "An error occurred"});
+            return res.status(500).json({status: "An error occurred"});
         }
         if (!files || !files.image) {
             awesomeLog(req, "No image in upload");
-            return res.status(500).send({status: "An error occurred"});
+            return res.status(500).json({status: "An error occurred"});
         }
 
         var path = files.image.path;
@@ -359,16 +376,16 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    return res.status(500).send({status: "An error occurred."});
+                    return res.status(500).json({status: "An error occurred."});
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    return res.status(500).send({status: "An error occurred."});
+                    return res.status(500).json({status: "An error occurred."});
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    return res.status(500).send({status: "An error occurred."});
+                    return res.status(500).json({status: "An error occurred."});
                 } else {
                     awesomeLog(req, body);
                     return res.send(body);
@@ -393,9 +410,9 @@ function authenticateUser(req, res, callback) {
             console.log(err);
             if (err.code && err.status) {
                 awesomeLog(req, err.status)
-                res.status(err.code).send({status: err.status});
+                res.status(err.code).json({status: err.status});
             } else {
-                res.status(500).send("An error occurred, please try again later.");
+                res.status(500).json({status: "An error occurred, please try again later."});
             }
         });
     } else {
