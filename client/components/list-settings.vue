@@ -9,8 +9,8 @@
             <div class="lpContent">
                 <ul id="lpOptionalFields">
                     <li v-for="optionalField in optionalFieldsLookup" class="lpOptionalField">
-                        <label v-on:click="toggleOptionalField($event, optionalField.name)">
-                            <input type="checkbox" v-model="library.optionalFields[optionalField.name]"/>
+                        <label>
+                            <input type="checkbox" v-model="optionalField.value" v-on:change="toggleOptionalField($event, optionalField.name)"/>
                             {{optionalField.displayName}}
                         </label>
                     </li>
@@ -67,13 +67,23 @@ module.exports = {
     },
     methods: {
         toggleOptionalField: function(evt, optionalField) {
-            evt.stopImmediatePropagation();
-            evt.preventDefault();
             this.$store.commit("toggleOptionalField", optionalField);
         },
         updateCurrencySymbol: function(evt) {
             this.$store.commit("updateCurrencySymbol", evt.target.value);
+        },
+        updateOptionalFieldValues: function() {
+            var i,
+            fieldLookup;
+
+            for (i = 0; i < this.optionalFieldsLookup.length; i++) {
+                fieldLookup = this.optionalFieldsLookup[i];
+                fieldLookup.value = this.library.optionalFields[fieldLookup.name];
+            }
         }
+    },
+    beforeMount: function() {
+        this.updateOptionalFieldValues();
     }
 }
 </script>
