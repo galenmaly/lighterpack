@@ -81,10 +81,12 @@ const store = new Vuex.Store({
         },
         newItem(state, category) {
             state.library.newItem({category});
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         newCategory(state, list) {
             var category = state.library.newCategory({list});
             var item = state.library.newItem({category});
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         newList(state) {
             var list = state.library.newList();
