@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="itemImageDialog">
+        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="lpImageDialog">
             <img :src="imageUrl" />
         </div>
         <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
