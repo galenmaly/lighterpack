@@ -20,7 +20,7 @@
 
         <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
             <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>
-            <textarea id="listDescription"></textarea>
+            <textarea id="listDescription" v-model="list.description" v-on:input="updateListDescription"></textarea>
         </div>
 
         <ul class="lpCategories">
@@ -74,6 +74,9 @@ export default {
     methods: {
         newCategory() {
             this.$store.commit("newCategory", this.list);
+        },
+        updateListDescription: function() {
+            this.$store.commit("updateListDescription", this.list);
         },
         handleItemReorder() {
             var $categoryItems = Array.prototype.slice.call(document.getElementsByClassName("lpItems"));

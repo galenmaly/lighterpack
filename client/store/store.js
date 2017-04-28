@@ -143,6 +143,10 @@ const store = new Vuex.Store({
             var list = state.library.getListById(updatedList.id);
             list.name = updatedList.name;
         },
+        updateListDescription(state, updatedList) {
+            var list = state.library.getListById(updatedList.id);
+            list.description = updatedList.description;
+        },
         setExternalId(state, args) {
             var list = state.library.getListById(args.list.id);
             list.externalId = args.externalId;
