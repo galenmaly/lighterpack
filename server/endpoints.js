@@ -220,33 +220,34 @@ router.post("/forgotPassword", function(req, res) {
         require('crypto').randomBytes(12, function(ex, buf) {
             var newPassword = buf.toString('hex');
 
-            var hash = CryptoJS.SHA3(newPassword+username);
-            hash = hash.toString(CryptoJS.enc.Base64);
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(newPassword, salt, function(err, hash) {
+                    user.password = hash;
+                    var email = user.email;
 
-            user.password = hash;
-            var email = user.email;
+                    var message = "Hello " + username + ",\n Apparently you forgot your password. Here's your new one: \n\n Username: " + username + "\n Password: " + newPassword + "\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!";
 
-            var message = "Hello " + username + ",\n Apparently you forgot your password. Here's your new one: \n\n Username: " + username + "\n Password: " + newPassword + "\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!";
+                    var mailOptions = {
+                        from: "LighterPack <info@lighterpack.com>",
+                        to: email,
+                        subject: "Your new LighterPack password",
+                        text: message
+                    }
 
-            var mailOptions = {
-                from: "LighterPack <info@lighterpack.com>",
-                to: email,
-                subject: "Your new LighterPack password",
-                text: message
-            }
-
-            awesomeLog(req, "Attempting to send new password to:" + email);
-            transport.sendMail(mailOptions, function(error, response){
-                if (error) {
-                    awesomeLog(req, error);
-                    return res.status(500).json({status: "An error occurred"});
-                } else {
-                    db.users.save(user);
-                    var out = {username: username};
-                    awesomeLog(req, "Message sent: " + response.message);
-                    awesomeLog(req, "password changed for user:" + username);
-                    return res.status(200).json(out);
-                }
+                    awesomeLog(req, "Attempting to send new password to:" + email);
+                    transport.sendMail(mailOptions, function(error, response){
+                        if (error) {
+                            awesomeLog(req, error);
+                            return res.status(500).json({status: "An error occurred"});
+                        } else {
+                            db.users.save(user);
+                            var out = {username: username};
+                            awesomeLog(req, "Message sent: " + response.message);
+                            awesomeLog(req, "password changed for user:" + username);
+                            return res.status(200).json(out);
+                        }
+                    });
+                });
             });
         });
     });
