@@ -216,10 +216,10 @@ router.get("/csv/:id", function(req, res) {
 
         for (var i in list.categoryIds) {
             var category = library.getCategoryById(list.categoryIds[i]);
-            for (var j in category.itemIds) {
-                var categoryItem = category.itemIds[j];
+            for (var j in category.categoryItems) {
+                var categoryItem = category.categoryItems[j];
                 var item = library.getItemById(categoryItem.itemId);
-                var temp = [item.name, category.name, item.description, categoryItem.qty, ""+MgToWeight(item.weight, item.authorUnit), fullUnits[item.authorUnit]];
+                var temp = [item.name, category.name, item.description, categoryItem.qty, ""+ weightUtils.MgToWeight(item.weight, item.authorUnit), fullUnits[item.authorUnit]];
                 for (var k in temp) {
                     var field = temp[k];
                     if (k > 0) out += ",";
