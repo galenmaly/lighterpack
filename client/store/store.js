@@ -110,6 +110,7 @@ const store = new Vuex.Store({
         reorderCategory(state, args) {
             var list = state.library.getListById(args.list.id);
             list.categoryIds = arrayMove(list.categoryIds, args.before, args.after);
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         reorderItem(state, args) {
             var item = state.library.getItemById(args.itemId);
@@ -125,6 +126,7 @@ const store = new Vuex.Store({
                 originalCategory.categoryItems.splice(oldIndex, 1);
                 dropCategory.categoryItems.splice(args.dropIndex, 0, oldCategoryItem);
             }
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         addItemToCategory(state, args) {
             var item = state.library.getItemById(args.itemId);
@@ -137,6 +139,7 @@ const store = new Vuex.Store({
                 if (categoryItem && categoryItemIndex !== -1) {
                     dropCategory.categoryItems = arrayMove(dropCategory.categoryItems, categoryItemIndex, args.dropIndex);
                 }
+                state.library.getListById(state.library.defaultListId).calculateTotals();
             }
         },
         updateListName(state, updatedList) {
@@ -154,6 +157,7 @@ const store = new Vuex.Store({
         updateCategoryName(state, updatedCategory) {
             var category = state.library.getCategoryById(updatedCategory.id);
             category.name = updatedCategory.name;
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         updateCategoryColor(state, updatedCategory) {
             var category = state.library.getCategoryById(updatedCategory.id);
