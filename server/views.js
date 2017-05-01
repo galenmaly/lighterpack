@@ -212,16 +212,27 @@ router.get("/csv/:id", function(req, res) {
         }
 
         var fullUnits = {oz: "ounce", lb: "pound", g: "gram", kg: "kilogram"};
-        var out = "Item Name,Category,desc,qty,weight,unit\n";
+        var out = "Item Name,Category,desc,qty,weight,unit,url,price,worn,consumable\n";
 
         for (var i in list.categoryIds) {
             var category = library.getCategoryById(list.categoryIds[i]);
             for (var j in category.categoryItems) {
                 var categoryItem = category.categoryItems[j];
                 var item = library.getItemById(categoryItem.itemId);
-                var temp = [item.name, category.name, item.description, categoryItem.qty, ""+ weightUtils.MgToWeight(item.weight, item.authorUnit), fullUnits[item.authorUnit]];
-                for (var k in temp) {
-                    var field = temp[k];
+
+                var itemRow = [item.name];
+                itemRow.push(category.name);
+                itemRow.push(item.description);
+                itemRow.push(""+categoryItem.qty);
+                itemRow.push(""+weightUtils.MgToWeight(item.weight, item.authorUnit));
+                itemRow.push(fullUnits[item.authorUnit]);
+                itemRow.push(item.url);
+                itemRow.push(""+item.price);
+                itemRow.push(categoryItem.worn?"Worn":"");
+                itemRow.push(categoryItem.consumable?"Consumable":"");
+
+                for (var k in itemRow) {
+                    var field = itemRow[k];
                     if (k > 0) out += ",";
                     if (typeof(field) == "string") {
                         if (field.indexOf(",") > -1) out += "\"" + field.replace(/\"/g,"\"\"") + "\"";
