@@ -67,7 +67,7 @@
                         Base Weight
                     </span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpDisplaySubtotal" :mg="list.baseTotal">{{list.baseTotal | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpDisplaySubtotal" :mg="list.baseTotal" :title="$options.filters.displayWeight(list.packTotal, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">{{list.baseTotal | displayWeight(library.totalUnit)}}</span>
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
