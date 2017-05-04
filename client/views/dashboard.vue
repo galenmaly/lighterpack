@@ -52,7 +52,6 @@ const forgotPassword = require("./forgotPassword.vue");
 const account = require("../components/account.vue");
 const todo = require("../components/todo.vue");
 const help = require("../components/help.vue");
-const imageDialog = require("./imageDialog.vue");
 const list = require("../components/list.vue");
 
 const colorPicker = require("../components/colorpicker.vue");
@@ -75,7 +74,6 @@ module.exports = {
         account: account,
         todo: todo,
         help: help,
-        imageDialog: imageDialog,
         list: list,
         colorPicker: colorPicker,
         itemLink: itemLink,
