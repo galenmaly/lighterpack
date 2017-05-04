@@ -61,7 +61,7 @@
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
-                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpPackWeight">
+                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpPackWeight" v-if="list.wornTotal || list.consumableTotal">
                     <span class="lpCell"></span>
                     <span class="lpCell lpSubtotal">
                         Base Weight

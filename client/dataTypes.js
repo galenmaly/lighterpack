@@ -68,10 +68,10 @@ Category.prototype.calculateSubtotal = function() {
         var categoryItem = this.categoryItems[i];
         var item = this.library.getItemById(categoryItem.itemId);
         this.subtotal += item.weight*categoryItem.qty;
-        if (categoryItem.worn) {
+        if (this.library.optionalFields.worn && categoryItem.worn) {
             this.wornSubtotal += item.weight * ( (categoryItem.qty > 0) ? 1 : 0 );
         }
-        if (categoryItem.consumable) {
+        if (this.library.optionalFields.consumable && categoryItem.consumable) {
             this.consumableSubtotal += item.weight * categoryItem.qty;
         }
         this.qtySubtotal += categoryItem.qty;
