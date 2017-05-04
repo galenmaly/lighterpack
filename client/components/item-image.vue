@@ -16,12 +16,15 @@
                 </div>
                 <div class="lpHalf">
                     <h2>Upload image from disk</h2>
-                    <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
-                    <button v-on:click="triggerImageUpload" class="lpButton" id="itemImageUpload">Upload Image</button>
-                    <a v-on:click="closeModal" class="lpHref close">Cancel</a>
-                    <p v-if="uploading">Uploading image...</p>
-
-                    
+                    <template v-if="!item.image">
+                        <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
+                        <button v-on:click="triggerImageUpload" class="lpButton" id="itemImageUpload">Upload Image</button>
+                        <a v-on:click="closeModal" class="lpHref close">Cancel</a>
+                        <p v-if="uploading">Uploading image...</p>
+                    </template>
+                    <template v-if="item.image">
+                        <button v-on:click="removeItemImage" class="lpButton" id="itemImageUpload">Remove Image</button>
+                    </template>
                 </div>
             </div>
         </div>
@@ -92,6 +95,10 @@ export default {
                 this.uploading = false;
                 alert("Upload failed! If this issue persists please file a bug.");
             });
+        },
+        removeItemImage: function() {
+            this.$store.commit("removeItemImage", this.item);
+            this.item.image = "";
         }
     },
     mounted: function() {

@@ -182,6 +182,10 @@ const store = new Vuex.Store({
             item.image = args.image;
             state.library.optionalFields["images"] = true;
         },
+        removeItemImage(state, updateItem) {
+            var item = state.library.getItemById(updateItem.id);
+            item.image = "";
+        },
         updateCategoryItem(state, args) {
             args.category.updateCategoryItem(args.categoryItem);
             state.library.getListById(state.library.defaultListId).calculateTotals();
@@ -276,11 +280,12 @@ const store = new Vuex.Store({
     plugins: [
         function save(store) {
             store.subscribe((mutation, state) => {
-                const ignore = ["setSaveType", "setSyncToken", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"]
+                const ignore = ["setSaveType", "setSyncToken", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"];
                 if (!state.library || ignore.indexOf(mutation.type) > -1) {
                     return;
                 }
                 var saveData = JSON.stringify(state.library.save());
+
 
                 if (saveData == state.lastSaveData) {
                     return;
