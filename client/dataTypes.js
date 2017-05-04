@@ -231,6 +231,7 @@ List.prototype.calculateTotals = function() {
     var total = 0,
         wornTotal = 0,
         consumableTotal = 0,
+        baseTotal = 0,
         packTotal = 0,
         qtyTotal = 0,
         out = {categories: []};
@@ -246,9 +247,11 @@ List.prototype.calculateTotals = function() {
         out.categories.push(category);
     }
 
-    packTotal = total - (wornTotal + consumableTotal);
+    baseTotal = total - (wornTotal + consumableTotal);
+    packTotal = total - wornTotal;
 
     this.total = total;
+    this.baseTotal = baseTotal;
     this.packTotal = packTotal;
     this.qtyTotal = qtyTotal;
     this.wornTotal = wornTotal;

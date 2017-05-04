@@ -61,13 +61,13 @@
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
-                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpPackWeight" v-if="list.wornTotal || list.consumableTotal">
+                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpBaseWeight" v-if="list.wornTotal || list.consumableTotal">
                     <span class="lpCell"></span>
-                    <span class="lpCell lpSubtotal">
+                    <span class="lpCell lpSubtotal" :title="$options.filters.displayWeight(list.packTotal, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
                         Base Weight
                     </span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpDisplaySubtotal" :mg="list.packTotal">{{list.packTotal | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpDisplaySubtotal" :mg="list.baseTotal">{{list.baseTotal | displayWeight(library.totalUnit)}}</span>
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
