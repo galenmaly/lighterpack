@@ -17,7 +17,7 @@
                     {{item.description}}
                 </span>
                 <a v-on:click="removeItem(item)" class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently"><i class="lpSprite lpSpriteRemove"></i></a>
-                <div class="lpHandle lpLibraryItemHandle" title="Reorder this item"></div>
+                <div class="lpHandle lpLibraryItemHandle" title="Reorder this item" v-if="!item.inCurrentList"></div>
             </li>
         </ul>
     </section>
@@ -42,18 +42,30 @@ export default {
             return this.$store.state.library;
         },
         filteredItems() {
+            var i,
+                item,
+                filteredItems = [];
             if (!this.searchText) {
-                return this.library.items;
+                filteredItems = this.library.items.map((item) => { return Vue.util.extend({}, item); });
             } else {
-                var filteredItems = [];
-                for (var i in this.library.items) {
-                    var item = this.library.items[i];
+                for (i = 0; i < this.library.items.length; i++) {
+                    item = this.library.items[i];
                     if (item.name.toLowerCase().indexOf(this.searchText) > -1 || item.description.toLowerCase().indexOf(this.searchText) > -1 ) {
-                        filteredItems.push(item);
+                        filteredItems.push(Vue.util.extend({}, item));
                     }
                 }
-                return filteredItems;
             }
+
+            var currentListItems = this.library.getItemsInCurrentList();
+
+            for (i = 0; i < filteredItems.length; i++) {
+                item = filteredItems[i];
+                if (currentListItems.indexOf(item.id) > -1) {
+                    item.inCurrentList = true;
+                }
+            }
+
+            return filteredItems;
         }
     },
     methods: {
