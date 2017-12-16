@@ -30,8 +30,12 @@
 
                     <section id="libraryContainer">
                         <h2>Gear</h2>
+                        <div>
+                            <input type="checkbox" id="librarySearchFilter" name="librarySearchFilter" />
+                            <label for="librarySearchFilter">Include Active Items</label>
+                        </div>
                         <input type="text" id="librarySearch" placeholder="search items"/>
-                        <ul id="library"></ul>
+                        <ul id="library" class="lpHideActive"></ul>
                     </section>
                 </div>
             </div>

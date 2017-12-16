@@ -207,6 +207,9 @@
 #library.lpSearching .lpLibraryItem.lpHit {
   display: block;
 }
+#library.lpHideActive .lpLibraryItem:not(.lpItemNotInList) {
+    display:none !important;
+}
 #main > .lpLibraryItem {
   background: #666;
   color: #FFF;

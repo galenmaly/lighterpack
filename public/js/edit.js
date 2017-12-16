@@ -722,6 +722,14 @@ editLists = function() {
         $("#librarySearch").on("keyup", function(evt) {
             librarySearch();
         });
+        
+        $("#librarySearchFilter").change(function(){
+           if($(this).prop('checked')){
+                $("#library").removeClass('lpHideActive');
+           } else {
+                $("#library").addClass('lpHideActive');
+           }           
+        });
 
         $categories.on("click", ".lpLink", function(evt) {
             selectedItem = $(this).parents(".lpItem").attr("id");
