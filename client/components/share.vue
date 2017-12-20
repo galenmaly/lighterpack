@@ -48,22 +48,15 @@ module.exports = {
     methods: {
         focusShare: function(evt) {
             if (!this.list.externalId) {
-                return fetchJson("/externalId", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                })
-                .then((response) => {
-                    this.$store.commit('setExternalId', {externalId: response.externalId, list: this.list});
-                    setTimeout(() => {
-                        bus.$emit('show-share-box');
-                    },0);
-                })
-                .catch((response) => {
-                    alert("An error occurred while attempting to get an ID for your list. Please try again later."); //TODO
-                });
+                var id = "";
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                for (var i = 0; i < 10; i++) {
+                    id += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+                this.$store.commit('setExternalId', {externalId: id, list: this.list});
+                setTimeout(() => {
+                    bus.$emit('show-share-box');
+                },0);
             } else {
                 bus.$emit('show-share-box');
             }
