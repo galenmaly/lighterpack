@@ -4,6 +4,10 @@
 <template>
     <section id="libraryContainer">
         <h2>Gear</h2>
+        <div>
+            <input type="checkbox" id="libraryActiveFilter" name="libraryActiveFilter" v-on:change="toggleActiveFilter"/>
+            <label for="libraryActiveFilter">Include Active Items</label>
+        </div>
         <input type="text" id="librarySearch" placeholder="search items" v-model="searchText"/>
         <ul id="library">
             <li v-for="item in filteredItems" class="lpLibraryItem" :data-item-id="item.id">
@@ -34,7 +38,8 @@ export default {
     data: function() {
         return {
             searchText: "",
-            itemDragId: false
+            itemDragId: false,
+            isActiveFiltered: true
         };
     },
     computed: {
@@ -57,11 +62,16 @@ export default {
             }
 
             var currentListItems = this.library.getItemsInCurrentList();
-
-            for (i = 0; i < filteredItems.length; i++) {
+            
+            var i = filteredItems.length;
+            while (i--) {
                 item = filteredItems[i];
                 if (currentListItems.indexOf(item.id) > -1) {
-                    item.inCurrentList = true;
+                    if (this.isActiveFiltered) {
+                        filteredItems.splice(i,1);
+                    } else {
+                        item.inCurrentList = true;
+                    }
                 }
             }
 
@@ -109,6 +119,13 @@ export default {
                 body: "Are you sure you want to delete this item? This cannot be undone."
             };
             bus.$emit("initSpeedbump", callback, speedbumpOptions);
+        },
+        toggleActiveFilter() {
+            if (document.getElementById("libraryActiveFilter").checked) {
+                this.isActiveFiltered = false;
+            } else {
+                this.isActiveFiltered = true;
+            }
         }
     },
     mounted: function() {
