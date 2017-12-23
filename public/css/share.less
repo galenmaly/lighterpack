@@ -57,16 +57,21 @@
 
 
         .lpShowImages &.lpItemHasImage {
-            min-height: 90px;
-            padding-left: 100px;
+            min-height: 48px;
+            padding-left: 60px;
             position: relative;
 
             .lpImageCell {
-                height: 90px;
+                height: 48px;
                 left: 0;
                 position: absolute;
                 top: 0;
-                width: 90px;
+                width: 48px;
+                img {
+                    object-fit: cover;
+                    height: 48px;
+                    width: 48px;
+                }
             }
         }
 

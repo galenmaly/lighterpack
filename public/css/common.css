@@ -590,6 +590,7 @@ input.lpCategoryName {
 .lpItemsHeader .lpImageCell,
 .lpItemsFooter .lpImageCell {
   flex: 0 0 90px;
+  text-align: center !important;
 }
 .lpItem .lpImageCell .lpItemImage,
 .lpItemsHeader .lpImageCell .lpItemImage,
@@ -597,7 +598,10 @@ input.lpCategoryName {
   cursor: pointer;
   position: relative;
   top: 3px;
+  object-fit: cover;
+  min-width: 48px;
   max-width: 90px;
+  max-height: 48px;
 }
 .lpItem .lpName,
 .lpItemsHeader .lpName,
