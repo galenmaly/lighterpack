@@ -154,45 +154,6 @@ function saveLibrary(req, res, user) {
     return res.status(200).json({status: "success", syncToken: user.syncToken});
 }
 
-router.post("/externalId", function(req, res) {
-    authenticateUser(req, res, externalId);
-});
-
-function externalId(req, res, user) {
-    var filePath = path.join(__dirname, "../extIds.txt");
-
-    fs.readFile(filePath, function(err, data) {
-        if (!err) {
-            data = data.toString();
-            var position = data.indexOf('\n');
-            if (position != -1) {
-                var myId = data.substr(0, position).trim();
-                data = data.substr(position + 1);
-                fs.writeFile(filePath, data, function(err) {
-                    if (err) {
-                        awesomeLog(req, err);
-                    }
-                });
-                awesomeLog(req, user.username + " - " + myId);
-
-                if (typeof user.externalIds == "undefined") user.externalIds = [myId];
-                else user.externalIds.push(myId);
-
-                db.users.save(user);
-
-                return res.status(200).json({externalId: myId});
-            } else {
-                awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
-                return res.status(500).json({status: "An error occurred, please try again later."});
-            }
-        } else {
-            awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
-            awesomeLog(req, err);
-            return res.status(500).json({status: "An error occurred, please try again later."});
-        }
-    });
-}
-
 router.post("/forgotPassword", function(req, res) {
     awesomeLog(req);
     var username = req.body.username;
