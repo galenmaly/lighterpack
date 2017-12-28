@@ -91,8 +91,9 @@ Category.prototype.getCategoryItemById = function(id) {
 Category.prototype.getExtendedItemByIndex = function(index) {
     var categoryItem = this.categoryItems[index];
     var item = this.library.getItemById(categoryItem.itemId);
-    Vue.util.extend(item, categoryItem);
-    return item;
+    var extendedItem = Vue.util.extend({}, item);
+    Vue.util.extend(extendedItem, categoryItem);
+    return extendedItem;
 }
 
 Category.prototype.save = function() {
