@@ -12,7 +12,7 @@ const Item = function(args) {
     this.weight = 0;
     this.authorUnit = "oz";
     if (args.unit) this.authorUnit = args.unit;
-    this.price = 0;
+    this.price = 0.00;
     this.image = "";
     this.imageUrl = "";
     this.url = "";
@@ -25,6 +25,9 @@ Item.prototype.save = function() {
 
 Item.prototype.load = function(input) {
     Vue.util.extend(this, input);
+    if (typeof this.price === "string") {
+        this.price = parseFloat(this.price, 10);
+    }
 }
 
 const Category = function(args) {

@@ -3,6 +3,7 @@
 .lpSilent {
     background: transparent;
     border: 1px solid transparent;
+
     &:hover {
         background-color: #FFF;
         border: 1px solid rgba(0,0,0,0.15);
@@ -11,6 +12,16 @@
         border: 1px solid rgba(0,0,0,0.15);
         background-color: #FFF;
         box-shadow: 0 1px 3px rgba(0,0,0,0.15) inset;
+    }
+
+    &.lpSilentError {
+        background-color: lighten(desaturate(@red1, 10%), 40%);
+        border: 1px solid @red1;
+        outline-color: @red1;
+
+        &:focus {
+            background-color: #FFF;
+        }
     }
 }
 

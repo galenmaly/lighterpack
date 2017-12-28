@@ -12,6 +12,14 @@
   background-color: #FFF;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
 }
+.lpSilent.lpSilentError {
+  background-color: #f3bfc7;
+  border: 1px solid #CE1836;
+  outline-color: #CE1836;
+}
+.lpSilent.lpSilentError:focus {
+  background-color: #FFF;
+}
 /* Sidebar */
 #sidebar {
   background: #555;
