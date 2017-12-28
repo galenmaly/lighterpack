@@ -445,6 +445,7 @@ h2 .alternateAction {
   margin-top: 0;
 }
 #welcome {
+  border-top: 2px solid #EFA026;
   width: 600px;
 }
 #welcome h2 {
