@@ -15,7 +15,7 @@
                 <span class="lpQtyCell">qty</span>
                 <span class="lpRemoveCell"><a v-on:click="removeCategory(category)" class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
             </li>
-            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category"></item>
+            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category" :key="itemContainer.item.id"></item>
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
                     <a class="lpAdd lpAddItem" v-on:click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
