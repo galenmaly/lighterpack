@@ -24,7 +24,7 @@
         </div>
 
         <ul class="lpCategories">
-            <category v-for="category in categories" :category="category"></category>
+            <category v-for="category in categories" :category="category" :key="category.id"></category>
         </ul>
 
         <hr />
@@ -49,7 +49,15 @@ export default {
     },
     data: function() {
         return {
-            onboardingCompleted: false
+            onboardingCompleted: false,
+            itemDrake: null
+        }
+    },
+    watch: {
+        categories: function() {
+            Vue.nextTick(() => {
+                this.handleItemReorder();
+            });
         }
     },
     computed: {
@@ -79,6 +87,9 @@ export default {
             this.$store.commit("updateListDescription", this.list);
         },
         handleItemReorder() {
+            if (this.itemDrake) {
+                this.itemDrake.destroy();
+            }
             var $categoryItems = Array.prototype.slice.call(document.getElementsByClassName("lpItems"));
             var drake = dragula($categoryItems, {
                 moves: function ($el, $source, $handle, $sibling) {
@@ -99,6 +110,7 @@ export default {
                 this.$store.commit("reorderItem", {list: this.list, itemId: this.itemDragId, categoryId: categoryId, dropIndex: getElementIndex($el) - 1});
                 drake.cancel(true);
             });
+            this.itemDrake = drake;
         },
         handleCategoryReorder() {
             var $categories = document.getElementsByClassName("lpCategories")[0];

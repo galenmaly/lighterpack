@@ -280,22 +280,43 @@ const store = new Vuex.Store({
     plugins: [
         function save(store) {
             store.subscribe((mutation, state) => {
-                const ignore = ["setSaveType", "setSyncToken", "setLastSaveTime", "setLastSaveData", "setSaveTimeout", "clearSaveTimeout", "signout", "setLoggedIn", "loadLibraryData", "clearLibraryData"];
+                const ignore = [
+                    "setSaveType",
+                    "setSyncToken",
+                    "setLastSaveTime",
+                    "setLastSaveData",
+                    "setSaveTimeout",
+                    "clearSaveTimeout",
+                    "signout",
+                    "setLoggedIn",
+                    "loadLibraryData",
+                    "clearLibraryData"
+                ];
                 if (!state.library || ignore.indexOf(mutation.type) > -1) {
                     return;
                 }
                 var saveData = JSON.stringify(state.library.save());
-
 
                 if (saveData == state.lastSaveData) {
                     return;
                 }
 
                 function saveRemotely(saveData) {
+                    var date = new Date();
+                    if (date.getTime() - state.lastSaveTime < 5000) {
+                         if (!state.saveTimeout) {
+                            store.commit("setSaveTimeout", setTimeout(saveRemotely, 5001));
+                        }
+                        return;
+                    }
+
+                    if (state.saveTimeout) {
+                        store.commit("clearSaveTimeout");
+                    }
+
                     if (!saveData) {
                         saveData = JSON.stringify(state.library.save());
                     }
-
                     store.commit("setLastSaveTime", date.getTime());
                     store.commit("setLastSaveData", saveData);
 
@@ -324,18 +345,7 @@ const store = new Vuex.Store({
                 }
                 
                 if (state.saveType === "remote") {
-                    var date = new Date();
-                    if (date.getTime() - state.lastSaveTime > 5000) {
-                        if (state.saveTimeout) {
-                            store.commit("clearSaveTimeout");
-                        }
-                        saveRemotely(saveData);
-                    } else {
-                        if (state.saveTimeout) {
-                            return;
-                        }
-                        store.commit("setSaveTimeout", setTimeout(saveRemotely, 5001));
-                    }
+                    saveRemotely(saveData);
                 } else if (state.saveType === "local") {
                     localStorage.library = saveData;
                 }

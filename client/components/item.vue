@@ -20,14 +20,14 @@
             <i :class="'lpSprite lpStar lpStar' + categoryItem.star" v-on:click="cycleStar" title="Star this item"></i>
         </span>
         <span v-if="library.optionalFields['price']" class="lpPriceCell">
-            <input type="text" :value="item.price" class="lpPrice lpNumber lpSilent" v-empty-if-zero />
+            <input v-on:input="savePrice" type="text" v-model="displayPrice" v-on:keydown.up="incrementPrice($event)" v-on:keydown.down="decrementPrice($event)" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" v-on:blur="setDisplayPrice" v-empty-if-zero />
         </span>
         <span class="lpWeightCell lpNumber">
-            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)"  type="text" v-model="weight" class="lpWeight lpNumber lpSilent" v-empty-if-zero />
+            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)" type="text" v-model="displayWeight" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" v-empty-if-zero/>
             <unitSelect :unit="item.authorUnit" :onChange="setUnit"></unitSelect>
         </span>
         <span class="lpQtyCell">
-            <input v-on:input="saveCategoryItem" v-on:keydown.up="incrementQty($event)" v-on:keydown.down="decrementQty($event)" type="text" v-model="categoryItem.qty" class="lpQty lpNumber lpSilent" />
+            <input v-on:input="saveQty" v-on:keydown.up="incrementQty($event)" v-on:keydown.down="decrementQty($event)" type="text" v-model="displayQty" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" />
             <span class="lpArrows">
                 <span class="lpSprite lpUp" v-on:click="incrementQty($event)"></span>
                 <span class="lpSprite lpDown" v-on:click="decrementQty($event)"></span>
@@ -53,7 +53,12 @@ module.exports = {
     },
     data: function() {
         return {
-            weight: 0,
+            displayWeight: 0,
+            displayPrice: 0,
+            displayQty: 0,
+            weightError: false,
+            priceError: false,
+            qtyError: false,
             numStars: 4
         };
     },
@@ -84,26 +89,64 @@ module.exports = {
             } else {
                 return "";
             }
-        }
+        },
     },
     methods: {
         saveItem: function() {
             this.item = this.$store.commit("updateItem", this.item);
         },
-        saveCategoryItem: function() {
-            this.categoryItem.qty = parseFloat(this.categoryItem.qty);
+        saveCategoryItem: function() {           
             this.$store.commit("updateCategoryItem", {category: this.category, categoryItem: this.categoryItem});
         },
         setUnit: function(unit) {
             this.item.authorUnit = unit;
             this.saveWeight(); //calling saveWeight preserves the text in the weight box instead of converting units.
         },
-        setWeight: function() {
-            this.weight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit);
+        savePrice: function() {
+            const priceFloat = parseFloat(this.displayPrice, 10);
+
+            if (!isNaN(priceFloat)) {
+                this.item.price = Math.round(priceFloat * 100) / 100;
+                this.saveItem();
+                this.priceError = false;
+            } else {
+                this.priceError = true;
+            }
+        },
+        saveQty: function() {
+            const qtyFloat = parseFloat(this.displayQty, 10);
+
+            if (!isNaN(qtyFloat)) {
+                this.categoryItem.qty = qtyFloat;
+                this.saveCategoryItem();
+                this.qtyError = false;
+            } else {
+                this.qtyError = true;
+            }
         },
         saveWeight: function() {
-            this.item.weight = weightUtils.WeightToMg(parseFloat(this.weight), this.item.authorUnit);
-            this.saveItem();
+            const weightFloat = parseFloat(this.displayWeight, 10);
+
+            if (!isNaN(weightFloat)) {
+                this.item.weight = weightUtils.WeightToMg(weightFloat, this.item.authorUnit);
+                this.saveItem();
+                this.weightError = false;
+            } else {
+                this.weightError = true;
+            }
+        },
+        setDisplayPrice: function() {
+            if (!this.priceError) {
+                this.displayPrice = this.item.price.toFixed(2);
+            }
+        },
+        setDisplayQty: function() {
+            if (!this.qtyError) {
+                this.displayQty = this.categoryItem.qty;
+            }
+        },
+        setDisplayWeight: function() {
+            this.displayWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit);
         },
         updateItemLink: function() {
             bus.$emit("updateItemLink", this.item);
@@ -135,28 +178,86 @@ module.exports = {
             this.categoryItem.star = (this.categoryItem.star + 1) % this.numStars;
             this.saveCategoryItem();
         },
+        incrementPrice: function(evt) {
+            evt.stopImmediatePropagation();
+
+            if (this.priceError) {
+                return;
+            }
+
+            this.item.price = this.item.price + 1;
+
+            this.saveItem();
+            this.setDisplayPrice();
+        },
+        decrementPrice: function(evt) {
+            evt.stopImmediatePropagation();
+
+            if (this.priceError) {
+                return;
+            }
+
+            this.item.price = this.item.price - 1;
+
+            if (this.item.price < 0) {
+                this.item.price = 0;
+            }
+
+            this.saveItem();
+            this.setDisplayPrice();
+        },
         incrementQty: function(evt) {
             evt.stopImmediatePropagation();
-            this.categoryItem.qty = parseFloat(this.categoryItem.qty) + 1;
+
+            if (this.qtyError) {
+                return;
+            }
+
+            this.categoryItem.qty = this.categoryItem.qty + 1;
             this.saveCategoryItem();
         },
         decrementQty: function(evt) {
             evt.stopImmediatePropagation();
-            this.categoryItem.qty = parseFloat(this.categoryItem.qty) - 1;
+
+            if (this.qtyError) {
+                return;
+            }
+
+            this.categoryItem.qty = this.categoryItem.qty - 1;
+
             if (this.categoryItem.qty < 0) {
                 this.categoryItem.qty = 0;
             }
+
             this.saveCategoryItem();
         },
         incrementWeight: function(evt) {
             evt.stopImmediatePropagation();
-            this.weight = parseFloat(this.weight) + 1;
-            this.saveWeight();
+
+            if (this.weightError) {
+                return;
+            }
+
+            let newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) + 1;
+            this.item.weight = weightUtils.WeightToMg(newWeight, this.item.authorUnit);
+
+            this.saveItem();
         },
         decrementWeight: function(evt) {
             evt.stopImmediatePropagation();
-            this.weight = parseFloat(this.weight) - 1;
-            this.saveWeight();
+
+            if (this.weightError) {
+                return;
+            }
+
+            let newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) - 1;
+            this.item.weight = weightUtils.WeightToMg(newWeight, this.item.authorUnit);
+
+            if (this.item.weight < 0) {
+                this.item.weight = 0;
+            }
+
+            this.saveItem();
         },
         removeItem: function() {
             this.$store.commit("removeItemFromCategory", {itemId: this.item.id, category: this.category});
@@ -164,11 +265,16 @@ module.exports = {
     },
     watch: {
         item: function() {
-            this.setWeight();
+            this.setDisplayWeight();
+        },
+        categoryItem: function() {
+            this.setDisplayQty();
         }
     },
     beforeMount: function() {
-        this.setWeight();
+        this.setDisplayWeight();
+        this.setDisplayPrice();
+        this.setDisplayQty();
     }
 }
 </script>,

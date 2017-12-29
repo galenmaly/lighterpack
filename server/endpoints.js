@@ -452,7 +452,15 @@ function verifyPassword(username, password) {
                             reject({code: 500, status: "An error occurred, please try again later."});
                         }
                         if (!result) {
-                            reject({code: 404, status: "Invalid username and/or password."});
+                            /* TODO: reinstate this block after DB migration */
+                            /* reject({code: 404, status: "Invalid username and/or password."}); */
+
+                            /* TODO: remove this block after DB migration */
+                            if (sha3password === user.password) {
+                                resolve(user);
+                            } else {
+                                reject({code: 404, status: "Invalid username and/or password."});
+                            }
                         } else {
                             bcrypt.genSalt(10, function(err, salt) {
                                 if (err) {

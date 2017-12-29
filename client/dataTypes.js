@@ -12,7 +12,7 @@ const Item = function(args) {
     this.weight = 0;
     this.authorUnit = "oz";
     if (args.unit) this.authorUnit = args.unit;
-    this.price = 0;
+    this.price = 0.00;
     this.image = "";
     this.imageUrl = "";
     this.url = "";
@@ -25,6 +25,9 @@ Item.prototype.save = function() {
 
 Item.prototype.load = function(input) {
     Vue.util.extend(this, input);
+    if (typeof this.price === "string") {
+        this.price = parseFloat(this.price, 10);
+    }
 }
 
 const Category = function(args) {
@@ -59,25 +62,28 @@ Category.prototype.removeItem = function (itemId) {
 }
 
 Category.prototype.calculateSubtotal = function() {
-    this.subtotal = 0;
-    this.wornSubtotal = 0;
-    this.consumableSubtotal = 0;
-    this.qtySubtotal = 0;
-    this.priceSubtotal = 0;
+    this.subtotalWeight = 0;
+    this.subtotalWornWeight = 0;
+    this.subtotalConsumableWeight = 0;
+    this.subtotalPrice = 0;
+    this.subtotalConsumablePrice = 0;
+    this.subtotalQty = 0;
+    
     for (var i in this.categoryItems) {
         var categoryItem = this.categoryItems[i];
         var item = this.library.getItemById(categoryItem.itemId);
-        this.subtotal += item.weight*categoryItem.qty;
+        this.subtotalWeight += item.weight*categoryItem.qty;
+        this.subtotalPrice += item.price*categoryItem.qty;
+
         if (this.library.optionalFields.worn && categoryItem.worn) {
-            this.wornSubtotal += item.weight * ( (categoryItem.qty > 0) ? 1 : 0 );
+            this.subtotalWornWeight += item.weight * ( (categoryItem.qty > 0) ? 1 : 0 );
         }
         if (this.library.optionalFields.consumable && categoryItem.consumable) {
-            this.consumableSubtotal += item.weight * categoryItem.qty;
+            this.subtotalConsumableWeight += item.weight * categoryItem.qty;
+            this.subtotalConsumablePrice += item.price * categoryItem.qty;
         }
-        this.qtySubtotal += categoryItem.qty;
-        this.priceSubtotal += item.price * categoryItem.qty;
+        this.subtotalQty += categoryItem.qty;
     }
-    this.displayPriceSubtotal = this.priceSubtotal.toFixed(2);
 }
 
 Category.prototype.getCategoryItemById = function(id) {
@@ -91,8 +97,9 @@ Category.prototype.getCategoryItemById = function(id) {
 Category.prototype.getExtendedItemByIndex = function(index) {
     var categoryItem = this.categoryItems[index];
     var item = this.library.getItemById(categoryItem.itemId);
-    Vue.util.extend(item, categoryItem);
-    return item;
+    var extendedItem = Vue.util.extend({}, item);
+    Vue.util.extend(extendedItem, categoryItem);
+    return extendedItem;
 }
 
 Category.prototype.save = function() {
@@ -166,13 +173,13 @@ List.prototype.renderChart = function (type, linkParent) {
             category.calculateSubtotal();
 
             if (type === 'consumable') {
-              total += category.consumableSubtotal;
+              total += category.subtotalConsumableWeight;
             } else if (type === 'worn') {
-              total += category.wornSubtotal;
+              total += category.subtotalWornWeight;
             } else if (type === 'base') {
-              total += (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+              total += (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
             } else { //total weight
-              total += category.subtotal;
+              total += category.subtotalWeight;
             }
         }
     }
@@ -190,13 +197,13 @@ List.prototype.renderChart = function (type, linkParent) {
 
             var categoryTotal;
             if (type === 'consumable') {
-              categoryTotal = category.consumableSubtotal;
+              categoryTotal = category.subtotalConsumableWeight;
             } else if (type === 'worn') {
-              categoryTotal = category.wornSubtotal;
+              categoryTotal = category.subtotalWornWeight;
             } else if (type === 'base') {
-              categoryTotal = (category.subtotal - (category.consumableSubtotal + category.wornSubtotal));
+              categoryTotal = (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
             } else { //total weight
-              categoryTotal = category.subtotal;
+              categoryTotal = category.subtotalWeight;
             }
 
             var tempColor = category.color || colorUtils.getColor(i);
@@ -228,34 +235,46 @@ List.prototype.renderChart = function (type, linkParent) {
 }
 
 List.prototype.calculateTotals = function() {
-    var total = 0,
-        wornTotal = 0,
-        consumableTotal = 0,
-        baseTotal = 0,
-        packTotal = 0,
-        qtyTotal = 0,
+    var totalWeight = 0,
+        totalPrice = 0,
+        totalWornWeight = 0,
+        totalConsumableWeight = 0,
+        totalConsumablePrice = 0,
+        totalBaseWeight = 0,
+        totalPackWeight = 0,
+        totalQty = 0,
         out = {categories: []};
 
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         category.calculateSubtotal();
 
-        total += category.subtotal;
-        wornTotal += category.wornSubtotal;
-        consumableTotal += category.consumableSubtotal;
-        qtyTotal += category.qtySubtotal;
+        totalWeight += category.subtotalWeight;
+        totalWornWeight += category.subtotalWornWeight;
+        totalConsumableWeight += category.subtotalConsumableWeight;
+
+        totalPrice += category.subtotalPrice;
+        totalConsumablePrice += category.subtotalConsumablePrice;
+
+        totalQty += category.subtotalQty;
+
         out.categories.push(category);
     }
 
-    baseTotal = total - (wornTotal + consumableTotal);
-    packTotal = total - wornTotal;
+    totalBaseWeight = totalWeight - (totalWornWeight + totalConsumableWeight);
+    totalPackWeight = totalWeight - totalWornWeight;
 
-    this.total = total;
-    this.baseTotal = baseTotal;
-    this.packTotal = packTotal;
-    this.qtyTotal = qtyTotal;
-    this.wornTotal = wornTotal;
-    this.consumableTotal = consumableTotal;
+    this.totalWeight = totalWeight;
+    this.totalWornWeight = totalWornWeight;
+    this.totalConsumableWeight = totalConsumableWeight;
+
+    this.totalBaseWeight = totalBaseWeight;
+    this.totalPackWeight = totalPackWeight;
+    
+    this.totalPrice = totalPrice;
+    this.totalConsumablePrice = totalConsumablePrice;
+
+    this.totalQty = totalQty; 
 }
 
 List.prototype.save = function() {

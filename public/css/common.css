@@ -371,10 +371,12 @@ html.lp,
 }
 .lp .lpButton {
   /* TODO: find out why this specificity is needed */
-  background-image: linear-gradient(to bottom, #FCAF40 0%, #FF9D0F 100%);
-  border: 1px solid #fca222;
-  border-radius: 3px;
-  box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, 0.5);
+  background-image: linear-gradient(to bottom, #EFA026 50%, #F18828 100%);
+  background-size: 200%;
+  background-position: 0 100%;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0) inset, 0 0px 2px rgba(0, 0, 0, 0.2);
   color: #fff;
   cursor: pointer;
   display: inline-block;
@@ -384,7 +386,8 @@ html.lp,
   padding: 6px 14px;
   text-align: center;
   text-decoration: none;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
   width: auto;
   /* Remove IE8 dotted outline when button is clicked */
   /* Remove FF dotted border when button is clicked */
@@ -396,7 +399,8 @@ html.lp,
 }
 .lp .lpButton:hover,
 .lp .lpButton:focus {
-  background-image: linear-gradient(to bottom, #fb9809 0%, #d67f00 100%);
+  background-position: 0 0;
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 .lp .lpButton:focus {
   outline: none;
@@ -473,7 +477,7 @@ html.lp,
   padding: 150px 0 20px;
 }
 #lpWelcomeFooter {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.55);
   bottom: 0;
   display: flex;
   justify-content: space-between;
@@ -723,7 +727,8 @@ input.lpCategoryName {
   text-align: center;
 }
 .lpSprite {
-  background-image: url(/images/sprite.png?v=2);
+  background-size: 400px;
+  background-image: url(/images/sprite2x.png?v=2);
   display: inline-block;
   height: 14px;
   overflow: hidden;
@@ -733,12 +738,6 @@ input.lpCategoryName {
 }
 .lpSprite.hidden {
   visibility: hidden;
-}
-@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
-  .lpSprite {
-    background-size: 400px;
-    background-image: url(/images/sprite2x.png?v=2);
-  }
 }
 .lpSpriteAdd {
   background-position: 0 0;

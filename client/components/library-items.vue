@@ -39,8 +39,16 @@ export default {
         return {
             searchText: "",
             itemDragId: false,
+            drake: null,
             isActiveFiltered: true
         };
+    },
+    watch: {
+        categories: function() {
+            Vue.nextTick(() => {
+                this.handleItemDrag();
+            });
+        }
     },
     computed: {
         library() {
@@ -76,10 +84,22 @@ export default {
             }
 
             return filteredItems;
-        }
+        },
+        list() {
+            return this.library.getListById(this.library.defaultListId);
+        },
+        categories() {
+            return this.list.categoryIds.map((id) => {
+                return this.library.getCategoryById(id);
+            });
+        },
     },
     methods: {
         handleItemDrag() {
+            if (this.drake) {
+                this.drake.destroy();
+            }
+
             var self = this;
             var $library = document.getElementById("library");
             var $categoryItems = Array.prototype.slice.call(document.getElementsByClassName("lpItems")); //list.vue
@@ -110,6 +130,7 @@ export default {
                 this.$store.commit("addItemToCategory", {itemId: this.itemDragId, categoryId: categoryId, dropIndex: getElementIndex($el) - 1});
                 drake.cancel(true);
             });
+            this.drake = drake;
         },
         removeItem(item) {
             var callback = function() {

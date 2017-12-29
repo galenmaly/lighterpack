@@ -14,6 +14,9 @@
                     <span class="lpCell">
                         Category
                     </span>
+                    <span class="lpCell" v-if="library.optionalFields['price']">
+                        Price
+                    </span>
                     <span class="lpCell">
                         Weight
                     </span>
@@ -25,49 +28,62 @@
                     <span class="lpCell">
                         {{category.name}}
                     </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']">
+                        {{category.subtotalPrice | displayPrice(library.currencySymbol)}}
+                    </span>
                     <span class="lpCell lpNumber">
-                        <div class="lpSubtotal"><span class="lpDisplaySubtotal" :mg="category.subtotal">{{category.subtotal | displayWeight(library.totalUnit)}}</span> <span class="lpSubtotalUnit">{{library.totalUnit}}</span></div>
+                        <span class="lpDisplaySubtotal" :mg="category.subtotalWeight">{{category.subtotalWeight | displayWeight(library.totalUnit)}}</span> <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
                 <li class="lpRow lpFooter lpTotal">
                     <span class="lpCell"></span>
-                    <span class="lpCell lpSubtotal" :title="list.qtyTotal +' items'">
+                    <span class="lpCell lpSubtotal" :title="list.totalQty +' items'">
                         Total
                     </span>
+                    <span class="lpCell lpNumber lpSubtotal" v-if="library.optionalFields['price']" :title="list.totalQty +' items'">
+                        {{list.totalPrice | displayPrice(library.currencySymbol)}}
+                    </span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpTotalValue" :title="list.qtyTotal + ' items'">
+                        <span class="lpTotalValue" :title="list.totalQty + ' items'">
                             {{list.total | displayWeight(library.totalUnit)}}
                         </span>
                         <span class="lpTotalUnit"><unitSelect :unit="library.totalUnit" :onChange="setTotalUnit"></unitSelect></span>
                     </span>
                 </li>
-                <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight" v-if="list.consumableTotal">
+                <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight" v-if="list.totalConsumableWeight">
                     <span class="lpCell"></span>
                     <span class="lpCell lpSubtotal">
                         Consumable
                     </span>
+                    <span class="lpCell lpNumber lpSubtotal" v-if="library.optionalFields['price']">
+                        {{list.totalConsumablePrice | displayPrice(library.currencySymbol)}}
+                    </span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpDisplaySubtotal" :mg="list.consumableTotal">{{list.consumableTotal | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpDisplaySubtotal" :mg="list.totalConsumableWeight">{{list.totalConsumableWeight | displayWeight(library.totalUnit)}}</span>
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
-                <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight" v-if="list.wornTotal">
+                <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight" v-if="list.totalWornWeight">
                     <span class="lpCell"></span>
                     <span class="lpCell lpSubtotal">
                         Worn
                     </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']"></span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpDisplaySubtotal" :mg="list.wornTotal">{{list.wornTotal | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpDisplaySubtotal" :mg="list.totalWornWeight">{{list.totalWornWeight | displayWeight(library.totalUnit)}}</span>
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
-                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpBaseWeight" v-if="list.wornTotal || list.consumableTotal">
+                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpBaseWeight" v-if="list.totalWornWeight || list.totalConsumableWeight">
                     <span class="lpCell"></span>
-                    <span class="lpCell lpSubtotal" :title="$options.filters.displayWeight(list.packTotal, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
+                    <span class="lpCell lpSubtotal" :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
                         Base Weight
                     </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']"></span>
                     <span class="lpCell lpNumber lpSubtotal">
-                        <span class="lpDisplaySubtotal" :mg="list.baseTotal" :title="$options.filters.displayWeight(list.packTotal, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">{{list.baseTotal | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpDisplaySubtotal" :mg="list.totalBaseWeight" :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
+                            {{list.totalBaseWeight | displayWeight(library.totalUnit)}}
+                        </span>
                         <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
                     </span>
                 </li>
@@ -151,7 +167,7 @@ module.exports = {
         "$store.state.library.defaultListId": function(to, from) {
             this.updateChart();
         },
-        "list.total": function(to, from) {
+        "list.totalWeight": function(to, from) {
             //TODO: this doesn't cover all cases
             this.updateChart();
         }

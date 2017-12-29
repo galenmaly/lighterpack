@@ -15,14 +15,21 @@
                 <span class="lpQtyCell">qty</span>
                 <span class="lpRemoveCell"><a v-on:click="removeCategory(category)" class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
             </li>
-            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category"></item>
+            <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category" :key="itemContainer.item.id"></item>
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
                     <a class="lpAdd lpAddItem" v-on:click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
                 </span>
-                <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber"><div class="lpPriceSubtotal"><span class="lpCurrencySymbol">{{library.currencySymbol}}</span><span class="lpDisplayPriceSubtotal">{{category.priceSubtotal}}</span></div></span>
-                <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal">{{category.subtotal | displayWeight(library.totalUnit)}}</span> <span class="lpSubtotalUnit">{{library.totalUnit}}</span></div></span>
-                <span class="lpQtyCell"><div class="lpSubtotal"><span class="lpQtySubtotal">{{category.qtySubtotal}}</span></div></span>
+                <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
+                    {{category.subtotalPrice | displayPrice(library.currencySymbol)}}
+                </span>
+                <span class="lpWeightCell lpNumber lpSubtotal">
+                    <span class="lpDisplaySubtotal">{{category.subtotalWeight | displayWeight(library.totalUnit)}}</span>
+                    <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
+                </span>
+                <span class="lpQtyCell lpSubtotal">
+                    <span class="lpQtySubtotal">{{category.subtotalQty}}</span>
+                </span>
                 <span class="lpRemoveCell"></span>
             </li>
         </ul>
