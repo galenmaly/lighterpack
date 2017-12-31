@@ -134,7 +134,7 @@ const store = new Vuex.Store({
             var dropCategory = state.library.getCategoryById(args.categoryId);
 
             if (item && dropCategory) {
-                dropCategory.addItem(item);
+                dropCategory.addItem({itemId: item.id});
                 var categoryItem = dropCategory.getCategoryItemById(item.id);
                 var categoryItemIndex = dropCategory.categoryItems.indexOf(categoryItem);
                 if (categoryItem && categoryItemIndex !== -1) {
