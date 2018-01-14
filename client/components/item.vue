@@ -74,7 +74,7 @@ module.exports = {
         },
         thumbnailImage() {
             if (this.item.image) {
-                return "https://i.imgur.com/" + this.item.image + "s.jpg";
+                return "https://i.imgur.com/" + this.item.image + "t.jpg";
             } else if (this.item.imageUrl) {
                 return this.item.imageUrl;
             } else {
