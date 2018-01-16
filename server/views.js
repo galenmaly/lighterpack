@@ -95,7 +95,7 @@ router.get("/r/:id", function(req, res) {
             unitSelectTemplate: templates.t_unitSelect,
             currencySymbol: library.currencySymbol});
 
-        var renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect, library.totalUnit);
+        var renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect);
 
         var model = {listName: list.name,
             chartData: chartData,
