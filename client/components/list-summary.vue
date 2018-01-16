@@ -45,7 +45,7 @@
                     </span>
                     <span class="lpCell lpNumber lpSubtotal">
                         <span class="lpTotalValue" :title="list.totalQty + ' items'">
-                            {{list.total | displayWeight(library.totalUnit)}}
+                            {{list.totalWeight | displayWeight(library.totalUnit)}}
                         </span>
                         <span class="lpTotalUnit"><unitSelect :unit="library.totalUnit" :onChange="setTotalUnit"></unitSelect></span>
                     </span>

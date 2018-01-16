@@ -328,7 +328,7 @@ var renderCategory = function(category, args) {
 
     
     category.calculateSubtotal();
-    category.displaySubtotal = weightUtils.MgToWeight(category.subtotal, args.totalUnit);
+    category.displaySubtotal = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
 
     var temp = Vue.util.extend({}, category);
     temp = Vue.util.extend(temp, {items:items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol, showPrices: args.showPrices});
@@ -363,13 +363,13 @@ var renderListTotals = function(list, totalsTemplate, unitSelectTemplate, unit) 
     for (var i in list.categoryIds) {
         var category = list.library.getCategoryById(list.categoryIds[i]);
         category.calculateSubtotal();
-        category.displaySubtotal = weightUtils.MgToWeight(category.subtotal, unit);
+        category.displaySubtotal = weightUtils.MgToWeight(category.subtotalWeight, unit);
         category.subtotalUnit = unit;
 
-        total += category.subtotal;
-        wornTotal += category.wornSubtotal;
-        consumableTotal += category.consumableSubtotal;
-        qtyTotal += category.qtySubtotal;
+        total += category.subtotalWeight;
+        wornTotal += category.subtotalWornWeight;
+        consumableTotal += category.subtotalConsumableWeight;
+        qtyTotal += category.subtotalQty;
         out.categories.push(category);
     }
 
