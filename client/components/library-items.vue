@@ -58,7 +58,7 @@ export default {
             } else {
                 for (i = 0; i < this.library.items.length; i++) {
                     item = this.library.items[i];
-                    if (item.name.toLowerCase().indexOf(this.searchText) > -1 || item.description.toLowerCase().indexOf(this.searchText) > -1 ) {
+                    if (item.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 || item.description.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 ) {
                         filteredItems.push(Vue.util.extend({}, item));
                     }
                 }
