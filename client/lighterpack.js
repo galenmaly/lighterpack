@@ -1,59 +1,60 @@
-import "@babel/polyfill";
+import '@babel/polyfill';
 
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-const focusDirectives = require("./utils/focus.js");
-const dataTypes = require("./dataTypes.js");
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
+import routes from './routes';
+import store from './store/store';
+
+const focusDirectives = require('./utils/focus.js');
+const dataTypes = require('./dataTypes.js');
+
+const { Item } = dataTypes;
+const { Category } = dataTypes;
+const { List } = dataTypes;
+const { Library } = dataTypes;
 
 Vue.use(VueRouter);
 
-const utils = require("./utils/utils.js");
+const utils = require('./utils/utils.js');
 
-import routes from "./routes";
-import store from "./store/store";
-
-window.Vue = Vue; //surfacing Vue globally for utils methods
-window.bus = new Vue(); //global event bus
+window.Vue = Vue; // surfacing Vue globally for utils methods
+window.bus = new Vue(); // global event bus
 window.router = new VueRouter({
-    mode: "history",
-    routes: routes
+    mode: 'history',
+    routes,
 });
 
-bus.$on("unauthorized", (error) => {
-    window.location = "/signin";
+bus.$on('unauthorized', (error) => {
+    window.location = '/signin';
 });
 
 store.dispatch('init')
-.then(() => {
-    initLighterPack();
-})
-.catch((error) => {
-    if (!store.state.library) {
-        router.push("/welcome");
-    }
-    initLighterPack();
-});
+    .then(() => {
+        initLighterPack();
+    })
+    .catch((error) => {
+        if (!store.state.library) {
+            router.push('/welcome');
+        }
+        initLighterPack();
+    });
 
-var initLighterPack = function() {
+var initLighterPack = function () {
     window.LighterPack = new Vue({
         router,
         store,
         data: {
-            path: "",
-            fatal: ""
+            path: '',
+            fatal: '',
         },
         watch: {
-            $route: function(to, from) {
+            $route(to, from) {
                 this.path = to.path;
-            }
+            },
         },
-        mounted: function() {
+        mounted() {
             this.path = router.currentRoute.path;
-        }
-    }).$mount("#lp");
-}
+        },
+    }).$mount('#lp');
+};

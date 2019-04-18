@@ -103,70 +103,102 @@
 </style>
 
 <template>
-    <div id="main" :class="{lpHasSidebar: library.showSidebar}" v-if="isLoaded">
-        <sidebar></sidebar>
-        <div class="lpList lpTransition">
-            <div id="header" class="clearfix">
-                <span class="headerItem">
-                    <a @click="toggleSidebar" id="hamburger" class="lpTransition"><i class="lpSprite lpHamburger"></i></a>
-                </span>
-                <input @input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
-                <share></share>
-                <listSettings></listSettings>
-                <accountDropdown></accountDropdown>
-                <span class="clearfix"></span>
-            </div>
+  <div
+    v-if="isLoaded"
+    id="main"
+    :class="{lpHasSidebar: library.showSidebar}"
+  >
+    <sidebar />
+    <div class="lpList lpTransition">
+      <div
+        id="header"
+        class="clearfix"
+      >
+        <span class="headerItem">
+          <a
+            id="hamburger"
+            class="lpTransition"
+            @click="toggleSidebar"
+          ><i class="lpSprite lpHamburger" /></a>
+        </span>
+        <input
+          id="lpListName"
+          :value="list.name"
+          type="text"
+          class="lpListName lpSilent headerItem"
+          value="New List"
+          placeholder="List Name"
+          autocomplete="off"
+          name="lastpass-disable-search"
+          @input="updateListName"
+        >
+        <share />
+        <listSettings />
+        <accountDropdown />
+        <span class="clearfix" />
+      </div>
 
-            <list></list>
-            
-            <div id="lpFooter">
-                <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
-                <div class="lpContact">
-                    Copyleft LighterPack 2017
-                    -
-                    <a class="lpHref" href="https://github.com/galenmaly/lighterpack">Fork me on GitHub</a>
-                    -
-                    <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a></div>
-            </div>
+      <list />
+
+      <div id="lpFooter">
+        <div class="lpSiteBy">
+          Site by <a
+            class="lpHref"
+            href="http://www.galenmaly.com/"
+          >Galen Maly</a>
         </div>
-
-        <speedbump></speedbump>
-        <copyList></copyList>
-        <importCSV></importCSV>
-        <itemImage></itemImage>
-        <itemViewImage></itemViewImage>
-        <itemLink></itemLink>
-        <todo></todo>
-        <help></help>
-        <account></account>
-        <accountDelete></accountDelete>
-        <colorPicker></colorPicker>
+        <div class="lpContact">
+          Copyleft LighterPack 2017
+          -
+          <a
+            class="lpHref"
+            href="https://github.com/galenmaly/lighterpack"
+          >Fork me on GitHub</a>
+          -
+          <a
+            class="lpHref"
+            href="mailto:info@lighterpack.com"
+          >Contact</a>
+        </div>
+      </div>
     </div>
+
+    <speedbump />
+    <copyList />
+    <importCSV />
+    <itemImage />
+    <itemViewImage />
+    <itemLink />
+    <todo />
+    <help />
+    <account />
+    <accountDelete />
+    <colorPicker />
+  </div>
 </template>
 
 <script>
-import sidebar from "../components/sidebar.vue";
-import share from "../components/share.vue";
-import listSettings from "../components/list-settings.vue";
-import accountDropdown from "../components/account-dropdown.vue";
-import forgotPassword from "./forgot-password.vue";
-import account from "../components/account.vue";
-import accountDelete from "../components/account-delete.vue";
-import todo from "../components/todo.vue";
-import help from "../components/help.vue";
-import list from "../components/list.vue";
+import sidebar from '../components/sidebar.vue';
+import share from '../components/share.vue';
+import listSettings from '../components/list-settings.vue';
+import accountDropdown from '../components/account-dropdown.vue';
+import forgotPassword from './forgot-password.vue';
+import account from '../components/account.vue';
+import accountDelete from '../components/account-delete.vue';
+import todo from '../components/todo.vue';
+import help from '../components/help.vue';
+import list from '../components/list.vue';
 
-import colorPicker from "../components/colorpicker.vue";
-import itemImage from "../components/item-image.vue";
-import itemViewImage from "../components/item-view-image.vue";
-import itemLink from "../components/item-link.vue";
-import importCSV from "../components/import-csv.vue";
-import copyList from "../components/copy-list.vue";
-import speedbump from "../components/speedbump.vue";
+import colorPicker from '../components/colorpicker.vue';
+import itemImage from '../components/item-image.vue';
+import itemViewImage from '../components/item-view-image.vue';
+import itemLink from '../components/item-link.vue';
+import importCSV from '../components/import-csv.vue';
+import copyList from '../components/copy-list.vue';
+import speedbump from '../components/speedbump.vue';
 
 export default {
-    name: "dashboard",
-    mixins: [],
+    name: 'Dashboard',
     components: {
         sidebar,
         share,
@@ -184,11 +216,12 @@ export default {
         importCSV,
         itemImage,
         itemViewImage,
-        speedbump
+        speedbump,
     },
-    data: function() {
+    mixins: [],
+    data() {
         return {
-            isLoaded: false
+            isLoaded: false,
         };
     },
     computed: {
@@ -197,22 +230,22 @@ export default {
         },
         list() {
             return this.library.getListById(this.library.defaultListId);
+        },
+    },
+    beforeMount() {
+        if (!this.$store.state.library) {
+            router.push('/welcome');
+        } else {
+            this.isLoaded = true;
         }
     },
     methods: {
         toggleSidebar() {
-            this.$store.commit("toggleSidebar");
+            this.$store.commit('toggleSidebar');
         },
         updateListName(evt) {
-            this.$store.commit("updateListName", {id: this.list.id, name: evt.target.value});
-        }
+            this.$store.commit('updateListName', { id: this.list.id, name: evt.target.value });
+        },
     },
-    beforeMount() {
-        if (!this.$store.state.library) {
-            router.push("/welcome");
-        } else {
-            this.isLoaded = true;
-        }
-    }
-}
+};
 </script>
