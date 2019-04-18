@@ -8,9 +8,11 @@
     padding: 0 5px;
     position: relative;
 
-    &:hover, &.lpHover {
-        background: #FFF;
+    &:hover,
+    &.lpHover {
+        background: #fff;
         border: 1px solid $border1;
+
         i {
             opacity: 1;
         }
@@ -21,7 +23,7 @@
     }
 
     &.lpOpen {
-        background: #FFF;
+        background: #fff;
 
         .lpUnitDropdown {
             display: block;
@@ -34,21 +36,23 @@
     }
 
     .lpUnitDropdown {
-        background :#FFF;
-        border: 1px solid #CCC;
+        background: #fff;
+        border: 1px solid #ccc;
         display: none;
+        left: 0;
         padding: 0;
         position: absolute;
         top: -1px;
-        left: 0;
         z-index: $aboveSidebar+1;
 
         &.lb {
             top: -30px;
         }
+
         &.g {
-            top: -55px
+            top: -55px;
         }
+
         &.kg {
             top: -81px;
         }
@@ -59,7 +63,7 @@
 
             &:hover {
                 background: $blue1;
-                color: #FFF;
+                color: #fff;
             }
         }
     }

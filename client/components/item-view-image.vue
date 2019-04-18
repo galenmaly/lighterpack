@@ -2,6 +2,7 @@
 
 #itemImageDialog {
     width: 640px;
+
     .imageUploadDescription {
         margin-bottom: 19px;
     }

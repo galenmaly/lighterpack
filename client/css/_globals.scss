@@ -1,28 +1,27 @@
-$background1: #F7F7F7;
+$background1: #f7f7f7;
 $content: #282828;
-$content2: #666666;
+$content2: #666;
 
-$border1: #CCCCCC;
+$border1: #ccc;
 
-$blue1: #1B77D3;
-$blue2: #3DB7FF;
+$blue1: #1b77d3;
+$blue2: #3db7ff;
 $darkBlue: #064989;
 
-$green1: #7AB317;
-$green2: #A8D46F;
+$green1: #7ab317;
+$green2: #a8d46f;
 
-$orange1: #EFA026;
+$orange1: #efa026;
 //$orange1: #ffb036;
 //$orange2: #F18828;
 $orange2: #ee801c;
 
-$red1: #CE1836;
+$red1: #ce1836;
 
-$yellow1: #F2D000;
-$yellow2: #FCEFA9;
+$yellow1: #f2d000;
+$yellow2: #fcefa9;
 
-$darkYellow: #A58C00;
-
+$darkYellow: #a58c00;
 
 /* spacing */
 $spacingSmaller: 5px;
@@ -44,7 +43,7 @@ $transitionDuration: 0.2s;
 $transitionDurationSlow: 0.4s;
 
 @mixin fullBleedLeft() {
-    &:before {
+    &::before {
         background: inherit;
         border-bottom: inherit;
         bottom: -1px;
@@ -59,7 +58,7 @@ $transitionDurationSlow: 0.4s;
 }
 
 @mixin fullBleedRight() {
-    &:after {
+    &::after {
         background: inherit;
         border-bottom: inherit;
         bottom: -1px;

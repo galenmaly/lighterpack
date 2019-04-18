@@ -5,8 +5,8 @@
     min-height: 100%;
     padding: 0 20px;
     position: relative;
-    z-index: $aboveSidebar;
     transition: all $transitionDurationSlow;
+    z-index: $aboveSidebar;
 
     .lpHasSidebar & {
         margin-left: 320px;
@@ -36,13 +36,14 @@
     &.dropAccept {
         background: $yellow2;
     }
+
     &.dropHover {
         background: $green2;
     }
 
     &.gu-mirror {
+        background: #f7f7f7;
         border: 1px solid #999;
-        background: #F7F7F7;
     }
 }
 
@@ -61,8 +62,8 @@ input.lpCategoryName { /* specificity */
 }
 
 .lpSubtotal {
-    white-space: nowrap;
     text-align: right;
+    white-space: nowrap;
 }
 
 .lpSubtotalUnit {
@@ -73,7 +74,8 @@ input.lpCategoryName { /* specificity */
     width: 15px;
 }
 
-.lpDisplaySubtotal, .lpTotalValue {
+.lpDisplaySubtotal,
+.lpTotalValue {
     padding-right: 4px;
 }
 
@@ -83,16 +85,18 @@ input.lpCategoryName { /* specificity */
     width: 100%;
 }
 
-.lpItem, .lpItemsHeader, .lpItemsFooter {
+.lpItem,
+.lpItemsHeader,
+.lpItemsFooter {
     align-items: center;
-    border-top: 1px dotted #AAA;
+    border-top: 1px dotted #aaa;
     display: flex;
     flex-direction: row;
     justify-content: stretch;
 
     &.gu-mirror {
+        background: #f7f7f7;
         border: 1px solid #999;
-        background: #F7F7F7;
     }
 
     .lpHandleCell {
@@ -105,9 +109,9 @@ input.lpCategoryName { /* specificity */
 
         .lpItemImage {
             cursor: pointer;
-            position:relative;
-            top: 3px;
             max-width: 90px;
+            position: relative;
+            top: 3px;
         }
     }
 
@@ -140,7 +144,6 @@ input.lpCategoryName { /* specificity */
         flex: 0 0 66px;
         margin-right: 4px;
 
-
         .lpPrice {
             width: 66px;
         }
@@ -170,7 +173,7 @@ input.lpCategoryName { /* specificity */
 
 .lpItemsHeader {
     align-items: flex-end;
-    border-bottom: 1px solid #AAA;
+    border-bottom: 1px solid #aaa;
     border-top: none;
     height: 31px;
 }
@@ -181,16 +184,24 @@ input.lpCategoryName { /* specificity */
 }
 
 .lpActionsCell {
-    .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpStar {
+    .lpWorn,
+    .lpConsumable,
+    .lpCamera,
+    .lpLink,
+    .lpStar {
         cursor: pointer;
         margin-right: 8px;
         opacity: 0.5;
         visibility: hidden;
+
         &:hover {
             opacity: 1;
         }
 
-        &.lpActive, &.lpStar1, &.lpStar2, &.lpStar3 {
+        &.lpActive,
+        &.lpStar1,
+        &.lpStar2,
+        &.lpStar3 {
             opacity: 1;
             visibility: visible;
         }
@@ -202,7 +213,9 @@ input.lpCategoryName { /* specificity */
 }
 
 .lpHeader {
-    .lpWeightCell, .lpQtyCell, .lpPriceCell {
+    .lpWeightCell,
+    .lpQtyCell,
+    .lpPriceCell {
         text-align: center;
     }
 }

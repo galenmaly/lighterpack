@@ -1,14 +1,14 @@
 <style lang="scss">
 @import "../css/_globals";
 
- #listContainer {
-        flex: 0 0 auto;
-        overflow-y: auto;
+#listContainer {
+    flex: 0 0 auto;
+    overflow-y: auto;
 
-        #lists {
-            max-height: 25vh;
-        }
+    #lists {
+        max-height: 25vh;
     }
+}
 
 .lpLibraryList {
     border-top: 1px dotted #999;
@@ -19,8 +19,8 @@
     position: relative;
 
     &:first-child {
-        padding-top: 10px;
         border-top: none;
+        padding-top: 10px;
     }
 
     &:last-child {
@@ -28,8 +28,8 @@
     }
 
     &.lpActive {
-        font-weight: bold;
         color: $yellow1;
+        font-weight: bold;
 
         .lpRemove {
             display: none;
@@ -37,14 +37,14 @@
     }
 
     &.gu-mirror {
-        border: 1px solid #999;
         background: #606060;
-        color: #FFF;
+        border: 1px solid #999;
+        color: #fff;
     }
 
     .lpHandle {
-        height: 18px;
         flex: 0 0 12px;
+        height: 18px;
         margin-right: 5px;
     }
 

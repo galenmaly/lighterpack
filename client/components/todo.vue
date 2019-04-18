@@ -8,9 +8,11 @@
 .high {
     color: $red1;
 }
+
 .medium {
     color: $darkYellow;
 }
+
 .low {
     color: $green1;
 }

@@ -2,8 +2,8 @@
 @import "../css/_globals";
 
 .warning {
-    border: 1px solid #777;
     background: $yellow2;
+    border: 1px solid #777;
     border-radius: 5px;
     padding: 10px;
 }

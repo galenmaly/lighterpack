@@ -1,7 +1,7 @@
 <style lang="scss">
 
 #lpPickerContainer {
-    background: #FFF;
+    background: #fff;
     border: 1px solid #999;
     display: none;
     position: absolute;

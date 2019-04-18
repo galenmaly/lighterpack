@@ -1,30 +1,32 @@
 @import "globals";
 
 .lp {
-
-    &, body { 
+    &,
+    body {
         background: $background1;
         color: $content;
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
-        line-height: 1.65em;
         height: 100%;
+        line-height: 1.65em;
         margin: 0;
         padding: 0;
     }
 
     hr {
         border: none;
-        border-top: 1px solid #AAA;
+        border-top: 1px solid #aaa;
         margin: 25px 0;
     }
 
-    input, select, textarea {
-        font-family: 'Open Sans', sans-serif;
-        font-size: 13px;
-        color: $content;
+    input,
+    select,
+    textarea {
         -moz-box-sizing: border-box;
         box-sizing: border-box;
+        color: $content;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 13px;
     }
 
     h2 {
@@ -35,16 +37,15 @@
         margin: 0 0 $spacingMedium;
     }
 
-
     .hover {
         background: $yellow2;
     }
 
     .tooltip {
         background: #444;
-        box-shadow: 0 0 5px rgba(0,0,0,0.25);
-        border: 1px solid #FFF;
-        color: #FFF;
+        border: 1px solid #fff;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+        color: #fff;
         display: none;
         padding: 3px;
         position: absolute;
@@ -56,6 +57,7 @@
     color: $blue1;
     cursor: pointer;
     text-decoration: none;
+
     &:hover {
         text-decoration: underline;
     }
@@ -63,46 +65,48 @@
 
 .lpInvisible {
     height: 1px;
-    width: 1px;
+    left: -9999px;
     overflow: hidden;
     position: absolute;
-    left: -9999px;
+    width: 1px;
 }
 
 .lpNotSupported {
     background: $red1;
-    color: #FFF;
+    color: #fff;
     font-size: 24px;
-    text-align: center;
     padding: 100px;
+    text-align: center;
 }
 
 .lpNumber {
     text-align: right;
 }
 
-.lpAdd, .lpCopy {
+.lpAdd,
+.lpCopy {
     color: $green1;
     cursor: pointer;
     display: inline-block;
     padding: 5px 10px;
     text-decoration: none;
 
-    
     i {
         margin-right: 5px;
     }
+
     &:hover {
         text-decoration: underline;
     }
+
     #sidebar & {
         color: $green1;
     }
 }
 
 .lpHalf {
-    box-sizing: border-box;
     -moz-box-sizing: border-box;
+    box-sizing: border-box;
     float: left;
     width: 50%;
 }
@@ -113,9 +117,9 @@
 
 #main {
     background: inherit;
-    min-height: 100%;
     margin: 0 auto;
     max-width: 960px;
+    min-height: 100%;
     position: relative;
     text-align: left;
     transition: all $transitionDurationSlow;
@@ -137,7 +141,7 @@
 
     &:hover {
         background: $red1;
-        box-shadow: 0 3px 3px rgba(0,0,0,0.25) inset;
+        box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25) inset;
         opacity: 1;
     }
 }
@@ -159,10 +163,10 @@
 }
 
 .lpLegend {
-    height:10px;
-    width: 10px;
-    border: 1px solid #FFF;
+    border: 1px solid #fff;
     display: block;
+    height: 10px;
+    width: 10px;
 }
 
 .lpFlyout {
@@ -177,8 +181,8 @@
     }
 
     .lpContent {
+        background: #fff;
         -moz-box-sizing: border-box;
-        background: #FFF;
         box-sizing: border-box;
         color: $content;
         display: none;
@@ -213,6 +217,7 @@
             padding: 0;
         }
     }
+
     &:hover {
         .lpTarget {
             z-index: $aboveDialog;
@@ -225,12 +230,15 @@
 }
 
 .lpFields {
-    input[type=text], input[type=email], input[type=password], textarea {
-        background: #FFF;
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    textarea {
+        background: #fff;
         border: 1px solid $border1;
         display: block;
-        padding: $spacingSmall;
         margin: 0 0 $spacingMedium;
+        padding: $spacingSmall;
         width: 100%;
 
         &:focus {
@@ -244,7 +252,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    text-align: center; 
+    text-align: center;
 
     > * {
         margin-bottom: $spacingMedium;
@@ -259,11 +267,10 @@
     background-image: linear-gradient(135deg, $orange1 50%, $orange2 100%);
     background-position: 100% 100%;
     background-size: 200%;
-
     border: none;
     border-radius: 4px;
-    box-shadow:  0 0 1px rgba(255,255,255,0) inset, 0 0px 2px rgba(0,0,0,0.2);
-    color:#fff;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0) inset, 0 0 2px rgba(0, 0, 0, 0.2);
+    color: #fff;
     cursor: pointer;
     display: inline-block;
     font-size: 16px;
@@ -272,37 +279,40 @@
     padding: 8px 20px;
     text-align: center;
     text-decoration: none;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.15);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.15);
     transition: all 0.2s;
     width: auto;
 
     &.lpSmall {
-        padding: 4px 7px;
         font-size: 13px;
         line-height: 16px;
+        padding: 4px 7px;
     }
 
-    &:hover:not(:disabled), &:active {
+    &:hover:not(:disabled),
+    &:active {
         background-position: 0 0;
-        box-shadow: 0 0 1px rgba(255,255,255,0.5) inset, 0 1px 3px darken($orange2, 25%);
+        box-shadow: 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 1px 3px darken($orange2, 25%);
     }
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
         outline: none;
     }
 
     &:focus:not(:active) {
-        outline: none;
         box-shadow: 0 0 0 1px darken($orange2, 15%) inset, 0 1px 3px darken($orange2, 25%);
+        outline: none;
     }
 
     &::-moz-focus-inner {
         border: none;
     }
 
-    &:disabled, &.lpButtonDisabled {
-        opacity: 0.5;
+    &:disabled,
+    &.lpButtonDisabled {
         cursor: default;
+        opacity: 0.5;
     }
 }
 
@@ -325,15 +335,15 @@
 }
 
 .lpRow {
-   display: table-row;
+    display: table-row;
 
-   &:first-child > .lpCell {
+    &:first-child > .lpCell {
         border-top: none;
     }
 
     &.lpHeader {
         .lpCell {
-            border-bottom: 1px solid #AAA;
+            border-bottom: 1px solid #aaa;
             vertical-align: bottom;
         }
 
@@ -343,29 +353,28 @@
     }
 }
 
-
-
 .lpFooter {
     .lpCell {
-        border-top: 1px solid #AAA;
+        border-top: 1px solid #aaa;
     }
 }
 
 .lpCell {
-    border-top: 1px dotted #AAA;
+    border-top: 1px dotted #aaa;
     display: table-cell;
     padding: 1px 8px;
 
     &:first-child {
         padding-left: 0;
     }
+
     &:last-child {
         padding-right: 0;
     }
 }
 
-
-.lpHeader, .lpSubtotal {
+.lpHeader,
+.lpSubtotal {
     font-weight: 600;
 
     + .lpItem {
@@ -373,17 +382,17 @@
     }
 }
 
-
 .lpError {
     color: $red1;
 }
 
 .lpSuccess {
-    color: darken($green1,10%);
+    color: darken($green1, 10%);
 }
 
 #lpImageDialog {
     width: auto;
+
     img {
         max-width: 800px;
     }
@@ -397,7 +406,7 @@
 }
 
 #lpWelcomeFooter {
-    background: rgba(255,255,255,0.55);
+    background: rgba(255, 255, 255, 0.55);
     bottom: 0;
     display: flex;
     justify-content: space-between;
@@ -412,6 +421,10 @@
     }
 }
 
-.lpLibraryList:hover .lpRemove, .lpCategory .lpHeader:hover .lpRemove, .lpLibraryItem:hover .lpRemove, .lpLibraryItem:hover .lpHandle, .lpCategory .lpHeader:hover .lpHandle {
+.lpLibraryList:hover .lpRemove,
+.lpCategory .lpHeader:hover .lpRemove,
+.lpLibraryItem:hover .lpRemove,
+.lpLibraryItem:hover .lpHandle,
+.lpCategory .lpHeader:hover .lpHandle {
     visibility: visible;
 }

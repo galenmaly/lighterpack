@@ -5,7 +5,7 @@
     box-sizing: border-box;
     display: flex;
     height: 60px;
-    margin: 0 -20px 20px; /*lpList padding */
+    margin: 0 -20px 20px; /* lpList padding */
     position: relative;
 
     * {
@@ -59,34 +59,34 @@
     }
 
     .lpContent {
-        background-color: #FFF;
-        box-shadow: 0 0 6px rgba(0,0,0,0.25);
+        background-color: #fff;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
         left: 50%;
         transform: translateX(-50%);
 
-        &:before {
-            background-color: #FFF;
-            box-shadow: 0 0 6px rgba(0,0,0,0.25);
+        &::before {
+            background-color: #fff;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
             content: "";
             display: block;
             height: 20px;
-            position: absolute;
             left: 50%;
             margin-left: -10px;
+            position: absolute;
             top: -10px;
             transform: rotate(45deg);
             width: 20px;
             z-index: $dialog - 1;
         }
 
-        &:after {
-            background: #FFF;
+        &::after {
+            background: #fff;
             content: "";
             display: block;
             height: 15px;
+            left: 0;
             position: absolute;
             top: 0;
-            left: 0;
             width: 100%;
             z-index: $dialog + 1;
         }

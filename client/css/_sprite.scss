@@ -1,12 +1,12 @@
 .lpSprite {
-    background-size: 400px;
     background-image: url(/images/sprite2x.png?v=2);
+    background-size: 400px;
     display: inline-block;
     height: 14px;
     overflow: hidden;
     position: relative;
-    width: 14px;
     top: 2px;
+    width: 14px;
 
     &.hidden {
         visibility: hidden;
@@ -77,6 +77,7 @@
 .lpLink {
     background-position: -175px 0;
     width: 13px;
+
     &.lpActive {
         background-position: -175px -25px;
     }
@@ -84,27 +85,27 @@
 
 .lpUp {
     background-position: -200px 0;
-    width: 7px;
     height: 7px;
+    width: 7px;
 }
 
 .lpDown {
     background-position: -200px -25px;
-    width: 7px;
     height: 7px;
+    width: 7px;
 }
 
 .lpStar {
-    background-position: -225px 0px;
-    width: 14px;
+    background-position: -225px 0;
     height: 14px;
+    width: 14px;
     &.lpStar1 { background-position: -225px -25px; }
     &.lpStar2 { background-position: -225px -50px; }
     &.lpStar3 { background-position: -225px -75px; }
 }
 
 .lpConsumable {
-    background-position: -275px 0px;
+    background-position: -275px 0;
     width: 17px;
 
     &.lpActive {
@@ -113,5 +114,5 @@
 }
 
 .lpSettings {
-    background-position: -300px 0px;
+    background-position: -300px 0;
 }

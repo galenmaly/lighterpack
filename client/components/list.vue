@@ -4,7 +4,8 @@
 #listDescriptionContainer {
     margin: 25px 0;
 
-    h3, p {
+    h3,
+    p {
         display: inline-block;
         margin: 0 0 5px;
     }
@@ -24,6 +25,7 @@
     font-size: 18px;
     height: 160px;
     padding: 30px 0;
+
     h2 {
         font-size: 30px;
     }
@@ -45,7 +47,7 @@
         <list-summary v-if="!isListNew" :list="list"></list-summary>
         
 
-        <div style="clear:both"></div>
+        <div style="clear: both;"></div>
 
         <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
             <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>

@@ -6,8 +6,9 @@
 
     .lpItem {
         &:hover {
-            background: #FFF;
+            background: #fff;
         }
+
         .lpActionsCell {
             flex-basis: 75px;
         }
@@ -26,18 +27,22 @@
     .lpChart {
         max-width: 100%;
     }
+
     .lpItems {
         position: relative;
 
         .lpWeightCell {
             flex-basis: 100px;
         }
+
         .lpPriceCell {
             flex-basis: 65px;
         }
 
         .lpHeader {
-            .lpWeightCell, .lpPriceCell, .lpQtyCell {
+            .lpWeightCell,
+            .lpPriceCell,
+            .lpQtyCell {
                 display: none;
             }
         }
@@ -56,7 +61,6 @@
         flex-flow: row wrap;
         justify-content: flex-end;
         padding: 3px 0;
-
 
         .lpShowImages &.lpItemHasImage {
             min-height: 90px;
@@ -77,13 +81,11 @@
         }
 
         .lpName {
+            flex-basis: 90px;
             font-weight: bold;
             order: 2;
-            flex-basis: 90px;
         }
-        .lpDescription {
-            flex-basis: calc(100% - 50px); /* Always wrap*/
-        }
+
         .lpQtyCell {
             flex-basis: auto;
             order: 1;
@@ -91,28 +93,35 @@
             &[qty1] {
                 display: none;
             }
-            &:after {
+
+            &::after {
                 content: " x ";
-                margin-right: 5px;
                 display: inline;
+                margin-right: 5px;
             }
         }
+
         .lpPriceCell {
             order: 4;
         }
+
         .lpWeightCell {
             order: 5;
         }
+
         .lpDescription {
+            flex-basis: calc(100% - 50px); /* Always wrap */
             order: 98;
         }
+
         .lpActionsCell {
             flex: 0 0 auto;
             order: 99;
             padding: 0 10px;
             text-align: right;
 
-            .lpHidden, i:not(.lpActive) {
+            .lpHidden,
+            i:not(.lpActive) {
                 display: none;
             }
         }
@@ -139,4 +148,3 @@
         max-width: 200px;
     }
 }
-

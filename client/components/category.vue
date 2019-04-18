@@ -1,7 +1,7 @@
 <style lang="scss">
 
 .lpQtySubtotal {
-    padding-right: 25px; /*Accommodates delete column */
+    padding-right: 25px; /* Accommodates delete column */
 }
 
 .lpPriceSubtotal { /* unused? */

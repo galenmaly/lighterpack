@@ -3,27 +3,28 @@
 
 .lpModal {
     background: $background1;
-    box-shadow: 0 0 30px rgba(0,0,0,0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     left: 50%;
     padding: $spacingLarge;
     position: fixed;
     text-align: left;
     top: 50%;
     transform: translateX(-50%) translateY(-50%);
-    width: 350px;
     transition: all $transitionDuration;
+    width: 350px;
     z-index: $dialog;
 
     .lpHalf {
         padding: 0 20px;
+
         &:first-child {
             padding-left: 0;
         }
+
         &:last-child {
             padding-right: 0;
         }
     }
-
 
     p {
         margin: 5px 0 10px;
@@ -45,7 +46,7 @@
 }
 
 .lpModalOverlay {
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     height: 100%;
     left: 0;
     position: fixed;
@@ -62,11 +63,12 @@
     }
 
     &.lpTransparent {
-        background: rgba(0,0,0,0.01);
+        background: rgba(0, 0, 0, 0.01);
     }
 }
 
-.lpModal-enter, .lpModal-leave-active {
+.lpModal-enter,
+.lpModal-leave-active {
     opacity: 0;
 
     &.lpModal {

@@ -3,16 +3,16 @@
 
 #sidebar {
     background: #555;
-    color: #FFF;
+    box-shadow: -7px 0 7px rgba(0, 0, 0, 0.2) inset;
+    color: #fff;
     height: 100%;
-    width: 280px;
-    position: fixed;
-    box-shadow: -7px 0 7px rgba(0,0,0,0.2) inset;
-    opacity: 0;
     margin-left: -600px;
+    opacity: 0;
     padding-left: 620px;
     padding-right: 20px;
+    position: fixed;
     transition: opacity $transitionDurationSlow ease-in-out 0s;
+    width: 280px;
     z-index: $sidebar;
 
     .lpHasSidebar & {
@@ -21,6 +21,7 @@
 
     h1 {
         @include fullBleedLeft();
+
         box-sizing: border-box;
         height: 60px;
         margin: 0 -20px 20px 0;
@@ -28,13 +29,13 @@
         position: relative;
 
         span {
-            color: #AAA;
+            color: #aaa;
         }
     }
 
     section {
-        position: relative;
         margin-bottom: 40px;
+        position: relative;
     }
 
     h2 {
@@ -44,9 +45,9 @@
 
     ul {
         background: #606060;
+        -moz-box-sizing: content-box;
         box-sizing: content-box;
         margin: 0;
-        -moz-box-sizing: content-box;
         overflow-x: hidden;
         padding: 0;
     }
@@ -66,8 +67,7 @@
             border-bottom: none;
         }
 
-
-        &:hover .lpTarget{
+        &:hover .lpTarget {
             background: #444;
             border: 1px solid #999;
             border-bottom: none;
@@ -90,8 +90,8 @@
 
 #scrollable {
     display: flex;
-    height: 100%;
     flex-direction: column;
+    height: 100%;
     position: relative;
     top: 0;
 

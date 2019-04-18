@@ -1,6 +1,5 @@
 <style lang="scss">
 
-
 #libraryContainer {
     display: flex;
     flex: 2 0 30vh;
@@ -15,9 +14,9 @@
 #librarySearch {
     background: #666;
     border: 1px solid #888;
-    color: #FFF;
-    padding: 3px 6px;
+    color: #fff;
     margin-bottom: 15px;
+    padding: 3px 6px;
 }
 
 .lpLibraryItem {
@@ -30,8 +29,8 @@
     position: relative;
 
     &:first-child {
-        padding-top: 10px;
         border-top: none;
+        padding-top: 10px;
     }
 
     &:last-child {
@@ -39,9 +38,9 @@
     }
 
     &.gu-mirror {
-        border: 1px solid #999;
         background: #606060;
-        color: #FFF;
+        border: 1px solid #999;
+        color: #fff;
     }
 
     .lpName {
@@ -52,10 +51,6 @@
         text-overflow: ellipsis;
     }
 
-    .lpDescription {
-        color: #CCC;
-    }
-
     .lpWeight {
         float: right;
         width: auto;
@@ -63,6 +58,7 @@
 
     .lpDescription {
         clear: both;
+        color: #ccc;
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -76,7 +72,7 @@
         top: 5px;
     }
 
-     .lpRemove {
+    .lpRemove {
         bottom: 0;
         position: absolute;
         right: 14px;
@@ -92,7 +88,7 @@
 
     #main > & {
         background: #666;
-        color: #FFF;
+        color: #fff;
         padding: 10px;
         width: 235px;
     }

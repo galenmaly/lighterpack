@@ -1,8 +1,8 @@
 <style lang="scss">
 
 #importValidate {
-    overflow-y: scroll;
     height: 500px;
+    overflow-y: scroll;
     width: 650px;
 
     .lpButton {

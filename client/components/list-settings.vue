@@ -22,8 +22,8 @@
         margin-left: 10px;
         width: 50px;
     }
-
 }
+
 #share .lpContent {
     width: 330px;
 }

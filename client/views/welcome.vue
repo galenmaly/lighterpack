@@ -7,6 +7,7 @@
 
     h2 {
         font-weight: normal;
+
         strong {
             font-size: 24px;
         }
@@ -25,8 +26,10 @@
         position: relative;
     }
 
-    input[type="text"], input[type="email"], input[type="password"] {
-        background: rgba(255,255,255,0.8);
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        background: rgba(255, 255, 255, 0.8);
         width: 100%;
     }
 
@@ -35,7 +38,7 @@
         font-size: 15px;
         font-weight: bold;
         margin: 15px 0 0;
-        text-shadow: 0 0 4px rgba(255,255,255,0.8);
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     }
 }
 
@@ -62,9 +65,6 @@
             margin-right: 5px;
         }
     }
-}
-
-#valueChartContainer {
 }
 
 #valueChart {

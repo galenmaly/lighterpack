@@ -1,15 +1,24 @@
 <style lang="scss">
 
 .lpItem {
-    &:hover, &.ui-sortable-helper {
-        background: #FFF;
+    &:hover,
+    &.ui-sortable-helper {
+        background: #fff;
 
-        .lpRemove, .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpHandle, .lpArrows, .lpStar {
+        .lpRemove,
+        .lpWorn,
+        .lpConsumable,
+        .lpCamera,
+        .lpLink,
+        .lpHandle,
+        .lpArrows,
+        .lpStar {
             visibility: visible;
         }
     }
 
-    input, select {
+    input,
+    select {
         padding: 3px;
     }
 }
@@ -21,11 +30,12 @@
     visibility: hidden;
     width: 10px;
 
-    .lpUp, .lpDown {
+    .lpUp,
+    .lpDown {
         cursor: pointer;
         left: 0;
-        opacity: 0.5;
         margin: 2px;
+        opacity: 0.5;
         position: absolute;
         top: 0;
 

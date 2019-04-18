@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "webpack -p --config ./webpack.config.js && node app.js",
-    "build": "webpack -p --config ./webpack.config.js"
+    "build": "webpack -p --config ./webpack.config.js",
+    "lint:css": "./node_modules/.bin/stylelint \"client/**/*.{scss,vue}\" --fix",
+    "lint:js": "./node_modules/.bin/eslint --ext .vue --ext .js ./ --fix"
   },
   "repository": {
     "type": "git",
@@ -47,6 +49,12 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "eslint": "5.16.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-vue": "5.2.2",
+    "stylelint": "10.0.1",
+    "stylelint-config-standard": "18.3.0",
+    "stylelint-order": "2.2.1",
     "webpack-dev-middleware": "3.4.0",
     "webpack-dev-server": "3.1.14",
     "webpack-hot-middleware": "2.24.3"
