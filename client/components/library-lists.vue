@@ -1,23 +1,93 @@
 <style lang="scss">
+@import "../css/_globals";
+
+ #listContainer {
+        flex: 0 0 auto;
+        overflow-y: auto;
+
+        #lists {
+            max-height: 25vh;
+        }
+    }
+
+.lpLibraryList {
+    border-top: 1px dotted #999;
+    display: flex;
+    list-style: none;
+    margin: 0 10px;
+    padding: 6px 0;
+    position: relative;
+
+    &:first-child {
+        padding-top: 10px;
+        border-top: none;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.lpActive {
+        font-weight: bold;
+        color: $yellow1;
+
+        .lpRemove {
+            display: none;
+        }
+    }
+
+    &.gu-mirror {
+        border: 1px solid #999;
+        background: #606060;
+        color: #FFF;
+    }
+
+    .lpHandle {
+        height: 18px;
+        flex: 0 0 12px;
+        margin-right: 5px;
+    }
+
+    &:hover .lpHandle {
+        visibility: visible;
+    }
+
+    .lpListName {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    .lpRemove {
+        flex: 0 0 8px;
+        margin-bottom: 0;
+    }
+}
 </style>
 
 <template>
     <section id="listContainer">
         <h2>Lists</h2>
         <span id="addListFlyout" class="lpFlyout">
-            <span class="lpTarget"><a id="addList" class="lpAdd" v-on:click="newList"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
+            <span class="lpTarget"><a id="addList" class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
             <div class="lpContent">
-                <div><a v-on:click="importCSV" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
-                <div><a v-on:click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
+                <div><a @click="importCSV" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
+                <div><a @click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
             </div>
         </span>
         <ul id="lists">
             <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
                 <div class="lpHandle" title="Reorder this item"></div>
-                <span class='lpLibraryListSwitch lpListName' v-on:click="setDefaultList(list)">
+                <span class='lpLibraryListSwitch lpListName' @click="setDefaultList(list)">
                     {{list | listName}}
                 </span>
-                <a v-on:click="removeList(list)" class="lpRemove" title="Remove this list"><i class="lpSprite lpSpriteRemove"></i></a>
+                <a @click="removeList(list)" class="lpRemove" title="Remove this list"><i class="lpSprite lpSpriteRemove"></i></a>
             </li>
         </ul>
     </section>

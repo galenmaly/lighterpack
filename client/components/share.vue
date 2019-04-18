@@ -4,7 +4,7 @@
 
 <template>
     <span v-if="isSignedIn" class="headerItem hasFlyout">
-        <span id="share" class="lpFlyout" v-on:mouseenter="focusShare">
+        <span id="share" class="lpFlyout" @mouseenter="focusShare">
             <span class="lpTarget"><i class="lpSprite lpLink"></i> Share</span>
             <div class="lpContent">
                 <h3>Share your list</h3>
@@ -19,8 +19,8 @@
 
 <script>
 
-module.exports = {
-    name: "header",
+export default {
+    name: "share",
     computed: {
         library: function() {
             return this.$store.state.library;

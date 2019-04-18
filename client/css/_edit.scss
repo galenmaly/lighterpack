@@ -1,0 +1,67 @@
+@import "globals";
+
+.lpSilent {
+    background: transparent;
+    border: 1px solid transparent;
+
+    &:hover {
+        background-color: #FFF;
+        border: 1px solid rgba(0,0,0,0.15);
+    }
+    &:focus {
+        border: 1px solid rgba(0,0,0,0.15);
+        background-color: #FFF;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15) inset;
+    }
+
+    &.lpSilentError {
+        background-color: lighten(desaturate($red1, 10%), 40%);
+        border: 1px solid $red1;
+        outline-color: $red1;
+
+        &:focus {
+            background-color: #FFF;
+        }
+    }
+}
+
+/* Body */
+
+.addCategory, .lpAddItem {
+    margin-left: 10px;
+}
+
+#csv, #image {
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    left: -999px;
+}
+
+.lpHref.close {
+    margin-left: 10px;
+}
+
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+}
+.gu-hide {
+  display: none !important;
+}
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
+}

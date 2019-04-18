@@ -1,5 +1,11 @@
 <style lang="scss">
 
+.lpLegend {
+    &:hover {
+        border-color: #666;
+        cursor: pointer;
+    }
+}
 </style>
 
 <template>
@@ -23,7 +29,7 @@
                 </li>
                 <li v-for="category in categories" :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
-                        <span v-on:click="showColorPicker($event, category)" class="lpLegend" :style="{'background-color': category.displayColor}"></span>
+                        <span @click="showColorPicker($event, category)" class="lpLegend" :style="{'background-color': category.displayColor}"></span>
                     </span>
                     <span class="lpCell">
                         {{category.name}}
@@ -95,10 +101,11 @@
 <script>
 const pies = require("../pies.js");
 const utilsMixin = require("../mixins/utils-mixin.js");
-const unitSelect = require("./unit-select.vue");
 const colorUtils = require("../utils/color.js");
 
-module.exports = {
+import unitSelect from "./unit-select.vue";
+
+export default {
     name: "list-summary",
     mixins: [utilsMixin],
     props: ["list"],
@@ -164,13 +171,9 @@ module.exports = {
         this.updateChart();
     },
     watch: {
-        "$store.state.library.defaultListId": function(to, from) {
-            this.updateChart();
-        },
-        "list.totalWeight": function(to, from) {
-            //TODO: this doesn't cover all cases
-            this.updateChart();
-        }
+        "$store.state.library.defaultListId": "updateChart",
+        "list.totalWeight": "updateChart",
+        "list.categoryIds": "updateChart"
     }
 }
 

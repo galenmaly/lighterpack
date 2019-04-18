@@ -4,39 +4,37 @@
 
 <template>
     <div id="registerContainer">
-        <div class="lpDialog" id="register">
-            <h2>
-                Register an Account
-                <router-link to="/signin"><a class="lpHref alternateAction">Already registered?</a></router-link>
-            </h2>
+        <modal :shown="true" :blackout="true" id="register">
+            <div class="lpModalHeader">
+                <h2>
+                    Register an Account
+                </h2>
+                <router-link to="/signin" class="lpHref">Already registered?</router-link>
+            </div>
 
-            <span class="info existingData">
+            <!-- TODO -->
+            <!--<span class="info existingData"> 
                 Your existing data will be saved to your new account upon creation.
-            </span>
+            </span>-->
+
             <registerForm></registerForm>
-        </div>
+        </modal>
 
         <blackoutFooter></blackoutFooter>
-        <div class="lpModalOverlay lpBlackout"></div>
     </div>
 </template>
 
 <script>
 import blackoutFooter from "../components/blackout-footer.vue";
+import modal from "../components/modal.vue";
 import registerForm from "../components/register-form.vue";
 
 export default {
     name: "register",
-    mixins: [],
     components: {
-        blackoutFooter: blackoutFooter,
-        registerForm: registerForm
-    },
-    data: function() {
-        return {
-        }
-    },
-    beforeMount: function() {
+        blackoutFooter,
+        modal,
+        registerForm
     }
 }
 </script>

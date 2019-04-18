@@ -1,4 +1,33 @@
 <style lang="scss">
+@import "../css/_globals";
+
+#listDescriptionContainer {
+    margin: 25px 0;
+
+    h3, p {
+        display: inline-block;
+        margin: 0 0 5px;
+    }
+
+    h3 {
+        margin-right: 10px;
+    }
+
+    textarea {
+        height: 65px;
+        width: 100%;
+    }
+}
+
+#getStarted {
+    background: $background1;
+    font-size: 18px;
+    height: 160px;
+    padding: 30px 0;
+    h2 {
+        font-size: 30px;
+    }
+}
 
 </style>
 
@@ -20,7 +49,7 @@
 
         <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
             <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>
-            <textarea id="listDescription" v-model="list.description" v-on:input="updateListDescription"></textarea>
+            <textarea id="listDescription" v-model="list.description" @input="updateListDescription"></textarea>
         </div>
 
         <ul class="lpCategories">
@@ -29,17 +58,18 @@
 
         <hr />
 
-        <a v-on:click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
+        <a @click="newCategory" class="lpAdd addCategory"><i class="lpSprite lpSpriteAdd"></i>Add new category</a>
     </div>
 </template>
 
 <script>
-const category = require("./category.vue");
 const dragula = require("dragula");
-const listSummary = require("../components/list-summary.vue");
+
+import category from "./category.vue";
+import listSummary from "../components/list-summary.vue";
 
 export default {
-    name: "dashboard",
+    name: "list",
     mixins: [],
     components: {
         listSummary: listSummary,

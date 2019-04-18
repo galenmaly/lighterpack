@@ -1,5 +1,13 @@
 <style lang="scss">
 
+.lpQtySubtotal {
+    padding-right: 25px; /*Accommodates delete column */
+}
+
+.lpPriceSubtotal { /* unused? */
+    padding-right: 4px;
+}
+
 </style>
 
 <template>
@@ -9,16 +17,16 @@
                 <span class="lpHandleCell">
                     <div class="lpHandle lpCategoryHandle" title="Reorder this category"></div>
                 </span>
-                <input type="text" v-on:input="updateCategoryName" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent"/>
+                <input type="text" @input="updateCategoryName" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent"/>
                 <span v-if="library.optionalFields['price']" class="lpPriceCell">Price</span>
                 <span class="lpWeightCell">Weight</span>
                 <span class="lpQtyCell">qty</span>
-                <span class="lpRemoveCell"><a v-on:click="removeCategory(category)" class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
+                <span class="lpRemoveCell"><a @click="removeCategory(category)" class="lpRemove lpRemoveCategory" title="Remove this category"><i class="lpSprite lpSpriteRemove"></i></a></span>
             </li>
             <item v-for="itemContainer in itemContainers" :itemContainer="itemContainer" :category="category" :key="itemContainer.item.id"></item>
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
-                    <a class="lpAdd lpAddItem" v-on:click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
+                    <a class="lpAdd lpAddItem" @click="newItem"><i class="lpSprite lpSpriteAdd"></i>Add new item</a>
                 </span>
                 <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
                     {{category.subtotalPrice | displayPrice(library.currencySymbol)}}
@@ -37,10 +45,11 @@
 </template>
 
 <script>
-const item = require("./item.vue");
 const utilsMixin = require("../mixins/utils-mixin.js");
 
-module.exports = {
+import item from "./item.vue";
+
+export default {
     name: "category",
     mixins: [utilsMixin],
     props: ["category"],
@@ -59,7 +68,7 @@ module.exports = {
     },
     methods: {
         newItem() {
-            this.$store.commit("newItem", this.category);
+            this.$store.commit("newItem", { category: this.category, _isNew: true });
         },
         updateCategoryName(evt) {
             this.$store.commit("updateCategoryName", {id: this.category.id, name: evt.target.value});

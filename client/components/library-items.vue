@@ -1,4 +1,102 @@
 <style lang="scss">
+
+
+#libraryContainer {
+    display: flex;
+    flex: 2 0 30vh;
+    flex-direction: column;
+}
+
+#library {
+    flex: 1 0 25vh;
+    overflow-y: scroll;
+}
+
+#librarySearch {
+    background: #666;
+    border: 1px solid #888;
+    color: #FFF;
+    padding: 3px 6px;
+    margin-bottom: 15px;
+}
+
+.lpLibraryItem {
+    border-top: 1px dotted #999;
+    list-style: none;
+    margin: 0 10px 5px;
+    min-height: 43px;
+    overflow: hidden;
+    padding: 5px 5px 0 15px;
+    position: relative;
+
+    &:first-child {
+        padding-top: 10px;
+        border-top: none;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.gu-mirror {
+        border: 1px solid #999;
+        background: #606060;
+        color: #FFF;
+    }
+
+    .lpName {
+        float: left;
+        margin: 0;
+        max-width: 190px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .lpDescription {
+        color: #CCC;
+    }
+
+    .lpWeight {
+        float: right;
+        width: auto;
+    }
+
+    .lpDescription {
+        clear: both;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 235px;
+    }
+
+    .lpHandle {
+        height: 80px;
+        left: 0;
+        position: absolute;
+        top: 5px;
+    }
+
+     .lpRemove {
+        bottom: 0;
+        position: absolute;
+        right: 14px;
+    }
+
+    #library.lpSearching & {
+        display: none;
+    }
+
+    #library.lpSearching &.lpHit {
+        display: block;
+    }
+
+    #main > & {
+        background: #666;
+        color: #FFF;
+        padding: 10px;
+        width: 235px;
+    }
+}
 </style>
 
 <template>
@@ -16,7 +114,7 @@
                 <span class="lpDescription">
                     {{item.description}}
                 </span>
-                <a v-on:click="removeItem(item)" class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently"><i class="lpSprite lpSpriteRemove"></i></a>
+                <a @click="removeItem(item)" class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently"><i class="lpSprite lpSpriteRemove"></i></a>
                 <div class="lpHandle lpLibraryItemHandle" title="Reorder this item" v-if="!item.inCurrentList"></div>
             </li>
         </ul>

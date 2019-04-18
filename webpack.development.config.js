@@ -1,52 +1,53 @@
-var path = require('path')
-var webpack = require('webpack')
+const path = require("path");
+const webpack = require("webpack");
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = {
+    mode: "development",
     entry: {
         app: [
-            'webpack/hot/dev-server',
-            'webpack-dev-server/client?http://dev.lighterpack.com:8080/',
-            './client/lighterpack.js'
+            "whatwg-fetch",
+            "webpack/hot/dev-server",
+            `webpack-dev-server/client?http://dev.lighterpack.com:8080/`,
+            "./client/css/lighterpack.scss",
+            "./client/lighterpack.js"
             ]
     },
     output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: '/dist/',
-        filename: 'build.js'
-    },
+        path: path.resolve(__dirname, "./dist"),
+        publicPath: "/dist/",
+        filename: "build.js"
+},
     module: {
         rules: [
             {
                 test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-                        // the "scss" and "sass" values for the lang attribute to the right configs here.
-                        // other preprocessors should work out of the box, no loader config like this nessessary.
-                        'scss': 'vue-style-loader!css-loader!sass-loader',
-                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-                    }
-                    // other vue-loader options go here
-                }
+                loader: "vue-loader"
             },
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
+                loader: "babel-loader",
+                exclude: /node_modules/,
+                query: {
+                    presets: ["@babel/preset-env"]
+                }
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
-                loader: 'file-loader',
+                loader: "file-loader",
                 options: {
-                    name: '[name].[ext]?[hash]'
+                    name: "[name].[ext]?[hash]"
                 }
+            },
+            {
+                test: /\.scss$/,
+                loader: ["vue-style-loader", "css-loader", "sass-loader"]
             }
         ]
     },
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.common.js'
+            vue$: "vue/dist/vue.esm.js"
         }
     },
     devServer: {
@@ -57,8 +58,9 @@ module.exports = {
     performance: {
         hints: false
     },
-    devtool: '#eval-source-map',
+    devtool: "#eval-source-map",
     plugins: [
+        new VueLoaderPlugin(),
         new webpack.HotModuleReplacementPlugin()
     ]
 }

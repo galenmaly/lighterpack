@@ -4,31 +4,30 @@
 
 <template>
     <div>
-        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="itemImageDialog">
+        <modal :shown="shown" @hide="shown = false" id="itemImageDialog">
             <div class="columns">
                 <div class="lpHalf">
                     <h2>Add image by URL</h2>
-                    <form id="itemImageUrlForm" v-on:submit="saveImageUrl($event)">
+                    <form id="itemImageUrlForm" @submit.prevent="saveImageUrl()">
                         <input v-model="imageUrl" type="text" id="itemImageUrl" placeholder="Image URL"/>
                         <input type="submit" class="lpButton" value="Save" />
-                        <a v-on:click="closeModal" class="lpHref close">Cancel</a>
+                        <a @click="shown = false" class="lpHref close">Cancel</a>
                     </form>
                 </div>
                 <div class="lpHalf">
                     <h2>Upload image from disk</h2>
                     <template v-if="!item.image">
                         <p class="imageUploadDescription">Your image will be hosted on imgur.</p>
-                        <button v-on:click="triggerImageUpload" class="lpButton" id="itemImageUpload">Upload Image</button>
-                        <a v-on:click="closeModal" class="lpHref close">Cancel</a>
+                        <button @click="triggerImageUpload" class="lpButton" id="itemImageUpload">Upload Image</button>
+                        <a @click="shown = false" class="lpHref close">Cancel</a>
                         <p v-if="uploading">Uploading image...</p>
                     </template>
                     <template v-if="item.image">
-                        <button v-on:click="removeItemImage" class="lpButton" id="itemImageUpload">Remove Image</button>
+                        <button @click="removeItemImage" class="lpButton" id="itemImageUpload">Remove Image</button>
                     </template>
                 </div>
             </div>
-        </div>
-        <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
+        </modal>
         <form id="imageUpload">
             <input type="file" name="image" id="image" />
         </form>
@@ -36,23 +35,26 @@
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from "./modal.vue";
 
 export default {
     name: "item-image",
-    mixins: [modalMixin],
+    components: {
+        modal
+    },
     data: function() {
         return {
+            imageUrl: null,
             imageInput: false,
             item: false,
-            uploading: false
+            uploading: false,
+            shown: false
         }
     },
     methods: {
-        saveImageUrl: function(evt) {
-            evt.preventDefault();
+        saveImageUrl: function() {
             this.$store.commit("updateItemImageUrl", {imageUrl: this.imageUrl, item: this.item});
-            this.closeModal();
+            this.shown = false;
         },
         triggerImageUpload: function() {
             this.imageInput.click();
@@ -90,7 +92,7 @@ export default {
             .then((response) => {
                 this.uploading = false;
                 this.$store.commit("updateItemImage", {image: response.data.id, item: this.item});
-                this.closeModal();
+                this.shown = false;
             }).catch((response) => {
                 this.uploading = false;
                 alert("Upload failed! If this issue persists please file a bug.");
@@ -107,7 +109,7 @@ export default {
 
 
         bus.$on("updateItemImage", (item) => {
-            this.openModal();
+            this.shown = true;
             this.item = item;
             this.imageUrl = item.imageUrl;
         });

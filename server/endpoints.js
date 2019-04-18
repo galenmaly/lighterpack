@@ -5,13 +5,15 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const request = require("request");
-const nodemailer = require("nodemailer");
-const sendmailTransport = require("nodemailer-sendmail-transport");
-const transport = nodemailer.createTransport(sendmailTransport({}));
 const formidable = require("formidable");
 const mongojs = require("mongojs");
 const config = require("config");
 const awesomeLog = require("./log.js");
+
+if (config.get("mailgunAPIKey")) {
+    var domain = 'lighterpack.com';
+    var mailgun = require('mailgun-js')({apiKey: config.get("mailgunAPIKey"), domain: domain});
+}
 
 const collections = ["users", "libraries"];
 const db = mongojs(config.get("databaseUrl"), collections);
@@ -129,15 +131,15 @@ router.post("/saveLibrary", function(req, res) {
 
 function saveLibrary(req, res, user) {
     if (!req.body.username || typeof req.body.syncToken === "undefined" || !req.body.data) {
-        return res.status(400).json({status: "An error occurred while saving your data."});
+        return res.status(400).json({message: "An error occurred while saving your data."});
     }
 
     if (req.body.username != user.username) {
-        return res.status(401).json({status: "Please login again."});
+        return res.status(401).json({message: "Please login again."});
     }
 
     if (req.body.syncToken != user.syncToken) {
-        return res.status(400).json({status: "Your list is out of date - please refresh your browser."});
+        return res.status(400).json({message: "Your list is out of date - please refresh your browser."});
     }
 
     var library;
@@ -149,9 +151,11 @@ function saveLibrary(req, res, user) {
 
     user.library = library;
     user.syncToken++;
-    db.users.save(user);
-    awesomeLog(req, user.username);
-    return res.status(200).json({status: "success", syncToken: user.syncToken});
+    db.users.save(user, () => {
+        awesomeLog(req, user.username);
+        
+        return res.status(200).json({message: "success", syncToken: user.syncToken});
+    });
 }
 
 router.post("/externalId", function(req, res) {
@@ -183,12 +187,12 @@ function externalId(req, res, user) {
                 return res.status(200).json({externalId: myId});
             } else {
                 awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
-                return res.status(500).json({status: "An error occurred, please try again later."});
+                return res.status(500).json({message: "An error occurred, please try again later."});
             }
         } else {
             awesomeLog(req, "ERROR OPENING EXTERNAL ID FILE");
             awesomeLog(req, err);
-            return res.status(500).json({status: "An error occurred, please try again later."});
+            return res.status(500).json({message: "An error occurred, please try again later."});
         }
     });
 }
@@ -211,10 +215,10 @@ router.post("/forgotPassword", function(req, res) {
     db.users.find({username: username}, function(err, users) {
         if( err ) {
             awesomeLog(req, "Forgot password lookup error for:" + username)
-            return res.status(500).json({status: "An error occurred"});
+            return res.status(500).json({message: "An error occurred"});
         } else if ( !users.length ) {
             awesomeLog(req, "Forgot password for unknown user:" + username)
-            return res.status(500).json({status: "An error occurred."});
+            return res.status(500).json({message: "An error occurred."});
         }
         var user = users[0];
         require('crypto').randomBytes(12, function(ex, buf) {
@@ -235,10 +239,10 @@ router.post("/forgotPassword", function(req, res) {
                     }
 
                     awesomeLog(req, "Attempting to send new password to:" + email);
-                    transport.sendMail(mailOptions, function(error, response){
+                    mailgun.messages().send(mailOptions, function(error, response){
                         if (error) {
                             awesomeLog(req, error);
-                            return res.status(500).json({status: "An error occurred"});
+                            return res.status(500).json({message: "An error occurred"});
                         } else {
                             db.users.save(user);
                             var out = {username: username};
@@ -271,10 +275,10 @@ router.post("/forgotUsername", function(req, res) {
     db.users.find({email: email}, function(err, users) {
         if (err) {
             awesomeLog(req, "Forgot email lookup error for:" + email)
-            return res.status(500).json({status: "An error occurred"});
+            return res.status(500).json({message: "An error occurred"});
         } else if ( !users.length ) {
             awesomeLog(req, "Forgot email for unknown user:" + email)
-            return res.status(400).json({status: "An error occurred"});
+            return res.status(400).json({message: "An error occurred"});
         }
         var user = users[0];
         var username = user.username;
@@ -289,10 +293,10 @@ router.post("/forgotUsername", function(req, res) {
         }
 
         awesomeLog(req, "Attempting to send username to:" + email);
-        transport.sendMail(mailOptions, function(error, response){
+        mailgun.messages().send(mailOptions, function(error, response){
             if (error) {
                 awesomeLog(req, error);
-                return res.status(500).json({status: "An error occurred"});
+                return res.status(500).json({message: "An error occurred"});
             } else {
                 var out = {email: email};
                 awesomeLog(req, "Message sent: " + response.message);
@@ -334,15 +338,35 @@ function account(req, res, user) {
                     }
 
                     db.users.save(user);
-                    return res.status(200).json({status: "success"});
+                    return res.status(200).json({message: "success"});
                 });
             });
         } else if (req.body.newEmail) {
             user.email = req.body.newEmail;
             awesomeLog(req, "Changing Email - " + user.username);
             db.users.save(user);
-            return res.status(200).json({status: "success"});
+            return res.status(200).json({message: "success"});
         }
+    })
+    .catch((err) => {
+        res.status(400).json({errors: [{field: "currentPassword", message: "Your current password is incorrect."}]});
+    });
+}
+
+router.post("/delete-account", function(req, res) {
+    authenticateUser(req, res, deleteAccount);
+});
+
+function deleteAccount(req, res, user) {
+    verifyPassword(user.username, req.body.password)
+    .then((user) => {
+        if (req.body.username !== user.username) {
+            return Promise.reject(new Error("An error occurred, please try logging out and in again."));
+        }
+
+        db.users.remove(user, true);
+
+        return res.status(200).json({message: "success"});
     })
     .catch((err) => {
         res.status(400).json({errors: [{field: "currentPassword", message: "Your current password is incorrect."}]});
@@ -360,11 +384,11 @@ function imageUpload(req, res, user) {
     form.parse(req, function(err, fields, files) {
         if (err) {
             awesomeLog(req, "form parse error");
-            return res.status(500).json({status: "An error occurred"});
+            return res.status(500).json({message: "An error occurred"});
         }
         if (!files || !files.image) {
             awesomeLog(req, "No image in upload");
-            return res.status(500).json({status: "An error occurred"});
+            return res.status(500).json({message: "An error occurred"});
         }
 
         var path = files.image.path;
@@ -377,16 +401,16 @@ function imageUpload(req, res, user) {
                     awesomeLog(req, "imgur post fail!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    return res.status(500).json({status: "An error occurred."});
+                    return res.status(500).json({message: "An error occurred."});
                 } else if (!body) {
                     awesomeLog(req, "imgur post fail!!");
                     awesomeLog(req, e);
-                    return res.status(500).json({status: "An error occurred."});
+                    return res.status(500).json({message: "An error occurred."});
                 } else if (r.statusCode !== 200 || body.error) {
                     awesomeLog(req, "imgur post fail!!!");
                     awesomeLog(req, e);
                     awesomeLog(req, body);
-                    return res.status(500).json({status: "An error occurred."});
+                    return res.status(500).json({message: "An error occurred."});
                 } else {
                     awesomeLog(req, body);
                     return res.send(body);
@@ -398,7 +422,7 @@ function imageUpload(req, res, user) {
 
 function authenticateUser(req, res, callback) {
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
-        return res.status(401).json({status: "Please log in."});
+        return res.status(401).json({message: "Please log in."});
     }
     if (req.body.username && req.body.password) {
         const username = req.body.username.toLowerCase().trim();
@@ -409,21 +433,21 @@ function authenticateUser(req, res, callback) {
         })
         .catch((err) => {
             console.log(err);
-            if (err.code && err.status) {
-                awesomeLog(req, err.status)
-                res.status(err.code).json({status: err.status});
+            if (err.code && err.message) {
+                awesomeLog(req, err.message)
+                res.status(err.code).json({message: err.message});
             } else {
-                res.status(500).json({status: "An error occurred, please try again later."});
+                res.status(500).json({message: "An error occurred, please try again later."});
             }
         });
     } else {
         db.users.find({token: req.cookies.lp}, function(err, users) {
             if (err) {
                 awesomeLog(req, "Error on authenticateUser else for:" + req.body.username + ", " + req.body.password )
-                return res.status(500).json({status: "An error occurred, please try again later."});;
+                return res.status(500).json({message: "An error occurred, please try again later."});;
             } else if (!users || !users.length) {
                 awesomeLog(req, "bad cookie!");
-                return res.status(401).json({status: "Please log in again."});
+                return res.status(401).json({message: "Please log in again."});
             }
             callback(req, res, users[0]);
         });
@@ -434,41 +458,41 @@ function verifyPassword(username, password) {
     return new Promise((resolve, reject) => {
         db.users.find({username: username}, function(err, users) {
             if (err) {
-                return reject({code: 500, status: "An error occurred, please try again later."});
+                return reject({code: 500, message: "An error occurred, please try again later."});
             } else if (!users || !users.length) {
-                return reject({code: 404, status: "Invalid username and/or password."});
+                return reject({code: 404, message: "Invalid username and/or password."});
             }
 
             const user = users[0];
 
             bcrypt.compare(password, user.password, function(err, result) {
                 if (err) {
-                    return reject({code: 500, status: "An error occurred, please try again later."});
+                    return reject({code: 500, message: "An error occurred, please try again later."});
                 }
                 if (!result) {
                     const sha3password = CryptoJS.SHA3(password + username).toString(CryptoJS.enc.Base64);
                     bcrypt.compare(sha3password, user.password, function(err, result) {
                         if (err) {
-                            reject({code: 500, status: "An error occurred, please try again later."});
+                            reject({code: 500, message: "An error occurred, please try again later."});
                         }
                         if (!result) {
                             /* TODO: reinstate this block after DB migration */
-                            /* reject({code: 404, status: "Invalid username and/or password."}); */
+                            /* reject({code: 404, message: "Invalid username and/or password."}); */
 
                             /* TODO: remove this block after DB migration */
                             if (sha3password === user.password) {
                                 resolve(user);
                             } else {
-                                reject({code: 404, status: "Invalid username and/or password."});
+                                reject({code: 404, message: "Invalid username and/or password."});
                             }
                         } else {
                             bcrypt.genSalt(10, function(err, salt) {
                                 if (err) {
-                                    return reject({code: 500, status: "An error occurred, please try again later."});
+                                    return reject({code: 500, message: "An error occurred, please try again later."});
                                 }
                                 bcrypt.hash(password, salt, function(err, hash) {
                                     if (err) {
-                                        return reject({code: 500, status: "An error occurred, please try again later."});
+                                        return reject({code: 500, message: "An error occurred, please try again later."});
                                     }
                                     user.password = hash;
                                     db.users.save(user);

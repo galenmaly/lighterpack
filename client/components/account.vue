@@ -1,16 +1,13 @@
 <style lang="scss">
-#dashboard .hello-world {
-    font-size: 15px;
-    line-height: 1.8;
-}
+
 </style>
 
 <template>
-    <div v-if="shown">
-        <div :class="'lpDialog ' + modalClasses" id="accountSettings">
-            <h2>Account Settings</h2>
+    <modal :shown="shown" @hide="shown = false" id="accountSettings">
+        <h2>Account Settings</h2>
 
-            <form id="accountForm" v-on:submit="updateAccount($event)">
+        <form id="accountForm" @submit.prevent="updateAccount()">
+            <div class="lpFields">
                 <input type="text" name="username" class="username" disabled :value="username"/>
                 <input v-model="currentPassword" type="password" placeholder="Current Password" name="currentPassword" class="currentPassword"/>
                 <hr>
@@ -18,33 +15,38 @@
                 <hr>
                 <input v-model="newPassword" type="password" placeholder="New Password" name="newPassword" class="newPassword"/>
                 <input v-model="confirmNewPassword" type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword"/>
+            </div>
 
-                <ul class="lpError" v-if="errors">
-                    <li v-for="error in errors">{{error.message}}</li>
-                </ul>
+            <errors :errors="errors" />
 
+            <div class="lpButtons">
                 <input type="submit" value="Submit" class="lpButton" />
-                <a v-on:click="closeModal" class="lpHref">Cancel</a>
-                <span class="status"></span>
-            </form>
-        </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+                <a @click="shown = false" class="lpHref">Cancel</a>
+                <a @click="showDeleteAccount" class="lpHref">Delete account</a>
+            </div>
+        </form>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import errors from "./errors.vue";
+import modal from "./modal.vue";
 
 export default {
     name: "account",
-    mixins: [modalMixin],
+    components: {
+        errors,
+        modal
+    },
     data: function() {
         return {
+            saving: false,
             errors: [],
             currentPassword: "",
             newEmail: "",
             newPassword: "",
-            confirmNewPassword: ""
+            confirmNewPassword: "",
+            shown: false
         }
     },
     computed: {
@@ -56,9 +58,7 @@ export default {
         }
     },
     methods: {
-        updateAccount: function(evt) {
-            evt.preventDefault();
-
+        updateAccount: function() {
             this.errors = [];
 
             if (!this.currentPassword) {
@@ -93,6 +93,7 @@ export default {
             if (!dirty) return;
 
             this.currentPassword = "";
+            this.saving = true;
 
             fetchJson("/account", {
                 method: "POST",
@@ -103,20 +104,22 @@ export default {
                 body: JSON.stringify(data)
             })
             .then((response) => {
-                this.closeModal();
+                this.saving = false;
+                this.shown = false;
             })
-            .catch((response) => {
-                if (response.json && response.json.errors) {
-                    this.errors = response.json.errors;
-                } else {
-                    this.errors = [{message: "An error occurred while registering. Please try again later."}];
-                }
+            .catch((err) => {
+                this.errors = err;
+                this.saving = false;
             });
+        },
+        showDeleteAccount: function() {
+            this.shown = false;
+            bus.$emit("showDeleteAccount");
         }
     },
     beforeMount: function() {
          bus.$on("showAccount", () => {
-            this.openModal();
+            this.shown = true;
         });
     }
 }

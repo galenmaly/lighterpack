@@ -1,17 +1,88 @@
 <style lang="scss">
+@import "../css/_globals";
+
+#welcome {
+    border-top: 2px solid $orange1;
+    width: 600px;
+
+    h2 {
+        font-weight: normal;
+        strong {
+            font-size: 24px;
+        }
+    }
+
+    h3 {
+        margin-bottom: $spacingMedium;
+    }
+
+    .lpError {
+        margin: 0 0 12px;
+    }
+
+    .lpHalf {
+        min-height: 260px;
+        position: relative;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"] {
+        background: rgba(255,255,255,0.8);
+        width: 100%;
+    }
+
+    .lpHref {
+        display: inline-block;
+        font-size: 15px;
+        font-weight: bold;
+        margin: 15px 0 0;
+        text-shadow: 0 0 4px rgba(255,255,255,0.8);
+    }
+}
+
+#lpWelcomeRegisterContainer {
+    width: 58%;
+}
+
+#lpValuePropContainer {
+    width: 42%;
+}
+
+#lpValueProp {
+    margin: 30px 0;
+    padding: 0;
+
+    li {
+        list-style-type: none;
+        margin: 0 0 15px;
+    }
+
+    h3 {
+        strong {
+            font-size: 20px;
+            margin-right: 5px;
+        }
+    }
+}
+
+#valueChartContainer {
+}
+
+#valueChart {
+    margin: 0 0 0 10px;
+}
 
 </style>
 
 <template>
     <div id="welcomeContainer">
-        <div class="lpDialog alwaysShow sticky" id="welcome">
+        <modal :shown="true" :blackout="true" id="welcome">
             <h2><strong>LighterPack</strong> helps you track the gear you bring on adventures.</h2>
             <div class="columns">
                 <div class="lpHalf" id="lpWelcomeRegisterContainer">
                     <h3>Register an Account</h3>
 
                     <registerForm></registerForm>
-                    <a class="lpHref lpGetStarted" v-on:click="loadLocal">Skip Registration</a>
+                    <a class="lpHref lpGetStarted" @click="loadLocal">Skip Registration</a><br>
                     <router-link to="/signin" class="lpHref">Already registered?</router-link>
                 </div>
                 <div class="lpHalf" id="lpValuePropContainer">
@@ -31,26 +102,27 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </modal>
 
         <blackoutFooter></blackoutFooter>
-        <div class="lpModalOverlay lpBlackout"></div>
     </div>
 </template>
 
 <script>
 import blackoutFooter from "../components/blackout-footer.vue";
+import modal from "../components/modal.vue";
 import registerForm from "../components/register-form.vue";
+
 const pies = require("../pies.js");
 const dataTypes = require("../dataTypes.js");
 const Library = dataTypes.Library;
 
 export default {
     name: "welcome",
-    mixins: [],
     components: {
-        blackoutFooter: blackoutFooter,
-        registerForm: registerForm
+        blackoutFooter,
+        modal,
+        registerForm
     },
     data: function() {
         return {

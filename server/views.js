@@ -29,20 +29,32 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: "/signin/forgot-username" },
     { path: "/welcome" },
     { path: "/register" },
-    { path: "/forgotPassword" }
+    { path: "/forgot-password" }
 ];
 
-var index = fs.readFileSync(path.join(__dirname, '../_index.html'), "utf8");
+let index = fs.readFileSync(path.join(__dirname, '../_index.html'), "utf8");
+let assetData;
 
 if (config.get('environment') === "production") {
-    const scripts = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/dist/assets.json'), "utf8"));
-    var scriptsHtml = "";
+    assetData = JSON.parse(fs.readFileSync(path.join(__dirname, "../../public/dist/assets.json"), "utf8"));
+    const assetFiles = assetData.files.app;
+    let i,
+        scriptsHtml = "",
+        stylesHtml = "",
+    assetName = "";
 
-    for (scriptName in scripts) {
-        scriptsHtml += "<script src='/dist/" + scripts[scriptName] + "'></script>";
+    for (i = 0; i < assetFiles.length; i++) {
+        assetName = assetFiles[i];
+        if (assetName.substr(assetName.length - 3) === ".js") {
+            scriptsHtml += `<script src='/dist/${assetName}'></script>`;
+        } else if (assetName.substr(assetName.length - 4) === ".css") {
+            stylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
+        }
     }
+    index = index.replace("{{styles}}", stylesHtml);
     index = index.replace("{{scripts}}", scriptsHtml);
 } else {
+    index = index.replace("{{styles}}", "");
     index = index.replace("{{scripts}}", "<script src='/dist/build.js'></script>");
 }
 

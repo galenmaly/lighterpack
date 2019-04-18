@@ -1,5 +1,36 @@
 <style lang="scss">
 
+#csvUrl {
+    display: block;
+    margin-top: 15px;
+}
+
+#lpOptionalFields {
+    margin: 0;
+    padding: 0;
+}
+
+.lpOptionalField {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#lpPriceSettings {
+    input {
+        display: inline-block;
+        margin-left: 10px;
+        width: 50px;
+    }
+
+}
+#share .lpContent {
+    width: 330px;
+}
+
+#settings .lpContent {
+    width: 200px;
+}
 </style>
 
 <template>
@@ -10,7 +41,7 @@
                 <ul id="lpOptionalFields">
                     <li v-for="optionalField in optionalFieldsLookup" class="lpOptionalField">
                         <label>
-                            <input type="checkbox" v-model="optionalField.value" v-on:change="toggleOptionalField($event, optionalField.name)"/>
+                            <input type="checkbox" v-model="optionalField.value" @change="toggleOptionalField($event, optionalField.name)"/>
                             {{optionalField.displayName}}
                         </label>
                     </li>
@@ -19,7 +50,7 @@
                     <hr />
                     <label>
                         Currency:
-                        <input id="currencySymbol" type="text" maxlength="4" :value="library.currencySymbol" v-on:input="updateCurrencySymbol($event)"/>
+                        <input id="currencySymbol" type="text" maxlength="4" :value="library.currencySymbol" @input="updateCurrencySymbol($event)"/>
                     </label>
                 </div>
             </div>
@@ -29,8 +60,8 @@
 
 <script>
 
-module.exports = {
-    name: "header",
+export default {
+    name: "list-settings",
     mixins: [],
     data: function() {
         return {

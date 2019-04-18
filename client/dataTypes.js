@@ -1,6 +1,4 @@
-if (typeof Vue === "undefined") {
-    var Vue = require("vue");
-}
+const assignIn = require("lodash/assignIn");
 
 const colorUtils = require("./utils/color.js");
 const weightUtils = require("./utils/weight.js");
@@ -24,7 +22,7 @@ Item.prototype.save = function() {
 }
 
 Item.prototype.load = function(input) {
-    Vue.util.extend(this, input);
+    assignIn(this, input);
     if (typeof this.price === "string") {
         this.price = parseFloat(this.price, 10);
     }
@@ -38,21 +36,22 @@ const Category = function(args) {
     return this;
 }
 
-Category.prototype.addItem = function (args) {
+Category.prototype.addItem = function (partialCategoryItem) {
     var temp = {
         qty: 1,
         worn: 0,
         consumable: false,
         star: 0,
-        itemId: null
+        itemId: null,
+        _isNew: false
     }
-    Vue.util.extend(temp, args);
+    assignIn(temp, partialCategoryItem);
     this.categoryItems.push(temp);
 }
 
 Category.prototype.updateCategoryItem = function (categoryItem) {
     var oldCategoryItem = this.getCategoryItemById(categoryItem.itemId);
-    Vue.util.extend(oldCategoryItem, categoryItem);
+    assignIn(oldCategoryItem, categoryItem);
 }   
 
 Category.prototype.removeItem = function (itemId) {
@@ -97,20 +96,20 @@ Category.prototype.getCategoryItemById = function(id) {
 Category.prototype.getExtendedItemByIndex = function(index) {
     var categoryItem = this.categoryItems[index];
     var item = this.library.getItemById(categoryItem.itemId);
-    var extendedItem = Vue.util.extend({}, item);
-    Vue.util.extend(extendedItem, categoryItem);
+    var extendedItem = assignIn({}, item);
+    assignIn(extendedItem, categoryItem);
     return extendedItem;
 }
 
 Category.prototype.save = function() {
-    var out = Vue.util.extend({}, this);
+    var out = assignIn({}, this);
     delete out.library;
     delete out.template;
     return out;
 }
 
 Category.prototype.load = function(input) {
-    Vue.util.extend(this, input);
+    assignIn(this, input);
 
     if (typeof this.itemIds !== "undefined") {
         if (this.categoryItems.length === 0) {
@@ -122,6 +121,7 @@ Category.prototype.load = function(input) {
     }
 
     for (var i = 0; i < this.categoryItems.length; i++) {
+        delete this.categoryItems[i]._isNew;
         if (typeof this.categoryItems[i].price !== "undefined") {
             delete this.categoryItems[i].price;
         }
@@ -225,7 +225,7 @@ List.prototype.renderChart = function (type, linkParent) {
             var percent = categoryTotal / total;
             var tempCategoryData = {points: points, color: category.color, id:category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent: percent, visiblePoints: false};
             if (linkParent) tempCategoryData.parent = chartData;
-            Vue.util.extend(tempCategory, tempCategoryData);
+            assignIn(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;
         }
     }
@@ -278,14 +278,14 @@ List.prototype.calculateTotals = function() {
 }
 
 List.prototype.save = function() {
-    var out = Vue.util.extend({}, this);
+    var out = assignIn({}, this);
     delete out.library;
     delete out.chart;
     return out;
 }
 
 List.prototype.load = function(input) {
-    Vue.util.extend(this, input);
+    assignIn(this, input);
     this.calculateTotals();
 }
 
@@ -320,17 +320,19 @@ Library.prototype.firstRun = function() {
     var firstItem = this.newItem({category: firstCategory});
 }
 
-Library.prototype.newItem = function(args) {
+Library.prototype.newItem = function({ category, _isNew }) {
     var temp = new Item({id: this.nextSequence(), library: this, unit: this.itemUnit});
     this.items.push(temp);
     this.idMap[temp.id] = temp;
-    if (args.category) args.category.addItem({itemId: temp.id});
+    if (category) {
+        category.addItem({ itemId: temp.id, _isNew });
+    }
     return temp;
 }
 
 Library.prototype.updateItem = function(item) {
     var oldItem = this.getItemById(item.id);
-    Vue.util.extend(oldItem, item);
+    assignIn(oldItem, item);
     return oldItem;
 }
 
@@ -541,7 +543,7 @@ Library.prototype.save = function() {
 Library.prototype.load = function(input) {
     this.items = [];
 
-    Vue.util.extend(this.optionalFields, input.optionalFields);
+    assignIn(this.optionalFields, input.optionalFields);
 
     for (var i in input.items) {
         var temp = new Item({id: input.items[i].id, library: this});

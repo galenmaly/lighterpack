@@ -3,38 +3,40 @@
 </style>
 
 <template>
-    <form class="register" v-on:submit="submit($event)">
-        <div class="lpError"></div>
-        <input v-focus-on-create type="text" placeholder="Username" name="username" v-model="username" />
-        <input type="email" placeholder="Email" name="email" v-model="email" />
-        <input type="password" placeholder="Password" name="password" v-model="password" />
-        <input type="password" placeholder="Confirm Password" name="passwordConfirm" v-model="passwordConfirm" />
-        <ul class="lpError" v-if="errors">
-            <li v-for="error in errors">{{error.message}}</li>
-        </ul>
-        <input type="submit" value="Register" class="lpButton" />
-        <span class="status"></span>
+    <form class="lpRegister lpFields" @submit.prevent="submit">
+        <div class="lpFields">
+            <input v-focus-on-create type="text" placeholder="Username" name="username" v-model="username" />
+            <input type="email" placeholder="Email" name="email" v-model="email" />
+            <input type="password" placeholder="Password" name="password" v-model="password" />
+            <input type="password" placeholder="Confirm password" name="passwordConfirm" v-model="passwordConfirm" />
+        </div>
+        <errors :errors="errors" />
+        <div class="lpButtons">
+            <input type="submit" value="Register" class="lpButton" />
+        </div>
     </form>
 </template>
 
 <script>
+import errors from "./errors.vue";
 
 export default {
     name: "registerForm",
-    mixins: [],
+    components: {
+        errors
+    },
     data: function() {
         return {
             username: "",
             email: "",
             password: "",
             passwordConfirm: "",
+            saving: false,
             errors: []
         }
     },
     methods: {
-        submit(evt) {
-            evt.preventDefault();
-
+        submit() {
             this.errors = [];
 
             if (!this.username) {
@@ -75,6 +77,7 @@ export default {
                 registerData.library = localStorage.library;
             }
 
+            this.saving = true;
             return fetchJson("/register", {
                 method: "POST",
                 headers: {
@@ -93,14 +96,12 @@ export default {
                     localStorage.registeredLibrary = localStorage.library;
                     delete localStorage.library;
                 }
+                this.saving = false;
                 router.push("/");
             })
-            .catch((response) => {
-                if (response.json && response.json.errors) {
-                    this.errors = response.json.errors;
-                } else {
-                    this.errors = [{message: "An error occurred while registering. Please try again later."}];
-                }
+            .catch((err) => {
+                this.saving = false;
+                this.errors = err;
             });
         }
     },

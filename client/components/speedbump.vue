@@ -3,27 +3,26 @@
 </style>
 
 <template>
-    <div v-if="shown">
-        <div id="speedbump" :class="'lpDialog ' + modalClasses">
-            <h2>{{messages.title}}</h2>
+    <modal :shown="shown" @hide="shown = false" id="speedbump">
+        <h2 v-if="messages.title">{{messages.title}}</h2>
 
-            <p>{{messages.body}}</p>
+        <p>{{messages.body}}</p>
 
-            <div class="buttons">
-                <button class="lpButton" v-on:click="confirmSpeedbump()" v-focus-on-create>{{messages.confirm}}</button>
-                &nbsp;<button class="lpButton" v-on:click="closeModal()">{{messages.cancel}}</button>
-            </div>
+        <div class="buttons">
+            <button class="lpButton" @click="confirmSpeedbump()" v-focus-on-create>{{messages.confirm}}</button>
+            &nbsp;<button class="lpButton" @click="shown = false">{{messages.cancel}}</button>
         </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from "./modal.vue";
 
-module.exports = {
+export default {
     name: "speedbump",
-    mixins: [modalMixin],
+    components: {
+        modal
+    },
     data: function() {
         return {
             defaultMessages: {
@@ -33,7 +32,8 @@ module.exports = {
                 cancel: "No"
             },
             messages: {},
-            callback: null
+            callback: null,
+            shown: false
         }
     },
     methods: {
@@ -45,13 +45,13 @@ module.exports = {
             } else {
                 this.messages = Vue.util.extend(this.messages, options);
             }
-            this.openModal();
+            this.shown = true;
         },
         confirmSpeedbump: function() {
             if (this.callback && typeof this.callback === "function") {
                 this.callback(true);
             }
-            this.closeModal();
+            this.shown = false;
         },
     },
     beforeMount: function() {

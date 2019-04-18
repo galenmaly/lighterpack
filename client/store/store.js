@@ -1,5 +1,5 @@
-const Vue = require("vue");
-const Vuex = require('vuex').default;
+import Vuex from "vuex";
+import Vue from "vue";
 
 const weightUtils = require("../utils/weight.js");
 const dataTypes = require("../dataTypes.js");
@@ -80,8 +80,8 @@ const store = new Vuex.Store({
         updateCurrencySymbol(state, currencySymbol) {
             state.library.currencySymbol = currencySymbol
         },
-        newItem(state, category) {
-            state.library.newItem({category});
+        newItem(state, { category, _isNew }) {
+            state.library.newItem({category, _isNew});
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         newCategory(state, list) {
@@ -218,7 +218,7 @@ const store = new Vuex.Store({
                     newCategories[row.category] = category;
                 }
 
-                item = state.library.newItem({category: category});
+                item = state.library.newItem({category: category, _isNew: false});
                 categoryItem = category.getCategoryItemById(item.id);
 
                 item.name = row.name;
@@ -354,4 +354,4 @@ const store = new Vuex.Store({
     ]
 });
 
-module.exports = store;
+export default store;

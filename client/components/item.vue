@@ -1,5 +1,44 @@
 <style lang="scss">
 
+.lpItem {
+    &:hover, &.ui-sortable-helper {
+        background: #FFF;
+
+        .lpRemove, .lpWorn, .lpConsumable, .lpCamera, .lpLink, .lpHandle, .lpArrows, .lpStar {
+            visibility: visible;
+        }
+    }
+
+    input, select {
+        padding: 3px;
+    }
+}
+
+.lpArrows {
+    display: inline-block;
+    height: 14px;
+    position: relative;
+    visibility: hidden;
+    width: 10px;
+
+    .lpUp, .lpDown {
+        cursor: pointer;
+        left: 0;
+        opacity: 0.5;
+        margin: 2px;
+        position: absolute;
+        top: 0;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .lpDown {
+        top: 11px;
+    }
+}
+
 </style>
 
 <template>
@@ -8,43 +47,44 @@
             <div class="lpItemHandle lpHandle" title="Reorder this item"></div>
         </span>
         <span v-if="library.optionalFields['images']" class="lpImageCell">
-            <img v-on:click="viewItemImage()" v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" />
+            <img @click="viewItemImage()" v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" />
         </span>
-        <input v-on:input="saveItem" type="text" v-model="item.name" class="lpName lpSilent" placeholder="Name" />
-        <input v-on:input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
+        <input @input="saveItem" type="text" v-model="item.name" class="lpName lpSilent" placeholder="Name" v-focus-on-create="categoryItem._isNew"/>
+        <input @input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
         <span class="lpActionsCell">
-            <i v-on:click="updateItemImage" class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
-            <i v-on:click="updateItemLink" class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
-            <i v-if="library.optionalFields['worn']" v-on:click="toggleWorn" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn"></i>
-            <i v-if="library.optionalFields['consumable']" v-on:click="toggleConsumable" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable"></i>
-            <i :class="'lpSprite lpStar lpStar' + categoryItem.star" v-on:click="cycleStar" title="Star this item"></i>
+            <i @click="updateItemImage" class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
+            <i @click="updateItemLink" class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
+            <i v-if="library.optionalFields['worn']" @click="toggleWorn" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn"></i>
+            <i v-if="library.optionalFields['consumable']" @click="toggleConsumable" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable"></i>
+            <i :class="'lpSprite lpStar lpStar' + categoryItem.star" @click="cycleStar" title="Star this item"></i>
         </span>
         <span v-if="library.optionalFields['price']" class="lpPriceCell">
-            <input v-on:input="savePrice" type="text" v-model="displayPrice" v-on:keydown.up="incrementPrice($event)" v-on:keydown.down="decrementPrice($event)" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" v-on:blur="setDisplayPrice" v-empty-if-zero />
+            <input @input="savePrice" type="text" v-model="displayPrice" @keydown.up="incrementPrice($event)" @keydown.down="decrementPrice($event)" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" @blur="setDisplayPrice" v-empty-if-zero />
         </span>
         <span class="lpWeightCell lpNumber">
-            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)" type="text" v-model="displayWeight" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" v-empty-if-zero/>
+            <input @input="saveWeight" @keydown.up="incrementWeight($event)" @keydown.down="decrementWeight($event)" type="text" v-model="displayWeight" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" v-empty-if-zero/>
             <unitSelect :unit="item.authorUnit" :onChange="setUnit"></unitSelect>
         </span>
         <span class="lpQtyCell">
-            <input v-on:input="saveQty" v-on:keydown.up="incrementQty($event)" v-on:keydown.down="decrementQty($event)" type="text" v-model="displayQty" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" />
+            <input @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)" type="text" v-model="displayQty" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" />
             <span class="lpArrows">
-                <span class="lpSprite lpUp" v-on:click="incrementQty($event)"></span>
-                <span class="lpSprite lpDown" v-on:click="decrementQty($event)"></span>
+                <span class="lpSprite lpUp" @click="incrementQty($event)"></span>
+                <span class="lpSprite lpDown" @click="decrementQty($event)"></span>
             </span>
         </span>
         <span class="lpRemoveCell">
-            <a v-on:click="removeItem" class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
+            <a @click="removeItem" class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
         </span>
     </li>
 </template>
 
 <script>
 const utilsMixin = require("../mixins/utils-mixin.js");
-const unitSelect = require("./unit-select.vue");
 const weightUtils = require("../utils/weight.js");
 
-module.exports = {
+import unitSelect from "./unit-select.vue";
+
+export default {
     name: "item",
     mixins: [utilsMixin],
     props: ["category", "itemContainer"],
@@ -93,7 +133,7 @@ module.exports = {
     },
     methods: {
         saveItem: function() {
-            this.item = this.$store.commit("updateItem", this.item);
+            this.$store.commit("updateItem", this.item);
         },
         saveCategoryItem: function() {           
             this.$store.commit("updateCategoryItem", {category: this.category, categoryItem: this.categoryItem});

@@ -1,25 +1,28 @@
 <style lang="scss">
 
+#forgotPassword {
+    width: 620px;
+}
+
 </style>
 
 <template>
     <div id="forgotPasswordContainer">
-        <div class="lpDialog" id="forgotPassword">
+        <modal :shown="true" :blackout="true" id="forgotPassword">
             <div class="columns">
                 <div class="lpHalf">
                     <h3>
                         Forgot Your Password?
                     </h3>
 
-                    <p>If you've forgotten your password we will email you a new one. Please enter your username.</p>
-                    <form class="forgotPassword" v-on:submit="resetPassword($event)"">
-                        <input type="text" placeholder="Username" name="username" class="username" v-model="forgotPasswordUsername"/>
-                        <input type="submit" value="Submit" class="lpButton" />
-                        <ul class="lpError" v-if="forgotPasswordErrors">
-                            <li v-for="error in forgotPasswordErrors">{{error.message}}</li>
-                        </ul>
-                        <span class="status"></span>
-                        <router-link to="/signin" class="lpHref alternateAction">Return to sign in</router-link>
+                    <p>Please enter your username.</p>
+                    <form class="forgotPassword" @submit.prevent="resetPassword">
+                        <div class="lpFields">
+                            <input type="text" placeholder="Username" name="username" class="username" v-model="forgotPasswordUsername"/>
+                            <input type="submit" value="Submit" class="lpButton" />
+                        </div>
+
+                        <errors :errors="forgotPasswordErrors" />
                     </form>
                 </div>
                 <div class="lpHalf">
@@ -27,28 +30,35 @@
                         Forgot Your Username?
                     </h3>
 
-                    <p>If you've forgotten your username we will email it to you. Please enter your email address.</p>
-                    <form class="forgotUsername" v-on:submit="forgotUsername($event)"">
-                        <input type="text" placeholder="Email Address" name="email" class="email" v-model="forgotUsernameEmail"/>
-                        <input type="submit" value="Submit" class="lpButton" />
-                        <ul class="lpError" v-if="forgotUsernameErrors">
-                            <li v-for="error in forgotUsernameErrors">{{error.message}}</li>
-                        </ul>
-                        <span class="status"></span>
-                        <router-link to="/signin" class="lpHref alternateAction">Return to sign in</router-link>
+                    <p>Please enter your email address.</p>
+                    <form class="forgotUsername" @submit.prevent="forgotUsername">
+                        <div class="lpFields">
+                            <input type="text" placeholder="Email Address" name="email" class="email" v-model="forgotUsernameEmail"/>
+                            <input type="submit" value="Submit" class="lpButton" />
+                        </div>
+
+                        <errors :errors="forgotUsernameErrors" />
                     </form>
                 </div>
+                <router-link to="/signin" class="lpHref">&larr; Return to sign in</router-link>
             </div>
-        </div>
+        </modal>
         <blackoutFooter></blackoutFooter>
-        <div class="lpModalOverlay lpBlackout"></div>
     </div>
 </template>
 
 <script>
+import blackoutFooter from "../components/blackout-footer.vue";
+import errors from "../components/errors.vue";
+import modal from "../components/modal.vue";
+
 export default {
     name: "forgotPassword",
-    mixins: [],
+    components: {
+        blackoutFooter,
+        errors,
+        modal
+    },
     data: function() {
         return {
             forgotPasswordUsername: "",
@@ -58,9 +68,7 @@ export default {
         }
     },
     methods: {
-        resetPassword: function(evt) {
-            evt.preventDefault();
-
+        resetPassword: function() {
             this.forgotPasswordErrors = [];
 
             return fetchJson("/forgotPassword", {
@@ -82,8 +90,7 @@ export default {
                 this.forgotPasswordErrors = errors;
             });
         },
-        forgotUsername: function(evt) {
-            evt.preventDefault();
+        forgotUsername: function() {
             this.forgotUsernameErrors = [];
 
             return fetchJson("/forgotUsername", {

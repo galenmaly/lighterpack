@@ -1,4 +1,4 @@
-const Vue = require("vue");
+import Vue from "vue";
 
 Vue.directive("select-on-focus", {
     inserted: function (el) {
@@ -9,29 +9,31 @@ Vue.directive("select-on-focus", {
 });
 
 Vue.directive("focus-on-create", {
-    inserted: function (el, bus) {
-        el.focus();
+    inserted: function (el, binding) {
+        if (binding.expression && binding.value || !binding.expression) {
+            el.focus();
+        }
     }
 });
 
 Vue.directive("focus-on-bus", {
-    inserted: function (el, args) {
-        bus.$on(args.value, () => {
+    inserted: function (el, binding) {
+        bus.$on(binding.value, () => {
             el.focus();
         });
     }
 });
 
 Vue.directive("select-on-bus", {
-    inserted: function (el, args) {
-        bus.$on(args.value, () => {
+    inserted: function (el, binding) {
+        bus.$on(binding.value, () => {
             el.select();
         });
     }
 });
 
 Vue.directive("empty-if-zero", {
-    inserted: function (el, args) {
+    inserted: function (el) {
         el.addEventListener("focus", (evt) => {
             if (el.value === "0" || el.value === "0.00") {
                 el.dataset.originalValue = el.value;

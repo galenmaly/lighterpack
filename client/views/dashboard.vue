@@ -1,16 +1,116 @@
 <style lang="scss">
+@import "../css/_globals";
 
+#header {
+    box-sizing: border-box;
+    display: flex;
+    height: 60px;
+    margin: 0 -20px 20px; /*lpList padding */
+    position: relative;
+
+    * {
+        box-sizing: inherit;
+    }
+}
+
+#hamburger {
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.6;
+    transition: transform $transitionDurationSlow;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .lpHasSidebar & {
+        transform: rotate(90deg);
+    }
+}
+
+#lpListName {
+    font-size: 24px;
+    font-weight: 600;
+    padding: 12px 15px;
+}
+
+.headerItem {
+    flex: 0 0 auto;
+    height: 100%;
+    padding: 17px 16px;
+    position: relative;
+
+    &:first-child {
+        padding-left: 20px;
+    }
+
+    .lpFlyout {
+        height: 100%;
+
+        &:hover .lpTarget {
+            color: $blue1;
+        }
+    }
+
+    .lpTarget {
+        font-weight: 600;
+        height: 100%;
+        padding: 17px 16px;
+    }
+
+    .lpContent {
+        background-color: #FFF;
+        box-shadow: 0 0 6px rgba(0,0,0,0.25);
+        left: 50%;
+        transform: translateX(-50%);
+
+        &:before {
+            background-color: #FFF;
+            box-shadow: 0 0 6px rgba(0,0,0,0.25);
+            content: "";
+            display: block;
+            height: 20px;
+            position: absolute;
+            left: 50%;
+            margin-left: -10px;
+            top: -10px;
+            transform: rotate(45deg);
+            width: 20px;
+            z-index: $dialog - 1;
+        }
+
+        &:after {
+            background: #FFF;
+            content: "";
+            display: block;
+            height: 15px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: $dialog + 1;
+        }
+    }
+
+    &#lpListName {
+        flex: 1 0 auto;
+    }
+
+    &.hasFlyout {
+        padding: 0;
+    }
+}
 </style>
 
 <template>
-    <div id="main" :class="{lpHasSidebar: library.showSidebar, lpTransition: true}" v-if="isLoaded">
+    <div id="main" :class="{lpHasSidebar: library.showSidebar}" v-if="isLoaded">
         <sidebar></sidebar>
         <div class="lpList lpTransition">
             <div id="header" class="clearfix">
                 <span class="headerItem">
-                    <a v-on:click="toggleSidebar" id="hamburger" class="lpTransition"><i class="lpSprite lpHamburger"></i></a>
+                    <a @click="toggleSidebar" id="hamburger" class="lpTransition"><i class="lpSprite lpHamburger"></i></a>
                 </span>
-                <input v-on:input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
+                <input @input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
                 <share></share>
                 <listSettings></listSettings>
                 <accountDropdown></accountDropdown>
@@ -39,49 +139,52 @@
         <todo></todo>
         <help></help>
         <account></account>
+        <accountDelete></accountDelete>
         <colorPicker></colorPicker>
     </div>
 </template>
 
 <script>
-const sidebar = require("../components/sidebar.vue");
-const share = require("../components/share.vue");
-const listSettings = require("../components/list-settings.vue");
-const accountDropdown = require("../components/account-dropdown.vue");
-const forgotPassword = require("./forgotPassword.vue");
-const account = require("../components/account.vue");
-const todo = require("../components/todo.vue");
-const help = require("../components/help.vue");
-const list = require("../components/list.vue");
+import sidebar from "../components/sidebar.vue";
+import share from "../components/share.vue";
+import listSettings from "../components/list-settings.vue";
+import accountDropdown from "../components/account-dropdown.vue";
+import forgotPassword from "./forgot-password.vue";
+import account from "../components/account.vue";
+import accountDelete from "../components/account-delete.vue";
+import todo from "../components/todo.vue";
+import help from "../components/help.vue";
+import list from "../components/list.vue";
 
-const colorPicker = require("../components/colorpicker.vue");
-const itemImage = require("../components/item-image.vue");
-const itemViewImage = require("../components/item-view-image.vue");
-const itemLink = require("../components/item-link.vue");
-const importCSV = require("../components/import-csv.vue");
-const copyList = require("../components/copy-list.vue");
-const speedbump = require("../components/speedbump.vue");
+import colorPicker from "../components/colorpicker.vue";
+import itemImage from "../components/item-image.vue";
+import itemViewImage from "../components/item-view-image.vue";
+import itemLink from "../components/item-link.vue";
+import importCSV from "../components/import-csv.vue";
+import copyList from "../components/copy-list.vue";
+import speedbump from "../components/speedbump.vue";
 
-module.exports = {
+export default {
     name: "dashboard",
     mixins: [],
     components: {
-        sidebar: sidebar,
-        share: share,
-        listSettings: listSettings,
-        accountDropdown: accountDropdown,
-        forgotPassword: forgotPassword,
-        account: account,
-        todo: todo,
-        help: help,
-        list: list,
-        colorPicker: colorPicker,
-        itemLink: itemLink,
-        copyList: copyList,
-        importCSV: importCSV,
-        itemImage: itemImage,
-        itemViewImage: itemViewImage,
-        speedbump: speedbump
+        sidebar,
+        share,
+        listSettings,
+        accountDropdown,
+        forgotPassword,
+        account,
+        accountDelete,
+        todo,
+        help,
+        list,
+        colorPicker,
+        itemLink,
+        copyList,
+        importCSV,
+        itemImage,
+        itemViewImage,
+        speedbump
     },
     data: function() {
         return {

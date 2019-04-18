@@ -1,35 +1,17 @@
+
 /*
   Application defaults, do not edit.
   Use local.json to change for your deployment.
 */
 {
-    /* development or production */
-    "environment"   : "production",
-
-    /* This is where clients connect to, typically something
-       like: https://gearlist.example.com
-    */
-    "deployUrl"     : "http://localhost:3000",
-
-    /* Port to run node server on */
-    "port"          : 3000,
-
-    /* Port to run webpack dev server on */
+    "environment"   : "development",
+    "deployUrl": "http://localhost:3000",
+    "publicUrl": "http://localhost:3000",
+    "port": 3000,
     "devServerPort" : 8080,
-
-    /* By default bind to all available interfaces on both ipv6 and ipv4
-       Each element of `bindings` gets passed to to `app.listen(port, element)`
-
-       Examples:
-       Both ipv4+ipv6 on all interfaces: [""] 
-       Only ipv6, on all interfaces    : ["::"]
-       Both loopback interfaces        : ["127.0.0.1","::1"]
-    */
     "bindings"      : [""],
-
-    /* Mongo connect URI */
-    "databaseUrl"   : "localhost/lighterpack",
-
-    /* Imgur API client ID */
-    "imgurClientID" : ""
+    "databaseUrl": "localhost/lighterpack",
+    "imgurClientID": "",
+    "mailgunBaseURL": "",
+    "mailgunAPIKey": ""
 }

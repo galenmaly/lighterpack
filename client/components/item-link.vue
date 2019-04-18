@@ -3,40 +3,40 @@
 </style>
 
 <template>
-    <div v-if="shown">
-        <div :class="'lpDialog ' + modalClasses" id="itemLinkDialog">
-            <h2>Add a link for this item</h2>
-            <form v-on:submit="addLink" id="itemLinkForm">
-                <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
-                <input type="submit" class="lpButton" value="Save" />
-                <a v-on:click="closeModal" class="lpHref close">Cancel</a>
-            </form>
-        </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+    <modal :shown="shown" @hide="shown = false" id="itemLinkDialog">
+        <h2>Add a link for this item</h2>
+        <form @submit="addLink" id="itemLinkForm">
+            <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
+            <input type="submit" class="lpButton" value="Save" />
+            <a @click="shown = false" class="lpHref close">Cancel</a>
+        </form>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from "./modal.vue";
 
 export default {
     name: "item-link",
-    mixins: [modalMixin],
+    components: {
+        modal
+    },
     data: function() {
         return {
             url: "",
-            item: false
+            item: false,
+            shown: false
         }
     },
     methods: {
         addLink: function() {
             this.$store.commit("updateItemLink", {url: this.url, item: this.item});
-            this.closeModal();
+            this.shown = false;
         }
     },
     beforeMount: function() {
         bus.$on("updateItemLink", (item) => {
-            this.openModal();
+            this.shown = true;
             this.item = item;
             this.url = item.url;
         });

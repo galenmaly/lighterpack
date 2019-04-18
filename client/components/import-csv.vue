@@ -1,10 +1,20 @@
 <style lang="scss">
 
+#importValidate {
+    overflow-y: scroll;
+    height: 500px;
+    width: 650px;
+
+    .lpButton {
+        margin-bottom: 30px;
+    }
+}
+
 </style>
 
 <template>
     <div id="importCSV">
-        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="importValidate">
+        <modal :shown="shown" @hide="shown = false" id="importValidate">
             <h2>Confirm your import</h2>
             <div id="importData">
                 <ul class="lpTable lpDataTable">
@@ -26,10 +36,9 @@
                     </li>
                 </ul>
             </div>
-            <a v-on:click="importList" class="lpButton" id="importConfirm">Import List</a>
-            <a v-on:click="closeModal" class="lpButton close">Cancel Import</a>
-        </div>
-        <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
+            <a @click="importList" class="lpButton" id="importConfirm">Import List</a>
+            <a @click="shown = false" class="lpButton close">Cancel Import</a>
+        </modal>
         <form id="csvUpload">
             <input type="file" name="csv" id="csv" />
         </form>
@@ -37,18 +46,20 @@
 </template>
 
 <script>
-
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from "./modal.vue";
 
 export default {
     name: "import-csv",
-    mixins: [modalMixin],
+    components: {
+        modal
+    },
     data: function() {
         return {
             csvInput: false,
             listId: false,
             importData: {},
-            fullUnitToUnit: {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"}
+            fullUnitToUnit: {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"},
+            shown: false
         }
     },
     computed: {
@@ -137,12 +148,12 @@ export default {
             if (!this.importData.data.length) {
                 alert("Unable to load spreadsheet - please verify the format.");
             } else {
-                this.openModal();
+                this.shown = true;
             }
         },
         importList: function() {
             this.$store.commit("importCSV", this.importData);
-            this.closeModal();
+            this.shown = false;
         }
 
     },

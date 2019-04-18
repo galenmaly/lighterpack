@@ -46,6 +46,7 @@ config.get('bindings').map(
 if (config.get('environment') !== "production") {
     new WebpackDevServer(webpack(webpackConfig), {
         historyApiFallback: true,
+        disableHostCheck: true,
         publicPath: webpackConfig.output.publicPath,
         hot: true,
         proxy: {
@@ -55,9 +56,15 @@ if (config.get('environment') !== "production") {
                 changeOrigin: true
             }
         },
-        stats: { cached: false,
+        stats: {
+            cached: false,
             cachedAssets: false,
-            colors: { level: 2 } }
+            colors: { level: 2 }
+        },
+        watchOptions: {
+            aggregateTimeout: 300,
+            poll: 1000
+        }
     }).listen(config.get('devServerPort'), function(err, result) {
         if (err) {
             return console.log(err);
