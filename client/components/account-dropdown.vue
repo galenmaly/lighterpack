@@ -3,80 +3,55 @@
 </style>
 
 <template>
-  <span id="account">
-    <span
-      v-if="isSignedIn"
-      id="account"
-      class="headerItem hasFlyout"
-    >
-      <span class="lpFlyout">
-        <span class="lpTarget">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
-        <div class="lpContent">
-          <a
-            class="lpHref accountSettings"
-            @click="showAccount"
-          >Account Settings</a><br>
-          <a
-            class="lpHref"
-            @click="showHelp"
-          >Help</a><br>
-          <a
-            class="lpHref"
-            @click="showTodo"
-          >Bugs / TODO</a><br>
-          <a
-            class="lpHref signout"
-            @click="signout"
-          >Sign Out</a>
-        </div>
-      </span>
+    <span id="account">
+        <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
+            <span class="lpFlyout">
+                <span class="lpTarget">Signed in as <span class="username">{{username}}</span> <i class="lpSprite lpExpand"></i></span>
+                <div class="lpContent">
+                    <a @click="showAccount" class="lpHref accountSettings">Account Settings</a><br />
+                    <a @click="showHelp" class="lpHref">Help</a><br />
+                    <a @click="showTodo" class="lpHref">Bugs / TODO</a><br />
+                    <a @click="signout" class="lpHref signout">Sign Out</a>
+                </div>
+            </span>
+        </span>
+        <span v-if="!isSignedIn" class="headerItem">
+            <router-link to="/register" class="lpButton lpSmall">Register</router-link>
+            or
+            <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
+        </span>
     </span>
-    <span
-      v-if="!isSignedIn"
-      class="headerItem"
-    >
-      <router-link
-        to="/register"
-        class="lpButton lpSmall"
-      >Register</router-link>
-      or
-      <router-link
-        to="/signin"
-        class="lpButton lpSmall"
-      >Sign In</router-link>
-    </span>
-  </span>
 </template>
 
 <script>
 
 export default {
-    name: 'AccountDropdown',
+    name: "accountDropdown",
     computed: {
-        library() {
+        library: function() {
             return this.$store.state.library;
         },
-        isSignedIn() {
+        isSignedIn: function() {
             return this.$store.state.loggedIn;
         },
-        username() {
+        username: function() {
             return this.$store.state.loggedIn;
-        },
+        }
     },
     methods: {
-        showAccount() {
-            bus.$emit('showAccount');
+        showAccount: function() {
+            bus.$emit("showAccount");
         },
-        showHelp() {
-            bus.$emit('showHelp');
+        showHelp: function() {
+            bus.$emit("showHelp");
         },
-        showTodo() {
-            bus.$emit('showTodo');
+        showTodo: function() {
+            bus.$emit("showTodo");
         },
-        signout() {
-            this.$store.commit('signout');
-            router.push('/signin');
-        },
-    },
-};
+        signout: function() {
+            this.$store.commit("signout");
+            router.push("/signin");
+        }
+    }
+}
 </script>

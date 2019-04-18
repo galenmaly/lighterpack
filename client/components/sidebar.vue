@@ -103,25 +103,25 @@
 </style>
 
 <template>
-  <div id="sidebar">
-    <div id="scrollable">
-      <h1>LighterPack <span>(beta)</span></h1>
+    <div id="sidebar">
+        <div id="scrollable">
+            <h1>LighterPack <span>(beta)</span></h1>
 
-      <libraryLists />
-      <libraryItems />
+            <libraryLists></libraryLists>
+            <libraryItems></libraryItems>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-import libraryItems from './library-items.vue';
-import libraryLists from './library-lists.vue';
+import libraryItems from "./library-items.vue";
+import libraryLists from "./library-lists.vue";
 
 export default {
-    name: 'Sidebar',
+    name: "sidebar",
     components: {
         libraryItems,
-        libraryLists,
-    },
-};
+        libraryLists
+    }
+}
 </script>

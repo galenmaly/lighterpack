@@ -71,57 +71,36 @@
 </style>
 
 <template>
-  <div
-    class="lpUnitSelect"
-    :class="{lpOpen: isOpen, lpHover: isFocused}"
-    @click="toggle($event)"
-  >
-    <select
-      class="lpUnit lpInvisible"
-      :value="unit"
-      @keyup="keyup($event)"
-      @focus="focusSelect"
-      @blur="blurSelect"
-    >
-      <option
-        v-for="unit in units"
-        :value="unit"
-      >
-        {{ unit }}
-      </option>
-    </select>
-    <span class="lpDisplay">{{ unit }}</span>
-    <i class="lpSprite lpExpand" />
-    <ul :class="'lpUnitDropdown ' + unit">
-      <li
-        v-for="unit in units"
-        :class="unit"
-        @click="select(unit)"
-      >
-        {{ unit }}
-      </li>
-    </ul>
-  </div>
+    <div class="lpUnitSelect" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle($event)">
+        <select class="lpUnit lpInvisible" :value="unit" @keyup="keyup($event)" @focus='focusSelect' @blur='blurSelect'>
+            <option v-for="unit in units" :value="unit">{{unit}}</option>
+        </select>
+        <span class="lpDisplay">{{unit}}</span>
+        <i class="lpSprite lpExpand"></i>
+        <ul :class="'lpUnitDropdown ' + unit">
+            <li v-for="unit in units" :class="unit" @click="select(unit)">{{unit}}</li>
+        </ul>
+    </div>
 </template>
 
 <script>
 export default {
-    name: 'UnitSelect',
-    props: ['weight', 'unit', 'onChange'],
-    data() {
+    name: "unit-select",
+    props: ["weight", "unit", "onChange"],
+    data: function() {
         return {
             units: [
-                'oz',
-                'lb',
-                'g',
-                'kg',
+                "oz",
+                "lb",
+                "g",
+                "kg"
             ],
             isOpen: false,
-            isFocused: false,
+            isFocused: false
         };
     },
     methods: {
-        toggle(evt) {
+        toggle: function(evt) {
             evt.stopPropagation();
             if (!this.isOpen) {
                 this.open();
@@ -129,46 +108,46 @@ export default {
                 this.close();
             }
         },
-        open() {
+        open: function() {
             this.isOpen = true;
             this.bindCloseListeners();
         },
-        close() {
+        close: function() {
             this.isOpen = false;
             this.unbindCloseListeners();
         },
-        select(unit) {
-            if (typeof this.onChange === 'function') {
+        select: function(unit) {
+            if (typeof this.onChange === "function") {
                 this.onChange(unit);
             }
         },
-        keyup(evt) {
-            if (typeof this.onChange === 'function') {
+        keyup: function(evt) {
+            if (typeof this.onChange === "function") {
                 this.onChange(evt.target.value);
             }
         },
-        bindCloseListeners() {
+        bindCloseListeners: function() {
             window.addEventListener('keyup', this.closeOnEscape);
             window.addEventListener('click', this.closeOnClick);
         },
-        unbindCloseListeners() {
+        unbindCloseListeners: function() {
             window.removeEventListener('keyup', this.closeOnEscape);
             window.removeEventListener('click', this.closeOnClick);
         },
-        closeOnEscape(evt) {
+        closeOnEscape: function(evt) {
             if (evt.keyCode === 27) {
                 this.close();
             }
         },
-        closeOnClick(evt) {
+        closeOnClick: function(evt) {
             this.close();
         },
-        focusSelect() {
+        focusSelect: function() {
             this.isFocused = true;
         },
-        blurSelect() {
+        blurSelect: function() {
             this.isFocused = false;
-        },
-    },
-};
+        }
+    }
+}
 </script>

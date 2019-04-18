@@ -1,71 +1,67 @@
-/* eslint-disable */
-
-editLists = function () {
-    const $list = $('.lpList');
-    const $categories = $('.lpCategories');
-    const $chartContainer = $('.lpChart');
-    const $listsContainer = $('#lists');
-    const $libraryContainer = $('#library');
-    const $modalOverlay = $('#lpModalOverlay');
-    const $listName = $('.lpListName', $list);
-    const $listDescription = $('#listDescription');
-    let chart = null;
-    const list = null;
-    let library = null;
-    let saveType = '';
-    let lastSave = 0;
-    let selectedItem = null;
-    let importData = null;
-    let saveTimeout = null;
-    let librarySave = '';
-    const categorySummaryTemplate = $('#categorySummary').html();
-    const itemTemplate = $('#itemTemplate').html();
-    const categoryTemplate = $('#categoryTemplate').html();
-    const libraryListTemplate = $('#libraryListTemplate').html();
-    const itemLibraryTemplate = $('#libraryItem').html();
-    const unitSelectTemplate = $('#unitSelect').html();
-    const totalsTemplate = $('#totalsTemplate').html();
-    const importValidateTemplate = $('#importValidateTemplate').html();
-    const optionalFieldsTemplate = $('#optionalFieldsTemplate').html();
-    const numStars = 4;
-    const fullUnitToUnit = {
-        ounce: 'oz', ounces: 'oz', oz: 'oz', pound: 'lb', pounds: 'lb', lb: 'lb', lbs: 'lb', gram: 'g', grams: 'g', g: 'g', kilogram: 'kg', kilograms: 'kg', kg: 'kg', kgs: 'kg',
-    };
-    const speedBumps = {
-        removeList: {
-            action: 'Delete List',
-            message: 'Are you sure you want to delete this list? This cannot be undone.',
+editLists = function() {
+    var $list = $(".lpList"),
+        $categories = $(".lpCategories"),
+        $chartContainer = $(".lpChart"),
+        $listsContainer = $("#lists"),
+        $libraryContainer = $("#library"),
+        $modalOverlay = $("#lpModalOverlay"),
+        $listName = $(".lpListName", $list),
+        $listDescription = $("#listDescription"),
+        chart = null,
+        list = null,
+        library = null,
+        saveType = "",
+        lastSave = 0,
+        selectedItem = null,
+        importData = null,
+        saveTimeout = null,
+        librarySave = "",
+        categorySummaryTemplate = $("#categorySummary").html(),
+        itemTemplate = $("#itemTemplate").html(),
+        categoryTemplate = $("#categoryTemplate").html(),
+        libraryListTemplate = $("#libraryListTemplate").html(),
+        itemLibraryTemplate = $("#libraryItem").html(),
+        unitSelectTemplate = $("#unitSelect").html(),
+        totalsTemplate = $("#totalsTemplate").html(),
+        importValidateTemplate = $("#importValidateTemplate").html(),
+        optionalFieldsTemplate = $("#optionalFieldsTemplate").html(),
+        numStars = 4,
+        fullUnitToUnit = {ounce: "oz", ounces: "oz", oz: "oz", pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", gram: "g", grams: "g", g: "g", kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg"},
+        speedBumps = {
+            "removeList": {
+                action: "Delete List",
+                message: "Are you sure you want to delete this list? This cannot be undone."
+            },
+            "removeCategory": {
+                action: "Delete Category",
+                message: "Are you sure you want to delete this category? This cannot be undone."
+            },
+            "removeItem": {
+                action: "Delete Item",
+                message: "Are you sure you want to delete this item? This cannot be undone."
+            }
         },
-        removeCategory: {
-            action: 'Delete Category',
-            message: 'Are you sure you want to delete this category? This cannot be undone.',
-        },
-        removeItem: {
-            action: 'Delete Item',
-            message: 'Are you sure you want to delete this item? This cannot be undone.',
-        },
-    };
-    const optionalFieldsLookup = [{
-        name: 'images',
-        displayName: 'Item images',
-        cssClass: 'lpShowImages',
-    }, {
-        name: 'price',
-        displayName: 'Item prices',
-        cssClass: 'lpShowPrices',
-    }, {
-        name: 'worn',
-        displayName: 'Worn items',
-        cssClass: 'lpShowWorn',
-    }, {
-        name: 'consumable',
-        displayName: 'Consumable items',
-        cssClass: 'lpShowConsumable',
-    }, {
-        name: 'listDescription',
-        displayName: 'List descriptions',
-        cssClass: 'lpShowListDescription',
-    }];
+        optionalFieldsLookup = [{
+            name: "images",
+            displayName: "Item images",
+            cssClass: "lpShowImages"
+        }, {
+            name: "price",
+            displayName: "Item prices",
+            cssClass: "lpShowPrices"
+        }, {
+            name: "worn",
+            displayName: "Worn items",
+            cssClass: "lpShowWorn"
+        }, {
+            name: "consumable",
+            displayName: "Consumable items",
+            cssClass: "lpShowConsumable"
+        }, {
+            name: "listDescription",
+            displayName: "List descriptions",
+            cssClass: "lpShowListDescription"
+        }];
 
 
     function init() {
@@ -75,19 +71,19 @@ editLists = function () {
         initSpeedBumps();
 
         library = new window.Library();
-        if (readCookie('lp')) {
+        if (readCookie("lp")) {
             signin();
         } else if (localStorage.library) {
             signedOut();
-            const libraryData = JSON.parse(localStorage.library);
+            var libraryData = JSON.parse(localStorage.library);
             library.load(libraryData);
             initWithLibrary();
-            saveType = 'local';
+            saveType = "local";
         } else {
             addBlackout();
             signedOut();
             $modalOverlay.show();
-            $('#welcome').show();
+            $("#welcome").show();
             addBlackout();
             initWithLibrary();
         }
@@ -95,23 +91,23 @@ editLists = function () {
 
     function signin() {
         $.ajax({
-            url: '/signin',
-            method: 'POST',
-            error(data) {
+            url: "/signin",
+            method: "POST",
+            error: function(data) {
                 addBlackout();
-                showSigninModal({ error: data.responseText });
+                showSigninModal({error: data.responseText});
             },
-            success(data, textStatus, jqXHR) {
+            success: function(data, textStatus, jqXHR) {
                 removeBlackout();
                 signedIn(data.username);
                 library.load(JSON.parse(data.library));
                 initWithLibrary();
-            },
+            }
         });
     }
 
     function signout() {
-        createCookie('lp', '', -1);
+        createCookie("lp","",-1);
         library = new window.Library();
         initWithLibrary();
         signedOut();
@@ -119,15 +115,15 @@ editLists = function () {
     }
 
     function signedIn(username) {
-        saveType = 'remote';
-        $('.username').text(username);
-        $('.signedOut').hide();
-        $('.signedIn').show();
+        saveType = "remote";
+        $(".username").text(username);
+        $(".signedOut").hide();
+        $(".signedIn").show();
     }
 
     function signedOut() {
-        $('.signedIn').hide();
-        $('.signedOut').show();
+        $(".signedIn").hide();
+        $(".signedOut").show();
     }
 
     function initWithLibrary() {
@@ -140,41 +136,41 @@ editLists = function () {
         $libraryContainer.html(library.renderLibrary(itemLibraryTemplate));
         updateItemLibrary();
         fragileListEvents();
-        if (library.showSidebar) $('#main').addClass('lpHasSidebar');
-        setTimeout(() => {
-            $('#main, #sidebar, .lpList, #hamburger').addClass('lpTransition');
+        if (library.showSidebar) $("#main").addClass("lpHasSidebar");
+        setTimeout(function() {
+            $("#main, #sidebar, .lpList, #hamburger").addClass("lpTransition");
         }, 500);
     }
 
     function renderAndApplyOptionalFields() {
-        const $main = $('#main');
-        let addClasses = '';
-        let removeClasses = '';
-        const optionalFieldsDisplay = optionalFieldsLookup.slice();
+        var $main = $("#main"),
+            addClasses = "",
+            removeClasses = "",
+            optionalFieldsDisplay = optionalFieldsLookup.slice();
 
-        for (let i = 0; i < optionalFieldsDisplay.length; i++) {
+        for (var i = 0; i < optionalFieldsDisplay.length; i++) {
             optionalFieldsDisplay[i].enabled = library.optionalFields[optionalFieldsDisplay[i].name];
 
             if (optionalFieldsDisplay[i].enabled) {
-                addClasses += `${optionalFieldsDisplay[i].cssClass} `;
+                addClasses += optionalFieldsDisplay[i].cssClass + " ";
             } else {
-                removeClasses += `${optionalFieldsDisplay[i].cssClass} `;
+                removeClasses += optionalFieldsDisplay[i].cssClass + " ";
             }
         }
 
         $main.addClass(addClasses).removeClass(removeClasses);
-        $('#lpOptionalFields').html(Mustache.render(optionalFieldsTemplate, { optionalFields: optionalFieldsDisplay }));
+        $("#lpOptionalFields").html(Mustache.render(optionalFieldsTemplate, {optionalFields: optionalFieldsDisplay}));
     }
 
     function updateCurrencySymbol() {
-        $('#currencySymbol').val(library.currencySymbol);
-        $('.lpCurrencySymbol').text(library.currencySymbol);
+        $("#currencySymbol").val(library.currencySymbol);
+        $(".lpCurrencySymbol").text(library.currencySymbol);
     }
 
     function renderDefaultList() {
         if (library.defaultListId) {
-            const list = library.getListById(library.defaultListId);
-            $list.attr('id', list.id);
+            var list = library.getListById(library.defaultListId);
+            $list.attr("id", list.id);
             $listName.val(list.name);
             $listDescription.val(list.description);
         }
@@ -192,526 +188,530 @@ editLists = function () {
     }
 
     function displayDefaultList() {
-        const list = library.getListById(library.defaultListId);
-        $list.attr('id', list.id);
+        var list = library.getListById(library.defaultListId);
+        $list.attr("id", list.id);
         $listName.val(list.name);
         $listDescription.val(list.description);
-        $('.lpActive', $listsContainer).removeClass('lpActive');
-        $(`[list=${library.defaultListId}]`, $listsContainer).addClass('lpActive');
+        $(".lpActive", $listsContainer).removeClass("lpActive");
+        $("[list="+library.defaultListId+"]", $listsContainer).addClass("lpActive");
     }
 
     function updateItemLibrary() {
-        $('li', $libraryContainer).addClass('lpItemNotInList');
-        const items = library.getItemsInCurrentList();
-        for (const i in items) {
-            const item = library.getItemById(items[i]);
-            $(`[item=${item.id}]`, $libraryContainer).removeClass('lpItemNotInList');
+        $("li", $libraryContainer).addClass("lpItemNotInList");
+        var items = library.getItemsInCurrentList();
+        for (var i in items) {
+            var item = library.getItemById(items[i]);
+            $("[item="+item.id+"]", $libraryContainer).removeClass("lpItemNotInList");
         }
     }
 
     function renderEdit() {
-        $categories.html(library.render({
-            itemTemplate, categoryTemplate, showImages: library.showImages, unitSelectTemplate,
-        }));
+        $categories.html(library.render({itemTemplate: itemTemplate, categoryTemplate: categoryTemplate, showImages: library.showImages, unitSelectTemplate: unitSelectTemplate}));
     }
 
     function updateSubtotals() {
-        const list = library.getListById(library.defaultListId);
+        var list = library.getListById(library.defaultListId);
 
 
         if (list.categoryIds.length) {
-            const chartData = updateChart();
+            var chartData = updateChart();
             if (chartData) {
                 showChart();
             } else {
                 hideChart();
             }
+
         } else {
             hideChart();
         }
 
-        $('.lpCategory', $categories).each(function () {
-            const category = library.getCategoryById($(this).attr('id'));
-            $('.lpDisplaySubtotal', this).text(category.displaySubtotal);
-            $('.lpSubtotalUnit', this).text(category.subtotalUnit);
-            $('.lpQtySubtotal', this).text(category.qtySubtotal);
-            $('.lpDisplayPriceSubtotal', this).text(category.displayPriceSubtotal);
+        $(".lpCategory", $categories).each(function() {
+            var category = library.getCategoryById($(this).attr("id"));
+            $(".lpDisplaySubtotal", this).text(category.displaySubtotal);
+            $(".lpSubtotalUnit", this).text(category.subtotalUnit);
+            $(".lpQtySubtotal", this).text(category.qtySubtotal);
+            $(".lpDisplayPriceSubtotal", this).text(category.displayPriceSubtotal);
         });
     }
 
     function showChart() {
-        $('#getStarted').hide();
-        $('#totalsContainer').css('visibility', 'visible');
-        $('.lpTotalsContainer').html(library.renderTotals(totalsTemplate, unitSelectTemplate));
+        $("#getStarted").hide();
+        $("#totalsContainer").css("visibility", "visible");
+        $(".lpTotalsContainer").html(library.renderTotals(totalsTemplate, unitSelectTemplate));
     }
 
     function hideChart() {
-        $('#getStarted').show();
-        $('#totalsContainer').css('visibility', 'hidden');
-        $chartContainer.css('visibility', 'hidden');
-        $('.lpTotalsContainer').html('');
+        $("#getStarted").show();
+        $("#totalsContainer").css("visibility", "hidden");
+        $chartContainer.css("visibility", "hidden");
+        $(".lpTotalsContainer").html("");
     }
 
     function updateChart(type) {
-        const chartData = library.renderChart(type);
+        var chartData = library.renderChart(type);
 
         if (chartData) {
             if (chart) {
-                chart.update({ processedData: chartData });
+                chart.update({processedData: chartData});
             } else {
-                chart = pies({ processedData: chartData, container: $chartContainer, hoverCallback: chartHover });
+                chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});
             }
-            $chartContainer.css('visibility', 'visible');
+            $chartContainer.css("visibility", "visible");
         } else {
-            $chartContainer.css('visibility', 'hidden');
+            $chartContainer.css("visibility", "hidden");
         }
         return chartData;
     }
 
     function chartHover(chartItem) {
-        $('.hover').removeClass('hover');
+        $(".hover").removeClass("hover");
         if (chartItem && chartItem.id) {
-            $(`#total_${chartItem.id}`).addClass('hover');
+            $("#total_"+chartItem.id).addClass("hover");
         }
     }
 
     function initEditHandlers() {
-        $(document).off('keyup').on('keyup', (evt) => {
+         $(document).off("keyup").on("keyup", function(evt) {
             if (evt.keyCode == 27) {
                 $modalOverlay.click();
             }
         });
 
-        $list.off('keyup').on('keyup', '.lpItem input, .lpCategoryName, .lpListName', function (evt) {
-            const $this = $(this);
+        $list.off("keyup").on("keyup", ".lpItem input, .lpCategoryName, .lpListName", function(evt) {
+            var $this = $(this);
             if (evt.keyCode == 27 || evt.keyCode == 13) {
                 $this.blur();
                 return;
             }
 
-            const item = $this.parents('.lpItem');
+            var item = $this.parents(".lpItem");
             if (item.length) updateItem(item);
         });
 
-        $categories.off('keydown').on('keydown', '.lpItem input', function (evt) {
-            const $this = $(this);
+        $categories.off("keydown").on("keydown", ".lpItem input", function(evt) {
+            var $this = $(this);
             if (evt.keyCode == 38 || evt.keyCode == 40) {
                 if (evt.keyCode == 38) incrementField($this);
                 if (evt.keyCode == 40) incrementField($this, true);
             }
         });
 
-        $categories.on('click', '.lpUp', function (evt) {
-            const $this = $('input', $(this).parents('.lpQtyCell'));
+        $categories.on("click", ".lpUp", function(evt) {
+            var $this = $("input",$(this).parents(".lpQtyCell"));
             incrementField($this);
-            const item = $this.parents('.lpItem');
+            var item = $this.parents(".lpItem");
             updateItem(item);
         });
 
-        $categories.on('click', '.lpDown', function (evt) {
-            const $this = $('input', $(this).parents('.lpQtyCell'));
+        $categories.on("click", ".lpDown", function(evt) {
+            var $this = $("input",$(this).parents(".lpQtyCell"));
             incrementField($this, true);
-            const item = $this.parents('.lpItem');
+            var item = $this.parents(".lpItem");
             updateItem(item);
         });
 
-        $categories.on('keyup', '.lpCategoryName', function (evt) {
+        $categories.on("keyup", ".lpCategoryName", function(evt) {
             updateCategoryName($(this));
             updateSubtotals();
         });
 
-        $listName.on('change keyup', function (evt) {
-            const id = $(this).parents('.lpList').attr('id');
-            const list = library.getListById(id);
+        $listName.on("change keyup", function(evt) {
+            var id = $(this).parents(".lpList").attr("id");
+            var list = library.getListById(id);
             list.name = $(this).val();
-            let { name } = list;
-            if (!name) name = 'List Name';
-            $(`[list=${id}] .lpListName`).text(name);
+            var name = list.name;
+            if (!name) name = "List Name";
+            $("[list="+id+"] .lpListName").text(name);
             saveLocally();
         });
 
-        $list.off('focus').on('focus', '.lpWeight', function (evt) {
-            if ($(this).val() === '0') {
-                $(this).val('');
+        $list.off("focus").on("focus", ".lpWeight", function(evt) {
+            if ($(this).val() === "0") {
+                $(this).val("");
             }
         });
 
-        $list.off('blur').on('blur', '.lpWeight', function (evt) {
-            if ($(this).val() === '') {
-                $(this).val('0');
+         $list.off("blur").on("blur", ".lpWeight", function(evt) {
+            if ($(this).val() === "") {
+                $(this).val("0");
             }
         });
 
-        $categories.on('click', '.lpRemoveItem', function (evt) {
-            const category = library.getCategoryById($(this).parents('.lpCategory').attr('id'));
-            const id = $(this).parents('.lpItem').attr('id');
-            const item = library.getItemById(id);
+        $categories.on("click", ".lpRemoveItem", function(evt) {
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
+            var id = $(this).parents(".lpItem").attr("id")
+            var item = library.getItemById(id);
             category.removeItem(id);
-            $(this).parents('.lpItem').remove();
-            $(`[item=${id}]`, $libraryContainer).addClass('lpItemNotInList');
+            $(this).parents(".lpItem").remove();
+            $("[item="+id+"]", $libraryContainer).addClass("lpItemNotInList");
             if (!item.name && !item.description && !item.weight) {
                 library.removeItem(id);
-                $(`[item=${id}]`, $libraryContainer).remove();
+                $("[item="+id+"]", $libraryContainer).remove();
             }
             updateSubtotals();
             saveLocally();
         });
 
-        $categories.on('click', '.lpWorn', function (evt) {
-            const category = library.getCategoryById($(this).parents('.lpCategory').attr('id'));
-            const id = $(this).parents('.lpItem').attr('id');
-            const categoryItem = category.getCategoryItemById(id);
+        $categories.on("click", ".lpWorn", function(evt) {
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
+            var id = $(this).parents(".lpItem").attr("id")
+            var categoryItem = category.getCategoryItemById(id);
 
             if (categoryItem.worn) {
                 categoryItem.worn = false;
-            } else if (!categoryItem.consumable) {
-                categoryItem.worn = true;
+            } else {
+                if (!categoryItem.consumable) {
+                    categoryItem.worn = true;
+                }
             }
 
-            $(this).removeClass('lpActive');
+            $(this).removeClass("lpActive")
 
-            let wornClass = '';
-            if (categoryItem.worn) wornClass = 'lpActive';
+            var wornClass = "";
+            if (categoryItem.worn) wornClass = "lpActive";
             $(this).addClass(wornClass);
 
             updateSubtotals();
             saveLocally();
         });
 
-        $categories.on('click', '.lpConsumable', function (evt) {
-            const category = library.getCategoryById($(this).parents('.lpCategory').attr('id'));
-            const id = $(this).parents('.lpItem').attr('id');
-            const categoryItem = category.getCategoryItemById(id);
+        $categories.on("click", ".lpConsumable", function(evt) {
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
+            var id = $(this).parents(".lpItem").attr("id")
+            var categoryItem = category.getCategoryItemById(id);
 
             if (categoryItem.consumable) {
                 categoryItem.consumable = false;
-            } else if (!categoryItem.worn) {
-                categoryItem.consumable = true;
+            } else {
+                if (!categoryItem.worn) {
+                    categoryItem.consumable = true;
+                }
             }
 
-            $(this).removeClass('lpActive');
+            $(this).removeClass("lpActive")
 
-            let consumableClass = '';
-            if (categoryItem.consumable) consumableClass = 'lpActive';
+            var consumableClass = "";
+            if (categoryItem.consumable) consumableClass = "lpActive";
             $(this).addClass(consumableClass);
 
             updateSubtotals();
             saveLocally();
         });
 
-        $categories.on('click', '.lpStar', function (evt) {
-            const category = library.getCategoryById($(this).parents('.lpCategory').attr('id'));
-            const id = $(this).parents('.lpItem').attr('id');
-            const categoryItem = category.getCategoryItemById(id);
-            if (typeof categoryItem.star === 'undefined') categoryItem.star = 0;
-            categoryItem.star = (categoryItem.star + 1) % numStars;
-            $(this).removeClass('lpStar1 lpStar2 lpStar3');
-            if (categoryItem.star) $(this).addClass(`lpStar${categoryItem.star}`);
+        $categories.on("click", ".lpStar", function(evt) {
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
+            var id = $(this).parents(".lpItem").attr("id")
+            var categoryItem = category.getCategoryItemById(id);
+            if (typeof categoryItem.star == "undefined") categoryItem.star = 0;
+            categoryItem.star = (categoryItem.star+1)%numStars;
+            $(this).removeClass("lpStar1 lpStar2 lpStar3");
+            if (categoryItem.star) $(this).addClass("lpStar"+categoryItem.star);
             saveLocally();
         });
 
-        $categories.on('click', '.lpRemoveCategory.confirmed', function (evt) {
-            const id = $(this).parents('.lpCategory').attr('id');
-            const result = library.removeCategory(id);
+        $categories.on("click", ".lpRemoveCategory.confirmed", function(evt) {
+            var id = $(this).parents(".lpCategory").attr("id");
+            var result = library.removeCategory(id);
             if (result) {
-                $(`#${id}`).remove();
+                $("#"+id).remove();
                 updateSubtotals();
                 saveLocally();
             }
         });
 
-        $categories.on('click', '.lpAddItem', function (evt) {
+        $categories.on("click", ".lpAddItem", function(evt) {
             evt.preventDefault();
-            const category = library.getCategoryById($(this).parents('.lpCategory').attr('id'));
+            var category = library.getCategoryById($(this).parents(".lpCategory").attr("id"));
             newItem(category, true, false);
         });
 
-        $('.addCategory').on('click', (evt) => {
+        $(".addCategory").on("click", function(evt) {
             evt.preventDefault();
             newCategory();
         });
 
-        $('#addList').on('click', (evt) => {
+        $("#addList").on("click", function(evt) {
             evt.preventDefault();
             newList();
         });
 
-        $('#importList').on('click', (evt) => {
+        $("#importList").on("click", function(evt) {
             evt.preventDefault();
-            $('#csv').click();
+            $("#csv").click();
         });
 
-        $('#copyList').on('click', (evt) => {
+        $("#copyList").on("click", function(evt) {
             evt.preventDefault();
-            let listsHtml = '';
-            for (const i in library.lists) {
-                listsHtml += `<option value='${i}'>${library.lists[i].name}</option>`;
+            var listsHtml = "";
+            for (var i in library.lists) {
+                listsHtml += "<option value='" + i + "'>" + library.lists[i].name + "</option>";
             }
-            $('#listToCopy').html(listsHtml);
-            $('#copyListDialog, #lpModalOverlay').fadeIn();
+            $("#listToCopy").html(listsHtml);
+            $("#copyListDialog, #lpModalOverlay").fadeIn();
         });
 
-        $('#csv').on('change', function () {
+        $("#csv").on("change", function() {
             if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-                alert('Your browser is not supported for file import. Please get a newer browser.');
+                alert("Your browser is not supported for file import. Please get a newer browser.");
                 return;
             }
-            const file = this.files[0];
+            var file = this.files[0];
             name = file.name;
             size = file.size;
             type = file.type;
 
-            if (file.name.length < 1) {
+            if(file.name.length < 1) {
                 return;
             }
-            if (file.size > 1000000) {
-                alert('File is too big');
+            else if(file.size > 1000000) {
+                alert("File is too big");
                 return;
             }
-            if (name.substring(name.length - 4).toLowerCase() != '.csv') {
-                alert('Please select a CSV.');
+            else if(name.substring(name.length-4).toLowerCase() != '.csv' ) {
+                alert("Please select a CSV.");
                 return;
             }
-            const reader = new FileReader();
+            var reader = new FileReader();
 
-            reader.onload = (function (theFile) {
-                validateImport(theFile.target.result, file.name.substring(0, file.name.length - 4).replace(/\_/g, ' '));
+            reader.onload = (function(theFile) {
+                validateImport(theFile.target.result, file.name.substring(0, file.name.length-4).replace(/\_/g, " "));
             });
 
             reader.readAsText(file);
         });
 
-        $('#importConfirm').on('click', (evt) => {
+        $("#importConfirm").on("click", function(evt) {
             evt.preventDefault();
             importList();
-            $('#importValidate, #lpModalOverlay').fadeOut();
+            $("#importValidate, #lpModalOverlay").fadeOut();
         });
 
-        $('#copyConfirm').on('click', (evt) => {
+        $("#copyConfirm").on("click", function(evt) {
             evt.preventDefault();
             copyList();
-            $('#copyListDialog, #lpModalOverlay').fadeOut();
+            $("#copyListDialog, #lpModalOverlay").fadeOut();
         });
 
-        $('#lists').on('click', '.lpLibraryListSwitch', function (evt) {
-            const id = parseInt($(this).parents('.lpLibraryList').attr('list'));
+        $("#lists").on("click", ".lpLibraryListSwitch", function(evt) {
+            var id = parseInt($(this).parents(".lpLibraryList").attr("list"));
             setDefaultList(id);
             renderDefaultList();
         });
 
-        $('#lists').on('click', '.lpRemove.confirmed', function (evt) {
-            const id = parseInt($(this).parents('.lpLibraryList').attr('list'));
+        $("#lists").on("click", ".lpRemove.confirmed", function(evt) {
+            var id = parseInt($(this).parents(".lpLibraryList").attr("list"));
             library.removeList(id);
-            $(`[list=${id}]`, $listsContainer).remove();
+            $("[list="+id+"]", $listsContainer).remove();
             displayDefaultList();
             renderDefaultList();
             saveLocally();
         });
 
-        $categories.on('mousedown', '.lpItems .lpHandle', function () {
-            const $name = $('.lpDescription', $(this).parents('.lpItem'));
+        $categories.on("mousedown", ".lpItems .lpHandle", function() {
+            var $name = $(".lpDescription", $(this).parents(".lpItem"));
             $name.width($name.width());
         });
 
-        $categories.on('mouseup', '.lpItems .lpHandle', function () {
-            const $name = $('.description', $(this).parents('.lpItem'));
-            $name.css('width', '100%');
+        $categories.on("mouseup", ".lpItems .lpHandle", function() {
+            var $name = $(".description", $(this).parents(".lpItem"));
+            $name.css("width","100%");
         });
 
-        $list.on('focus', '.lpUnitSelect select', function (evt) {
-            const $unitSelect = $(this).parent();
-            $unitSelect.addClass('lpHover');
+        $list.on("focus", ".lpUnitSelect select", function(evt) {
+            var $unitSelect = $(this).parent();
+            $unitSelect.addClass("lpHover");
         });
 
-        $list.on('blur', '.lpUnitSelect select', function (evt) {
-            const $unitSelect = $(this).parent();
-            $unitSelect.removeClass('lpHover');
+        $list.on("blur", ".lpUnitSelect select", function(evt) {
+            var $unitSelect = $(this).parent();
+            $unitSelect.removeClass("lpHover");
         });
 
-        $list.on('keyup', '.lpUnitSelect select', function (evt) {
-            const unit = $(this).val();
-            const $unitSelect = $(this).parent();
-            $('.lpDisplay', $unitSelect).text(unit);
-            if ($(this).parents('.lpTotalUnit').length) {
+        $list.on("keyup", ".lpUnitSelect select", function(evt) {
+            var unit = $(this).val();
+            var $unitSelect = $(this).parent();
+            $(".lpDisplay", $unitSelect).text(unit)
+            if ($(this).parents(".lpTotalUnit").length) {
                 library.totalUnit = unit;
                 updateSubtotals();
                 saveLocally();
-            } else if ($(this).parents('.lpItem').length) {
-                updateItem($(this).parents('.lpItem'));
+            } else if ($(this).parents(".lpItem").length) {
+                updateItem($(this).parents(".lpItem"));
                 updateSubtotals();
             }
         });
 
-        $list.on('click', '.lpUnitSelect', function (evt) {
+        $list.on("click", ".lpUnitSelect", function(evt) {
             evt.stopPropagation();
-            $(this).toggleClass('lpOpen');
-            const value = $('select', this).val();
-            $('ul', this).removeClass('oz lb g kg');
-            $('ul', this).addClass(value);
+            $(this).toggleClass("lpOpen");
+            var value = $("select", this).val();
+            $("ul", this).removeClass("oz lb g kg");
+            $("ul", this).addClass(value);
         });
 
-        $list.on('click', '.lpUnitSelect li', function () {
-            const unit = $(this).text();
-            $('.lpDisplay', $(this).parents('.lpUnitSelect')).text(unit);
-            $('select', $(this).parents('.lpUnitSelect')).val(unit);
-            if ($(this).parents('.lpTotalUnit').length) {
+        $list.on("click", ".lpUnitSelect li", function() {
+            var unit = $(this).text();
+            $(".lpDisplay", $(this).parents(".lpUnitSelect")).text(unit)
+            $("select", $(this).parents(".lpUnitSelect")).val(unit);
+            if ($(this).parents(".lpTotalUnit").length) {
                 library.totalUnit = unit;
                 updateSubtotals();
                 saveLocally();
-            } else if ($(this).parents('.lpItem').length) {
+            } else if ($(this).parents(".lpItem").length) {
                 library.itemUnit = unit;
-                updateItem($(this).parents('.lpItem'));
+                updateItem($(this).parents(".lpItem"));
                 updateSubtotals();
             }
         });
 
-        $list.on('click', '.lpTotals .lpFooter', function () {
-            const type = $(this).data('weightType');
+        $list.on("click", ".lpTotals .lpFooter", function() {
+            var type = $(this).data("weightType");
             if (type) {
-                updateChart(type);
+                updateChart(type)
             } else {
                 updateChart();
             }
         });
 
-        $('#hamburger').off('click').on('click', () => {
-            $('#main').toggleClass('lpHasSidebar');
-            library.showSidebar = $('#main').hasClass('lpHasSidebar');
+        $("#hamburger").off("click").on("click", function() {
+            $("#main").toggleClass("lpHasSidebar");
+            library.showSidebar = $("#main").hasClass("lpHasSidebar");
             saveLocally();
         });
 
-        $('.lpList').css('min-height', $('#sidebar').height());
+        $(".lpList").css("min-height", $("#sidebar").height());
 
-        $(document).on('click', () => {
-            $('.lpOpen').removeClass('lpOpen');
+        $(document).on("click", function() {
+            $(".lpOpen").removeClass("lpOpen");
         });
 
-        $(document).on('click', '.lpDialog .close', (evt) => {
+        $(document).on("click", ".lpDialog .close", function(evt) {
             evt.preventDefault();
-            $('#lpModalOverlay, .lpDialog').fadeOut(removeBlackout);
+            $("#lpModalOverlay, .lpDialog").fadeOut(removeBlackout);
         });
 
-        $modalOverlay.on('click', () => {
-            if (!$('.lpDialog:visible').hasClass('sticky')) {
-                $('#lpModalOverlay, .lpDialog').fadeOut(removeBlackout);
+        $modalOverlay.on("click", function() {
+            if (!$(".lpDialog:visible").hasClass("sticky")) {
+                $("#lpModalOverlay, .lpDialog").fadeOut(removeBlackout);
             }
         });
 
-        $categories.on('click', '.lpCamera', function () {
-            selectedItem = $(this).parents('.lpItem').attr('id');
-            const item = library.getItemById(selectedItem);
-            $('#itemImageDialog, #lpModalOverlay').fadeIn();
-            $('#itemImageUrl').val(item.imageUrl).focus();
+        $categories.on("click", ".lpCamera", function() {
+            selectedItem = $(this).parents(".lpItem").attr("id");
+            var item = library.getItemById(selectedItem);
+            $("#itemImageDialog, #lpModalOverlay").fadeIn();
+            $("#itemImageUrl").val(item.imageUrl).focus();
         });
 
-        $('#itemImageUrlForm').on('submit', (evt) => {
+        $("#itemImageUrlForm").on("submit", function(evt) {
             evt.preventDefault();
-            const item = library.getItemById(selectedItem);
-            const $item = $(`#${item.id}`);
-            item.imageUrl = $('#itemImageUrl').val();
-            $('#itemImageDialog, #lpModalOverlay').fadeOut();
-            $('.lpImageCell', $item).html(`<img class='lpItemImage' src='${encodeURI(item.imageUrl)}' />`);
+            var item = library.getItemById(selectedItem);
+            var $item = $("#"+item.id);
+            item.imageUrl = $("#itemImageUrl").val();
+            $("#itemImageDialog, #lpModalOverlay").fadeOut();
+            $(".lpImageCell", $item).html("<img class='lpItemImage' src='" + encodeURI(item.imageUrl) + "' />");
 
             saveLocally();
         });
 
-        $('#itemImageUpload').on('click', () => {
-            $('#image').click();
+        $("#itemImageUpload").on("click", function() {
+            $("#image").click();
         });
 
-        $('#image').on('change', function () {
-            const self = this;
+        $("#image").on("change", function() {
+            var self = this;
             if (!FormData) {
-                alert('Your browser is not supported for file uploads. Please update to a more modern browser.');
+                alert("Your browser is not supported for file uploads. Please update to a more modern browser.");
                 return;
             }
-            const file = this.files[0];
+            var file = this.files[0];
             name = file.name;
             size = file.size;
             type = file.type;
 
-            if (file.name.length < 1) {
+            if(file.name.length < 1) {
                 return;
             }
-            if (file.size > 2500000) {
-                alert('Please upload a file less than 2.5mb');
+            else if(file.size > 2500000) {
+                alert("Please upload a file less than 2.5mb");
                 return;
             }
-            if (file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg') {
-                alert('File doesnt match png, jpg or gif.');
+            else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
+                alert("File doesnt match png, jpg or gif.");
                 return;
             }
-            const formData = new FormData($('#imageUpload')[0]);
+            var formData = new FormData($("#imageUpload")[0]);
 
             $(self).hide();
-            $('#uploadingText').show();
+            $("#uploadingText").show();
 
             $.ajax({
                 data: formData,
-                url: '/imageUpload',
-                method: 'POST',
-                xhr() { // custom xhr
+                url: "/imageUpload",
+                method: "POST",
+                xhr: function() {  // custom xhr
                     myXhr = $.ajaxSettings.xhr();
-                    if (myXhr.upload) {
+                    if(myXhr.upload){
                         myXhr.upload.addEventListener('progress', imageUploadProgress, false); // progressbar
                     }
                     return myXhr;
                 },
-                success: completeHandler = function (data) {
-                    const item = library.getItemById(selectedItem);
-                    const $item = $(`#${selectedItem}`);
+                success: completeHandler = function(data) {
+                    var item = library.getItemById(selectedItem);
+                    var $item = $("#"+selectedItem);
                     item.image = data.data.id;
-                    $('.lpImageCell', $item).html(`<img class='lpItemImage' src='https://i.imgur.com/${item.image}s.jpg' />`);
-                    $('#itemImageDialog, #lpModalOverlay').fadeOut();
+                    $(".lpImageCell", $item).html("<img class='lpItemImage' src='https://i.imgur.com/"+item.image+"s.jpg' />");
+                    $("#itemImageDialog, #lpModalOverlay").fadeOut();
 
                     library.showImages = true;
                     library.optionalFields.images = true;
                     renderAndApplyOptionalFields();
                     saveLocally();
                 },
-                error: errorHandler = function () {
-                    alert('Upload failed! If this issue persists please file a bug.');
+                error: errorHandler = function() {
+                    alert("Upload failed! If this issue persists please file a bug.");
                 },
-                complete() {
+                complete: function() {
                     $(self).show();
-                    $('#uploadingText').hide();
+                    $("#uploadingText").hide();
                 },
                 cache: false,
                 contentType: false,
-                processData: false,
-            });
+                processData: false
+            })
         });
 
-        $categories.on('click', '.lpItemImage', function () {
-            const item = library.getItemById($(this).parents('.lpItem').attr('id'));
-            let imageUrl;
+        $categories.on("click", ".lpItemImage", function() {
+            var item = library.getItemById($(this).parents(".lpItem").attr("id")),
+                imageUrl;
 
             if (item.image) {
-                imageUrl = `https://i.imgur.com/${item.image}l.png`;
+                imageUrl = "https://i.imgur.com/"+item.image+"l.png";
             } else if (item.imageUrl) {
                 imageUrl = item.imageUrl;
             } else {
                 return;
             }
 
-            const $modalImage = $(`<img src='${imageUrl}' />`);
-            $('#lpImageDialog').empty().append($modalImage);
-            $modalImage.load(() => {
-                $('#lpImageDialog').show();
+            var $modalImage = $("<img src='" + imageUrl + "' />");
+            $("#lpImageDialog").empty().append($modalImage);
+            $modalImage.load(function() {
+                $("#lpImageDialog").show();
                 $modalOverlay.show();
             });
+
         });
-        $('#library').on('click', '.lpRemoveLibraryItem.confirmed', function (evt) {
-            const id = $(this).parents('.lpLibraryItem').attr('item');
-            const success = library.removeItem(id);
+        $("#library").on("click", ".lpRemoveLibraryItem.confirmed", function(evt) {
+            var id = $(this).parents(".lpLibraryItem").attr("item");
+            var success = library.removeItem(id);
             if (success) {
-                $(this).parents('.lpLibraryItem').remove();
+                $(this).parents(".lpLibraryItem").remove();
                 saveLocally();
             }
         });
 
-        $('#share').on('mouseenter', (evt) => {
-            const list = library.getListById(library.defaultListId);
+        $("#share").on("mouseenter", function(evt) {
+            var list = library.getListById(library.defaultListId);
             if (list.externalId) {
                 showShareBox(list.externalId);
             } else {
@@ -719,141 +719,142 @@ editLists = function () {
             }
         });
 
-        $('#librarySearch').on('keyup', (evt) => {
+        $("#librarySearch").on("keyup", function(evt) {
             librarySearch();
         });
 
-        $categories.on('click', '.lpLink', function (evt) {
-            selectedItem = $(this).parents('.lpItem').attr('id');
-            const item = library.getItemById(selectedItem);
-            $('#itemLinkDialog, #lpModalOverlay').fadeIn();
-            $('#itemLink').val(item.url).focus();
+        $categories.on("click", ".lpLink", function(evt) {
+            selectedItem = $(this).parents(".lpItem").attr("id");
+            var item = library.getItemById(selectedItem);
+            $("#itemLinkDialog, #lpModalOverlay").fadeIn();
+            $("#itemLink").val(item.url).focus();
         });
 
-        $('#itemLinkForm').on('submit', (evt) => {
+        $("#itemLinkForm").on("submit", function(evt) {
             evt.preventDefault();
-            const item = library.getItemById(selectedItem);
-            const $item = $(`#${item.id}`);
-            item.url = $('#itemLink').val();
-            $('#itemLinkDialog, #lpModalOverlay').fadeOut();
+            var item = library.getItemById(selectedItem);
+            var $item = $("#"+item.id);
+            item.url = $("#itemLink").val();
+            $("#itemLinkDialog, #lpModalOverlay").fadeOut();
             if (item.url) {
-                $('.lpLink', $item).addClass('lpActive');
+                $(".lpLink", $item).addClass("lpActive");
             } else {
-                $('.lpLink', $item).removeClass('lpActive');
+                $(".lpLink", $item).removeClass("lpActive");
             }
             saveLocally();
         });
 
-        $('.accountSettings').on('click', (evt) => {
+        $(".accountSettings").on("click", function(evt) {
             evt.preventDefault();
-            $('#accountSettings, #lpModalOverlay').fadeIn();
-            $('#accountSettings input[type=email], #accountSettings input[type=password]').val('');
-            $('#accountSettings .username').val($('.username').eq(0).text());
+            $("#accountSettings, #lpModalOverlay").fadeIn();
+            $("#accountSettings input[type=email], #accountSettings input[type=password]").val("");
+            $("#accountSettings .username").val($(".username").eq(0).text());
         });
 
-        $('.help').on('click', (evt) => {
+        $(".help").on("click", function(evt) {
             evt.preventDefault();
-            $('#help, #lpModalOverlay').fadeIn();
+            $("#help, #lpModalOverlay").fadeIn();
         });
 
-        $('#accountForm').on('submit', function (evt) {
+        $("#accountForm").on("submit", function(evt) {
             evt.preventDefault();
-            const form = this;
-            let error = '';
-            let username = $('.username', this).val();
-            const currentPassword = $('.currentPassword', this).val();
-            const newPassword = $('.newPassword', this).val();
-            const confirmNewPassword = $('.confirmNewPassword', this).val();
-            if (!currentPassword) error = 'Please enter a password.';
-            if (!username) error = 'Please enter your current username.';
+            var form = this;
+            var error = "";
+            var username = $(".username", this).val();
+            var currentPassword = $(".currentPassword", this).val();
+            var newPassword = $(".newPassword", this).val();
+            var confirmNewPassword = $(".confirmNewPassword", this).val();
+            if (!currentPassword) error = "Please enter a password.";
+            if (!username) error = "Please enter your current username.";
             if (newPassword && newPassword != confirmNewPassword) error = "New passwords don't match!";
 
             if (error) {
-                $('.lpError', this).text(error).show();
+                $(".lpError", this).text(error).show();
                 return;
             }
 
-            $('.lpError', this).text('').hide();
+            $(".lpError", this).text("").hide();
 
             username = username.toLowerCase();
-            let hash = CryptoJS.SHA3(currentPassword + username);
+            var hash = CryptoJS.SHA3(currentPassword+username);
             hash = hash.toString(CryptoJS.enc.Base64);
-            const data = { username, password: hash };
+            var data = {username: username, password: hash}
 
-            let dirty = false;
+            var dirty = false;
 
-            if ($('.newPassword', this).val()) {
+            if ($(".newPassword", this).val()) {
                 dirty = true;
-                let newHash = CryptoJS.SHA3(newPassword + username);
+                var newHash = CryptoJS.SHA3(newPassword+username);
                 newHash = newHash.toString(CryptoJS.enc.Base64);
                 data.newPassword = newHash;
             }
-            if ($('.newEmail', this).val()) {
+            if ($(".newEmail", this).val()) {
                 dirty = true;
-                const newEmail = $('.newEmail', this).val();
+                var newEmail = $(".newEmail", this).val();
                 data.newEmail = newEmail;
             }
 
             if (!dirty) return;
 
-            $('.password', this).val('');
+            $(".password", this).val("");
 
             $.ajax({
-                url: '/account',
-                data,
-                method: 'POST',
-                error(data, textStatus, jqXHR) {
-                    let error = 'An error occurred while trying to save your account information.';
+                url: "/account",
+                data: data,
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred while trying to save your account information.";
                     if (data.responseText) error = data.responseText;
-                    $('.lpError', form).text(error).show();
+                    $(".lpError", form).text(error).show();
                 },
-                success(data) {
-                    $('#accountSettings, #lpModalOverlay').fadeOut('slow');
-                },
+                success: function(data) {
+                    $("#accountSettings, #lpModalOverlay").fadeOut("slow");
+                }
             });
         });
 
-        $list.on('click', '.lpLegend', function (evt) {
+        $list.on("click", ".lpLegend", function(evt) {
             evt.stopImmediatePropagation();
 
-            const $this = $(this);
-            const position = $this.position();
-            const categoryId = $this.parents('.lpTotalCategory').attr('category');
-            const category = library.getCategoryById(categoryId);
+            var $this = $(this);
+            var position = $this.position();
+            var categoryId = $this.parents(".lpTotalCategory").attr("category");
+            var category = library.getCategoryById(categoryId);
 
-            $('#lpPickerContainer').css({ top: position.top + 12, left: position.left }).attr('data-category', categoryId).show();
+            $('#lpPickerContainer').css({"top": position.top+12, "left": position.left}).attr("data-category",categoryId).show();
 
-            const f = $.farbtastic($('#lpPicker'), (color) => {
-                const category = library.getCategoryById($('#lpPickerContainer').attr('data-category'));
+            var f = $.farbtastic($('#lpPicker'), function(color) {
+                var category = library.getCategoryById( $('#lpPickerContainer').attr("data-category"));
                 category.color = hexToRgb(color);
                 updateSubtotals();
                 saveLocally();
             });
             f.setColor(rgbToHex(rgbStringToRgb(category.displayColor)));
 
-            $(document).on('click', closePicker);
+            $(document).on("click", closePicker);
+
         });
 
-        $('#lpOptionalFields').on('click', 'input', function () {
-            const $this = $(this);
-            const optionalFieldName = $this.closest('.lpOptionalField').data('optionalField');
+        $("#lpOptionalFields").on("click", "input", function() {
+            var $this = $(this),
+                optionalFieldName = $this.closest(".lpOptionalField").data("optionalField");
 
-            library.optionalFields[optionalFieldName] = $this.is(':checked');
+            library.optionalFields[optionalFieldName] = $this.is(":checked");
 
             renderAndApplyOptionalFields();
             saveLocally();
         });
 
-        $('#currencySymbol').on('keyup input', function () {
-            const $this = $(this);
+        $("#currencySymbol").on("keyup input", function() {
+            var $this = $(this);
             library.currencySymbol = $this.val();
             updateCurrencySymbol();
             saveLocally();
         });
 
-        $listDescription.on('keyup', function () {
-            const id = $(this).parents('.lpList').attr('id');
-            const list = library.getListById(id);
+        $listDescription.on("keyup", function() {
+            var id = $(this).parents(".lpList").attr("id"),
+                list = library.getListById(id);
 
             list.description = $listDescription.val();
             saveLocally();
@@ -861,124 +862,116 @@ editLists = function () {
     }
 
     function closePicker(evt) {
-        if ($(evt.target).closest('#lpPickerContainer').length) return;
-        $('#lpPickerContainer').hide();
-        $(document).off('click', closePicker);
+        if ($(evt.target).closest("#lpPickerContainer").length) return;
+         $('#lpPickerContainer').hide();
+        $(document).off("click", closePicker);
     }
 
     function fragileListEvents() {
-        $('.lpItems').sortable({
-            handle: '.lpItemHandle', connectWith: '.lpItems', stop: sortItems, axis: 'y',
-        });
-        $categories.sortable({ handle: '.lpCategoryHandle', stop: sortCategories, axis: 'y' });
+        $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
+        $categories.sortable({handle: ".lpCategoryHandle", stop: sortCategories, axis: "y"});
 
-        $('.lpLibraryItem').draggable({
-            handle: '.lpHandle', revert: true, zIndex: 100, helper: 'clone', appendTo: $('#main'),
-        });
-        $('.lpCategory').droppable({
-            hoverClass: 'dropHover', activeClass: 'dropAccept', accept: '.lpLibraryItem', drop: dropItemOnCategory,
-        });
+        $(".lpLibraryItem").draggable({handle: ".lpHandle",  revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
+        $(".lpCategory" ).droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
     }
 
-    function dropItemOnCategory(event, ui) {
-        const category = library.getCategoryById($(this).closest('.lpCategory').attr('id'));
-        const itemId = parseInt(ui.draggable.attr('item'));
-        const item = library.getItemById(itemId);
-        category.addItem({ itemId });
-        const $item = $(item.render({ itemTemplate, unitSelectTemplate }));
-        const $category = $(`#${category.id}`);
-        $('.lpItems .lpFooter', $category).before($item);
-        $(ui.draggable).removeClass('lpItemNotInList');
+    function dropItemOnCategory (event, ui) {
+        var category = library.getCategoryById($(this).closest(".lpCategory").attr("id"));
+        var itemId = parseInt(ui.draggable.attr("item"));
+        var item = library.getItemById(itemId);
+        category.addItem({itemId: itemId});
+        var $item = $(item.render({itemTemplate: itemTemplate, unitSelectTemplate: unitSelectTemplate}));
+        var $category = $("#"+category.id);
+        $(".lpItems .lpFooter", $category).before($item);
+        $(ui.draggable).removeClass("lpItemNotInList");
         updateSubtotals();
         saveLocally();
     }
 
     function newItem(category, focus, deleteIfEmpty) {
-        const item = library.newItem({ category });
-        const categoryItem = category.getCategoryItemById(item.id);
+        var item = library.newItem({category: category});
+        var categoryItem = category.getCategoryItemById(item.id);
         $.extend(item, categoryItem);
 
         if (deleteIfEmpty) item.deleteIfEmpty = true;
-        const $newItem = $(item.render({ itemTemplate, unitSelectTemplate }));
-        const $category = $(`#${category.id}`);
-        $('.lpItems .lpFooter', $category).before($newItem);
-        if (focus) setTimeout(() => { $('input', $newItem).eq(0).focus(); }, 5);
+        var $newItem = $(item.render({itemTemplate: itemTemplate, unitSelectTemplate: unitSelectTemplate}));
+        var $category = $("#"+category.id);
+        $(".lpItems .lpFooter", $category).before($newItem);
+        if (focus) setTimeout(function() { $("input", $newItem).eq(0).focus();}, 5);
 
-        const newLibraryItem = item.render({ itemTemplate: itemLibraryTemplate, unitSelectTemplate });
-        $('li', $libraryContainer).last().after(newLibraryItem);
-        $('li:last-child', $libraryContainer).draggable({
-            handle: '.lpHandle', revert: true, zIndex: 100, helper: 'clone', appendTo: $('#main'),
-        });
+        var newLibraryItem = item.render({itemTemplate: itemLibraryTemplate, unitSelectTemplate: unitSelectTemplate});
+        $("li", $libraryContainer).last().after(newLibraryItem);
+        $("li:last-child", $libraryContainer).draggable({handle: ".lpHandle", revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
     }
 
     function incrementField($this, decrement) {
-        let increment = 1;
-        let offset = 0;
+        var increment = 1;
+        var offset = 0;
         if (decrement) {
             increment = -1;
             offset = 2;
         }
-        if ($this.hasClass('lpQty')) {
-            const qty = parseFloat($this.val());
+        if ($this.hasClass("lpQty")) {
+            var qty = parseFloat($this.val());
             if (qty >= -1 + offset) {
-                $this.val(qty + increment);
+                $this.val(qty+increment);
             }
         }
-        if ($this.hasClass('lpWeight')) {
-            const weight = parseFloat($this.val());
-            if (weight >= 0 + offset) {
-                $this.val(weight + increment);
+        if ($this.hasClass("lpWeight")) {
+            var weight = parseFloat($this.val());
+            if (weight >= 0+offset) {
+                $this.val(weight+increment);
             }
         }
     }
 
     function updateItem($row) {
-        const id = $row.attr('id');
+        var id = $row.attr("id");
 
-        const item = library.getItemById(id);
-        const weight = parseFloat($('.lpWeight', $row).val()) || 0;
-        const qty = parseFloat($('.lpQty', $row).val());
-        const price = parseFloat($('.lpPrice', $row).val()) || 0;
-        const authorUnit = $('.lpUnit', $row).val();
+        var item = library.getItemById(id);
+        var weight = parseFloat($(".lpWeight", $row).val()) || 0;
+        var qty = parseFloat($(".lpQty", $row).val());
+        var price = parseFloat($(".lpPrice", $row).val()) || 0;
+        var authorUnit = $(".lpUnit", $row).val();
 
         if (weight < 0) {
-            alert('Please enter a valid weight.');
+            alert("Please enter a valid weight.");
             return;
         }
         if (qty < 0) {
-            alert('Please enter a valid quantity.');
+            alert("Please enter a valid quantity.");
             return;
         }
-        if (price < 0) {
-            alert('Please enter a valid price.');
+         if (price < 0) {
+            alert("Please enter a valid price.");
             return;
         }
 
-        item.name = $('.lpName', $row).val();
-        item.description = $('.lpDescription', $row).val();
+        item.name = $(".lpName", $row).val();
+        item.description = $(".lpDescription", $row).val();
         item.weight = WeightToMg(weight, authorUnit);
         item.price = price;
         item.authorUnit = authorUnit;
         item.deleteIfEmpty = false;
 
-        const category = library.getCategoryById($row.parents('.lpCategory').attr('id'));
-        const categoryItem = category.getCategoryItemById(id);
+        var category = library.getCategoryById($row.parents(".lpCategory").attr("id"));
+        var categoryItem = category.getCategoryItemById(id);
         categoryItem.qty = qty;
 
-        const $libraryItem = $(`[item=${id}]`, $libraryContainer);
-        $('.lpName', $libraryItem).text(item.name);
-        $('.lpDescription', $libraryItem).text(item.description);
-        $('.lpWeight', $libraryItem).text(`${weight} ${item.authorUnit}`);
+        var $libraryItem = $("[item="+id+"]", $libraryContainer);
+        $(".lpName", $libraryItem).text(item.name);
+        $(".lpDescription", $libraryItem).text(item.description);
+        $(".lpWeight", $libraryItem).text(weight+" "+item.authorUnit);
 
         updateSubtotals();
         saveLocally();
     }
 
     function sortItems(evt, ui) {
-        const itemId = $(ui.item).attr('id');
-        const category = library.getCategoryById($(ui.item).parents('.lpCategory').attr('id'));
-        const oldCategory = library.findCategoryWithItemById(itemId, library.defaultListId);
-        let movedCategoryItem = null;
+        var itemId = $(ui.item).attr("id");
+        var category = library.getCategoryById($(ui.item).parents(".lpCategory").attr("id"));
+        var oldCategory = library.findCategoryWithItemById(itemId, library.defaultListId);
+        var movedCategoryItem = null;
 
         if (category != oldCategory) {
             movedCategoryItem = oldCategory.getCategoryItemById(itemId);
@@ -986,9 +979,9 @@ editLists = function () {
         }
 
         tempCategoryItems = [];
-        $('.lpItem', $(ui.item).parents('.lpItems')).each(function () {
-            const itemId = $(this).attr('id');
-            let categoryItem = category.getCategoryItemById(itemId);
+        $(".lpItem", $(ui.item).parents(".lpItems")).each(function() {
+            var itemId = $(this).attr("id");
+            var categoryItem = category.getCategoryItemById(itemId);
             if (!categoryItem) categoryItem = movedCategoryItem;
             tempCategoryItems.push(categoryItem);
         });
@@ -1000,12 +993,12 @@ editLists = function () {
     }
 
     function sortCategories(evt, ui) {
-        const list = library.getListById(library.defaultListId);
+        var list = library.getListById(library.defaultListId);
 
-        const tempListItems = [];
+        var tempListItems = [];
 
-        $('.lpCategory').each(function () {
-            const categoryId = $(this).attr('id');
+        $(".lpCategory").each(function() {
+            var categoryId = $(this).attr("id");
             tempListItems.push(categoryId);
         });
 
@@ -1016,89 +1009,85 @@ editLists = function () {
     }
 
     function updateCategoryName($categoryName) {
-        const category = library.getCategoryById($categoryName.parents('.lpCategory').attr('id'));
+        var category = library.getCategoryById($categoryName.parents(".lpCategory").attr("id"));
         category.name = $categoryName.val();
         saveLocally();
     }
 
     function newCategory() {
-        const category = library.newCategory({ list: library.getListById(library.defaultListId) });
-        const $newCategory = $(category.render({ categoryTemplate }));
+        var category = library.newCategory({list: library.getListById(library.defaultListId)});
+        var $newCategory = $(category.render({categoryTemplate: categoryTemplate}));
         $categories.append($newCategory);
         newItem(category, false, false);
-        $('.lpItems').sortable({
-            handle: '.lpItemHandle', connectWith: '.lpItems', stop: sortItems, axis: 'y',
-        });
-        $newCategory.droppable({
-            hoverClass: 'dropHover', activeClass: 'dropAccept', accept: '.lpLibraryItem', drop: dropItemOnCategory,
-        });
-        $('.lpCategoryName', $newCategory).focus();
+        $(".lpItems").sortable({handle: ".lpItemHandle", connectWith: ".lpItems", stop: sortItems, axis: "y"});
+        $newCategory.droppable({hoverClass: "dropHover", activeClass: "dropAccept", accept: ".lpLibraryItem", drop: dropItemOnCategory});
+        $(".lpCategoryName", $newCategory).focus();
     }
 
     function newList() {
-        const list = library.newList({});
-        const category = library.newCategory({ list });
-        const item = library.newItem({ category });
+        var list = library.newList({});
+        var category = library.newCategory({list: list});
+        var item = library.newItem({category: category});
         library.defaultListId = list.id;
-        const $newLibraryList = Mustache.render(libraryListTemplate, list);
-        $('li', $listsContainer).last().after($newLibraryList);
+        var $newLibraryList = Mustache.render(libraryListTemplate, list);
+        $("li", $listsContainer).last().after($newLibraryList);
         displayDefaultList();
         renderDefaultList();
     }
 
-    function validateImport(input, name) {
-        const csv = CSVToArray(input);
-        importData = { data: [], name };
+    function validateImport(input,name) {
+        var csv = CSVToArray(input);
+        importData= {data: [], name: name};
 
         for (var i in csv) {
             var row = csv[i];
             if (row.length < 6) continue;
-            if (row[0].toLowerCase() == 'item name') continue;
+            if (row[0].toLowerCase() == "item name") continue;
             if (isNaN(parseInt(row[3]))) continue;
             if (isNaN(parseInt(row[4]))) continue;
-            if (typeof fullUnitToUnit[row[5]] === 'undefined') continue;
+            if (typeof fullUnitToUnit[row[5]] == "undefined") continue;
 
             importData.data.push(row);
         }
 
         if (!importData.data.length) {
-            alert('Unable to load spreadsheet - please verify the format.');
+            alert("Unable to load spreadsheet - please verify the format.");
         } else {
-            data = [];
+            data = []
             for (var i in importData.data) {
                 var row = importData.data[i];
-                const temp = {
-                    name: row[0],
-                    category: row[1],
-                    description: row[2],
-                    qty: parseFloat(row[3]),
-                    weight: parseFloat(row[4]),
-                    unit: row[5],
-                };
+                var temp = {name: row[0],
+                        category: row[1],
+                        description: row[2],
+                        qty: parseFloat(row[3]),
+                        weight: parseFloat(row[4]),
+                        unit: row[5]};
                 data.push(temp);
+
             }
-            const renderedImport = Mustache.render(importValidateTemplate, { data });
-            $('#importData').html(renderedImport);
-            $('#importValidate, #lpModalOverlay').fadeIn();
+            var renderedImport = Mustache.render(importValidateTemplate, {data: data});
+            $("#importData").html(renderedImport);
+            $("#importValidate, #lpModalOverlay").fadeIn();
         }
+
     }
 
     function importList() {
-        const list = library.newList({});
+        var list = library.newList({});
         list.name = importData.name;
-        const newCategories = {};
+        var newCategories = {};
 
-        for (const i in importData.data) {
-            const row = importData.data[i];
+        for (var i in importData.data) {
+            var row = importData.data[i];
             if (newCategories[row[1]]) {
                 var category = newCategories[row[1]];
             } else {
-                var category = library.newCategory({ list });
+                var category = library.newCategory({list: list});
                 newCategories[row[1]] = category;
             }
 
-            const item = library.newItem({ category });
-            const categoryItem = category.getCategoryItemById(item.id);
+            var item = library.newItem({category: category});
+            var categoryItem = category.getCategoryItemById(item.id);
 
             item.name = row[0];
             item.description = row[2];
@@ -1107,467 +1096,461 @@ editLists = function () {
             item.authorUnit = fullUnitToUnit[row[5]];
             category.name = row[1];
 
-            const newLibraryItem = item.render({ itemTemplate: itemLibraryTemplate, unitSelectTemplate });
-            $('li', $libraryContainer).last().after(newLibraryItem);
-            $('li:last-child', $libraryContainer).draggable({
-                handle: '.lpHandle', revert: true, zIndex: 100, helper: 'clone', appendTo: $('#main'),
-            });
+            var newLibraryItem = item.render({itemTemplate: itemLibraryTemplate, unitSelectTemplate: unitSelectTemplate});
+            $("li", $libraryContainer).last().after(newLibraryItem);
+            $("li:last-child", $libraryContainer).draggable({handle: ".lpHandle", revert: true, zIndex: 100, helper: "clone", appendTo: $("#main")});
         }
         library.defaultListId = list.id;
-        const $newLibraryList = Mustache.render(libraryListTemplate, list);
-        $('li', $listsContainer).last().after($newLibraryList);
+        var $newLibraryList = Mustache.render(libraryListTemplate, list);
+        $("li", $listsContainer).last().after($newLibraryList);
         displayDefaultList();
         renderDefaultList();
         saveLocally();
     }
 
     function CSVToArray(strData) {
-        const strDelimiter = ',';
-        const arrData = [[]];
-        let arrMatches = null;
+        var strDelimiter = ",",
+            arrData = [[]],
+            arrMatches = null;
 
 
-        const objPattern = new RegExp(
+        var objPattern = new RegExp(
             (
-                `(\\${strDelimiter}|\\r?\\n|\\r|^)`
-                + '(?:"([^"]*(?:""[^"]*)*)"|'
-                + `([^"\\${strDelimiter}\\r\\n]*))`
-            ), 'gi',
-        );
+                "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+                "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+                "([^\"\\" + strDelimiter + "\\r\\n]*))"
+            ), "gi");
 
-        while (arrMatches = objPattern.exec(strData)) {
-            const strMatchedDelimiter = arrMatches[1];
-            if (strMatchedDelimiter.length && (strMatchedDelimiter != strDelimiter)) {
-                arrData.push([]);
+        while (arrMatches = objPattern.exec( strData )){
+            var strMatchedDelimiter = arrMatches[ 1 ];
+            if ( strMatchedDelimiter.length && (strMatchedDelimiter != strDelimiter) ) {
+                arrData.push( [] );
             }
 
-            if (arrMatches[2]) {
-                var strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
+            if (arrMatches[ 2 ]){
+                var strMatchedValue = arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ), "\"");
             } else {
-                var strMatchedValue = arrMatches[3];
+                var strMatchedValue = arrMatches[ 3 ];
             }
 
-            arrData[arrData.length - 1].push(strMatchedValue);
+            arrData[ arrData.length - 1 ].push( strMatchedValue );
         }
 
-        return (arrData);
+        return( arrData );
     }
 
     function isEmptyRow(row) {
-        let empty = true;
-        $('.input[type=text]', row).each(function () {
+        var empty = true;
+        $(".input[type=text]", row).each(function() {
             if ($(this).val()) empty = false;
         });
         return empty;
     }
 
     function copyList() {
-        const listToCopyId = $('#listToCopy').val();
+        var listToCopyId = $("#listToCopy").val();
 
         if (!listToCopyId) return;
 
-        const copiedList = library.copyList(listToCopyId);
+        var copiedList = library.copyList(listToCopyId);
 
         library.defaultListId = copiedList.id;
-        const $newLibraryList = Mustache.render(libraryListTemplate, copiedList);
-        $('li', $listsContainer).last().after($newLibraryList);
+        var $newLibraryList = Mustache.render(libraryListTemplate, copiedList);
+        $("li", $listsContainer).last().after($newLibraryList);
         displayDefaultList();
         renderDefaultList();
         saveLocally();
     }
 
     function getSaveData() {
-        const save = library.save();
-        // return save;
+        var save = library.save();
+        //return save;
         return JSON.stringify(save);
     }
 
     function saveLocally() {
         librarySave = getSaveData();
-        if (saveType == 'remote') {
-            const temp = new Date();
+        if (saveType == "remote") {
+            var temp = new Date();
             if (temp.getTime() - lastSave > 10000) {
                 if (saveTimeout) {
                     clearTimeout(saveTimeout);
                     saveTimeout = null;
                 }
                 lastSave = temp.getTime();
-                $.ajax({
-                    url: '/saveLibrary',
-                    method: 'POST',
-                    data: { data: librarySave },
-                    error(data, textStatus, jqXHR) {
-                        let error = 'An error occurred while attempting to save your data.';
+                $.ajax({ url:"/saveLibrary",
+                    method: "POST",
+                    data: {data: librarySave},
+                    error: function(data, textStatus, jqXHR) {
+                        var error = "An error occurred while attempting to save your data.";
                         if (data.responseText) error = data.responseText;
                         if (data.status == 400) {
-                            showSigninModal({ error });
+                            showSigninModal({error: error});
                         } else {
                             alert(error);
                         }
-                    },
+                    }
                 });
             } else {
                 if (saveTimeout) return;
-                saveTimeout = setTimeout(saveLocally, 10001);
+                saveTimeout = setTimeout(saveLocally, 10001)
             }
-        } else if (saveType == 'local') {
+        } else if (saveType =="local") {
             localStorage.library = librarySave;
         }
     }
 
     function initModalLinks() {
-        $('.alternateAction').on('click', function (evt) {
+        $(".alternateAction").on("click", function(evt) {
             evt.preventDefault();
-            if ($(this).attr('href') == '#signin') {
+            if ($(this).attr("href") == "#signin") {
                 showSigninModal();
-            } else if ($(this).attr('href') == '#register') {
+            } else if ($(this).attr("href") == "#register") {
                 showRegisterModal();
-            } else if ($(this).attr('href') == '#forgotPassword') {
+            } else if ($(this).attr("href") == "#forgotPassword") {
                 showForgotPasswordModal();
             }
         });
 
-        $('.showRegister').on('click', () => {
+        $(".showRegister").on("click", function() {
             showRegisterModal();
         });
 
-        $('.showSignin').on('click', () => {
+        $(".showSignin").on("click", function() {
             showSigninModal();
         });
 
-        $('.signout').on('click', () => {
+        $(".signout").on("click", function() {
             signout();
         });
 
-        $('#showTODO').on('click', (evt) => {
+        $("#showTODO").on("click", function(evt) {
             evt.preventDefault();
-            $('#TODO, #lpModalOverlay').fadeIn();
+            $("#TODO, #lpModalOverlay").fadeIn();
         });
 
-        $('.register').on('submit', function (evt) {
+        $(".register").on("submit", function(evt) {
             evt.preventDefault();
-            const form = this;
-            let error = '';
-            let username = $('.username', this).val();
-            const password = $('.password', this).val();
-            const passwordConfirm = $('.passwordConfirm', this).val();
-            const email = $('.email', this).val();
+            var form = this;
+            var error = "";
+            var username = $(".username", this).val();
+            var password = $(".password", this).val();
+            var passwordConfirm = $(".passwordConfirm", this).val();
+            var email = $(".email", this).val();
 
-            if (password != passwordConfirm) error = 'The passwords do not match.';
-            if (!passwordConfirm) error = 'Please confirm your password.';
-            if (!password) error = 'Please enter a password.';
-            if (!email) error = 'Please enter an email address.';
-            if (!username) error = 'Please enter a username.';
+            if (password != passwordConfirm) error = "The passwords do not match.";
+            if (!passwordConfirm) error = "Please confirm your password.";
+            if (!password) error = "Please enter a password.";
+            if (!email) error = "Please enter an email address.";
+            if (!username) error = "Please enter a username.";
 
             if (error) {
-                $('.lpError', this).text(error).show();
+                $(".lpError", this).text(error).show();
                 return;
             }
 
-            $('.lpError', this).text('').hide();
+            $(".lpError", this).text("").hide();
 
             username = username.toLowerCase();
-            let hash = CryptoJS.SHA3(password + username);
+            var hash = CryptoJS.SHA3(password+username);
             hash = hash.toString(CryptoJS.enc.Base64);
 
             $.ajax({
-                url: '/register',
-                data: {
-                    username, password: hash, email, library: getSaveData(),
-                },
-                method: 'POST',
-                error(data, textStatus, jqXHR) {
-                    let error = 'An error occurred.';
+                url: "/register",
+                data: {username: username, password: hash, email: email, library: getSaveData() },
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred.";
                     if (data.responseText) error = data.responseText;
-                    $('.lpError', form).text(error).show();
-                    $('.password, .passwordConfirm', form).val('');
+                    $(".lpError", form).text(error).show();
+                    $(".password, .passwordConfirm", form).val("");
                 },
-                success(data) {
-                    $('#welcome, #register, #lpModalOverlay').fadeOut('slow', removeBlackout);
+                success: function(data) {
+                    $("#welcome, #register, #lpModalOverlay").fadeOut("slow", removeBlackout);
                     signedIn(data.username);
                     library.load(JSON.parse(data.library));
                     initWithLibrary();
-                    $('.password, .passwordConfirm', form).val('');
-                },
+                    $(".password, .passwordConfirm", form).val("");
+                }
             });
         });
 
-        $('.signin').on('submit', function (evt) {
+        $(".signin").on("submit", function(evt) {
             evt.preventDefault();
-            const form = this;
-            let error = '';
-            let username = $('.username', this).val();
-            const password = $('.password', this).val();
-            if (!password) error = 'Please enter a password.';
-            if (!username) error = 'Please enter a username.';
+            var form = this;
+            var error = "";
+            var username = $(".username", this).val();
+            var password = $(".password", this).val();
+            if (!password) error = "Please enter a password.";
+            if (!username) error = "Please enter a username.";
 
             if (error) {
-                $('.lpError', this).text(error).show();
+                $(".lpError", this).text(error).show();
                 return;
             }
 
-            $('.lpError', this).text('').hide();
+            $(".lpError", this).text("").hide();
 
             username = username.toLowerCase();
-            let hash = CryptoJS.SHA3(password + username);
+            var hash = CryptoJS.SHA3(password+username);
             hash = hash.toString(CryptoJS.enc.Base64);
 
             $.ajax({
-                url: '/signin',
-                data: { username, password: hash },
-                method: 'POST',
-                error(data, textStatus, jqXHR) {
-                    let error = 'An error occurred.';
+                url: "/signin",
+                data: {username: username, password: hash, },
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred.";
                     if (data.responseText) error = data.responseText;
-                    $('.password', form).val('').focus();
-                    $('.lpError', form).text(error).show();
+                    $(".password", form).val("").focus();
+                    $(".lpError", form).text(error).show();
                 },
-                success(data) {
-                    $('#signin, #lpModalOverlay').fadeOut('slow', removeBlackout);
-                    $('.password, .username', form).val('');
+                success: function(data) {
+                    $("#signin, #lpModalOverlay").fadeOut("slow", removeBlackout);
+                    $(".password, .username", form).val("");
                     signedIn(data.username);
                     library.load(JSON.parse(data.library));
                     initWithLibrary();
-                },
+                }
             });
         });
 
-        $('.forgotPassword').on('submit', function (evt) {
+        $(".forgotPassword").on("submit", function(evt) {
             evt.preventDefault();
-            const form = this;
-            let error = '';
-            let username = $('.username', this).val();
-            if (!username) error = 'Please enter a username.';
+            var form = this;
+            var error = "";
+            var username = $(".username", this).val();
+            if (!username) error = "Please enter a username.";
 
             if (error) {
-                $('.lpError', this).text(error).show();
+                $(".lpError", this).text(error).show();
                 return;
             }
 
-            $('.lpError', this).text('').hide();
+            $(".lpError", this).text("").hide();
 
             username = username.toLowerCase();
 
             $.ajax({
-                url: '/forgotPassword',
-                data: { username },
-                method: 'POST',
-                error(data, textStatus, jqXHR) {
-                    let error = 'An error occurred.';
+                url: "/forgotPassword",
+                data: {username: username},
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred.";
                     if (data.responseText) error = data.responseText;
-                    $('.lpError', form).text(error).show();
+                    $(".lpError", form).text(error).show();
                 },
-                success(data) {
-                    showSigninModal({ success: 'An email has been sent to the address associated with your account.' });
-                },
+                success: function(data) {
+                    showSigninModal({success: "An email has been sent to the address associated with your account."});
+                }
             });
+
         });
 
-        $('.forgotUsername').on('submit', function (evt) {
+        $(".forgotUsername").on("submit", function(evt) {
             evt.preventDefault();
-            const form = this;
-            let error = '';
-            let email = $('.email', this).val();
-            if (!email) error = 'Please enter an email.';
+            var form = this;
+            var error = "";
+            var email = $(".email", this).val();
+            if (!email) error = "Please enter an email.";
 
             if (error) {
-                $('.lpError', this).text(error).show();
+                $(".lpError", this).text(error).show();
                 return;
             }
 
-            $('.lpError', this).text('').hide();
+            $(".lpError", this).text("").hide();
 
             email = email.toLowerCase();
 
             $.ajax({
-                url: '/forgotUsername',
-                data: { email },
-                method: 'POST',
-                error(data, textStatus, jqXHR) {
-                    let error = 'An error occurred.';
+                url: "/forgotUsername",
+                data: {email: email},
+                method: "POST",
+                error: function(data, textStatus, jqXHR) {
+                    var error = "An error occurred.";
                     if (data.responseText) error = data.responseText;
-                    $('.lpError', form).text(error).show();
+                    $(".lpError", form).text(error).show();
                 },
-                success(data) {
-                    showSigninModal({ success: 'An email has been sent to the address associated with your account.' });
-                },
+                success: function(data) {
+                    showSigninModal({success: "An email has been sent to the address associated with your account."});
+                }
             });
+
         });
     }
 
     function showSigninModal(args) {
-        $('#signin .lpSuccess, #signin .lpError').hide();
+        $("#signin .lpSuccess, #signin .lpError").hide();
 
         if (args) {
-            if (args.success) $('#signin .lpSuccess').text(args.success).show();
-            if (args.error) $('#signin .lpError').text(args.error).show();
+            if (args.success) $("#signin .lpSuccess").text(args.success).show();
+            if (args.error) $("#signin .lpError").text(args.error).show();
         }
 
-        $('.lpDialog:visible').fadeOut();
-        $('#signin, #lpModalOverlay').fadeIn();
+        $(".lpDialog:visible").fadeOut();
+        $("#signin, #lpModalOverlay").fadeIn();
     }
 
     function showRegisterModal() {
-        $('#register .lpError').hide();
-        if (localStorage.library) $('#register .existingData').show();
-        else $('#register .existingData').hide();
+        $("#register .lpError").hide();
+        if (localStorage.library) $("#register .existingData").show();
+        else $("#register .existingData").hide();
 
-        $('.lpDialog:visible').fadeOut();
-        $('#register, #lpModalOverlay').fadeIn();
+        $(".lpDialog:visible").fadeOut();
+        $("#register, #lpModalOverlay").fadeIn();
     }
 
     function showForgotPasswordModal() {
-        $('#forgotPassword .lpError').hide();
-        $('.lpDialog:visible').fadeOut();
-        $('#forgotPassword, #lpModalOverlay').fadeIn();
+        $("#forgotPassword .lpError").hide();
+        $(".lpDialog:visible").fadeOut();
+        $("#forgotPassword, #lpModalOverlay").fadeIn();
     }
 
     function initWelcomeModal() {
-        $('.lpGetStarted').on('click', () => {
-            saveType = 'local';
-            $('#welcome, #lpModalOverlay').fadeOut('slow', removeBlackout);
+        $(".lpGetStarted").on("click", function() {
+            saveType = "local";
+            $("#welcome, #lpModalOverlay").fadeOut("slow", removeBlackout);
         });
-        const data = {
-            Clothes: {
-                cake: 30,
-                cupcake: 60,
-                pie: 15,
-                cookies: 45,
-                brownies: 72,
-            },
-            vegetables: {
-                carrots: 200,
-                letuce: 42,
-                celery: 67,
-            },
-            fruit: {
-                'champagne grapes': 300,
-                strawberries: 27,
-                watermelon: 90,
-            },
-        };
+        var data = {
+                Clothes: {
+                    cake: 30,
+                    cupcake: 60,
+                    pie: 15,
+                    cookies: 45,
+                    brownies: 72
+                },
+                vegetables: {
+                    carrots: 200,
+                    letuce: 42,
+                    celery: 67
+                },
+                fruit: {
+                    "champagne grapes": 300,
+                    strawberries: 27,
+                    watermelon: 90
+                }
+            }
 
-        const chart = pies({
-            data,
-            container: $('.valueChart'),
-            hoverCallback() {
+        var chart = pies({data: data, container: $(".valueChart"), hoverCallback: function() {
 
-            },
-        });
+        }});
 
-        setTimeout(() => { chart.open(); }, 2000);
-        setTimeout(() => { chart.close(); }, 3000);
+        setTimeout(function() { chart.open();}, 2000);
+        setTimeout(function() { chart.close();}, 3000);
+        
     }
 
     function addBlackout() {
-        $('body').addClass('lpHasBlackout');
+        $("body").addClass("lpHasBlackout");
     }
 
     function removeBlackout() {
-        $('body').removeClass('lpHasBlackout');
+        $("body").removeClass("lpHasBlackout");
     }
 
     function readCookie(name) {
-        const nameEQ = `${name}=`;
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
         }
         return null;
     }
-    function createCookie(name, value, days) {
+    function createCookie(name,value,days) {
         if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            var expires = `; expires=${date.toGMTString()}`;
-        } else var expires = '';
-        document.cookie = `${name}=${value}${expires}; path=/`;
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var expires = "; expires="+date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name+"="+value+expires+"; path=/";
     }
 
     function imageUploadProgress(a) {
-        // console.log("progress:"+a);
+        //console.log("progress:"+a);
     }
 
     function librarySearch() {
-        const val = $('#librarySearch').val().toLowerCase();
-        if (val !== '') {
-            $libraryContainer.addClass('lpSearching');
-            $('.lpLibraryItem').removeClass('lpHit');
-            for (const i in library.items) {
-                const item = library.items[i];
-                if (item.name.toLowerCase().indexOf(val) > -1 || item.description.toLowerCase().indexOf(val) > -1) {
-                    const $item = $(`[item=${item.id}]`, $libraryContainer);
-                    $item.addClass('lpHit');
+        var val = $("#librarySearch").val().toLowerCase();
+        if (val !== "") {
+            $libraryContainer.addClass("lpSearching");
+            $(".lpLibraryItem").removeClass("lpHit");
+            for (var i in library.items) {
+                var item = library.items[i];
+                if (item.name.toLowerCase().indexOf(val) > -1 || item.description.toLowerCase().indexOf(val) > -1 ) {
+                    var $item = $("[item="+item.id+"]", $libraryContainer);
+                    $item.addClass("lpHit");
                 } else {
 
                 }
             }
         } else {
-            $libraryContainer.removeClass('lpSearching');
+            $libraryContainer.removeClass("lpSearching");
         }
     }
 
     function getExternalId(list) {
         $.ajax({
-            url: '/externalId',
-            method: 'POST',
-            success(data) {
+            url: "/externalId",
+            method: "POST",
+            success: function(data) {
                 list.externalId = $.trim(data);
                 saveLocally();
                 showShareBox(data);
             },
-            error() {
-                alert('An error occurred while trying to fetch an ID for your list. Please try again later.');
-            },
+            error: function() {
+                alert("An error occurred while trying to fetch an ID for your list. Please try again later.");
+            }
         });
     }
 
     function showShareBox(externalId) {
-        const { location } = window;
-        const baseUrl = location.origin ? location.origin : `${location.protocol}//${location.hostname}`;
+	var location = window.location;
+	var baseUrl = location.origin ? location.origin : location.protocol + '//' + location.hostname;
 
-        $('#shareUrl').val(`${baseUrl}/r/${externalId}`).focus().select();
-        $('#embedUrl').val(`<script src="${baseUrl}/e/${externalId}"></script><div id="${externalId}"></div>`);
-        $('#csvUrl').attr('href', `${baseUrl}/csv/${externalId}`);
+        $("#shareUrl").val(baseUrl+"/r/"+externalId).focus().select();
+        $("#embedUrl").val("<script src=\""+baseUrl+"/e/"+externalId+"\"></script><div id=\""+externalId+"\"></div>");
+        $("#csvUrl").attr("href",baseUrl+"/csv/"+externalId);
     }
 
 
     function initSpeedBumps() {
-        $(document).on('click', '.speedbump', (evt) => {
-            const context = $(evt.currentTarget);
-            if (context.hasClass('confirmed')) return;
+        $(document).on("click", ".speedbump", function(evt) {
+            var context = $(evt.currentTarget);
+            if (context.hasClass("confirmed")) return;
 
             evt.preventDefault();
             evt.stopImmediatePropagation();
 
-            const speedBumpDetails = speedBumps[context.data('speedbump')];
-            const speedBumpDialog = createSpeedBumpDialog(speedBumpDetails.action, speedBumpDetails.message);
+            var speedBumpDetails = speedBumps[context.data("speedbump")];
+            var speedBumpDialog = createSpeedBumpDialog(speedBumpDetails.action, speedBumpDetails.message);
 
-            $('.confirm', speedBumpDialog).on('click', (evt) => {
+            $(".confirm", speedBumpDialog).on("click", function(evt) {
                 evt.preventDefault();
-                setTimeout(() => { context.addClass('confirmed').click(); context.removeClass('confirmed'); }, 10);
+                setTimeout(function() {context.addClass("confirmed").click(); context.removeClass("confirmed")}, 10);
             });
         });
     }
 
     function createSpeedBumpDialog(action, message) {
-        let content = `<h2>${message}</h2>`;
-        if (message.charAt(0) == '<') content = message;
+        var content = "<h2>" + message + "</h2>";
+        if (message.charAt(0) == "<") content = message;
         content += "<div class='buttons'><a class='lpButton primary close'>Cancel</a>&nbsp;&nbsp;&nbsp;";
-        content += `<a class='lpButton close confirm'>${action}</a></div>`;
+        content += "<a class='lpButton close confirm'>" + action + "</a></div>";
 
         return createDialog(content);
     }
 
     function createDialog(content) {
-        $(`<div class='lpDialog'>${content}</div>`).appendTo('body').show();
+        $("<div class='lpDialog'>" + content + "</div>").appendTo("body").show();
         $modalOverlay.show();
     }
 
     function diagnostics() {
-        /* for (var i in library.lists) {
+        /*for (var i in library.lists) {
             var list = library.lists[i];
             for (var j in list.categoryIds) {
                 var categoryId = list.categoryIds[j];
@@ -1609,12 +1592,12 @@ editLists = function () {
                     libraryCategory.removeItem(libraryCategory.itemIds[i].itemId);
                 }
             }
-        } */
+        }*/
     }
 
     init();
 };
 
-$(() => {
+$(function() {
     editLists();
 });

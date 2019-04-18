@@ -9,181 +9,114 @@
 </style>
 
 <template>
-  <div class="lpListSummary">
-    <div class="lpChartContainer">
-      <canvas
-        class="lpChart"
-        height="260"
-        width="260"
-      />
+    <div class="lpListSummary">
+        <div class="lpChartContainer">
+            <canvas class="lpChart" height="260" width="260"></canvas>
+        </div>
+        <div class="lpTotalsContainer">
+            <ul class="lpTotals lpTable lpDataTable">
+                <li class="lpRow lpHeader">
+                    <span class="lpCell"></span>
+                    <span class="lpCell">
+                        Category
+                    </span>
+                    <span class="lpCell" v-if="library.optionalFields['price']">
+                        Price
+                    </span>
+                    <span class="lpCell">
+                        Weight
+                    </span>
+                </li>
+                <li v-for="category in categories" :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}">
+                    <span class="lpCell lpLegendCell">
+                        <span @click="showColorPicker($event, category)" class="lpLegend" :style="{'background-color': category.displayColor}"></span>
+                    </span>
+                    <span class="lpCell">
+                        {{category.name}}
+                    </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']">
+                        {{category.subtotalPrice | displayPrice(library.currencySymbol)}}
+                    </span>
+                    <span class="lpCell lpNumber">
+                        <span class="lpDisplaySubtotal" :mg="category.subtotalWeight">{{category.subtotalWeight | displayWeight(library.totalUnit)}}</span> <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
+                    </span>
+                </li>
+                <li class="lpRow lpFooter lpTotal">
+                    <span class="lpCell"></span>
+                    <span class="lpCell lpSubtotal" :title="list.totalQty +' items'">
+                        Total
+                    </span>
+                    <span class="lpCell lpNumber lpSubtotal" v-if="library.optionalFields['price']" :title="list.totalQty +' items'">
+                        {{list.totalPrice | displayPrice(library.currencySymbol)}}
+                    </span>
+                    <span class="lpCell lpNumber lpSubtotal">
+                        <span class="lpTotalValue" :title="list.totalQty + ' items'">
+                            {{list.total | displayWeight(library.totalUnit)}}
+                        </span>
+                        <span class="lpTotalUnit"><unitSelect :unit="library.totalUnit" :onChange="setTotalUnit"></unitSelect></span>
+                    </span>
+                </li>
+                <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight" v-if="list.totalConsumableWeight">
+                    <span class="lpCell"></span>
+                    <span class="lpCell lpSubtotal">
+                        Consumable
+                    </span>
+                    <span class="lpCell lpNumber lpSubtotal" v-if="library.optionalFields['price']">
+                        {{list.totalConsumablePrice | displayPrice(library.currencySymbol)}}
+                    </span>
+                    <span class="lpCell lpNumber lpSubtotal">
+                        <span class="lpDisplaySubtotal" :mg="list.totalConsumableWeight">{{list.totalConsumableWeight | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
+                    </span>
+                </li>
+                <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight" v-if="list.totalWornWeight">
+                    <span class="lpCell"></span>
+                    <span class="lpCell lpSubtotal">
+                        Worn
+                    </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']"></span>
+                    <span class="lpCell lpNumber lpSubtotal">
+                        <span class="lpDisplaySubtotal" :mg="list.totalWornWeight">{{list.totalWornWeight | displayWeight(library.totalUnit)}}</span>
+                        <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
+                    </span>
+                </li>
+                <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpBaseWeight" v-if="list.totalWornWeight || list.totalConsumableWeight">
+                    <span class="lpCell"></span>
+                    <span class="lpCell lpSubtotal" :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
+                        Base Weight
+                    </span>
+                    <span class="lpCell lpNumber" v-if="library.optionalFields['price']"></span>
+                    <span class="lpCell lpNumber lpSubtotal">
+                        <span class="lpDisplaySubtotal" :mg="list.totalBaseWeight" :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
+                            {{list.totalBaseWeight | displayWeight(library.totalUnit)}}
+                        </span>
+                        <span class="lpSubtotalUnit">{{library.totalUnit}}</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="lpTotalsContainer">
-      <ul class="lpTotals lpTable lpDataTable">
-        <li class="lpRow lpHeader">
-          <span class="lpCell" />
-          <span class="lpCell">
-            Category
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell"
-          >
-            Price
-          </span>
-          <span class="lpCell">
-            Weight
-          </span>
-        </li>
-        <li
-          v-for="category in categories"
-          :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}"
-        >
-          <span class="lpCell lpLegendCell">
-            <span
-              class="lpLegend"
-              :style="{'background-color': category.displayColor}"
-              @click="showColorPicker($event, category)"
-            />
-          </span>
-          <span class="lpCell">
-            {{ category.name }}
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell lpNumber"
-          >
-            {{ category.subtotalPrice | displayPrice(library.currencySymbol) }}
-          </span>
-          <span class="lpCell lpNumber">
-            <span
-              class="lpDisplaySubtotal"
-              :mg="category.subtotalWeight"
-            >{{ category.subtotalWeight | displayWeight(library.totalUnit) }}</span> <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
-          </span>
-        </li>
-        <li class="lpRow lpFooter lpTotal">
-          <span class="lpCell" />
-          <span
-            class="lpCell lpSubtotal"
-            :title="list.totalQty +' items'"
-          >
-            Total
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell lpNumber lpSubtotal"
-            :title="list.totalQty +' items'"
-          >
-            {{ list.totalPrice | displayPrice(library.currencySymbol) }}
-          </span>
-          <span class="lpCell lpNumber lpSubtotal">
-            <span
-              class="lpTotalValue"
-              :title="list.totalQty + ' items'"
-            >
-              {{ list.total | displayWeight(library.totalUnit) }}
-            </span>
-            <span class="lpTotalUnit"><unitSelect
-              :unit="library.totalUnit"
-              :on-change="setTotalUnit"
-            /></span>
-          </span>
-        </li>
-        <li
-          v-if="list.totalConsumableWeight"
-          data-weight-type="consumable"
-          class="lpRow lpFooter lpBreakdown lpConsumableWeight"
-        >
-          <span class="lpCell" />
-          <span class="lpCell lpSubtotal">
-            Consumable
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell lpNumber lpSubtotal"
-          >
-            {{ list.totalConsumablePrice | displayPrice(library.currencySymbol) }}
-          </span>
-          <span class="lpCell lpNumber lpSubtotal">
-            <span
-              class="lpDisplaySubtotal"
-              :mg="list.totalConsumableWeight"
-            >{{ list.totalConsumableWeight | displayWeight(library.totalUnit) }}</span>
-            <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
-          </span>
-        </li>
-        <li
-          v-if="list.totalWornWeight"
-          data-weight-type="worn"
-          class="lpRow lpFooter lpBreakdown lpWornWeight"
-        >
-          <span class="lpCell" />
-          <span class="lpCell lpSubtotal">
-            Worn
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell lpNumber"
-          />
-          <span class="lpCell lpNumber lpSubtotal">
-            <span
-              class="lpDisplaySubtotal"
-              :mg="list.totalWornWeight"
-            >{{ list.totalWornWeight | displayWeight(library.totalUnit) }}</span>
-            <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
-          </span>
-        </li>
-        <li
-          v-if="list.totalWornWeight || list.totalConsumableWeight"
-          data-weight-type="base"
-          class="lpRow lpFooter lpBreakdown lpBaseWeight"
-        >
-          <span class="lpCell" />
-          <span
-            class="lpCell lpSubtotal"
-            :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'"
-          >
-            Base Weight
-          </span>
-          <span
-            v-if="library.optionalFields['price']"
-            class="lpCell lpNumber"
-          />
-          <span class="lpCell lpNumber lpSubtotal">
-            <span
-              class="lpDisplaySubtotal"
-              :mg="list.totalBaseWeight"
-              :title="$options.filters.displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'"
-            >
-              {{ list.totalBaseWeight | displayWeight(library.totalUnit) }}
-            </span>
-            <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
-          </span>
-        </li>
-      </ul>
-    </div>
-  </div>
 </template>
 
 <script>
-import unitSelect from './unit-select.vue';
+const pies = require("../pies.js");
+const utilsMixin = require("../mixins/utils-mixin.js");
+const colorUtils = require("../utils/color.js");
 
-const pies = require('../pies.js');
-const utilsMixin = require('../mixins/utils-mixin.js');
-const colorUtils = require('../utils/color.js');
+import unitSelect from "./unit-select.vue";
 
 export default {
-    name: 'ListSummary',
-    components: {
-        unitSelect,
-    },
+    name: "list-summary",
     mixins: [utilsMixin],
-    props: ['list'],
-    data() {
+    props: ["list"],
+    components: {
+        unitSelect: unitSelect
+    },
+    data: function() {
         return {
             chart: null,
-            hoveredCategoryId: null,
-        };
+            hoveredCategoryId: null
+        }
     },
     computed: {
         library() {
@@ -191,57 +124,57 @@ export default {
         },
         categories() {
             return this.list.categoryIds.map((id) => {
-                const category = this.library.getCategoryById(id);
+                var category = this.library.getCategoryById(id);
                 category.activeHover = (this.hoveredCategoryId === category.id);
                 return category;
             });
-        },
-    },
-    watch: {
-        '$store.state.library.defaultListId': 'updateChart',
-        'list.totalWeight': 'updateChart',
-        'list.categoryIds': 'updateChart',
-    },
-    mounted() {
-        this.updateChart();
+        }
     },
     methods: {
-        updateChart(type) {
-            const chartData = this.library.renderChart(type);
+        updateChart: function(type) {
+            var chartData = this.library.renderChart(type);
 
             if (chartData) {
                 if (this.chart) {
-                    this.chart.update({ processedData: chartData });
+                    this.chart.update({processedData: chartData});
                 } else {
-                    this.chart = pies({ processedData: chartData, container: document.getElementsByClassName('lpChart')[0], hoverCallback: this.chartHover });
+                    this.chart = pies({processedData: chartData, container: document.getElementsByClassName("lpChart")[0], hoverCallback: this.chartHover});
                 }
             }
             return chartData;
         },
-        chartHover(chartItem) {
+        chartHover: function(chartItem) {
             if (chartItem && chartItem.id) {
                 this.hoveredCategoryId = chartItem.id;
             } else {
                 this.hoveredCategoryId = null;
             }
         },
-        setTotalUnit(unit) {
-            this.$store.commit('setTotalUnit', unit);
+        setTotalUnit: function(unit) {
+            this.$store.commit("setTotalUnit", unit);
         },
-        showColorPicker(evt, category) {
-            const self = this;
-            const callback = function (color) {
+        showColorPicker: function(evt, category) {
+            var self = this;
+            var callback = function(color) {
                 self.updateColor(category, color);
-            };
-            bus.$emit('showColorPicker', { evt, category, callback });
+            }
+            bus.$emit("showColorPicker", {evt, category, callback});
         },
-        updateColor(category, color) {
+        updateColor: function(category, color) {
             category.color = color;
             category.displayColor = colorUtils.rgbToString(color);
-            this.$store.commit('updateCategoryColor', category);
+            this.$store.commit("updateCategoryColor", category)
             this.updateChart();
-        },
+        }
     },
-};
+    mounted: function() {
+        this.updateChart();
+    },
+    watch: {
+        "$store.state.library.defaultListId": "updateChart",
+        "list.totalWeight": "updateChart",
+        "list.categoryIds": "updateChart"
+    }
+}
 
 </script>

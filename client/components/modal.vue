@@ -79,48 +79,40 @@
 </style>
 
 <template>
-  <div class="lpModalContainer">
-    <transition name="lpModal">
-      <div
-        v-if="shown"
-        :id="id"
-        class="lpModal"
-      >
-        <slot />
-      </div>
-    </transition>
-    <transition name="lpModal">
-      <div
-        v-if="shown"
-        :class="{'lpModalOverlay': true, 'lpBlackout': blackout, 'lpTransparent': transparentOverlay}"
-        @click="hide"
-      />
-    </transition>
-  </div>
+    <div class="lpModalContainer">
+        <transition name="lpModal">
+            <div v-if="shown" :id="id" class="lpModal">
+                <slot></slot>
+            </div>
+        </transition>
+        <transition name="lpModal">
+            <div v-if="shown" :class="{'lpModalOverlay': true, 'lpBlackout': blackout, 'lpTransparent': transparentOverlay}" @click="hide"></div>
+        </transition>
+    </div>
 </template>
 
 <script>
 export default {
-    name: 'Modal',
+    name: "Modal",
     props: {
         id: {
             type: String,
-            required: false,
+            required: false
         },
         shown: {
             type: Boolean,
-            required: true,
+            required: true
         },
         blackout: {
             type: Boolean,
             required: false,
-            default: false,
+            default: false
         },
         transparentOverlay: {
             type: Boolean,
             required: false,
-            default: false,
-        },
+            default: false
+        }
     },
     beforeMount() {
         this.bindEscape();
@@ -130,19 +122,19 @@ export default {
     },
     methods: {
         hide() {
-            this.$emit('hide');
+            this.$emit("hide");
         },
         bindEscape() {
-            window.addEventListener('keyup', this.closeOnEscape);
+            window.addEventListener("keyup", this.closeOnEscape);
         },
         unbindEscape() {
-            window.removeEventListener('keyup', this.closeOnEscape);
+            window.removeEventListener("keyup", this.closeOnEscape);
         },
         closeOnEscape(evt) {
             if (this.shown && evt.keyCode === 27) {
                 this.hide();
             }
-        },
-    },
+        }
+    }
 };
 </script>
