@@ -22,7 +22,10 @@
                 <errors :errors="errors" />
 
                 <div class="lpButtons">
-                    <input type="submit" value="Sign in" class="lpButton" />
+                    <button class="lpButton">
+                        Sign in
+                        <spinner v-if="fetching" />
+                    </button>
                     <router-link to="/forgot-password" class="lpHref alternateAction">Forgot username/password?</router-link>
                 </div>
             </form>
@@ -36,13 +39,15 @@
 import blackoutFooter from "../components/blackout-footer.vue";
 import errors from "../components/errors.vue";
 import modal from "../components/modal.vue";
+import spinner from "../components/spinner.vue";
 
 export default {
     name: "welcome",
     components: {
         blackoutFooter,
         errors,
-        modal
+        modal,
+        spinner
     },
     data: function() {
         return {
