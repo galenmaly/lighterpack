@@ -120,6 +120,11 @@ export default {
     },
     beforeMount: function() {
         this.updateOptionalFieldValues();
+    },
+    mounted: function() {
+        bus.$on("optionalFieldChanged", () => {
+            this.updateOptionalFieldValues();
+        });
     }
 }
 </script>
