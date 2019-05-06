@@ -176,11 +176,13 @@ const store = new Vuex.Store({
             var item = state.library.getItemById(args.item.id);
             item.imageUrl = args.imageUrl;
             state.library.optionalFields["images"] = true;
+            bus.$emit("optionalFieldChanged");
         },
         updateItemImage(state, args) {
             var item = state.library.getItemById(args.item.id);
             item.image = args.image;
             state.library.optionalFields["images"] = true;
+            bus.$emit("optionalFieldChanged");
         },
         removeItemImage(state, updateItem) {
             var item = state.library.getItemById(updateItem.id);
