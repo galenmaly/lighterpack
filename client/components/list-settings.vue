@@ -68,23 +68,28 @@ export default {
             optionalFieldsLookup: [{
                 name: "images",
                 displayName: "Item images",
-                cssClass: "lpShowImages"
+                cssClass: "lpShowImages",
+                value: false
             }, {
                 name: "price",
                 displayName: "Item prices",
-                cssClass: "lpShowPrices"
+                cssClass: "lpShowPrices",
+                value: false
             }, {
                 name: "worn",
                 displayName: "Worn items",
-                cssClass: "lpShowWorn"
+                cssClass: "lpShowWorn",
+                value: false
             }, {
                 name: "consumable",
                 displayName: "Consumable items",
-                cssClass: "lpShowConsumable"
+                cssClass: "lpShowConsumable",
+                value: false
             }, {
                 name: "listDescription",
                 displayName: "List descriptions",
-                cssClass: "lpShowListDescription"
+                cssClass: "lpShowListDescription",
+                value: false
             }]
         }
     },
