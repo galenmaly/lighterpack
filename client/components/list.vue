@@ -97,7 +97,7 @@ export default {
             return this.$store.state.library;
         },
         list() {
-            return this.library.getListById(this.library.defaultListId);
+            return this.$store.getters.activeList;
         },
         categories() {
             return this.list.categoryIds.map((id) => {

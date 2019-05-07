@@ -20,6 +20,11 @@ const store = new Vuex.Store({
         lastSaveData: null,
         loggedIn: false
     },
+    getters: {
+        activeList(state) {
+            return state.library.getListById(state.library.defaultListId);
+        }
+    },
     mutations: {
         setSaveType(state, saveType) {
             state.saveType = saveType;
