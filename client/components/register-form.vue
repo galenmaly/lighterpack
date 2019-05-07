@@ -12,18 +12,23 @@
         </div>
         <errors :errors="errors" />
         <div class="lpButtons">
-            <input type="submit" value="Register" class="lpButton" />
+            <button class="lpButton">
+                Register
+                <spinner v-if="saving" />
+            </button>
         </div>
     </form>
 </template>
 
 <script>
 import errors from "./errors.vue";
+import spinner from "./spinner.vue";
 
 export default {
     name: "registerForm",
     components: {
-        errors
+        errors,
+        spinner
     },
     data: function() {
         return {
