@@ -20,7 +20,10 @@
             <errors :errors="errors" />
 
             <div class="lpButtons">
-                <input type="submit" value="Submit" class="lpButton" />
+                <button class="lpButton">
+                    Submit
+                    <spinner v-if="saving" />
+                </button>
                 <a @click="shown = false" class="lpHref">Cancel</a>
                 <a @click="showDeleteAccount" class="lpHref">Delete account</a>
             </div>
@@ -31,12 +34,14 @@
 <script>
 import errors from "./errors.vue";
 import modal from "./modal.vue";
+import spinner from "./spinner.vue";
 
 export default {
     name: "account",
     components: {
         errors,
-        modal
+        modal,
+        spinner
     },
     data: function() {
         return {
