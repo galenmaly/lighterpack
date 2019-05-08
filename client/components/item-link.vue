@@ -5,7 +5,7 @@
 <template>
     <modal :shown="shown" @hide="shown = false" id="itemLinkDialog">
         <h2>Add a link for this item</h2>
-        <form @submit="addLink" id="itemLinkForm">
+        <form @submit.prevent="addLink" id="itemLinkForm">
             <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
             <input type="submit" class="lpButton" value="Save" />
             <a @click="shown = false" class="lpHref close">Cancel</a>
