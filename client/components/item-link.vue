@@ -30,6 +30,7 @@ export default {
     },
     methods: {
         addLink: function(e) {
+            e.preventDefault();
             this.$store.commit("updateItemLink", {url: this.url, item: this.item});
             this.shown = false;
         }
