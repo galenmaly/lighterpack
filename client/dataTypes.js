@@ -1,81 +1,81 @@
-const assignIn = require("lodash/assignIn");
+const assignIn = require('lodash/assignIn');
 
-const colorUtils = require("./utils/color.js");
-const weightUtils = require("./utils/weight.js");
+const colorUtils = require('./utils/color.js');
+const weightUtils = require('./utils/weight.js');
 
-const Item = function(args) {
+const Item = function (args) {
     this.id = args.id;
-    this.name = "";
-    this.description = "";
+    this.name = '';
+    this.description = '';
     this.weight = 0;
-    this.authorUnit = "oz";
+    this.authorUnit = 'oz';
     if (args.unit) this.authorUnit = args.unit;
     this.price = 0.00;
-    this.image = "";
-    this.imageUrl = "";
-    this.url = "";
+    this.image = '';
+    this.imageUrl = '';
+    this.url = '';
     return this;
-}
+};
 
-Item.prototype.save = function() {
+Item.prototype.save = function () {
     return this;
-}
+};
 
-Item.prototype.load = function(input) {
+Item.prototype.load = function (input) {
     assignIn(this, input);
-    if (typeof this.price === "string") {
+    if (typeof this.price === 'string') {
         this.price = parseFloat(this.price, 10);
     }
-}
+};
 
-const Category = function(args) {
+const Category = function (args) {
     this.library = args.library;
     this.id = args.id;
-    this.name = "";
+    this.name = '';
     this.categoryItems = [];
     return this;
-}
+};
 
 Category.prototype.addItem = function (partialCategoryItem) {
-    var temp = {
+    const temp = {
         qty: 1,
         worn: 0,
         consumable: false,
         star: 0,
         itemId: null,
-        _isNew: false
-    }
+        _isNew: false,
+    };
     assignIn(temp, partialCategoryItem);
     this.categoryItems.push(temp);
-}
+};
 
 Category.prototype.updateCategoryItem = function (categoryItem) {
-    var oldCategoryItem = this.getCategoryItemById(categoryItem.itemId);
+    const oldCategoryItem = this.getCategoryItemById(categoryItem.itemId);
     assignIn(oldCategoryItem, categoryItem);
-}   
+};
 
 Category.prototype.removeItem = function (itemId) {
-    var categoryItem = this.getCategoryItemById(itemId);
-    var index = this.categoryItems.indexOf(categoryItem);
-    this.categoryItems.splice(index,1);
-}
+    const categoryItem = this.getCategoryItemById(itemId);
+    const index = this.categoryItems.indexOf(categoryItem);
+    this.categoryItems.splice(index, 1);
+};
 
-Category.prototype.calculateSubtotal = function() {
+Category.prototype.calculateSubtotal = function () {
     this.subtotalWeight = 0;
     this.subtotalWornWeight = 0;
     this.subtotalConsumableWeight = 0;
     this.subtotalPrice = 0;
     this.subtotalConsumablePrice = 0;
     this.subtotalQty = 0;
-    
-    for (var i in this.categoryItems) {
-        var categoryItem = this.categoryItems[i];
-        var item = this.library.getItemById(categoryItem.itemId);
-        this.subtotalWeight += item.weight*categoryItem.qty;
-        this.subtotalPrice += item.price*categoryItem.qty;
+
+    for (const i in this.categoryItems) {
+        const categoryItem = this.categoryItems[i];
+        const item = this.library.getItemById(categoryItem.itemId);
+        this.subtotalWeight += item.weight * categoryItem.qty;
+        this.subtotalPrice += item.price * categoryItem.qty;
 
         if (this.library.optionalFields.worn && categoryItem.worn) {
-            this.subtotalWornWeight += item.weight * ( (categoryItem.qty > 0) ? 1 : 0 );
+            this.subtotalWornWeight += item.weight * ((categoryItem.qty > 0) ? 1 : 0);
         }
         if (this.library.optionalFields.consumable && categoryItem.consumable) {
             this.subtotalConsumableWeight += item.weight * categoryItem.qty;
@@ -83,35 +83,35 @@ Category.prototype.calculateSubtotal = function() {
         }
         this.subtotalQty += categoryItem.qty;
     }
-}
+};
 
-Category.prototype.getCategoryItemById = function(id) {
-    for (var i in this.categoryItems) {
-        var categoryItem = this.categoryItems[i];
+Category.prototype.getCategoryItemById = function (id) {
+    for (const i in this.categoryItems) {
+        const categoryItem = this.categoryItems[i];
         if (categoryItem.itemId == id) return categoryItem;
     }
     return null;
-}
+};
 
-Category.prototype.getExtendedItemByIndex = function(index) {
-    var categoryItem = this.categoryItems[index];
-    var item = this.library.getItemById(categoryItem.itemId);
-    var extendedItem = assignIn({}, item);
+Category.prototype.getExtendedItemByIndex = function (index) {
+    const categoryItem = this.categoryItems[index];
+    const item = this.library.getItemById(categoryItem.itemId);
+    const extendedItem = assignIn({}, item);
     assignIn(extendedItem, categoryItem);
     return extendedItem;
-}
+};
 
-Category.prototype.save = function() {
-    var out = assignIn({}, this);
+Category.prototype.save = function () {
+    const out = assignIn({}, this);
     delete out.library;
     delete out.template;
     return out;
-}
+};
 
-Category.prototype.load = function(input) {
+Category.prototype.load = function (input) {
     assignIn(this, input);
 
-    if (typeof this.itemIds !== "undefined") {
+    if (typeof this.itemIds !== 'undefined') {
         if (this.categoryItems.length === 0) {
             this.categoryItems = this.itemIds;
             delete this.itemIds;
@@ -120,52 +120,52 @@ Category.prototype.load = function(input) {
         }
     }
 
-    for (var i = 0; i < this.categoryItems.length; i++) {
+    for (let i = 0; i < this.categoryItems.length; i++) {
         delete this.categoryItems[i]._isNew;
-        if (typeof this.categoryItems[i].price !== "undefined") {
+        if (typeof this.categoryItems[i].price !== 'undefined') {
             delete this.categoryItems[i].price;
         }
         if (!this.categoryItems[i].star) {
             this.categoryItems[i].star = 0;
         }
     }
-}
+};
 
-const List = function(args) {
+const List = function (args) {
     this.library = args.library;
     this.id = args.id;
-    this.name = "";
+    this.name = '';
     this.categoryIds = [];
     this.chart = null;
-    this.description = "";
-    this.externalId = "";
+    this.description = '';
+    this.externalId = '';
     return this;
-}
+};
 
 List.prototype.addCategory = function (categoryId) {
     this.categoryIds.push(categoryId);
-}
+};
 
 List.prototype.removeCategory = function (categoryId) {
     categoryId = parseInt(categoryId);
-    var index = this.categoryIds.indexOf(categoryId);
+    let index = this.categoryIds.indexOf(categoryId);
     if (index == -1) {
-        index = this.categoryIds.indexOf(""+categoryId);
+        index = this.categoryIds.indexOf(`${categoryId}`);
         if (index == -1) {
-            console.warn("Unable to delete category, it does not exist in this list:"+categoryId);
+            console.warn(`Unable to delete category, it does not exist in this list:${categoryId}`);
             return false;
         }
     }
 
-    this.categoryIds.splice(index,1);
+    this.categoryIds.splice(index, 1);
     return true;
-}
+};
 
 List.prototype.renderChart = function (type, linkParent) {
-    var chartData = { points: {}};
-    var total = 0;
+    const chartData = { points: {} };
+    let total = 0;
 
-    if (typeof linkParent == "undefined") linkParent = true;
+    if (typeof linkParent === 'undefined') linkParent = true;
 
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
@@ -173,57 +173,61 @@ List.prototype.renderChart = function (type, linkParent) {
             category.calculateSubtotal();
 
             if (type === 'consumable') {
-              total += category.subtotalConsumableWeight;
+                total += category.subtotalConsumableWeight;
             } else if (type === 'worn') {
-              total += category.subtotalWornWeight;
+                total += category.subtotalWornWeight;
             } else if (type === 'base') {
-              total += (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
-            } else { //total weight
-              total += category.subtotalWeight;
+                total += (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
+            } else { // total weight
+                total += category.subtotalWeight;
             }
         }
     }
 
     if (!total) return false;
-    
-    var getTooltipText = function(name, valueMg, unit) {
-      return name + ": " + weightUtils.MgToWeight(valueMg, unit) + " " + unit;
+
+    const getTooltipText = function (name, valueMg, unit) {
+        return `${name}: ${weightUtils.MgToWeight(valueMg, unit)} ${unit}`;
     };
-    
+
     for (var i in this.categoryIds) {
         var category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
-            var points = {};
+            const points = {};
 
             var categoryTotal;
             if (type === 'consumable') {
-              categoryTotal = category.subtotalConsumableWeight;
+                categoryTotal = category.subtotalConsumableWeight;
             } else if (type === 'worn') {
-              categoryTotal = category.subtotalWornWeight;
+                categoryTotal = category.subtotalWornWeight;
             } else if (type === 'base') {
-              categoryTotal = (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
-            } else { //total weight
-              categoryTotal = category.subtotalWeight;
+                categoryTotal = (category.subtotalWeight - (category.subtotalConsumableWeight + category.subtotalWornWeight));
+            } else { // total weight
+                categoryTotal = category.subtotalWeight;
             }
 
-            var tempColor = category.color || colorUtils.getColor(i);
+            const tempColor = category.color || colorUtils.getColor(i);
             category.displayColor = colorUtils.rgbToString(tempColor);
-            var tempCategory = {};
+            const tempCategory = {};
 
-            for (var j in category.categoryItems) {
-                var item = category.getExtendedItemByIndex(j);
-                var value = item.weight * item.qty;
+            for (const j in category.categoryItems) {
+                const item = category.getExtendedItemByIndex(j);
+                let value = item.weight * item.qty;
                 if (!value) value = 0;
-                var name = getTooltipText(item.name, value, item.authorUnit);
-                var color = colorUtils.getColor(j, tempColor);
-                if (item.qty > 1) name += " x "+item.qty;
+                let name = getTooltipText(item.name, value, item.authorUnit);
+                const color = colorUtils.getColor(j, tempColor);
+                if (item.qty > 1) name += ` x ${item.qty}`;
                 var percent = value / categoryTotal;
-                var tempItem =  { value: value, id: item.id, name: name, color: color, percent: percent };
+                const tempItem = {
+                    value, id: item.id, name, color, percent,
+                };
                 if (linkParent) tempItem.parent = tempCategory;
                 points[j] = tempItem;
             }
             var percent = categoryTotal / total;
-            var tempCategoryData = {points: points, color: category.color, id:category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent: percent, visiblePoints: false};
+            const tempCategoryData = {
+                points, color: category.color, id: category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent, visiblePoints: false,
+            };
             if (linkParent) tempCategoryData.parent = chartData;
             assignIn(tempCategory, tempCategoryData);
             chartData.points[i] = tempCategory;
@@ -232,21 +236,21 @@ List.prototype.renderChart = function (type, linkParent) {
     chartData.total = total;
 
     return chartData;
-}
+};
 
-List.prototype.calculateTotals = function() {
-    var totalWeight = 0,
-        totalPrice = 0,
-        totalWornWeight = 0,
-        totalConsumableWeight = 0,
-        totalConsumablePrice = 0,
-        totalBaseWeight = 0,
-        totalPackWeight = 0,
-        totalQty = 0,
-        out = {categories: []};
+List.prototype.calculateTotals = function () {
+    let totalWeight = 0;
+    let totalPrice = 0;
+    let totalWornWeight = 0;
+    let totalConsumableWeight = 0;
+    let totalConsumablePrice = 0;
+    let totalBaseWeight = 0;
+    let totalPackWeight = 0;
+    let totalQty = 0;
+    const out = { categories: [] };
 
-    for (var i in this.categoryIds) {
-        var category = this.library.getCategoryById(this.categoryIds[i]);
+    for (const i in this.categoryIds) {
+        const category = this.library.getCategoryById(this.categoryIds[i]);
         category.calculateSubtotal();
 
         totalWeight += category.subtotalWeight;
@@ -270,76 +274,76 @@ List.prototype.calculateTotals = function() {
 
     this.totalBaseWeight = totalBaseWeight;
     this.totalPackWeight = totalPackWeight;
-    
+
     this.totalPrice = totalPrice;
     this.totalConsumablePrice = totalConsumablePrice;
 
-    this.totalQty = totalQty; 
-}
+    this.totalQty = totalQty;
+};
 
-List.prototype.save = function() {
-    var out = assignIn({}, this);
+List.prototype.save = function () {
+    const out = assignIn({}, this);
     delete out.library;
     delete out.chart;
     return out;
-}
+};
 
-List.prototype.load = function(input) {
+List.prototype.load = function (input) {
     assignIn(this, input);
     this.calculateTotals();
-}
+};
 
-const Library = function(args) {
-    this.version = "0.3";
+const Library = function (args) {
+    this.version = '0.3';
     this.idMap = {};
     this.items = [];
     this.categories = [];
     this.lists = [];
     this.sequence = 0;
     this.defaultListId = 1;
-    this.totalUnit = "oz";
-    this.itemUnit = "oz";
+    this.totalUnit = 'oz';
+    this.itemUnit = 'oz';
     this.showSidebar = true;
     this.showImages = false;
     this.optionalFields = {
-            images: false,
-            price: false,
-            worn: true,
-            consumable: true,
-            listDescription: false
-        };
-    this.currencySymbol = "$";
+        images: false,
+        price: false,
+        worn: true,
+        consumable: true,
+        listDescription: false,
+    };
+    this.currencySymbol = '$';
     this.firstRun();
     return this;
-}
+};
 
 
-Library.prototype.firstRun = function() {
-    var firstList = this.newList();
-    var firstCategory = this.newCategory({list: firstList});
-    var firstItem = this.newItem({category: firstCategory});
-}
+Library.prototype.firstRun = function () {
+    const firstList = this.newList();
+    const firstCategory = this.newCategory({ list: firstList });
+    const firstItem = this.newItem({ category: firstCategory });
+};
 
-Library.prototype.newItem = function({ category, _isNew }) {
-    var temp = new Item({id: this.nextSequence(), library: this, unit: this.itemUnit});
+Library.prototype.newItem = function ({ category, _isNew }) {
+    const temp = new Item({ id: this.nextSequence(), library: this, unit: this.itemUnit });
     this.items.push(temp);
     this.idMap[temp.id] = temp;
     if (category) {
         category.addItem({ itemId: temp.id, _isNew });
     }
     return temp;
-}
+};
 
-Library.prototype.updateItem = function(item) {
-    var oldItem = this.getItemById(item.id);
+Library.prototype.updateItem = function (item) {
+    const oldItem = this.getItemById(item.id);
     assignIn(oldItem, item);
     return oldItem;
-}
+};
 
-Library.prototype.removeItem = function(id) {
-    var item = this.getItemById(id);
-    for (var i in this.lists) {
-        var category = this.findCategoryWithItemById(id, this.lists[i].id);
+Library.prototype.removeItem = function (id) {
+    const item = this.getItemById(id);
+    for (const i in this.lists) {
+        const category = this.findCategoryWithItemById(id, this.lists[i].id);
         if (category) {
             category.removeItem(id);
         }
@@ -349,19 +353,19 @@ Library.prototype.removeItem = function(id) {
     delete this.idMap[id];
 
     return true;
-}
+};
 
-Library.prototype.newCategory = function(args) {
-    var temp = new Category({id: this.nextSequence(), library: this});
+Library.prototype.newCategory = function (args) {
+    const temp = new Category({ id: this.nextSequence(), library: this });
     this.categories.push(temp);
     this.idMap[temp.id] = temp;
     if (args.list) args.list.addCategory(temp.id);
     return temp;
-}
+};
 
-Library.prototype.removeCategory = function(id, force) {
-    var category = this.getCategoryById(id);
-    var list = this.findListWithCategoryById(id);
+Library.prototype.removeCategory = function (id, force) {
+    const category = this.getCategoryById(id);
+    const list = this.findListWithCategoryById(id);
 
     if (list && list.categoryIds.length == 1 && !force) {
         alert("Can't remove the last category in a list!");
@@ -376,19 +380,19 @@ Library.prototype.removeCategory = function(id, force) {
     delete this.idMap[id];
 
     return true;
-}
+};
 
-Library.prototype.newList = function() {
-    var temp = new List({id: this.nextSequence(), library: this});
+Library.prototype.newList = function () {
+    const temp = new List({ id: this.nextSequence(), library: this });
     this.lists.push(temp);
     this.idMap[temp.id] = temp;
     if (!this.defaultListId) this.defaultListId = temp.id;
     return temp;
-}
+};
 
-Library.prototype.removeList = function(id) {
+Library.prototype.removeList = function (id) {
     if (Object.size(this.lists) == 1) return;
-    var list = this.getListById(id);
+    const list = this.getListById(id);
 
     for (var i = 0; i < list.categoryIds; i++) {
         this.removeCategory(list.categoryIds[i], true);
@@ -398,70 +402,70 @@ Library.prototype.removeList = function(id) {
     delete this.idMap[id];
 
     if (this.defaultListId == id) {
-        var newId = -1;
+        let newId = -1;
         for (var i in lists) {
             newId = i;
             break;
         }
         this.defaultListId = newId;
     }
-}
+};
 
-Library.prototype.copyList = function(id) {
-    var oldList = this.getListById(id);
+Library.prototype.copyList = function (id) {
+    const oldList = this.getListById(id);
     if (!oldList) return;
 
-    var copiedList = this.newList();
+    const copiedList = this.newList();
 
-    copiedList.name = "Copy of " + oldList.name;
-    for (var i in oldList.categoryIds) {
-        var oldCategory = this.getCategoryById(oldList.categoryIds[i]),
-            copiedCategory = this.newCategory({list: copiedList});
+    copiedList.name = `Copy of ${oldList.name}`;
+    for (const i in oldList.categoryIds) {
+        const oldCategory = this.getCategoryById(oldList.categoryIds[i]);
+        const copiedCategory = this.newCategory({ list: copiedList });
 
         copiedCategory.name = oldCategory.name;
 
-        for (var j in oldCategory.categoryItems) {
+        for (const j in oldCategory.categoryItems) {
             copiedCategory.addItem(oldCategory.categoryItems[j]);
         }
     }
 
     return copiedList;
-}
+};
 
-Library.prototype.renderChart = function(type) {
+Library.prototype.renderChart = function (type) {
     return this.getListById(this.defaultListId).renderChart(type);
-}
+};
 
-Library.prototype.getCategoryById = function(id) {
+Library.prototype.getCategoryById = function (id) {
     return this.idMap[id];
-}
+};
 
-Library.prototype.getItemById = function(id) {
+Library.prototype.getItemById = function (id) {
     return this.idMap[id];
-}
+};
 
-Library.prototype.getListById = function(id) {
+Library.prototype.getListById = function (id) {
     return this.idMap[id];
-}
+};
 
-Library.prototype.getItemsInCurrentList = function() {
-    var out = [];
-    var list = this.getListById(this.defaultListId);
-    for (var i = 0; i < list.categoryIds.length; i++) {
-        var category = this.getCategoryById(list.categoryIds[i]);
+Library.prototype.getItemsInCurrentList = function () {
+    const out = [];
+    const list = this.getListById(this.defaultListId);
+    for (let i = 0; i < list.categoryIds.length; i++) {
+        const category = this.getCategoryById(list.categoryIds[i]);
         if (category) {
-            for (var j in category.categoryItems) {
-                var categoryItem = category.categoryItems[j];
+            for (const j in category.categoryItems) {
+                const categoryItem = category.categoryItems[j];
                 out.push(categoryItem.itemId);
             }
         }
     }
     return out;
-}
+};
 
-Library.prototype.findCategoryWithItemById = function(itemId, listId) {
+Library.prototype.findCategoryWithItemById = function (itemId, listId) {
     if (listId) {
-        var list = this.getListById(listId);
+        const list = this.getListById(listId);
         for (i in list.categoryIds) {
             var category = this.getCategoryById(list.categoryIds[i]);
             if (category) {
@@ -482,36 +486,36 @@ Library.prototype.findCategoryWithItemById = function(itemId, listId) {
             }
         }
     }
-}
+};
 
-Library.prototype.findListWithCategoryById = function(id) {
-     for (var i in this.lists) {
-        var list = this.lists[i];
-        for (var j in list.categoryIds) {
-            if ( list.categoryIds[j] == id) return list;
+Library.prototype.findListWithCategoryById = function (id) {
+    for (const i in this.lists) {
+        const list = this.lists[i];
+        for (const j in list.categoryIds) {
+            if (list.categoryIds[j] == id) return list;
         }
     }
-}
+};
 
-Library.prototype.findSequence = function() {
-    var list = this.getListById(this.defaultListId);
-    for (var i in list.categories) {
-        var category = list.categories[i];
-        for (var j in category.items) {
-            var item = category.items[j];
+Library.prototype.findSequence = function () {
+    const list = this.getListById(this.defaultListId);
+    for (const i in list.categories) {
+        const category = list.categories[i];
+        for (const j in category.items) {
+            const item = category.items[j];
             if (item.id && item.id > sequence) {
                 sequence = item.id;
             }
         }
     }
-}
+};
 
-Library.prototype.nextSequence = function() {
+Library.prototype.nextSequence = function () {
     return ++this.sequence;
-}
+};
 
-Library.prototype.save = function() {
-    var out = {};
+Library.prototype.save = function () {
+    const out = {};
 
     out.version = this.version;
     out.totalUnit = this.totalUnit;
@@ -538,15 +542,15 @@ Library.prototype.save = function() {
     }
 
     return out;
-}
+};
 
-Library.prototype.load = function(input) {
+Library.prototype.load = function (input) {
     this.items = [];
 
     assignIn(this.optionalFields, input.optionalFields);
 
     for (var i in input.items) {
-        var temp = new Item({id: input.items[i].id, library: this});
+        var temp = new Item({ id: input.items[i].id, library: this });
         temp.load(input.items[i]);
         this.items.push(temp);
         this.idMap[temp.id] = temp;
@@ -554,7 +558,7 @@ Library.prototype.load = function(input) {
 
     this.categories = [];
     for (var i in input.categories) {
-        var temp = new Category({id: input.categories[i].id, library: this});
+        var temp = new Category({ id: input.categories[i].id, library: this });
         temp.load(input.categories[i]);
         this.categories.push(temp);
         this.idMap[temp.id] = temp;
@@ -562,7 +566,7 @@ Library.prototype.load = function(input) {
 
     this.lists = [];
     for (var i in input.lists) {
-        var temp = new List({id: input.lists[i].id, library: this});
+        var temp = new List({ id: input.lists[i].id, library: this });
         temp.load(input.lists[i]);
         this.lists.push(temp);
         this.idMap[temp.id] = temp;
@@ -575,22 +579,23 @@ Library.prototype.load = function(input) {
     this.sequence = input.sequence;
     this.defaultListId = input.defaultListId;
 
-    if (input.version === "0.1" || !input.version) {
+    if (input.version === '0.1' || !input.version) {
         this.upgrade01to02(input);
     }
-}
+};
 
-Library.prototype.upgrade01to02 = function(input) {
+Library.prototype.upgrade01to02 = function (input) {
     if (input.showImages) {
         this.optionalFields.images = true;
     } else {
         this.optionalFields.images = false;
     }
-    this.version == "0.2";
-}
+    this.version == '0.2';
+};
 
-Object.size = function(obj) {
-    var size = 0, key;
+Object.size = function (obj) {
+    let size = 0; let
+        key;
     for (key in obj) {
         if (obj.hasOwnProperty(key)) size++;
     }
@@ -601,5 +606,5 @@ module.exports = {
     Library,
     List,
     Category,
-    Item
+    Item,
 };

@@ -72,35 +72,39 @@
 
 <template>
     <div class="lpUnitSelect" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle($event)">
-        <select class="lpUnit lpInvisible" :value="unit" @keyup="keyup($event)" @focus='focusSelect' @blur='blurSelect'>
-            <option v-for="unit in units" :value="unit">{{unit}}</option>
+        <select class="lpUnit lpInvisible" :value="unit" @keyup="keyup($event)" @focus="focusSelect" @blur="blurSelect">
+            <option v-for="unit in units" :value="unit">
+                {{ unit }}
+            </option>
         </select>
-        <span class="lpDisplay">{{unit}}</span>
-        <i class="lpSprite lpExpand"></i>
+        <span class="lpDisplay">{{ unit }}</span>
+        <i class="lpSprite lpExpand" />
         <ul :class="'lpUnitDropdown ' + unit">
-            <li v-for="unit in units" :class="unit" @click="select(unit)">{{unit}}</li>
+            <li v-for="unit in units" :class="unit" @click="select(unit)">
+                {{ unit }}
+            </li>
         </ul>
     </div>
 </template>
 
 <script>
 export default {
-    name: "unit-select",
-    props: ["weight", "unit", "onChange"],
-    data: function() {
+    name: 'UnitSelect',
+    props: ['weight', 'unit', 'onChange'],
+    data() {
         return {
             units: [
-                "oz",
-                "lb",
-                "g",
-                "kg"
+                'oz',
+                'lb',
+                'g',
+                'kg',
             ],
             isOpen: false,
-            isFocused: false
+            isFocused: false,
         };
     },
     methods: {
-        toggle: function(evt) {
+        toggle(evt) {
             evt.stopPropagation();
             if (!this.isOpen) {
                 this.open();
@@ -108,46 +112,46 @@ export default {
                 this.close();
             }
         },
-        open: function() {
+        open() {
             this.isOpen = true;
             this.bindCloseListeners();
         },
-        close: function() {
+        close() {
             this.isOpen = false;
             this.unbindCloseListeners();
         },
-        select: function(unit) {
-            if (typeof this.onChange === "function") {
+        select(unit) {
+            if (typeof this.onChange === 'function') {
                 this.onChange(unit);
             }
         },
-        keyup: function(evt) {
-            if (typeof this.onChange === "function") {
+        keyup(evt) {
+            if (typeof this.onChange === 'function') {
                 this.onChange(evt.target.value);
             }
         },
-        bindCloseListeners: function() {
+        bindCloseListeners() {
             window.addEventListener('keyup', this.closeOnEscape);
             window.addEventListener('click', this.closeOnClick);
         },
-        unbindCloseListeners: function() {
+        unbindCloseListeners() {
             window.removeEventListener('keyup', this.closeOnEscape);
             window.removeEventListener('click', this.closeOnClick);
         },
-        closeOnEscape: function(evt) {
+        closeOnEscape(evt) {
             if (evt.keyCode === 27) {
                 this.close();
             }
         },
-        closeOnClick: function(evt) {
+        closeOnClick(evt) {
             this.close();
         },
-        focusSelect: function() {
+        focusSelect() {
             this.isFocused = true;
         },
-        blurSelect: function() {
+        blurSelect() {
             this.isFocused = false;
-        }
-    }
-}
+        },
+    },
+};
 </script>

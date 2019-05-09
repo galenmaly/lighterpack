@@ -20,7 +20,7 @@
 </style>
 
 <template>
-    <modal :shown="shown" @hide="shown = false" id="TODO">
+    <modal id="TODO" :shown="shown" @hide="shown = false">
         <div class="lpContent">
             <p><a class="lpHref" href="mailto:info@lighterpack.com">Found a bug not here? Email me!</a></p>
             <h2>Known Bugs</h2>
@@ -31,36 +31,52 @@
 
             <h2>TODO Features</h2>
             <ul>
-                <li class="medium">Add utility to convert all items to a certain unit.</li>
-                <li class="medium">Guided "tour" for new users</li>
-                <li class="medium">Support for mobile devices</li>
-                <li class="medium">Make qty/weight validation nicer</li>
-                <li class="low">Collapse categories</li>
-                <li class="low">Add progress bar / spinner for file uploads</li>
-                <li class="low">Gear sorting?</li>
-                <li class="low">Better accomodate long names.</li>
+                <li class="medium">
+                    Add utility to convert all items to a certain unit.
+                </li>
+                <li class="medium">
+                    Guided "tour" for new users
+                </li>
+                <li class="medium">
+                    Support for mobile devices
+                </li>
+                <li class="medium">
+                    Make qty/weight validation nicer
+                </li>
+                <li class="low">
+                    Collapse categories
+                </li>
+                <li class="low">
+                    Add progress bar / spinner for file uploads
+                </li>
+                <li class="low">
+                    Gear sorting?
+                </li>
+                <li class="low">
+                    Better accomodate long names.
+                </li>
             </ul>
         </div>
     </modal>
 </template>
 
 <script>
-import modal from "./modal.vue";
+import modal from './modal.vue';
 
 export default {
-    name: "help",
+    name: 'Help',
     components: {
-        modal
+        modal,
     },
-    data: function() {
+    data() {
         return {
-            shown: false
-        }
+            shown: false,
+        };
     },
-    beforeMount: function() {
-        bus.$on("showTodo", () => {
+    beforeMount() {
+        bus.$on('showTodo', () => {
             this.shown = true;
         });
-    }
-}
+    },
+};
 </script>

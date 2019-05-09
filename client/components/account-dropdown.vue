@@ -6,12 +6,12 @@
     <span id="account">
         <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
             <span class="lpFlyout">
-                <span class="lpTarget">Signed in as <span class="username">{{username}}</span> <i class="lpSprite lpExpand"></i></span>
+                <span class="lpTarget">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
                 <div class="lpContent">
-                    <a @click="showAccount" class="lpHref accountSettings">Account Settings</a><br />
-                    <a @click="showHelp" class="lpHref">Help</a><br />
-                    <a @click="showTodo" class="lpHref">Bugs / TODO</a><br />
-                    <a @click="signout" class="lpHref signout">Sign Out</a>
+                    <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
+                    <a class="lpHref" @click="showHelp">Help</a><br>
+                    <a class="lpHref" @click="showTodo">Bugs / TODO</a><br>
+                    <a class="lpHref signout" @click="signout">Sign Out</a>
                 </div>
             </span>
         </span>
@@ -26,32 +26,32 @@
 <script>
 
 export default {
-    name: "accountDropdown",
+    name: 'AccountDropdown',
     computed: {
-        library: function() {
+        library() {
             return this.$store.state.library;
         },
-        isSignedIn: function() {
+        isSignedIn() {
             return this.$store.state.loggedIn;
         },
-        username: function() {
+        username() {
             return this.$store.state.loggedIn;
-        }
+        },
     },
     methods: {
-        showAccount: function() {
-            bus.$emit("showAccount");
+        showAccount() {
+            bus.$emit('showAccount');
         },
-        showHelp: function() {
-            bus.$emit("showHelp");
+        showHelp() {
+            bus.$emit('showHelp');
         },
-        showTodo: function() {
-            bus.$emit("showTodo");
+        showTodo() {
+            bus.$emit('showTodo');
         },
-        signout: function() {
-            this.$store.commit("signout");
-            router.push("/signin");
-        }
-    }
-}
+        signout() {
+            this.$store.commit('signout');
+            router.push('/signin');
+        },
+    },
+};
 </script>

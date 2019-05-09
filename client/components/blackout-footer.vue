@@ -4,7 +4,9 @@
 
 <template>
     <div id="lpWelcomeFooter">
-        <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
+        <div class="lpSiteBy">
+            Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a>
+        </div>
         <div class="lpContact">
             Copyleft LighterPack 2017
             -
@@ -17,6 +19,6 @@
 
 <script>
 export default {
-    name: "blackoutFooter"
-}
+    name: 'BlackoutFooter',
+};
 </script>
