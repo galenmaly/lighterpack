@@ -68,6 +68,7 @@ const store = new Vuex.Store({
         },
         setDefaultList(state, list) {
             state.library.defaultListId = list.id;
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         setTotalUnit(state, unit) {
             state.library.totalUnit = unit;
