@@ -1,5 +1,6 @@
 import Vuex from 'vuex';
 import Vue from 'vue';
+import debounce from 'lodash/debounce';
 
 const weightUtils = require('../utils/weight.js');
 const dataTypes = require('../dataTypes.js');
@@ -9,15 +10,16 @@ const Category = dataTypes.Category;
 const List = dataTypes.List;
 const Library = dataTypes.Library;
 
+const saveInterval = 5000;
+
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
         library: false,
+        isSaving: false,
         syncToken: false,
         saveType: null,
-        saveTimeout: null,
-        lastSaveTime: 0,
         lastSaveData: null,
         loggedIn: false,
     },
@@ -33,20 +35,11 @@ const store = new Vuex.Store({
         setSyncToken(state, syncToken) {
             state.syncToken = syncToken;
         },
-        setLastSaveTime(state, lastSaveTime) {
-            state.lastSaveTime = lastSaveTime;
-        },
         setLastSaveData(state, lastSaveData) {
             state.lastSaveData = lastSaveData;
         },
-        setSaveTimeout(state, saveTimeout) {
-            state.saveTimeout = saveTimeout;
-        },
-        clearSaveTimeout(state) {
-            if (state.saveTimeout) {
-                clearTimeout(state.saveTimeout);
-                state.saveTimeout = null;
-            }
+        setIsSaving(state, isSaving) {
+            state.isSaving = isSaving;
         },
         signout(state) {
             createCookie('lp', '', -1);
@@ -239,6 +232,9 @@ const store = new Vuex.Store({
             list.calculateTotals();
             state.library.defaultListId = list.id;
         },
+        save() {
+            // no-op
+        }
     },
     actions: {
         init(context) {
@@ -286,14 +282,12 @@ const store = new Vuex.Store({
     },
     plugins: [
         function save(store) {
-            store.subscribe((mutation, state) => {
+            store.subscribe(debounce((mutation, state) => {
                 const ignore = [
+                    'setIsSaving',
                     'setSaveType',
                     'setSyncToken',
-                    'setLastSaveTime',
                     'setLastSaveData',
-                    'setSaveTimeout',
-                    'clearSaveTimeout',
                     'signout',
                     'setLoggedIn',
                     'loadLibraryData',
@@ -308,23 +302,17 @@ const store = new Vuex.Store({
                     return;
                 }
 
-                function saveRemotely(saveData) {
-                    const date = new Date();
-                    if (date.getTime() - state.lastSaveTime < 5000) {
-                        if (!state.saveTimeout) {
-                            store.commit('setSaveTimeout', setTimeout(saveRemotely, 5001));
-                        }
+                const saveRemotely = function(saveData) {
+                    if (state.isSaving) {
+                        setTimeout(() => { store.commit('save', true); }, saveInterval + 1);
                         return;
-                    }
-
-                    if (state.saveTimeout) {
-                        store.commit('clearSaveTimeout');
                     }
 
                     if (!saveData) {
                         saveData = JSON.stringify(state.library.save());
                     }
-                    store.commit('setLastSaveTime', date.getTime());
+
+                    store.commit('setIsSaving', true);
                     store.commit('setLastSaveData', saveData);
 
                     return fetchJson('/saveLibrary/', {
@@ -337,8 +325,10 @@ const store = new Vuex.Store({
                     })
                         .then((response) => {
                             store.commit('setSyncToken', response.syncToken);
+                            store.commit('setIsSaving', false);
                         })
                         .catch((response) => {
+                            store.commit('setIsSaving', false);
                             let error = 'An error occurred while attempting to save your data.';
                             if (response.json && response.json.status) {
                                 error = response.json.status;
@@ -356,7 +346,7 @@ const store = new Vuex.Store({
                 } else if (state.saveType === 'local') {
                     localStorage.library = saveData;
                 }
-            });
+            }, saveInterval, { maxWait: saveInterval * 3 }));
         },
     ],
 });
