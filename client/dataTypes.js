@@ -3,13 +3,15 @@ const assignIn = require('lodash/assignIn');
 const colorUtils = require('./utils/color.js');
 const weightUtils = require('./utils/weight.js');
 
-const Item = function (args) {
-    this.id = args.id;
+const Item = function ({ id, unit }) {
+    this.id = id;
     this.name = '';
     this.description = '';
     this.weight = 0;
     this.authorUnit = 'oz';
-    if (args.unit) this.authorUnit = args.unit;
+    if (unit) {
+        this.authorUnit = unit;
+    }
     this.price = 0.00;
     this.image = '';
     this.imageUrl = '';
@@ -137,9 +139,9 @@ Category.prototype.load = function (input) {
     }
 };
 
-const List = function (args) {
-    this.library = args.library;
-    this.id = args.id;
+const List = function ({ id, library }) {
+    this.library = library;
+    this.id = id;
     this.name = '';
     this.categoryIds = [];
     this.chart = null;
@@ -299,7 +301,7 @@ List.prototype.load = function (input) {
     this.calculateTotals();
 };
 
-const Library = function (args) {
+const Library = function () {
     this.version = '0.3';
     this.idMap = {};
     this.items = [];
@@ -331,7 +333,7 @@ Library.prototype.firstRun = function () {
 };
 
 Library.prototype.newItem = function ({ category, _isNew }) {
-    const temp = new Item({ id: this.nextSequence(), library: this, unit: this.itemUnit });
+    const temp = new Item({ id: this.nextSequence(), unit: this.itemUnit });
     this.items.push(temp);
     this.idMap[temp.id] = temp;
     if (category) {
@@ -560,7 +562,7 @@ Library.prototype.load = function (input) {
     assignIn(this.optionalFields, input.optionalFields);
 
     for (var i in input.items) {
-        var temp = new Item({ id: input.items[i].id, library: this });
+        var temp = new Item({ id: input.items[i].id });
         temp.load(input.items[i]);
         this.items.push(temp);
         this.idMap[temp.id] = temp;
