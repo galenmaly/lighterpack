@@ -5,6 +5,8 @@
     background: $background1;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     left: 50%;
+    max-height: calc(90% - (#{$spacingLarge} * 2));
+    overflow-y: auto;
     padding: $spacingLarge;
     position: fixed;
     text-align: left;
