@@ -28,16 +28,17 @@ Item.prototype.load = function (input) {
     }
 };
 
-const Category = function (args) {
-    this.library = args.library;
-    this.id = args.id;
+const Category = function ({ library, id, _isNew }) {
+    this.library = library;
+    this.id = id;
     this.name = '';
     this.categoryItems = [];
+    this._isNew = _isNew;
     return this;
 };
 
 Category.prototype.addItem = function (partialCategoryItem) {
-    const temp = {
+    const tempCategoryItem = {
         qty: 1,
         worn: 0,
         consumable: false,
@@ -45,8 +46,8 @@ Category.prototype.addItem = function (partialCategoryItem) {
         itemId: null,
         _isNew: false,
     };
-    assignIn(temp, partialCategoryItem);
-    this.categoryItems.push(temp);
+    assignIn(tempCategoryItem, partialCategoryItem);
+    this.categoryItems.push(tempCategoryItem);
 };
 
 Category.prototype.updateCategoryItem = function (categoryItem) {
@@ -103,12 +104,17 @@ Category.prototype.getExtendedItemByIndex = function (index) {
 
 Category.prototype.save = function () {
     const out = assignIn({}, this);
+
     delete out.library;
     delete out.template;
+    delete out._isNew;
+
     return out;
 };
 
 Category.prototype.load = function (input) {
+    delete input._isNew;
+
     assignIn(this, input);
 
     if (typeof this.itemIds !== 'undefined') {
@@ -355,11 +361,15 @@ Library.prototype.removeItem = function (id) {
     return true;
 };
 
-Library.prototype.newCategory = function (args) {
-    const temp = new Category({ id: this.nextSequence(), library: this });
+Library.prototype.newCategory = function ({ list, _isNew}) {
+    const temp = new Category({ id: this.nextSequence(), _isNew, library: this });
+
     this.categories.push(temp);
     this.idMap[temp.id] = temp;
-    if (args.list) args.list.addCategory(temp.id);
+    if (list) {
+        list.addCategory(temp.id);
+    }
+
     return temp;
 };
 
