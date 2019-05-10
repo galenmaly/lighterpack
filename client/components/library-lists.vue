@@ -3,7 +3,6 @@
 
 #listContainer {
     flex: 0 0 auto;
-    overflow-y: auto;
 
     #lists {
         max-height: 25vh;
@@ -15,6 +14,7 @@
     display: flex;
     list-style: none;
     margin: 0 10px;
+    overflow-y: auto;
     padding: 6px 0;
     position: relative;
 
@@ -69,20 +69,28 @@
         margin-bottom: 0;
     }
 }
+
+.listContainerHeader {
+    display: flex;
+    justify-content: space-between;
+}
 </style>
 
 <template>
     <section id="listContainer">
-        <h2>Lists</h2>
-        <span id="addListFlyout" class="lpFlyout">
-            <span class="lpTarget"><a id="addList" class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
-            <div class="lpContent">
-                <div><a id="importList" class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a></div>
-                <div><a sid="copyList" class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a></div>
-            </div>
-        </span>
+        <div class="listContainerHeader">
+            <h2>Lists</h2>
+            <PopoverHover id="addListFlyout" >
+                <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
+                <div slot="content">
+                    <div><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></div>
+                    <div><a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a></div>
+                    <div><a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a></div>
+                </div>
+            </PopoverHover>
+        </div>
         <ul id="lists">
-            <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
+            <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}" :key="list.id">
                 <div class="lpHandle" title="Reorder this item" />
                 <span class="lpLibraryListSwitch lpListName" @click="setDefaultList(list)">
                     {{ list | listName }}
@@ -94,10 +102,15 @@
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
+
 const dragula = require('dragula');
 
 export default {
     name: 'LibraryItem',
+    components: {
+        PopoverHover,
+    },
     filters: {
         listName(list) {
             return list.name || 'New list';

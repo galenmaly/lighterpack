@@ -1,18 +1,20 @@
 <style lang="scss">
-
+#headerPopover .lpContent {
+    min-width: 9em;
+}
 </style>
 
 <template>
     <span id="account">
-        <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
-            <span class="lpFlyout">
-                <span class="lpTarget">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
-                <div class="lpContent">
+        <span v-if="isSignedIn" class="headerItem hasPopover">
+            <PopoverHover id="headerPopover">
+                <span slot="target">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
+                <div slot="content">
                     <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
                     <a class="lpHref" @click="showHelp">Help</a><br>
                     <a class="lpHref signout" @click="signout">Sign Out</a>
                 </div>
-            </span>
+            </PopoverHover>
         </span>
         <span v-if="!isSignedIn" class="headerItem">
             <router-link to="/register" class="lpButton lpSmall">Register</router-link>
@@ -23,9 +25,13 @@
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
 
 export default {
     name: 'AccountDropdown',
+    components: {
+        PopoverHover,
+    },
     computed: {
         library() {
             return this.$store.state.library;

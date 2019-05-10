@@ -5,10 +5,10 @@
 </style>
 
 <template>
-    <span v-if="isSignedIn" class="headerItem hasFlyout">
-        <span id="share" class="lpFlyout" @mouseenter="focusShare">
-            <span class="lpTarget"><i class="lpSprite lpLink" /> Share</span>
-            <div class="lpContent lpFields">
+    <span v-if="isSignedIn" class="headerItem hasPopover">
+        <PopoverHover id="share" @shown="focusShare">
+            <span slot="target"><i class="lpSprite lpLink" /> Share</span>
+            <div slot="content" class="lpFields">
                 <div class="lpField">
                     <label for="shareUrl">Share your list</label>
                     <input id="shareUrl" v-select-on-bus="'show-share-box'" type="text" :value="shareUrl">
@@ -19,14 +19,18 @@
                 </div>
                 <a id="csvUrl" :href="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload" />Export to CSV</a>
             </div>
-        </span>
+        </PopoverHover>
     </span>
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
 
 export default {
     name: 'Share',
+    components: {
+        PopoverHover,
+    },
     computed: {
         library() {
             return this.$store.state.library;

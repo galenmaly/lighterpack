@@ -169,66 +169,6 @@
     width: 10px;
 }
 
-.lpFlyout {
-    display: block;
-    position: relative;
-
-    .lpTarget {
-        cursor: default;
-        display: inline-block;
-        padding: 5px;
-        position: relative;
-    }
-
-    .lpContent {
-        background: #fff;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        color: $content;
-        display: none;
-        left: -1px;
-        margin-top: -1px;
-        min-width: 100%;
-        padding: 12px;
-        position: absolute;
-        top: 100%;
-        white-space: nowrap;
-        z-index: $dialog;
-
-        & > *:first-child {
-            margin-top: 0;
-        }
-
-        & > *:last-child {
-            margin-bottom: 0;
-        }
-
-        h3 {
-            margin-bottom: 0;
-        }
-
-        ul {
-            line-height: 25px;
-        }
-
-        hr {
-            border-color: $border1;
-            margin: 7px -0;
-            padding: 0;
-        }
-    }
-
-    &:hover {
-        .lpTarget {
-            z-index: $aboveDialog;
-        }
-
-        .lpContent {
-            display: block;
-        }
-    }
-}
-
 .lpFields {
     input[type=text],
     input[type=email],

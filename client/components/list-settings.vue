@@ -34,12 +34,12 @@
 </style>
 
 <template>
-    <span v-if="isSignedIn" id="settings" class="headerItem hasFlyout">
-        <span class="lpFlyout">
-            <span class="lpTarget"><i class="lpSprite lpSettings" /> Settings</span>
-            <div class="lpContent">
+    <span v-if="isSignedIn" id="settings" class="headerItem hasPopover">
+        <PopoverHover>
+            <span slot="target"><i class="lpSprite lpSettings" /> Settings</span>
+            <div slot="content">
                 <ul id="lpOptionalFields">
-                    <li v-for="optionalField in optionalFieldsLookup" class="lpOptionalField">
+                    <li v-for="optionalField in optionalFieldsLookup" class="lpOptionalField" :key="optionalField.name">
                         <label>
                             <input v-model="optionalField.value" type="checkbox" @change="toggleOptionalField($event, optionalField.name)">
                             {{ optionalField.displayName }}
@@ -54,15 +54,18 @@
                     </label>
                 </div>
             </div>
-        </span>
+        </PopoverHover>
     </span>
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
 
 export default {
     name: 'ListSettings',
-    mixins: [],
+    components: {
+        PopoverHover,
+    },
     data() {
         return {
             optionalFieldsLookup: [{

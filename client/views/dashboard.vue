@@ -7,10 +7,6 @@
     height: 60px;
     margin: 0 -20px 20px; /* lpList padding */
     position: relative;
-
-    * {
-        box-sizing: inherit;
-    }
 }
 
 #hamburger {
@@ -44,8 +40,7 @@
         padding-left: 20px;
     }
 
-    .lpFlyout {
-        height: 100%;
+    .lpPopover {
 
         &:hover .lpTarget {
             color: $blue1;
@@ -54,49 +49,14 @@
 
     .lpTarget {
         font-weight: 600;
-        height: 100%;
-        padding: 17px 16px;
-    }
-
-    .lpContent {
-        background-color: #fff;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-        left: 50%;
-        transform: translateX(-50%);
-
-        &::before {
-            background-color: #fff;
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-            content: "";
-            display: block;
-            height: 20px;
-            left: 50%;
-            margin-left: -10px;
-            position: absolute;
-            top: -10px;
-            transform: rotate(45deg);
-            width: 20px;
-            z-index: $dialog - 1;
-        }
-
-        &::after {
-            background: #fff;
-            content: "";
-            display: block;
-            height: 15px;
-            left: 0;
-            position: absolute;
-            top: 0;
-            width: 100%;
-            z-index: $dialog + 1;
-        }
+        padding: 17px 16px 15px;
     }
 
     &#lpListName {
         flex: 1 0 auto;
     }
 
-    &.hasFlyout {
+    &.hasPopover {
         padding: 0;
     }
 }
@@ -142,7 +102,6 @@
         <help />
         <account />
         <accountDelete />
-        <colorPicker />
     </div>
 </template>
 
@@ -157,7 +116,6 @@ import accountDelete from '../components/account-delete.vue';
 import help from '../components/help.vue';
 import list from '../components/list.vue';
 
-import colorPicker from '../components/colorpicker.vue';
 import itemImage from '../components/item-image.vue';
 import itemViewImage from '../components/item-view-image.vue';
 import itemLink from '../components/item-link.vue';
@@ -177,7 +135,6 @@ export default {
         accountDelete,
         help,
         list,
-        colorPicker,
         itemLink,
         copyList,
         importCSV,

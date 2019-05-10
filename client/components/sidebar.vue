@@ -45,7 +45,6 @@
 
     ul {
         background: #606060;
-        -moz-box-sizing: content-box;
         box-sizing: content-box;
         margin: 0;
         overflow-x: hidden;
@@ -54,37 +53,6 @@
 
     .lpHref {
         color: $blue2;
-    }
-
-    #addListFlyout {
-        position: absolute;
-        right: 0;
-        top: -10px;
-        width: 126px;
-
-        .lpTarget {
-            border: 1px solid transparent;
-            border-bottom: none;
-        }
-
-        &:hover .lpTarget {
-            background: #444;
-            border: 1px solid #999;
-            border-bottom: none;
-            display: block;
-        }
-
-        .lpContent {
-            background: #444;
-            border: 1px solid #999;
-            border-top: none;
-            left: 0;
-            padding: 0 5px 5px;
-        }
-
-        #importList {
-            padding-top: 0;
-        }
     }
 }
 
