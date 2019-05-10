@@ -41,6 +41,7 @@
     "request": "^2.67.0",
     "sass-loader": "7.1.0",
     "vue": "2.6.7",
+    "vue-color-picker-wheel": "0.4.3",
     "vue-loader": "15.6.4",
     "vue-router": "^3.0.1",
     "vue-template-compiler": "2.6.7",

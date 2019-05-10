@@ -27,9 +27,9 @@
                         Weight
                     </span>
                 </li>
-                <li v-for="category in categories" :class="{'hover':category.activeHover, 'lpTotalCategory lpRow': true}">
+                <li v-for="category in categories" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}" :key="category.id">
                     <span class="lpCell lpLegendCell">
-                        <span class="lpLegend" :style="{'background-color': category.displayColor}" @click="showColorPicker($event, category)" />
+                        <colorPicker v-if="category.displayColor" @colorChange="updateColor(category, $event)" :color="colorToHex(category.displayColor)" />
                     </span>
                     <span class="lpCell">
                         {{ category.name }}
@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import colorPicker from '../components/colorpicker.vue';
 import unitSelect from './unit-select.vue';
 
 const pies = require('../pies.js');
@@ -108,6 +109,7 @@ const colorUtils = require('../utils/color.js');
 export default {
     name: 'ListSummary',
     components: {
+        colorPicker,
         unitSelect,
     },
     mixins: [utilsMixin],
@@ -161,18 +163,14 @@ export default {
         setTotalUnit(unit) {
             this.$store.commit('setTotalUnit', unit);
         },
-        showColorPicker(evt, category) {
-            const self = this;
-            const callback = function (color) {
-                self.updateColor(category, color);
-            };
-            bus.$emit('showColorPicker', { evt, category, callback });
-        },
         updateColor(category, color) {
-            category.color = color;
-            category.displayColor = colorUtils.rgbToString(color);
+            category.color = colorUtils.hexToRgb(color);
+            category.displayColor = colorUtils.rgbToString(colorUtils.hexToRgb(color));
             this.$store.commit('updateCategoryColor', category);
             this.updateChart();
+        },
+        colorToHex(color) {
+            return colorUtils.rgbToHex(colorUtils.stringToRgb(color));
         },
     },
 };
