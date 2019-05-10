@@ -139,7 +139,6 @@
         <itemImage />
         <itemViewImage />
         <itemLink />
-        <todo />
         <help />
         <account />
         <accountDelete />
@@ -155,7 +154,6 @@ import accountDropdown from '../components/account-dropdown.vue';
 import forgotPassword from './forgot-password.vue';
 import account from '../components/account.vue';
 import accountDelete from '../components/account-delete.vue';
-import todo from '../components/todo.vue';
 import help from '../components/help.vue';
 import list from '../components/list.vue';
 
@@ -177,7 +175,6 @@ export default {
         forgotPassword,
         account,
         accountDelete,
-        todo,
         help,
         list,
         colorPicker,

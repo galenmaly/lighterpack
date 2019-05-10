@@ -10,7 +10,6 @@
                 <div class="lpContent">
                     <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
                     <a class="lpHref" @click="showHelp">Help</a><br>
-                    <a class="lpHref" @click="showTodo">Bugs / TODO</a><br>
                     <a class="lpHref signout" @click="signout">Sign Out</a>
                 </div>
             </span>
@@ -44,9 +43,6 @@ export default {
         },
         showHelp() {
             bus.$emit('showHelp');
-        },
-        showTodo() {
-            bus.$emit('showTodo');
         },
         signout() {
             this.$store.commit('signout');
