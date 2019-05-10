@@ -22,6 +22,7 @@ const store = new Vuex.Store({
         saveType: null,
         lastSaveData: null,
         loggedIn: false,
+        directiveInstances: {},
     },
     getters: {
         activeList(state) {
@@ -235,6 +236,12 @@ const store = new Vuex.Store({
         },
         save() {
             // no-op
+        },
+        addDirectiveInstance(state, { key, value }) {
+            state.directiveInstances[key] = value;
+        },
+        removeDirectiveInstance(state, key) {
+            delete state.directiveInstances[key];
         }
     },
     actions: {

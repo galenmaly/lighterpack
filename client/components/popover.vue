@@ -19,12 +19,15 @@
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
         color: $content;
         left: 50%;
-        margin-top: 10px;
+        margin-top: 15px;
         min-width: 100%;
+        opacity: 0;
         padding: 12px;
+        pointer-events: none;
         position: absolute;
         top: 100%;
         transform: translateX(-50%);
+        transition: all 0.15s;
         white-space: nowrap;
         z-index: $dialog;
 
@@ -78,9 +81,14 @@
         }
     }
 
-    &:hover {
+    &.lpPopoverShown {
         .lpTarget {
             z-index: $aboveDialog;
+        }
+        .lpContent {
+            opacity: 1;
+            pointer-events: all;
+            margin-top: 10px;
         }
     }
 }
@@ -88,11 +96,11 @@
 </style>
 
 <template>
-    <div class="lpPopover" v-click-outside="hide">
+    <div :class="{'lpPopover': true, 'lpPopoverShown': shown}" v-click-outside="hide">
         <div class="lpTarget">
             <slot name="target" />
         </div>
-        <div v-if="shown" class="lpContent">
+        <div class="lpContent">
             <slot name="content" />
         </div>
     </div>

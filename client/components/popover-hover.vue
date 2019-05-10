@@ -31,12 +31,14 @@ export default {
                 this.hideTimeout = null;
             }
             this.shown = true;
+            this.$emit("shown");
         },
         startHideTimeout() {
             this.hideTimeout = setTimeout(this.hide, 50);
         },
         hide() {
             this.shown = false;
+            this.$emit("hidden");
         }
     },
 };
