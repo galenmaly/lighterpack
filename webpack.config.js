@@ -10,11 +10,14 @@ module.exports = {
             './client/css/lighterpack.scss',
             './client/lighterpack.js',
         ],
+        share: [
+            './client/css/share.scss',
+        ],
     },
     output: {
         path: path.resolve(__dirname, './public/dist'),
         publicPath: '/dist/',
-        filename: 'build.[chunkhash].js',
+        filename: '[name].[chunkhash].js',
     },
     module: {
         rules: [
@@ -72,7 +75,7 @@ module.exports = {
                 };
 
                 require('fs').writeFileSync(
-                    path.join(__dirname, '../public/dist/', 'assets.json'), JSON.stringify(assetData),
+                    path.join(__dirname, '/public/dist/', 'assets.json'), JSON.stringify(assetData),
                 );
             });
         },

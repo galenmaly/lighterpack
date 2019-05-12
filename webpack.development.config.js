@@ -12,11 +12,16 @@ module.exports = {
             './client/css/lighterpack.scss',
             './client/lighterpack.js',
         ],
+        share: [
+            './client/css/share.scss',
+            'webpack/hot/dev-server',
+            'webpack-dev-server/client?http://dev.lighterpack.com:8080/',
+        ],
     },
     output: {
         path: path.resolve(__dirname, './dist'),
         publicPath: '/dist/',
-        filename: 'build.js',
+        filename: '[name].js',
     },
     module: {
         rules: [

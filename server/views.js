@@ -36,29 +36,40 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
 
 let index = fs.readFileSync(path.join(__dirname, '../_index.html'), 'utf8');
 let assetData;
+let shareStylesHtml = '';
+let shareScriptsHtml = '';
+let appScriptsHtml = '';
+let appStylesHtml = '';
 
 if (config.get('environment') === 'production') {
-    assetData = JSON.parse(fs.readFileSync(path.join(__dirname, '../../public/dist/assets.json'), 'utf8'));
-    const assetFiles = assetData.files.app;
-    let i;
-    let scriptsHtml = '';
-    let stylesHtml = '';
-    let assetName = '';
+    assetData = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/dist/assets.json'), 'utf8'));
+    const appAssetFiles = assetData.files.app;
 
-    for (i = 0; i < assetFiles.length; i++) {
-        assetName = assetFiles[i];
+    appAssetFiles.forEach((assetName) => {
         if (assetName.substr(assetName.length - 3) === '.js') {
-            scriptsHtml += `<script src='/dist/${assetName}'></script>`;
+            appScriptsHtml += `<script src='/dist/${assetName}'></script>`;
         } else if (assetName.substr(assetName.length - 4) === '.css') {
-            stylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
+            appStylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
         }
-    }
-    index = index.replace('{{styles}}', stylesHtml);
-    index = index.replace('{{scripts}}', scriptsHtml);
+    });
+
+    const shareAssetFiles = assetData.files.app;
+    shareAssetFiles.forEach((assetName) => {
+        if (assetName.substr(assetName.length - 3) === '.js') {
+            shareScriptsHtml += `<script src='/dist/${assetName}'></script>`;
+        } else if (assetName.substr(assetName.length - 4) === '.css') {
+            shareStylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
+        }
+    });
 } else {
-    index = index.replace('{{styles}}', '');
-    index = index.replace('{{scripts}}', "<script src='/dist/build.js'></script>");
+    appStylesHtml = '';
+    appScriptsHtml = '<script src=\'/dist/app.js\'></script>';
+    shareStylesHtml = '';
+    shareScriptsHtml = '<script src=\'/dist/share.js\'></script>';
 }
+
+index = index.replace('{{styles}}', appStylesHtml);
+index = index.replace('{{scripts}}', appScriptsHtml);
 
 for (let i = 0; i < vueRoutes.length; i++) {
     router.get(vueRoutes[i].path, (req, res) => {
@@ -119,6 +130,8 @@ router.get('/r/:id', (req, res) => {
             renderedTotals,
             optionalFields: library.optionalFields,
             renderedDescription: markdown.toHTML(list.description),
+            scripts: shareScriptsHtml,
+            styles: shareStylesHtml,
         };
 
         model = extend(model, templates);
