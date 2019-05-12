@@ -4,6 +4,7 @@
     &,
     body {
         background: $background1;
+        box-sizing: border-box;
         color: $content;
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
@@ -22,8 +23,6 @@
     input,
     select,
     textarea {
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
         color: $content;
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
@@ -50,6 +49,10 @@
         padding: 3px;
         position: absolute;
         z-index: 105;
+    }
+
+    *, *:before, *:after {
+        box-sizing: inherit;
     }
 }
 
@@ -88,7 +91,6 @@
     color: $green1;
     cursor: pointer;
     display: inline-block;
-    padding: 5px 10px;
     text-decoration: none;
 
     i {
@@ -105,8 +107,6 @@
 }
 
 .lpHalf {
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     float: left;
     width: 50%;
 }
@@ -258,7 +258,6 @@
 }
 
 .lpButtons .lpButton {
-    box-sizing: border-box;
     width: 100%;
 }
 

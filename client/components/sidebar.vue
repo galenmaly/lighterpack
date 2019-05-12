@@ -1,18 +1,22 @@
 <style lang="scss">
 @import "../css/_globals";
 
+$sidebarWidth: 280px;
+$sidebarOverflow: 1000px;
+$sidebarPadding: 20px;
+
 #sidebar {
     background: #555;
     box-shadow: -7px 0 7px rgba(0, 0, 0, 0.2) inset;
     color: #fff;
     height: 100%;
-    margin-left: -600px;
+    margin-left: -$sidebarOverflow;
     opacity: 0;
-    padding-left: 620px;
-    padding-right: 20px;
+    padding-left: $sidebarOverflow + $sidebarPadding;
+    padding-right: $sidebarPadding;
     position: fixed;
     transition: opacity $transitionDurationSlow ease-in-out 0s;
-    width: 280px;
+    width: $sidebarWidth + $sidebarOverflow + $sidebarPadding*2;
     z-index: $sidebar;
 
     .lpHasSidebar & {
@@ -22,7 +26,6 @@
     h1 {
         @include fullBleedLeft();
 
-        box-sizing: border-box;
         height: 60px;
         margin: 0 -20px 20px 0;
         padding: 20px 0 20px;
@@ -45,7 +48,6 @@
 
     ul {
         background: #606060;
-        box-sizing: content-box;
         margin: 0;
         overflow-x: hidden;
         padding: 0;

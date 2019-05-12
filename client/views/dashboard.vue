@@ -2,7 +2,6 @@
 @import "../css/_globals";
 
 #header {
-    box-sizing: border-box;
     display: flex;
     height: 60px;
     margin: 0 -20px 20px; /* lpList padding */

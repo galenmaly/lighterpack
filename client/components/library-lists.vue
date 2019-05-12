@@ -74,6 +74,17 @@
     display: flex;
     justify-content: space-between;
 }
+
+#addListFlyout {
+    .lpContent a {
+        display: block;
+        margin-bottom: 5px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
 </style>
 
 <template>
@@ -83,9 +94,9 @@
             <PopoverHover id="addListFlyout" >
                 <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
                 <div slot="content">
-                    <div><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></div>
-                    <div><a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a></div>
-                    <div><a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a></div>
+                    <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
+                    <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
+                    <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
                 </div>
             </PopoverHover>
         </div>

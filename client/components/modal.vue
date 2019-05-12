@@ -13,7 +13,7 @@
     top: 50%;
     transform: translateX(-50%) translateY(-50%);
     transition: all $transitionDuration;
-    width: 350px;
+    width: 420px;
     z-index: $dialog;
 
     .lpHalf {

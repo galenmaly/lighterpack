@@ -4,8 +4,6 @@
 .lpPopover {
     display: block;
     position: relative;
-    box-sizing: border-box;
-
     .lpTarget {
         cursor: default;
         display: inline-block;

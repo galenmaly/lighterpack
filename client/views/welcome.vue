@@ -3,7 +3,7 @@
 
 #welcome {
     border-top: 2px solid $orange1;
-    width: 600px;
+    width: 700px;
 
     h2 {
         font-weight: normal;
