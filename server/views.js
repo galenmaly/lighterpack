@@ -339,7 +339,7 @@ const renderItem = function (item, args) {
 
     const displayWeight = weightUtils.MgToWeight(item.weight, unit);
 
-    const displayPrice = item.price ? item.price.toFixed(2) : '';
+    const displayPrice = item.price ? item.price.toFixed(2) : '0.00';
 
     const unitSelect = renderUnitSelect(unit, args.unitSelectTemplate, item.weight);
 
@@ -361,10 +361,11 @@ const renderCategory = function (category, args) {
         items += renderItem(item, args);
     }
 
-
     category.calculateSubtotal();
-    category.displaySubtotal = weightUtils.MgToWeight(category.subtotal, args.totalUnit);
+    category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
 
+    category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
+    
     let temp = Vue.util.extend({}, category);
     temp = Vue.util.extend(temp, {
         items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol, showPrices: args.showPrices,
@@ -390,41 +391,51 @@ var renderLibrary = function (library, args) {
 };
 
 const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, unit) {
-    let total = 0;
-    let wornTotal = 0;
-    let consumableTotal = 0;
-    let packTotal = 0;
-    let qtyTotal = 0;
+    let totalWeight = 0;
+    let totalWornWeight = 0;
+    let totalConsumableWeight = 0;
+    let totalPackWeight = 0;
+    let totalQty = 0;
+    let totalPrice = 0;
+    let totalConsumablePrice = 0;
     const out = { categories: [] };
 
     for (const i in list.categoryIds) {
         const category = list.library.getCategoryById(list.categoryIds[i]);
         category.calculateSubtotal();
-        category.displaySubtotal = weightUtils.MgToWeight(category.subtotal, unit);
+        category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, unit);
         category.subtotalUnit = unit;
 
-        total += category.subtotal;
-        wornTotal += category.wornSubtotal;
-        consumableTotal += category.consumableSubtotal;
-        qtyTotal += category.qtySubtotal;
+        totalWeight += category.subtotalWeight;
+        totalPrice += category.subtotalPrice;
+        totalWornWeight += category.subtotalWornWeight;
+        totalConsumableWeight += category.subtotalConsumableWeight;
+        totalConsumablePrice += category.subtotalConsumablePrice;
+        totalQty += category.subtotalQty;
         out.categories.push(category);
     }
 
-    packTotal = total - (wornTotal + consumableTotal);
-    out.total = weightUtils.MgToWeight(total, unit);
-    out.totalUnit = renderUnitSelect(unit, unitSelectTemplate, total);
+    totalPackWeight = totalWeight - (totalWornWeight + totalConsumableWeight);
+
+    out.totalWeight = totalWeight;
+    out.totalWeightDisplay = weightUtils.MgToWeight(totalWeight, unit);
+    out.totalUnit = renderUnitSelect(unit, unitSelectTemplate, totalWeight);
     out.subtotalUnit = unit;
-    out.wornTotal = wornTotal;
-    out.wornDisplayTotal = weightUtils.MgToWeight(wornTotal, unit);
-    out.consumableTotal = consumableTotal;
-    out.consumableDisplayTotal = weightUtils.MgToWeight(consumableTotal, unit);
-    out.packTotal = packTotal;
-    out.packDisplayTotal = weightUtils.MgToWeight(packTotal, unit);
-    out.qtyTotal = qtyTotal;
+    out.totalWornWeight = totalWornWeight;
+    out.totalWornWeightDisplay = weightUtils.MgToWeight(totalWornWeight, unit);
+    out.totalConsumableWeight = totalConsumableWeight;
+    out.totalConsumableWeightDisplay = weightUtils.MgToWeight(totalConsumableWeight, unit);
+    out.totalPackWeight = totalPackWeight;
+    out.totalPackWeightDisplay = weightUtils.MgToWeight(totalPackWeight, unit);
+    out.shouldDisplayPackWeight = totalPackWeight !== totalWeight;
+    out.totalQty = totalQty;
+    out.totalPrice = totalPrice;
+    out.totalPriceDisplay = totalPrice ? totalPrice.toFixed(2) : '';
+    out.totalConsumablePrice = totalConsumablePrice;
+    out.totalConsumablePriceDisplay = totalConsumablePrice ? totalConsumablePrice.toFixed(2) : '';
 
     return Mustache.render(totalsTemplate, out);
 };
-
 
 var renderLibraryTotals = function (library, totalsTemplate, unitSelectTemplate) {
     return renderListTotals(library.getListById(library.defaultListId), totalsTemplate, unitSelectTemplate, library.totalUnit);

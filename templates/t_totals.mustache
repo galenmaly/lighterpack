@@ -17,48 +17,54 @@
                 {{name}}
             </span>
             <span class="lpCell lpNumber">
-                <div class="lpSubtotal"><span class="lpDisplaySubtotal"  mg="{{subtotal}}">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div>
+                <div class="lpSubtotal"><span class="lpDisplaySubtotal"  mg="{{subtotalWeight}}">{{subtotalWeightDisplay}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div>
             </span>
         </li>
     {{/categories}}
     <li class="lpRow lpFooter lpTotal">
         <span class="lpCell"></span>
-        <span class="lpCell lpSubtotal" title="{{qtyTotal}} items">
+        <span class="lpCell lpSubtotal" title="{{totalQty}} items">
             Total
         </span>
         <span class="lpCell lpNumber lpSubtotal">
-            <span class="lpTotalValue" title="{{qtyTotal}} items">{{total}}</span>
+            <span class="lpTotalValue" title="{{totalQty}} items">{{totalWeightDisplay}}</span>
             <span class="lpTotalUnit">{{{totalUnit}}}</span>
         </span>
     </li>
-    <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight">
-        <span class="lpCell"></span>
-        <span class="lpCell lpSubtotal">
-            Consumable
-        </span>
-        <span class="lpCell lpNumber lpSubtotal">
-            <span class="lpDisplaySubtotal" mg="{{consumableTotal}}">{{consumableDisplayTotal}}</span>
-            <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
-        </span>
-    </li>
-    <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight">
-        <span class="lpCell"></span>
-        <span class="lpCell lpSubtotal">
-            Worn
-        </span>
-        <span class="lpCell lpNumber lpSubtotal">
-            <span class="lpDisplaySubtotal" mg="{{wornTotal}}">{{wornDisplayTotal}}</span>
-            <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
-        </span>
-    </li>
-    <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpPackWeight">
-        <span class="lpCell"></span>
-        <span class="lpCell lpSubtotal">
-            Base Weight
-        </span>
-        <span class="lpCell lpNumber lpSubtotal">
-            <span class="lpDisplaySubtotal" mg="{{packTotal}}">{{packDisplayTotal}}</span>
-            <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
-        </span>
-    </li>
+    {{#totalConsumableWeight}}
+        <li data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight">
+            <span class="lpCell"></span>
+            <span class="lpCell lpSubtotal">
+                Consumable
+            </span>
+            <span class="lpCell lpNumber lpSubtotal">
+                <span class="lpDisplaySubtotal" mg="{{totalConsumableWeight}}">{{totalConsumableWeightDisplay}}</span>
+                <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+            </span>
+        </li>
+    {{/totalConsumableWeight}}
+    {{#totalWornWeight}}
+        <li data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight">
+            <span class="lpCell"></span>
+            <span class="lpCell lpSubtotal">
+                Worn
+            </span>
+            <span class="lpCell lpNumber lpSubtotal">
+                <span class="lpDisplaySubtotal" mg="{{totalWornWeight}}">{{totalWornWeightDisplay}}</span>
+                <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+            </span>
+        </li>
+    {{/totalWornWeight}}
+    {{#shouldDisplayPackWeight}}
+        <li data-weight-type="base" class="lpRow lpFooter lpBreakdown lpPackWeight">
+            <span class="lpCell"></span>
+            <span class="lpCell lpSubtotal">
+                Base Weight
+            </span>
+            <span class="lpCell lpNumber lpSubtotal">
+                <span class="lpDisplaySubtotal" mg="{{totalPackWeight}}">{{totalPackWeightDisplay}}</span>
+                <span class="lpSubtotalUnit">{{subtotalUnit}}</span>
+            </span>
+        </li>
+    {{/shouldDisplayPackWeight}}
 </ul>
