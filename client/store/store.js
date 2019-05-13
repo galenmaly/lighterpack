@@ -185,6 +185,9 @@ const store = new Vuex.Store({
             state.library.optionalFields.images = true;
             bus.$emit('optionalFieldChanged');
         },
+        updateItemUnit(state, unit) {
+            state.library.itemUnit = unit;
+        },
         removeItemImage(state, updateItem) {
             const item = state.library.getItemById(updateItem.id);
             item.image = '';
