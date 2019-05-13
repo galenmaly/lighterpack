@@ -23,7 +23,7 @@
 #getStarted {
     background: $background1;
     font-size: 18px;
-    height: 160px;
+    height: 220px;
     padding: 30px 0;
 
     h2 {
@@ -96,10 +96,7 @@ export default {
             return this.list.categoryIds.map(id => this.library.getCategoryById(id));
         },
         isListNew() {
-            if (this.list.total === 0) {
-                return true;
-            }
-            return false;
+            return this.list.totalWeight === 0;
         },
     },
     watch: {

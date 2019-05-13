@@ -16,6 +16,7 @@ const Item = function ({ id, unit }) {
     this.image = '';
     this.imageUrl = '';
     this.url = '';
+    
     return this;
 };
 
@@ -35,6 +36,14 @@ const Category = function ({ library, id, _isNew }) {
     this.id = id;
     this.name = '';
     this.categoryItems = [];
+
+    this.subtotalWeight = 0;
+    this.subtotalWornWeight = 0;
+    this.subtotalConsumableWeight = 0;
+    this.subtotalPrice = 0;
+    this.subtotalConsumablePrice = 0;
+    this.subtotalQty = 0;
+
     this._isNew = _isNew;
     return this;
 };
@@ -147,6 +156,16 @@ const List = function ({ id, library }) {
     this.chart = null;
     this.description = '';
     this.externalId = '';
+
+    this.totalWeight = 0;
+    this.totalWornWeight = 0;
+    this.totalConsumableWeight = 0;
+    this.totalBaseWeight = 0;
+    this.totalPackWeight = 0;
+    this.totalPrice = 0;
+    this.totalConsumablePrice = 0;
+    this.totalQty = 0;
+    
     return this;
 };
 
