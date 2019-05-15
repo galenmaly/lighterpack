@@ -99,6 +99,7 @@ const store = new Vuex.Store({
         },
         removeItem(state, item) {
             state.library.removeItem(item.id);
+            state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         removeCategory(state, category) {
             state.library.removeCategory(category.id);
