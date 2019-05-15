@@ -118,7 +118,7 @@ import PopoverHover from './popover-hover.vue';
 const dragula = require('dragula');
 
 export default {
-    name: 'LibraryItem',
+    name: 'LibraryList',
     components: {
         PopoverHover,
     },
