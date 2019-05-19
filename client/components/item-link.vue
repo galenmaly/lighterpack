@@ -3,43 +3,43 @@
 </style>
 
 <template>
-    <modal :shown="shown" @hide="shown = false" id="itemLinkDialog">
+    <modal id="itemLinkDialog" :shown="shown" @hide="shown = false">
         <h2>Add a link for this item</h2>
-        <form @submit.prevent="addLink" id="itemLinkForm">
-            <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
-            <input type="submit" class="lpButton" value="Save" />
-            <a @click="shown = false" class="lpHref close">Cancel</a>
+        <form id="itemLinkForm" @submit.prevent="addLink">
+            <input v-model="url" type="text" d="itemLink" placeholder="Item Link">
+            <input type="submit" class="lpButton" value="Save">
+            <a class="lpHref close" @click="shown = false">Cancel</a>
         </form>
     </modal>
 </template>
 
 <script>
-import modal from "./modal.vue";
+import modal from './modal.vue';
 
 export default {
-    name: "item-link",
+    name: 'ItemLink',
     components: {
-        modal
+        modal,
     },
-    data: function() {
+    data() {
         return {
-            url: "",
+            url: '',
             item: false,
-            shown: false
-        }
+            shown: false,
+        };
     },
-    methods: {
-        addLink: function() {
-            this.$store.commit("updateItemLink", {url: this.url, item: this.item});
-            this.shown = false;
-        }
-    },
-    beforeMount: function() {
-        bus.$on("updateItemLink", (item) => {
+    beforeMount() {
+        bus.$on('updateItemLink', (item) => {
             this.shown = true;
             this.item = item;
             this.url = item.url;
         });
-    }
-}
+    },
+    methods: {
+        addLink() {
+            this.$store.commit('updateItemLink', { url: this.url, item: this.item });
+            this.shown = false;
+        },
+    },
+};
 </script>

@@ -11,30 +11,30 @@
 </style>
 
 <template>
-    <modal :shown="shown" @hide="shown = false" id="lpImageDialog">
-        <img :src="imageUrl" />
+    <modal id="lpImageDialog" :shown="shown" @hide="shown = false">
+        <img :src="imageUrl">
     </modal>
 </template>
 
 <script>
-import modal from "./modal.vue";
+import modal from './modal.vue';
 
 export default {
-    name: "item-view-image",
+    name: 'ItemViewImage',
     components: {
-        modal
+        modal,
     },
-    data: function() {
+    data() {
         return {
-            imageUrl: "",
-            shown: false
+            imageUrl: '',
+            shown: false,
         };
     },
-    mounted: function() {
-        bus.$on("viewItemImage", (imageUrl) => {
+    mounted() {
+        bus.$on('viewItemImage', (imageUrl) => {
             this.shown = true;
             this.imageUrl = imageUrl;
         });
-    }
-}
+    },
+};
 </script>

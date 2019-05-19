@@ -1,18 +1,22 @@
 <style lang="scss">
 @import "../css/_globals";
 
+$sidebarWidth: 280px;
+$sidebarOverflow: 1000px;
+$sidebarPadding: 20px;
+
 #sidebar {
     background: #555;
     box-shadow: -7px 0 7px rgba(0, 0, 0, 0.2) inset;
     color: #fff;
     height: 100%;
-    margin-left: -600px;
+    margin-left: -$sidebarOverflow;
     opacity: 0;
-    padding-left: 620px;
-    padding-right: 20px;
+    padding-left: $sidebarOverflow + $sidebarPadding;
+    padding-right: $sidebarPadding;
     position: fixed;
     transition: opacity $transitionDurationSlow ease-in-out 0s;
-    width: 280px;
+    width: $sidebarWidth + $sidebarOverflow + $sidebarPadding*2;
     z-index: $sidebar;
 
     .lpHasSidebar & {
@@ -22,7 +26,6 @@
     h1 {
         @include fullBleedLeft();
 
-        box-sizing: border-box;
         height: 60px;
         margin: 0 -20px 20px 0;
         padding: 20px 0 20px;
@@ -45,8 +48,6 @@
 
     ul {
         background: #606060;
-        -moz-box-sizing: content-box;
-        box-sizing: content-box;
         margin: 0;
         overflow-x: hidden;
         padding: 0;
@@ -54,37 +55,6 @@
 
     .lpHref {
         color: $blue2;
-    }
-
-    #addListFlyout {
-        position: absolute;
-        right: 0;
-        top: -10px;
-        width: 126px;
-
-        .lpTarget {
-            border: 1px solid transparent;
-            border-bottom: none;
-        }
-
-        &:hover .lpTarget {
-            background: #444;
-            border: 1px solid #999;
-            border-bottom: none;
-            display: block;
-        }
-
-        .lpContent {
-            background: #444;
-            border: 1px solid #999;
-            border-top: none;
-            left: 0;
-            padding: 0 5px 5px;
-        }
-
-        #importList {
-            padding-top: 0;
-        }
     }
 }
 
@@ -107,21 +77,21 @@
         <div id="scrollable">
             <h1>LighterPack <span>(beta)</span></h1>
 
-            <libraryLists></libraryLists>
-            <libraryItems></libraryItems>
+            <libraryLists />
+            <libraryItems />
         </div>
     </div>
 </template>
 
 <script>
-import libraryItems from "./library-items.vue";
-import libraryLists from "./library-lists.vue";
+import libraryItems from './library-items.vue';
+import libraryLists from './library-lists.vue';
 
 export default {
-    name: "sidebar",
+    name: 'Sidebar',
     components: {
         libraryItems,
-        libraryLists
-    }
-}
+        libraryLists,
+    },
+};
 </script>

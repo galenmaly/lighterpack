@@ -32,12 +32,11 @@ $spinnerSize: 18px;
 </style>
 
 <template>
-    <div class="lpSpinner"></div>
+    <div class="lpSpinner" />
 </template>
 
 <script>
 export default {
-    name: "spinner",
-}
+    name: 'Spinner',
+};
 </script>
-

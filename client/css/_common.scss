@@ -4,6 +4,7 @@
     &,
     body {
         background: $background1;
+        box-sizing: border-box;
         color: $content;
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
@@ -22,8 +23,6 @@
     input,
     select,
     textarea {
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
         color: $content;
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
@@ -50,6 +49,10 @@
         padding: 3px;
         position: absolute;
         z-index: 105;
+    }
+
+    *, *:before, *:after {
+        box-sizing: inherit;
     }
 }
 
@@ -88,7 +91,6 @@
     color: $green1;
     cursor: pointer;
     display: inline-block;
-    padding: 5px 10px;
     text-decoration: none;
 
     i {
@@ -105,8 +107,6 @@
 }
 
 .lpHalf {
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     float: left;
     width: 50%;
 }
@@ -169,66 +169,6 @@
     width: 10px;
 }
 
-.lpFlyout {
-    display: block;
-    position: relative;
-
-    .lpTarget {
-        cursor: default;
-        display: inline-block;
-        padding: 5px;
-        position: relative;
-    }
-
-    .lpContent {
-        background: #fff;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        color: $content;
-        display: none;
-        left: -1px;
-        margin-top: -1px;
-        min-width: 100%;
-        padding: 12px;
-        position: absolute;
-        top: 100%;
-        white-space: nowrap;
-        z-index: $dialog;
-
-        & > *:first-child {
-            margin-top: 0;
-        }
-
-        & > *:last-child {
-            margin-bottom: 0;
-        }
-
-        h3 {
-            margin-bottom: 0;
-        }
-
-        ul {
-            line-height: 25px;
-        }
-
-        hr {
-            border-color: $border1;
-            margin: 7px -0;
-            padding: 0;
-        }
-    }
-
-    &:hover {
-        .lpTarget {
-            z-index: $aboveDialog;
-        }
-
-        .lpContent {
-            display: block;
-        }
-    }
-}
-
 .lpFields {
     input[type=text],
     input[type=email],
@@ -264,7 +204,7 @@
 }
 
 .lp .lpButton { /* TODO: find out why this specificity is needed */
-    background-image: linear-gradient(135deg, $orange1 50%, $orange2 100%);
+    background-image: linear-gradient(165deg, $orange1 50%, $orange2 100%);
     background-position: 100% 100%;
     background-size: 200%;
     border: none;
@@ -318,7 +258,6 @@
 }
 
 .lpButtons .lpButton {
-    box-sizing: border-box;
     width: 100%;
 }
 

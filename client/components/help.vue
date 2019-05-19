@@ -7,7 +7,7 @@
 </style>
 
 <template>
-    <modal :shown="shown" @hide="shown = false" id="help">
+    <modal id="help" :shown="shown" @hide="shown = false">
         <h2>Help</h2>
 
         <p>Getting Started:</p>
@@ -22,28 +22,28 @@
         <hr>
         <strong>Items in multiple lists</strong>
         <p>If you copy your list or drag an item from the gear library into a second list, those items are now <strong>linked</strong>. This means that changes to an item in one place will update that list everywhere. If you want to copy your list without links, for now you can export to CSV and re-import the list.</p>
-        <hr />
+        <hr>
         <p><a class="lpHref" href="mailto:info@lighterpack.com">More help available via email.</a></p>
     </modal>
 </template>
 
 <script>
-import modal from "./modal.vue";
+import modal from './modal.vue';
 
 export default {
-    name: "help",
+    name: 'Help',
     components: {
-        modal
+        modal,
     },
-    data: function() {
+    data() {
         return {
-            shown: false
-        }
+            shown: false,
+        };
     },
-    beforeMount: function() {
-        bus.$on("showHelp", () => {
+    beforeMount() {
+        bus.$on('showHelp', () => {
             this.shown = true;
         });
-    }
-}
+    },
+};
 </script>

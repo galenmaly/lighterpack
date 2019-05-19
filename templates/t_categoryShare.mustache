@@ -8,9 +8,9 @@
         </li>
         {{{items}}}
         <li class="lpFooter lpItemsFooter">
-            {{#showPrices}}<span class="lpPriceCell lpNumber"><div class="lpPriceSubtotal">{{currencySymbol}}{{displayPriceSubtotal}}</div></span>{{/showPrices}}
-            <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal" mg="{{subtotal}}">{{displaySubtotal}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
-            <span class="lpQtyCell lpNumber"><div class="lpSubtotal"><span class="lpQtySubtotal">{{qtySubtotal}}</span></div></span>
+            {{#showPrices}}<span class="lpPriceCell lpNumber"><div class="lpPriceSubtotal">{{currencySymbol}}{{subtotalPriceDisplay}}</div></span>{{/showPrices}}
+            <span class="lpWeightCell lpNumber"><div class="lpSubtotal"><span class="lpDisplaySubtotal" mg="{{subtotalWeight}}">{{subtotalWeightDisplay}}</span> <span class="lpSubtotalUnit">{{subtotalUnit}}</span></div></span>
+            <span class="lpQtyCell lpNumber"><div class="lpSubtotal"><span class="lpQtySubtotal">{{subtotalQty}}</span></div></span>
         </li>
     </ul>
 </li>

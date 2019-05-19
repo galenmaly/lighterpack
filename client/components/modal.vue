@@ -5,13 +5,15 @@
     background: $background1;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     left: 50%;
+    max-height: calc(90% - (#{$spacingLarge} * 2));
+    overflow-y: auto;
     padding: $spacingLarge;
     position: fixed;
     text-align: left;
     top: 50%;
     transform: translateX(-50%) translateY(-50%);
     transition: all $transitionDuration;
-    width: 350px;
+    width: 420px;
     z-index: $dialog;
 
     .lpHalf {
@@ -82,37 +84,37 @@
     <div class="lpModalContainer">
         <transition name="lpModal">
             <div v-if="shown" :id="id" class="lpModal">
-                <slot></slot>
+                <slot />
             </div>
         </transition>
         <transition name="lpModal">
-            <div v-if="shown" :class="{'lpModalOverlay': true, 'lpBlackout': blackout, 'lpTransparent': transparentOverlay}" @click="hide"></div>
+            <div v-if="shown" :class="{'lpModalOverlay': true, 'lpBlackout': blackout, 'lpTransparent': transparentOverlay}" @click="hide" />
         </transition>
     </div>
 </template>
 
 <script>
 export default {
-    name: "Modal",
+    name: 'Modal',
     props: {
         id: {
             type: String,
-            required: false
+            required: false,
         },
         shown: {
             type: Boolean,
-            required: true
+            required: true,
         },
         blackout: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
         transparentOverlay: {
             type: Boolean,
             required: false,
-            default: false
-        }
+            default: false,
+        },
     },
     beforeMount() {
         this.bindEscape();
@@ -122,19 +124,19 @@ export default {
     },
     methods: {
         hide() {
-            this.$emit("hide");
+            this.$emit('hide');
         },
         bindEscape() {
-            window.addEventListener("keyup", this.closeOnEscape);
+            window.addEventListener('keyup', this.closeOnEscape);
         },
         unbindEscape() {
-            window.removeEventListener("keyup", this.closeOnEscape);
+            window.removeEventListener('keyup', this.closeOnEscape);
         },
         closeOnEscape(evt) {
             if (this.shown && evt.keyCode === 27) {
                 this.hide();
             }
-        }
-    }
+        },
+    },
 };
 </script>
