@@ -363,7 +363,6 @@ const renderCategory = function (category, args) {
 
     category.calculateSubtotal();
     category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
-
     category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
 
     let temp = Vue.util.extend({}, category);
