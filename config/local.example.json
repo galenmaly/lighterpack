@@ -1,0 +1,12 @@
+{
+  "environment"   : "development",
+  "deployUrl": "http://localhost:3000",
+  "publicUrl": "http://localhost:3000",
+  "port": 3000,
+  "devServerPort" : 8080,
+  "bindings"      : [""],
+  "databaseUrl": "mongodb/lighterpack",
+  "imgurClientID": "",
+  "mailgunBaseURL": "",
+  "mailgunAPIKey": ""
+}
