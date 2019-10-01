@@ -92,6 +92,7 @@
             </div>
         </div>
 
+        <globalAlerts />
         <speedbump />
         <copyList />
         <importCSV />
@@ -105,6 +106,7 @@
 </template>
 
 <script>
+import globalAlerts from '../components/global-alerts.vue';
 import sidebar from '../components/sidebar.vue';
 import share from '../components/share.vue';
 import listSettings from '../components/list-settings.vue';
@@ -140,6 +142,7 @@ export default {
         itemImage,
         itemViewImage,
         speedbump,
+        globalAlerts,
     },
     mixins: [],
     data() {

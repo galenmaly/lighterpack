@@ -23,6 +23,7 @@ const store = new Vuex.Store({
         lastSaveData: null,
         loggedIn: false,
         directiveInstances: {},
+        globalAlerts: [],
     },
     getters: {
         activeList(state) {
@@ -57,7 +58,7 @@ const store = new Vuex.Store({
                 library.load(libraryData);
                 state.library = library;
             } catch (err) {
-                alert('An error occurred while loading your data.');
+                state.globalAlerts.push({message: 'An error occurred while loading your data.'});
             }
             state.lastSaveData = JSON.stringify(library.save());
         },
