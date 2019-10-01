@@ -5,3 +5,4 @@ node_modules
 /public/dist/*
 app.sublime-project
 app.sublime-workspace
+*.code-workspace
