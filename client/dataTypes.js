@@ -3,6 +3,14 @@ const assignIn = require('lodash/assignIn');
 const colorUtils = require('./utils/color.js');
 const weightUtils = require('./utils/weight.js');
 
+const defaultOptionalFields = {
+    images: false,
+    price: false,
+    worn: true,
+    consumable: true,
+    listDescription: false,
+};
+
 const Item = function ({ id, unit }) {
     this.id = id;
     this.name = '';
@@ -128,24 +136,18 @@ Category.prototype.load = function (input) {
 
     assignIn(this, input);
 
-    if (typeof this.itemIds !== 'undefined') {
-        if (this.categoryItems.length === 0) {
-            this.categoryItems = this.itemIds;
-            delete this.itemIds;
-        } else {
-            delete this.itemIds;
+    this.categoryItems.forEach((categoryItem, index) => {
+        delete categoryItem._isNew;
+        if (typeof categoryItem.price !== 'undefined') {
+            delete categoryItem.price;
         }
-    }
-
-    for (let i = 0; i < this.categoryItems.length; i++) {
-        delete this.categoryItems[i]._isNew;
-        if (typeof this.categoryItems[i].price !== 'undefined') {
-            delete this.categoryItems[i].price;
+        if (!categoryItem.star) {
+            categoryItem.star = 0;
         }
-        if (!this.categoryItems[i].star) {
-            this.categoryItems[i].star = 0;
+        if (!this.library.getItemById(categoryItem.itemId)) {
+            this.categoryItems.splice(index, 1);
         }
-    }
+    });
 };
 
 const List = function ({ id, library }) {
@@ -278,6 +280,7 @@ List.prototype.calculateTotals = function () {
 
     for (const i in this.categoryIds) {
         const category = this.library.getCategoryById(this.categoryIds[i]);
+
         category.calculateSubtotal();
 
         totalWeight += category.subtotalWeight;
@@ -332,13 +335,7 @@ const Library = function () {
     this.itemUnit = 'oz';
     this.showSidebar = true;
     this.showImages = false;
-    this.optionalFields = {
-        images: false,
-        price: false,
-        worn: true,
-        consumable: true,
-        listDescription: false,
-    };
+    this.optionalFields = assignIn({}, defaultOptionalFields);
     this.currencySymbol = '$';
     this.firstRun();
     return this;
@@ -528,19 +525,6 @@ Library.prototype.findListWithCategoryById = function (id) {
     }
 };
 
-Library.prototype.findSequence = function () {
-    const list = this.getListById(this.defaultListId);
-    for (const i in list.categories) {
-        const category = list.categories[i];
-        for (const j in category.items) {
-            const item = category.items[j];
-            if (item.id && item.id > sequence) {
-                sequence = item.id;
-            }
-        }
-    }
-};
-
 Library.prototype.nextSequence = function () {
     return ++this.sequence;
 };
@@ -575,53 +559,194 @@ Library.prototype.save = function () {
     return out;
 };
 
-Library.prototype.load = function (input) {
+Library.prototype.load = function (serializedLibrary) {
+    //upgrades should update "serializedLibrary" in-place instead of modifying "this"
+    if (serializedLibrary.version === '0.1' || !serializedLibrary.version) {
+        this.upgrade01to02(serializedLibrary);
+    }
+    if (serializedLibrary.version === '0.2') {
+        this.upgrade02to03(serializedLibrary);
+    }
+
     this.items = [];
 
-    assignIn(this.optionalFields, input.optionalFields);
+    assignIn(this.optionalFields, serializedLibrary.optionalFields);
 
-    for (var i in input.items) {
-        var temp = new Item({ id: input.items[i].id });
-        temp.load(input.items[i]);
+    for (var i in serializedLibrary.items) {
+        var temp = new Item({ id: serializedLibrary.items[i].id });
+        temp.load(serializedLibrary.items[i]);
         this.items.push(temp);
         this.idMap[temp.id] = temp;
     }
 
     this.categories = [];
-    for (var i in input.categories) {
-        var temp = new Category({ id: input.categories[i].id, library: this });
-        temp.load(input.categories[i]);
+    for (var i in serializedLibrary.categories) {
+        var temp = new Category({ id: serializedLibrary.categories[i].id, library: this });
+        temp.load(serializedLibrary.categories[i]);
         this.categories.push(temp);
         this.idMap[temp.id] = temp;
     }
 
     this.lists = [];
-    for (var i in input.lists) {
-        var temp = new List({ id: input.lists[i].id, library: this });
-        temp.load(input.lists[i]);
+    for (var i in serializedLibrary.lists) {
+        var temp = new List({ id: serializedLibrary.lists[i].id, library: this });
+        temp.load(serializedLibrary.lists[i]);
         this.lists.push(temp);
         this.idMap[temp.id] = temp;
     }
 
-    if (input.showSidebar) this.showSidebar = input.showSidebar;
-    if (input.totalUnit) this.totalUnit = input.totalUnit;
-    if (input.itemUnit) this.itemUnit = input.itemUnit;
-    if (input.currencySymbol) this.currencySymbol = input.currencySymbol;
-    this.sequence = input.sequence;
-    this.defaultListId = input.defaultListId;
+    if (serializedLibrary.showSidebar) this.showSidebar = serializedLibrary.showSidebar;
+    if (serializedLibrary.totalUnit) this.totalUnit = serializedLibrary.totalUnit;
+    if (serializedLibrary.itemUnit) this.itemUnit = serializedLibrary.itemUnit;
+    if (serializedLibrary.currencySymbol) this.currencySymbol = serializedLibrary.currencySymbol;
 
-    if (input.version === '0.1' || !input.version) {
-        this.upgrade01to02(input);
-    }
+    this.version = serializedLibrary.version;
+    this.sequence = serializedLibrary.sequence;
+    this.defaultListId = serializedLibrary.defaultListId;
 };
 
-Library.prototype.upgrade01to02 = function (input) {
-    if (input.showImages) {
-        this.optionalFields.images = true;
-    } else {
-        this.optionalFields.images = false;
+Library.prototype.upgrade01to02 = function (serializedLibrary) {
+    if (!serializedLibrary.optionalFields) {
+        serializedLibrary.optionalFields = assignIn({}, defaultOptionalFields);
     }
-    this.version == '0.2';
+    
+    if (serializedLibrary.showImages) {
+        serializedLibrary.optionalFields.images = true;
+    } else {
+        serializedLibrary.optionalFields.images = false;
+    }
+    serializedLibrary.version = '0.2';
+};
+
+Library.prototype.upgrade02to03 = function (serializedLibrary) {
+    this.sequenceShouldBeCorrect(serializedLibrary);
+    this.idsShouldBeInts(serializedLibrary);
+    this.renameCategoryIds(serializedLibrary);
+    this.fixDuplicateIds(serializedLibrary);
+    serializedLibrary.version = '0.3';
+};
+
+Library.prototype.sequenceShouldBeCorrect = function (serializedLibrary) {
+    let sequence = 0;
+
+    serializedLibrary.lists.forEach((list) => {
+        if (list.id > sequence) {
+            sequence = list.id;
+        }
+    });
+
+    serializedLibrary.categories.forEach((category) => {
+        if (category.id > sequence) {
+            sequence = category.id;
+        }
+    });
+
+    serializedLibrary.items.forEach((item) => {
+        if (item.id > sequence) {
+            sequence = item.id;
+        }
+    });
+    serializedLibrary.sequence = (sequence + 1);
+};
+
+Library.prototype.idsShouldBeInts = function (serializedLibrary) {
+    // Some lists of Ids were strings previously. They should be numbers.
+    serializedLibrary.lists.forEach((list) => {
+        list.categoryIds = list.categoryIds.map((categoryId) => {
+            return parseInt(categoryId, 10);
+        })
+    });
+};
+
+Library.prototype.renameCategoryIds = function(serializedLibrary) {
+    // categoryIds was previously itemIds. Renaming for clarity.
+    serializedLibrary.categories.forEach((category) => {
+        if (typeof category.itemIds !== 'undefined') {
+            if (!category.categoryItems || category.categoryItems.length === 0) {
+                category.categoryItems = category.itemIds;
+                delete category.itemIds;
+            } else {
+                delete category.itemIds;
+            }
+        }
+        if (typeof category.categoryItems === 'undefined') {
+            category.categoryItems = [];
+        }
+    });
+};
+
+Library.prototype.fixDuplicateIds = function (serializedLibrary) {
+    const foundIds = {};
+
+    serializedLibrary.items.forEach((item) => {
+        if (!foundIds[item.id]) {
+            foundIds[item.id] = [];
+        }
+        foundIds[item.id].push({type: "item", item});
+    });
+
+    serializedLibrary.categories.forEach((category) => {
+        if (!foundIds[category.id]) {
+            foundIds[category.id] = [];
+        }
+        foundIds[category.id].push({type: "category", category});
+    });
+
+    serializedLibrary.lists.forEach((list) => {
+        if (!foundIds[list.id]) {
+            foundIds[list.id] = [];
+        }
+        foundIds[list.id].push({type: "list", list});
+    });
+
+    for (id in foundIds) {
+        if (foundIds[id].length > 1) {
+            const duplicateSet = foundIds[id];
+            duplicateSet.forEach((duplicate, index) => {
+                if (index === 0) {
+                    return;
+                }
+                if (duplicate.type === "item") {
+                    this.updateItemId(serializedLibrary, duplicate.item, ++serializedLibrary.sequence);
+                } else if (duplicate.type === "category") {
+                    this.updateCategoryId(serializedLibrary, duplicate.category, ++serializedLibrary.sequence);
+                } else if (duplicate.type === "list") {
+                    this.updateListId(serializedLibrary, duplicate.list, ++serializedLibrary.sequence);
+                }
+            });
+        }
+    }
+}
+
+Library.prototype.updateListId = function (serializedLibrary, list, newId) {
+    list.id = newId;
+};
+Library.prototype.updateCategoryId = function (serializedLibrary, category, newId) {
+    const oldId = category.id;
+
+    category.id = newId;
+
+    serializedLibrary.lists.forEach((list) => {
+        list.categoryIds.forEach((categoryId, index) => {
+            if (categoryId === oldId) {
+                list.categoryIds[index] = newId;
+            }
+        });
+    });
+};
+
+Library.prototype.updateItemId = function (serializedLibrary, item, newId) {
+    const oldId = item.id;
+
+    item.id = newId;
+
+    serializedLibrary.categories.forEach((category) => {
+        category.categoryItems.forEach((categoryItem) => {
+            if (categoryItem.itemId === oldId) {
+                categoryItem.itemId = newId;
+            }
+        });
+    });
 };
 
 Object.size = function (obj) {
