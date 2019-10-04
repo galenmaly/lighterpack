@@ -29,6 +29,11 @@ $spinnerSize: 18px;
         border-top-color: transparent;
     }
 }
+
+.lpButton.lpSmall .lpSpinner {
+    right: 50%;
+    transform: translateY(-50%) translateX(50%);
+}
 </style>
 
 <template>
