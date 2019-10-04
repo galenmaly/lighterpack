@@ -17,11 +17,13 @@
         </modal>
 
         <blackoutFooter />
+        <globalAlerts />
     </div>
 </template>
 
 <script>
 import blackoutFooter from '../components/blackout-footer.vue';
+import globalAlerts from '../components/global-alerts.vue';
 import modal from '../components/modal.vue';
 import SigninForm from '../components/signin-form.vue';
 
