@@ -30,7 +30,7 @@
 </style>
 
 <template>
-    <ul v-if="alerts" class="lpGlobalAlerts">
+    <ul v-if="alerts && alerts.length" class="lpGlobalAlerts">
         <li class="lpGlobalAlert" v-for="alert in alerts">
             {{ alert.message }}
         </li>
