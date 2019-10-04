@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <ul v-if="sanitizedErrors" class="lpError">
+    <ul v-if="sanitizedErrors && sanitizedErrors.length" class="lpError">
         <li v-for="error in sanitizedErrors">
             {{ error.message }}
         </li>
