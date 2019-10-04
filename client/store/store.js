@@ -58,7 +58,7 @@ const store = new Vuex.Store({
                 library.load(libraryData);
                 state.library = library;
             } catch (err) {
-                state.globalAlerts.push({message: 'An error occurred while loading your data.'});
+                state.globalAlerts.push({ message: 'An error occurred while loading your data.' });
             }
             state.lastSaveData = JSON.stringify(library.save());
         },
@@ -247,7 +247,7 @@ const store = new Vuex.Store({
         },
         removeDirectiveInstance(state, key) {
             delete state.directiveInstances[key];
-        }
+        },
     },
     actions: {
         init(context) {
@@ -315,7 +315,7 @@ const store = new Vuex.Store({
                     return;
                 }
 
-                const saveRemotely = function(saveData) {
+                const saveRemotely = function (saveData) {
                     if (state.isSaving) {
                         setTimeout(() => { store.commit('save', true); }, saveInterval + 1);
                         return;
@@ -352,7 +352,7 @@ const store = new Vuex.Store({
                                 alert(error); // TODO
                             }
                         });
-                }
+                };
 
                 if (state.saveType === 'remote') {
                     saveRemotely(saveData);

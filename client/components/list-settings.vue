@@ -39,7 +39,7 @@
             <span slot="target"><i class="lpSprite lpSettings" /> Settings</span>
             <div slot="content">
                 <ul id="lpOptionalFields">
-                    <li v-for="optionalField in optionalFieldsLookup" class="lpOptionalField" :key="optionalField.name">
+                    <li v-for="optionalField in optionalFieldsLookup" :key="optionalField.name" class="lpOptionalField">
                         <label>
                             <input v-model="optionalField.value" type="checkbox" @change="toggleOptionalField($event, optionalField.name)">
                             {{ optionalField.displayName }}

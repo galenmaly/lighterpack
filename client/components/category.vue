@@ -17,7 +17,7 @@
                 <span class="lpHandleCell">
                     <div class="lpHandle lpCategoryHandle" title="Reorder this category" />
                 </span>
-                <input type="text" v-focus-on-create="category._isNew" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent" @input="updateCategoryName">
+                <input v-focus-on-create="category._isNew" type="text" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent" @input="updateCategoryName">
                 <span v-if="library.optionalFields['price']" class="lpPriceCell">Price</span>
                 <span class="lpWeightCell">Weight</span>
                 <span class="lpQtyCell">qty</span>

@@ -26,6 +26,7 @@ import errors from './errors.vue';
 import spinner from './spinner.vue';
 
 const dataTypes = require('../dataTypes.js');
+
 const Library = dataTypes.Library;
 
 export default {

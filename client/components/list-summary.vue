@@ -27,9 +27,9 @@
                         Weight
                     </span>
                 </li>
-                <li v-for="category in categories" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}" :key="category.id">
+                <li v-for="category in categories" :key="category.id" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
-                        <colorPicker v-if="category.displayColor" @colorChange="updateColor(category, $event)" :color="colorToHex(category.displayColor)" />
+                        <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @colorChange="updateColor(category, $event)" />
                     </span>
                     <span class="lpCell">
                         {{ category.name }}
@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import colorPicker from '../components/colorpicker.vue';
+import colorPicker from './colorpicker.vue';
 import unitSelect from './unit-select.vue';
 
 const pies = require('../pies.js');

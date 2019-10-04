@@ -3,6 +3,7 @@ const request = require('request');
 const mongojs = require('mongojs');
 
 const newDataTypes = require('../client/dataTypes.js');
+
 const NewLibrary = newDataTypes.Library;
 
 const collections = ['users_prod', 'libraries'];
@@ -10,36 +11,34 @@ const collections = ['users_prod', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
 
 let successfulUsersCount = 0;
-let erroredUsersCount = 0; 
+let erroredUsersCount = 0;
 const erroredUsers = [];
 
-console.log("loading users....")
-db.users_prod.find({}, function(err, users) {
+console.log('loading users....');
+db.users_prod.find({}, (err, users) => {
     if (!users.length) {
-        console.log("no users found");
+        console.log('no users found');
         return;
     }
 
-    for (var i in users) {
-        var user = users[i];
+    for (const i in users) {
+        const user = users[i];
         console.log(user.username);
-        let library = new NewLibrary();
+        const library = new NewLibrary();
         try {
             library.load(user.library);
-            successfulUsersCount ++;
+            successfulUsersCount++;
         } catch (err) {
-            console.log(user.username + " - " + err);
+            console.log(`${user.username} - ${err}`);
             erroredUsers.push(user.username);
-            erroredUsersCount ++;
+            erroredUsersCount++;
         }
-        let listIds = user.library.lists.map((list) => {
-            return list.externalId;
-        });
+        const listIds = user.library.lists.map(list => list.externalId);
     }
-    console.log("complete");
-    console.log("---")
-    console.log("successful users: " + successfulUsersCount)
-    console.log("errored users: " + erroredUsersCount)
-    console.log("---")
-    console.log(erroredUsers)
+    console.log('complete');
+    console.log('---');
+    console.log(`successful users: ${successfulUsersCount}`);
+    console.log(`errored users: ${erroredUsersCount}`);
+    console.log('---');
+    console.log(erroredUsers);
 });

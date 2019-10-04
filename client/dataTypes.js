@@ -24,7 +24,7 @@ const Item = function ({ id, unit }) {
     this.image = '';
     this.imageUrl = '';
     this.url = '';
-    
+
     return this;
 };
 
@@ -167,7 +167,7 @@ const List = function ({ id, library }) {
     this.totalPrice = 0;
     this.totalConsumablePrice = 0;
     this.totalQty = 0;
-    
+
     return this;
 };
 
@@ -379,7 +379,7 @@ Library.prototype.removeItem = function (id) {
     return true;
 };
 
-Library.prototype.newCategory = function ({ list, _isNew}) {
+Library.prototype.newCategory = function ({ list, _isNew }) {
     const temp = new Category({ id: this.nextSequence(), _isNew, library: this });
 
     this.categories.push(temp);
@@ -560,7 +560,7 @@ Library.prototype.save = function () {
 };
 
 Library.prototype.load = function (serializedLibrary) {
-    //upgrades should update "serializedLibrary" in-place instead of modifying "this"
+    // upgrades should update "serializedLibrary" in-place instead of modifying "this"
     if (serializedLibrary.version === '0.1' || !serializedLibrary.version) {
         this.upgrade01to02(serializedLibrary);
     }
@@ -609,7 +609,7 @@ Library.prototype.upgrade01to02 = function (serializedLibrary) {
     if (!serializedLibrary.optionalFields) {
         serializedLibrary.optionalFields = assignIn({}, defaultOptionalFields);
     }
-    
+
     if (serializedLibrary.showImages) {
         serializedLibrary.optionalFields.images = true;
     } else {
@@ -652,13 +652,11 @@ Library.prototype.sequenceShouldBeCorrect = function (serializedLibrary) {
 Library.prototype.idsShouldBeInts = function (serializedLibrary) {
     // Some lists of Ids were strings previously. They should be numbers.
     serializedLibrary.lists.forEach((list) => {
-        list.categoryIds = list.categoryIds.map((categoryId) => {
-            return parseInt(categoryId, 10);
-        })
+        list.categoryIds = list.categoryIds.map(categoryId => parseInt(categoryId, 10));
     });
 };
 
-Library.prototype.renameCategoryIds = function(serializedLibrary) {
+Library.prototype.renameCategoryIds = function (serializedLibrary) {
     // categoryIds was previously itemIds. Renaming for clarity.
     serializedLibrary.categories.forEach((category) => {
         if (typeof category.itemIds !== 'undefined') {
@@ -682,21 +680,21 @@ Library.prototype.fixDuplicateIds = function (serializedLibrary) {
         if (!foundIds[item.id]) {
             foundIds[item.id] = [];
         }
-        foundIds[item.id].push({type: "item", item});
+        foundIds[item.id].push({ type: 'item', item });
     });
 
     serializedLibrary.categories.forEach((category) => {
         if (!foundIds[category.id]) {
             foundIds[category.id] = [];
         }
-        foundIds[category.id].push({type: "category", category});
+        foundIds[category.id].push({ type: 'category', category });
     });
 
     serializedLibrary.lists.forEach((list) => {
         if (!foundIds[list.id]) {
             foundIds[list.id] = [];
         }
-        foundIds[list.id].push({type: "list", list});
+        foundIds[list.id].push({ type: 'list', list });
     });
 
     for (id in foundIds) {
@@ -706,17 +704,17 @@ Library.prototype.fixDuplicateIds = function (serializedLibrary) {
                 if (index === 0) {
                     return;
                 }
-                if (duplicate.type === "item") {
+                if (duplicate.type === 'item') {
                     this.updateItemId(serializedLibrary, duplicate.item, ++serializedLibrary.sequence);
-                } else if (duplicate.type === "category") {
+                } else if (duplicate.type === 'category') {
                     this.updateCategoryId(serializedLibrary, duplicate.category, ++serializedLibrary.sequence);
-                } else if (duplicate.type === "list") {
+                } else if (duplicate.type === 'list') {
                     this.updateListId(serializedLibrary, duplicate.list, ++serializedLibrary.sequence);
                 }
             });
         }
     }
-}
+};
 
 Library.prototype.updateListId = function (serializedLibrary, list, newId) {
     list.id = newId;

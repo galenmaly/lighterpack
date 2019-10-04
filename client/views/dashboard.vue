@@ -2,11 +2,11 @@
 @import "../css/_globals";
 
 #header {
+    align-items: baseline;
     display: flex;
     height: 60px;
     margin: 0 -20px 20px; /* lpList padding */
     position: relative;
-    align-items: baseline;
 }
 
 #hamburger {
@@ -60,8 +60,8 @@
     }
 
     &.signInRegisterButtons {
-        padding: 0 16px;
         height: auto;
+        padding: 0 16px;
     }
 }
 </style>
@@ -77,7 +77,7 @@
                 <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
                 <listSettings />
-                <accountDropdown v-if="isSignedIn"/>
+                <accountDropdown v-if="isSignedIn" />
                 <span v-else class="headerItem signInRegisterButtons">
                     <router-link to="/register" class="lpButton lpSmall">Register</router-link>
                     or

@@ -91,7 +91,7 @@
     <section id="listContainer">
         <div class="listContainerHeader">
             <h2>Lists</h2>
-            <PopoverHover id="addListFlyout" >
+            <PopoverHover id="addListFlyout">
                 <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
                 <div slot="content">
                     <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
@@ -101,7 +101,7 @@
             </PopoverHover>
         </div>
         <ul id="lists">
-            <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}" :key="list.id">
+            <li v-for="list in library.lists" :key="list.id" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
                 <div class="lpHandle" title="Reorder this item" />
                 <span class="lpLibraryListSwitch lpListName" @click="setDefaultList(list)">
                     {{ list | listName }}

@@ -2,26 +2,26 @@
 @import "../css/_globals";
 
 .lpGlobalAlerts {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
     background: $yellow1;
-    z-index: $aboveDialog;
+    border: 1px solid $darkYellow;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+    left: 50%;
     margin: 0;
     padding: 0;
+    position: fixed;
     text-align: center;
+    top: 0;
+    transform: translateX(-50%);
     width: 50%;
-    border-radius: 0 0 10px 10px;
-    border: 1px solid $darkYellow;
-    border-top: none;
+    z-index: $aboveDialog;
 }
 
 .lpGlobalAlert {
-    padding: $spacingMedium;
-    margin: 0;
     border-bottom: 1px solid $darkYellow;
     list-style-type: none;
+    margin: 0;
+    padding: $spacingMedium;
 
     &:last-child {
         border-bottom: none;
@@ -31,7 +31,7 @@
 
 <template>
     <ul v-if="alerts && alerts.length" class="lpGlobalAlerts">
-        <li class="lpGlobalAlert" v-for="alert in alerts">
+        <li v-for="alert in alerts" class="lpGlobalAlert">
             {{ alert.message }}
         </li>
     </ul>

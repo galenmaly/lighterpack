@@ -4,12 +4,13 @@
 .lpPopover {
     display: block;
     position: relative;
+
     .lpTarget {
         cursor: default;
         display: inline-block;
-        position: relative;
-        padding-bottom: 10px;
         margin-bottom: -10px;
+        padding-bottom: 10px;
+        position: relative;
     }
 
     .lpContent {
@@ -83,10 +84,11 @@
         .lpTarget {
             z-index: $aboveDialog;
         }
+
         .lpContent {
+            margin-top: 10px;
             opacity: 1;
             pointer-events: all;
-            margin-top: 10px;
         }
     }
 }
@@ -94,7 +96,7 @@
 </style>
 
 <template>
-    <div :class="{'lpPopover': true, 'lpPopoverShown': shown}" v-click-outside="hide">
+    <div v-click-outside="hide" :class="{'lpPopover': true, 'lpPopoverShown': shown}">
         <div class="lpTarget">
             <slot name="target" />
         </div>

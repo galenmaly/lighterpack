@@ -51,7 +51,9 @@
         z-index: 105;
     }
 
-    *, *:before, *:after {
+    *,
+    *::before,
+    *::after {
         box-sizing: inherit;
     }
 }
@@ -335,7 +337,6 @@
     border-radius: 5px;
     padding: 10px;
 }
-
 
 #lpImageDialog {
     width: auto;

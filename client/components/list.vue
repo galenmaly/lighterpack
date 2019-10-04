@@ -24,17 +24,19 @@
     background: darken($background1, 10%);
     display: flex;
     flex-direction: column;
+    height: 220px;
     justify-content: center;
     line-height: 1.6;
-    height: 220px;
     padding: $spacingLarge;
 
     h2 {
         font-size: 24px;
         line-height: 1;
     }
-    
-    h2, p, ol {
+
+    h2,
+    p,
+    ol {
         margin: 0 0 $spacingMedium;
 
         &:last-child {
@@ -53,9 +55,13 @@
             <ol>
                 <li>Click on things to edit them. Give your list and category a name.</li>
                 <li>Add new categories and give items weights to start the visualization.</li>
-                <li v-if="!isLocalSaving">When you're done, share your list with others!</li>
+                <li v-if="!isLocalSaving">
+                    When you're done, share your list with others!
+                </li>
             </ol>
-            <p v-if="isLocalSaving" class="lpWarning"><strong>Note:</strong> Your data is being saved to your local computer. In order to share your lists please register an account.</p>
+            <p v-if="isLocalSaving" class="lpWarning">
+                <strong>Note:</strong> Your data is being saved to your local computer. In order to share your lists please register an account.
+            </p>
         </div>
         <list-summary v-if="!isListNew" :list="list" />
 

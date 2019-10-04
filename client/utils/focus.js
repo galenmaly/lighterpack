@@ -58,21 +58,21 @@ Vue.directive('click-outside', {
             if (el.contains(evt.target)) {
                 return;
             }
-            if (binding && typeof binding.value === "function") {
+            if (binding && typeof binding.value === 'function') {
                 binding.value();
             }
         };
 
-        window.addEventListener("click", handler);
+        window.addEventListener('click', handler);
 
         // Store handler to clean up later
         el.dataset.clickoutside = uniqueId();
-        store.commit("addDirectiveInstance", { key: el.dataset.clickoutside, value: handler });
+        store.commit('addDirectiveInstance', { key: el.dataset.clickoutside, value: handler });
     },
     unbind(el) {
         // clean up event handlers
         const handler = store.state.directiveInstances[el.dataset.clickoutside];
-        store.commit("removeDirectiveInstance", el.dataset.clickoutside);
-        window.removeEventListener("click", handler);
-    }
+        store.commit('removeDirectiveInstance', el.dataset.clickoutside);
+        window.removeEventListener('click', handler);
+    },
 });

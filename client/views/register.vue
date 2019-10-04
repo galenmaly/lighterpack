@@ -14,7 +14,7 @@
                 </router-link>
             </div>
 
-            <p class="lpWarning" v-if="isLocalSaving">
+            <p v-if="isLocalSaving" class="lpWarning">
                 <strong>Note:</strong> Your existing data on your computer <strong>will</strong> be saved to your new account.
             </p>
 
@@ -40,7 +40,7 @@ export default {
         modal,
         registerForm,
     },
-    
+
     computed: {
         isLocalSaving() {
             return this.$store.state.saveType === 'local';

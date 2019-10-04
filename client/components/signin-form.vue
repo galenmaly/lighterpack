@@ -15,7 +15,7 @@
                 Sign in
                 <spinner v-if="fetching" />
             </button>
-            
+
             <router-link to="/forgot-password" class="lpHref signin-forgot-password">
                 Forgot username/password?
             </router-link>
@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import errors from '../components/errors.vue';
-import spinner from '../components/spinner.vue';
+import errors from './errors.vue';
+import spinner from './spinner.vue';
 
 export default {
     name: 'SigninForm',
@@ -84,5 +84,5 @@ export default {
                 });
         },
     },
-}
+};
 </script>

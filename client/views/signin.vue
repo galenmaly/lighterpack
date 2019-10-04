@@ -38,10 +38,10 @@ export default {
     computed: {
         message() {
             if (this.$route.path.indexOf('/reset-password') > -1 || this.$route.path.indexOf('/forgot-username') > -1) {
-               return 'An email has been sent to the address associated with your account.';
+                return 'An email has been sent to the address associated with your account.';
             }
             return '';
-        }
+        },
     },
 };
 </script>
