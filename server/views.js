@@ -53,7 +53,7 @@ if (config.get('environment') === 'production') {
         }
     });
 
-    const shareAssetFiles = assetData.files.app;
+    const shareAssetFiles = assetData.files.share;
     shareAssetFiles.forEach((assetName) => {
         if (assetName.substr(assetName.length - 3) === '.js') {
             shareScriptsHtml += `<script src='/dist/${assetName}'></script>`;

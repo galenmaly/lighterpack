@@ -64,8 +64,7 @@ module.exports = {
             minimize: true,
         }),
         new MiniCssExtractPlugin({
-            filename: 'build.[chunkhash].css',
-            allChunks: true,
+            filename: '[name].[chunkhash].css',
         }),
         function () {
             this.plugin('done', (stats) => {
