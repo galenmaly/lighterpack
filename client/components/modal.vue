@@ -3,7 +3,7 @@
 
 .lpModal {
     background: $background1;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
     left: 50%;
     max-height: calc(90% - (#{$spacingLarge} * 2));
     overflow-y: auto;
@@ -43,6 +43,7 @@
 }
 
 .lpModalHeader {
+    align-items: baseline;
     display: flex;
     justify-content: space-between;
 }
