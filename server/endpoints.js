@@ -12,7 +12,7 @@ const config = require('config');
 const awesomeLog = require('./log.js');
 
 if (config.get('mailgunAPIKey')) {
-    const domain = 'lighterpack.com';
+    const domain = 'mg.lighterpack.com';
     var mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain });
 }
 
@@ -30,9 +30,9 @@ const Library = dataTypes.Library;
 eval(`${fs.readFileSync(path.join(__dirname, './sha3.js'))}`);
 
 router.post('/register', (req, res) => {
-    let username = req.body.username;
-    const password = req.body.password;
-    let email = req.body.email;
+    let username = String(req.body.username);
+    const password = String(req.body.password);
+    let email = String(req.body.email);
 
     const errors = [];
 
@@ -132,11 +132,11 @@ router.post('/saveLibrary', (req, res) => {
 
 function saveLibrary(req, res, user) {
     if (!req.body.username || typeof req.body.syncToken === 'undefined' || !req.body.data) {
-        return res.status(400).json({ message: 'An error occurred while saving your data.' });
+        return res.status(400).json({ message: 'An error occurred while saving your data. Please refresh your browser and try again.' });
     }
 
     if (req.body.username != user.username) {
-        return res.status(401).json({ message: 'Please login again.' });
+        return res.status(401).json({ message: 'An error occurred while saving your data. Please refresh your browser and login again.' });
     }
 
     if (req.body.syncToken != user.syncToken) {
@@ -198,7 +198,7 @@ function externalId(req, res, user) {
 
 router.post('/forgotPassword', (req, res) => {
     awesomeLog(req);
-    let username = req.body.username;
+    let username = String(req.body.username);
     if (!username) {
         awesomeLog(req, `Bad forgot password:${username}`);
         return res.status(400).json({ errors: [{ message: 'Please enter a username.' }] });
@@ -257,7 +257,7 @@ router.post('/forgotPassword', (req, res) => {
 
 router.post('/forgotUsername', (req, res) => {
     awesomeLog(req);
-    let email = req.body.email;
+    let email = String(req.body.email);
     if (!email) {
         awesomeLog(req, `Bad forgot username:${email}`);
         return res.status(400).json({ errors: [{ message: 'Please enter a valid email.' }] });
@@ -311,12 +311,13 @@ router.post('/account', (req, res) => {
 function account(req, res, user) {
     // TODO: check for duplicate emails
 
-    verifyPassword(user.username, req.body.currentPassword)
+    verifyPassword(user.username, String(req.body.currentPassword))
         .then((user) => {
             if (req.body.newPassword) {
+                const newPassword = String(req.body.password);
                 const errors = [];
 
-                if (req.body.newPassword.length < 5 || req.body.newPassword.length > 60) {
+                if (newPassword.length < 5 || newPassword.length > 60) {
                     errors.push({ field: 'newPassword', message: 'Please enter a password between 5 and 60 characters.' });
                 }
 
@@ -325,12 +326,12 @@ function account(req, res, user) {
                 }
 
                 bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(req.body.newPassword, salt, (err, hash) => {
+                    bcrypt.hash(newPassword, salt, (err, hash) => {
                         user.password = hash;
                         awesomeLog(req, `Changing PW - ${user.username}`);
 
                         if (req.body.newEmail) {
-                            user.email = req.body.newEmail;
+                            user.email = String(req.body.newEmail);
                             awesomeLog(req, `Changing Email - ${user.username}`);
                         }
 
@@ -339,7 +340,7 @@ function account(req, res, user) {
                     });
                 });
             } else if (req.body.newEmail) {
-                user.email = req.body.newEmail;
+                user.email = String(req.body.newEmail);
                 awesomeLog(req, `Changing Email - ${user.username}`);
                 db.users.save(user);
                 return res.status(200).json({ message: 'success' });
@@ -355,7 +356,7 @@ router.post('/delete-account', (req, res) => {
 });
 
 function deleteAccount(req, res, user) {
-    verifyPassword(user.username, req.body.password)
+    verifyPassword(user.username, String(req.body.password))
         .then((user) => {
             if (req.body.username !== user.username) {
                 return Promise.reject(new Error('An error occurred, please try logging out and in again.'));
@@ -421,8 +422,8 @@ function authenticateUser(req, res, callback) {
         return res.status(401).json({ message: 'Please log in.' });
     }
     if (req.body.username && req.body.password) {
-        const username = req.body.username.toLowerCase().trim();
-        const password = req.body.password;
+        const username = String(req.body.username).toLowerCase().trim();
+        const password = String(req.body.password);
         verifyPassword(username, password)
             .then((user) => {
                 generateSession(req, res, user, callback);
@@ -439,7 +440,7 @@ function authenticateUser(req, res, callback) {
     } else {
         db.users.find({ token: req.cookies.lp }, (err, users) => {
             if (err) {
-                awesomeLog(req, `Error on authenticateUser else for:${req.body.username}, ${req.body.password}`);
+                awesomeLog(req, `Error on authenticateUser else for:${username}`);
                 return res.status(500).json({ message: 'An error occurred, please try again later.' });
             } if (!users || !users.length) {
                 awesomeLog(req, 'bad cookie!');
@@ -482,6 +483,7 @@ function verifyPassword(username, password) {
                                 reject({ code: 404, message: 'Invalid username and/or password.' });
                             }
                         } else {
+                            // Remove extra layer of hashing. Just bcrypt.
                             bcrypt.genSalt(10, (err, salt) => {
                                 if (err) {
                                     return reject({ code: 500, message: 'An error occurred, please try again later.' });
