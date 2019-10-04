@@ -329,6 +329,14 @@
     color: darken($green1, 10%);
 }
 
+.lpWarning {
+    background: $yellow2;
+    border: 1px solid $darkYellow;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+
 #lpImageDialog {
     width: auto;
 

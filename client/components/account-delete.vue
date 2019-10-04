@@ -9,7 +9,7 @@
         <h2>Delete account?</h2>
 
         <form id="accountForm" @submit.prevent="deleteAccount()">
-            <p class="warning">
+            <p class="lpWarning">
                 <strong>This action is permanent and cannot be undone.</strong>
             </p>
             <p>If you want to delete your account, please enter your current password and the text <strong>delete my account</strong>:</p>
