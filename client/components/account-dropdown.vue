@@ -1,57 +1,49 @@
 <style lang="scss">
-
+#headerPopover .lpContent {
+    min-width: 9em;
+}
 </style>
 
 <template>
-    <span id="account">
-        <span v-if="isSignedIn" id="account" class="headerItem hasFlyout">
-            <span class="lpFlyout">
-                <span class="lpTarget">Signed in as <span class="username">{{username}}</span> <i class="lpSprite lpExpand"></i></span>
-                <div class="lpContent">
-                    <a v-on:click="showAccount" class="lpHref accountSettings">Account Settings</a><br />
-                    <a v-on:click="showHelp" class="lpHref">Help</a><br />
-                    <a v-on:click="showTodo" class="lpHref">Bugs / TODO</a><br />
-                    <a v-on:click="signout" class="lpHref signout">Sign Out</a>
-                </div>
-            </span>
-        </span>
-        <span v-if="!isSignedIn" class="headerItem">
-            <router-link to="/register" class="lpButton lpSmall">Register</router-link>
-            or
-            <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
-        </span>
+    <span class="headerItem hasPopover">
+        <PopoverHover id="headerPopover">
+            <span slot="target">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
+            <div slot="content">
+                <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
+                <a class="lpHref" @click="showHelp">Help</a><br>
+                <a class="lpHref signout" @click="signout">Sign Out</a>
+            </div>
+        </PopoverHover>
     </span>
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
 
-module.exports = {
-    name: "accountDropdown",
+export default {
+    name: 'AccountDropdown',
+    components: {
+        PopoverHover,
+    },
     computed: {
-        library: function() {
+        library() {
             return this.$store.state.library;
         },
-        isSignedIn: function() {
+        username() {
             return this.$store.state.loggedIn;
         },
-        username: function() {
-            return this.$store.state.loggedIn;
-        }
     },
     methods: {
-        showAccount: function() {
-            bus.$emit("showAccount");
+        showAccount() {
+            bus.$emit('showAccount');
         },
-        showHelp: function() {
-            bus.$emit("showHelp");
+        showHelp() {
+            bus.$emit('showHelp');
         },
-        showTodo: function() {
-            bus.$emit("showTodo");
+        signout() {
+            this.$store.commit('signout');
+            router.push('/signin');
         },
-        signout: function() {
-            this.$store.commit("signout");
-            router.push("/signin");
-        }
-    }
-}
+    },
+};
 </script>

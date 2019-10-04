@@ -1,57 +1,107 @@
 <style lang="scss">
 
+.lpItem {
+    &:hover,
+    &.ui-sortable-helper {
+        background: #fff;
+
+        .lpRemove,
+        .lpWorn,
+        .lpConsumable,
+        .lpCamera,
+        .lpLink,
+        .lpHandle,
+        .lpArrows,
+        .lpStar {
+            visibility: visible;
+        }
+    }
+
+    input,
+    select {
+        padding: 3px;
+    }
+}
+
+.lpArrows {
+    display: inline-block;
+    height: 14px;
+    position: relative;
+    visibility: hidden;
+    width: 10px;
+
+    .lpUp,
+    .lpDown {
+        cursor: pointer;
+        left: 0;
+        margin: 2px;
+        opacity: 0.5;
+        position: absolute;
+        top: 0;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .lpDown {
+        top: 11px;
+    }
+}
+
 </style>
 
 <template>
-    <li :class="'lpItem '+ item.classes" :id="item.id">
+    <li :id="item.id" :class="'lpItem '+ item.classes">
         <span class="lpHandleCell">
-            <div class="lpItemHandle lpHandle" title="Reorder this item"></div>
+            <div class="lpItemHandle lpHandle" title="Reorder this item" />
         </span>
         <span v-if="library.optionalFields['images']" class="lpImageCell">
-            <img v-on:click="viewItemImage()" v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" />
+            <img v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" @click="viewItemImage()">
         </span>
-        <input v-on:input="saveItem" type="text" v-model="item.name" class="lpName lpSilent" placeholder="Name" />
-        <input v-on:input="saveItem" type="text" v-model="item.description" class="lpDescription lpSilent" placeholder="Description" />
+        <input v-model="item.name" v-focus-on-create="categoryItem._isNew" type="text" class="lpName lpSilent" placeholder="Name" @input="saveItem">
+        <input v-model="item.description" type="text" class="lpDescription lpSilent" placeholder="Description" @input="saveItem">
         <span class="lpActionsCell">
-            <i v-on:click="updateItemImage" class="lpSprite lpCamera" title="Upload a photo or use a photo from the web"></i>
-            <i v-on:click="updateItemLink" class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item"></i>
-            <i v-if="library.optionalFields['worn']" v-on:click="toggleWorn" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn"></i>
-            <i v-if="library.optionalFields['consumable']" v-on:click="toggleConsumable" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable"></i>
-            <i :class="'lpSprite lpStar lpStar' + categoryItem.star" v-on:click="cycleStar" title="Star this item"></i>
+            <i class="lpSprite lpCamera" title="Upload a photo or use a photo from the web" @click="updateItemImage" />
+            <i class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item" @click="updateItemLink" />
+            <i v-if="library.optionalFields['worn']" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn" @click="toggleWorn" />
+            <i v-if="library.optionalFields['consumable']" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable" @click="toggleConsumable" />
+            <i :class="'lpSprite lpStar lpStar' + categoryItem.star" title="Star this item" @click="cycleStar" />
         </span>
         <span v-if="library.optionalFields['price']" class="lpPriceCell">
-            <input v-on:input="savePrice" type="text" v-model="displayPrice" v-on:keydown.up="incrementPrice($event)" v-on:keydown.down="decrementPrice($event)" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" v-on:blur="setDisplayPrice" v-empty-if-zero />
+            <input v-model="displayPrice" v-empty-if-zero type="text" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" @input="savePrice" @keydown.up="incrementPrice($event)" @keydown.down="decrementPrice($event)" @blur="setDisplayPrice">
         </span>
         <span class="lpWeightCell lpNumber">
-            <input v-on:input="saveWeight" v-on:keydown.up="incrementWeight($event)" v-on:keydown.down="decrementWeight($event)" type="text" v-model="displayWeight" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" v-empty-if-zero/>
-            <unitSelect :unit="item.authorUnit" :onChange="setUnit"></unitSelect>
+            <input v-model="displayWeight" v-empty-if-zero type="text" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" @input="saveWeight" @keydown.up="incrementWeight($event)" @keydown.down="decrementWeight($event)">
+            <unitSelect :unit="item.authorUnit" :on-change="setUnit" />
         </span>
         <span class="lpQtyCell">
-            <input v-on:input="saveQty" v-on:keydown.up="incrementQty($event)" v-on:keydown.down="decrementQty($event)" type="text" v-model="displayQty" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" />
+            <input v-model="displayQty" type="text" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)">
             <span class="lpArrows">
-                <span class="lpSprite lpUp" v-on:click="incrementQty($event)"></span>
-                <span class="lpSprite lpDown" v-on:click="decrementQty($event)"></span>
+                <span class="lpSprite lpUp" @click="incrementQty($event)" />
+                <span class="lpSprite lpDown" @click="decrementQty($event)" />
             </span>
         </span>
         <span class="lpRemoveCell">
-            <a v-on:click="removeItem" class="lpRemove lpRemoveItem" title="Remove this item"><i class="lpSprite lpSpriteRemove"></i></a>
+            <a class="lpRemove lpRemoveItem" title="Remove this item" @click="removeItem"><i class="lpSprite lpSpriteRemove" /></a>
         </span>
     </li>
 </template>
 
 <script>
-const utilsMixin = require("../mixins/utils-mixin.js");
-const unitSelect = require("./unit-select.vue");
-const weightUtils = require("../utils/weight.js");
+import unitSelect from './unit-select.vue';
 
-module.exports = {
-    name: "item",
-    mixins: [utilsMixin],
-    props: ["category", "itemContainer"],
+const utilsMixin = require('../mixins/utils-mixin.js');
+const weightUtils = require('../utils/weight.js');
+
+export default {
+    name: 'Item',
     components: {
-        unitSelect: unitSelect
+        unitSelect,
     },
-    data: function() {
+    mixins: [utilsMixin],
+    props: ['category', 'itemContainer'],
+    data() {
         return {
             displayWeight: 0,
             displayPrice: 0,
@@ -59,11 +109,11 @@ module.exports = {
             weightError: false,
             priceError: false,
             qtyError: false,
-            numStars: 4
+            numStars: 4,
         };
     },
     computed: {
-        library: function() {
+        library() {
             return this.$store.state.library;
         },
         item() {
@@ -74,35 +124,47 @@ module.exports = {
         },
         thumbnailImage() {
             if (this.item.image) {
-                return "https://i.imgur.com/" + this.item.image + "s.jpg";
-            } else if (this.item.imageUrl) {
+                return `https://i.imgur.com/${this.item.image}s.jpg`;
+            } if (this.item.imageUrl) {
                 return this.item.imageUrl;
-            } else {
-                return "";
             }
+            return '';
         },
         fullImage() {
             if (this.item.image) {
-                return "https://i.imgur.com/" + this.item.image + "l.jpg";
-            } else if (this.item.imageUrl) {
+                return `https://i.imgur.com/${this.item.image}l.jpg`;
+            } if (this.item.imageUrl) {
                 return this.item.imageUrl;
-            } else {
-                return "";
             }
+            return '';
         },
     },
+    watch: {
+        item() {
+            this.setDisplayWeight();
+        },
+        categoryItem() {
+            this.setDisplayQty();
+        },
+    },
+    beforeMount() {
+        this.setDisplayWeight();
+        this.setDisplayPrice();
+        this.setDisplayQty();
+    },
     methods: {
-        saveItem: function() {
-            this.item = this.$store.commit("updateItem", this.item);
+        saveItem() {
+            this.$store.commit('updateItem', this.item);
         },
-        saveCategoryItem: function() {           
-            this.$store.commit("updateCategoryItem", {category: this.category, categoryItem: this.categoryItem});
+        saveCategoryItem() {
+            this.$store.commit('updateCategoryItem', { category: this.category, categoryItem: this.categoryItem });
         },
-        setUnit: function(unit) {
+        setUnit(unit) {
             this.item.authorUnit = unit;
-            this.saveWeight(); //calling saveWeight preserves the text in the weight box instead of converting units.
+            this.$store.commit('updateItemUnit', unit);
+            this.saveWeight(); // calling saveWeight preserves the text in the weight box instead of converting units.
         },
-        savePrice: function() {
+        savePrice() {
             const priceFloat = parseFloat(this.displayPrice, 10);
 
             if (!isNaN(priceFloat)) {
@@ -113,7 +175,7 @@ module.exports = {
                 this.priceError = true;
             }
         },
-        saveQty: function() {
+        saveQty() {
             const qtyFloat = parseFloat(this.displayQty, 10);
 
             if (!isNaN(qtyFloat)) {
@@ -124,7 +186,7 @@ module.exports = {
                 this.qtyError = true;
             }
         },
-        saveWeight: function() {
+        saveWeight() {
             const weightFloat = parseFloat(this.displayWeight, 10);
 
             if (!isNaN(weightFloat)) {
@@ -135,50 +197,50 @@ module.exports = {
                 this.weightError = true;
             }
         },
-        setDisplayPrice: function() {
+        setDisplayPrice() {
             if (!this.priceError) {
                 this.displayPrice = this.item.price.toFixed(2);
             }
         },
-        setDisplayQty: function() {
+        setDisplayQty() {
             if (!this.qtyError) {
                 this.displayQty = this.categoryItem.qty;
             }
         },
-        setDisplayWeight: function() {
+        setDisplayWeight() {
             this.displayWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit);
         },
-        updateItemLink: function() {
-            bus.$emit("updateItemLink", this.item);
+        updateItemLink() {
+            bus.$emit('updateItemLink', this.item);
         },
-        updateItemImage: function() {
-            bus.$emit("updateItemImage", this.item);
+        updateItemImage() {
+            bus.$emit('updateItemImage', this.item);
         },
-        viewItemImage: function() {
-            bus.$emit("viewItemImage", this.fullImage);
+        viewItemImage() {
+            bus.$emit('viewItemImage', this.fullImage);
         },
-        toggleWorn: function() {
+        toggleWorn() {
             if (this.categoryItem.consumable) {
                 return;
             }
             this.categoryItem.worn = !this.categoryItem.worn;
             this.saveCategoryItem();
         },
-        toggleConsumable: function() {
+        toggleConsumable() {
             if (this.categoryItem.worn) {
                 return;
             }
             this.categoryItem.consumable = !this.categoryItem.consumable;
             this.saveCategoryItem();
         },
-        cycleStar: function() {
+        cycleStar() {
             if (!this.categoryItem.star) {
                 this.categoryItem.star = 0;
             }
             this.categoryItem.star = (this.categoryItem.star + 1) % this.numStars;
             this.saveCategoryItem();
         },
-        incrementPrice: function(evt) {
+        incrementPrice(evt) {
             evt.stopImmediatePropagation();
 
             if (this.priceError) {
@@ -190,7 +252,7 @@ module.exports = {
             this.saveItem();
             this.setDisplayPrice();
         },
-        decrementPrice: function(evt) {
+        decrementPrice(evt) {
             evt.stopImmediatePropagation();
 
             if (this.priceError) {
@@ -206,7 +268,7 @@ module.exports = {
             this.saveItem();
             this.setDisplayPrice();
         },
-        incrementQty: function(evt) {
+        incrementQty(evt) {
             evt.stopImmediatePropagation();
 
             if (this.qtyError) {
@@ -216,7 +278,7 @@ module.exports = {
             this.categoryItem.qty = this.categoryItem.qty + 1;
             this.saveCategoryItem();
         },
-        decrementQty: function(evt) {
+        decrementQty(evt) {
             evt.stopImmediatePropagation();
 
             if (this.qtyError) {
@@ -231,26 +293,26 @@ module.exports = {
 
             this.saveCategoryItem();
         },
-        incrementWeight: function(evt) {
+        incrementWeight(evt) {
             evt.stopImmediatePropagation();
 
             if (this.weightError) {
                 return;
             }
 
-            let newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) + 1;
+            const newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) + 1;
             this.item.weight = weightUtils.WeightToMg(newWeight, this.item.authorUnit);
 
             this.saveItem();
         },
-        decrementWeight: function(evt) {
+        decrementWeight(evt) {
             evt.stopImmediatePropagation();
 
             if (this.weightError) {
                 return;
             }
 
-            let newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) - 1;
+            const newWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit) - 1;
             this.item.weight = weightUtils.WeightToMg(newWeight, this.item.authorUnit);
 
             if (this.item.weight < 0) {
@@ -259,22 +321,9 @@ module.exports = {
 
             this.saveItem();
         },
-        removeItem: function() {
-            this.$store.commit("removeItemFromCategory", {itemId: this.item.id, category: this.category});
+        removeItem() {
+            this.$store.commit('removeItemFromCategory', { itemId: this.item.id, category: this.category });
         },
     },
-    watch: {
-        item: function() {
-            this.setDisplayWeight();
-        },
-        categoryItem: function() {
-            this.setDisplayQty();
-        }
-    },
-    beforeMount: function() {
-        this.setDisplayWeight();
-        this.setDisplayPrice();
-        this.setDisplayQty();
-    }
-}
+};
 </script>,

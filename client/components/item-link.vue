@@ -3,43 +3,43 @@
 </style>
 
 <template>
-    <div v-if="shown">
-        <div :class="'lpDialog ' + modalClasses" id="itemLinkDialog">
-            <h2>Add a link for this item</h2>
-            <form v-on:submit="addLink" id="itemLinkForm">
-                <input v-model="url" type="text" d="itemLink" placeholder="Item Link"/>
-                <input type="submit" class="lpButton" value="Save" />
-                <a v-on:click="closeModal" class="lpHref close">Cancel</a>
-            </form>
-        </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+    <modal id="itemLinkDialog" :shown="shown" @hide="shown = false">
+        <h2>Add a link for this item</h2>
+        <form id="itemLinkForm" @submit.prevent="addLink">
+            <input v-model="url" type="text" d="itemLink" placeholder="Item Link">
+            <input type="submit" class="lpButton" value="Save">
+            <a class="lpHref close" @click="shown = false">Cancel</a>
+        </form>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from './modal.vue';
 
 export default {
-    name: "item-link",
-    mixins: [modalMixin],
-    data: function() {
+    name: 'ItemLink',
+    components: {
+        modal,
+    },
+    data() {
         return {
-            url: "",
-            item: false
-        }
+            url: '',
+            item: false,
+            shown: false,
+        };
     },
-    methods: {
-        addLink: function() {
-            this.$store.commit("updateItemLink", {url: this.url, item: this.item});
-            this.closeModal();
-        }
-    },
-    beforeMount: function() {
-        bus.$on("updateItemLink", (item) => {
-            this.openModal();
+    beforeMount() {
+        bus.$on('updateItemLink', (item) => {
+            this.shown = true;
             this.item = item;
             this.url = item.url;
         });
-    }
-}
+    },
+    methods: {
+        addLink() {
+            this.$store.commit('updateItemLink', { url: this.url, item: this.item });
+            this.shown = false;
+        },
+    },
+};
 </script>

@@ -1,32 +1,40 @@
 <style lang="scss">
 
+#itemImageDialog {
+    width: 640px;
+
+    .imageUploadDescription {
+        margin-bottom: 19px;
+    }
+}
+
 </style>
 
 <template>
-    <div>
-        <div v-if="shown" :class="'lpDialog ' + modalClasses" id="lpImageDialog">
-            <img :src="imageUrl" />
-        </div>
-        <div v-if="shown" v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+    <modal id="lpImageDialog" :shown="shown" @hide="shown = false">
+        <img :src="imageUrl">
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from './modal.vue';
 
 export default {
-    name: "item-view-image",
-    mixins: [modalMixin],
-    data: function() {
+    name: 'ItemViewImage',
+    components: {
+        modal,
+    },
+    data() {
         return {
-            imageUrl: ""
+            imageUrl: '',
+            shown: false,
         };
     },
-    mounted: function() {
-        bus.$on("viewItemImage", (imageUrl) => {
-            this.openModal();
+    mounted() {
+        bus.$on('viewItemImage', (imageUrl) => {
+            this.shown = true;
             this.imageUrl = imageUrl;
         });
-    }
-}
+    },
+};
 </script>

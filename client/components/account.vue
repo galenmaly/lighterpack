@@ -1,85 +1,95 @@
 <style lang="scss">
-#dashboard .hello-world {
-    font-size: 15px;
-    line-height: 1.8;
-}
+
 </style>
 
 <template>
-    <div v-if="shown">
-        <div :class="'lpDialog ' + modalClasses" id="accountSettings">
-            <h2>Account Settings</h2>
+    <modal id="accountSettings" :shown="shown" @hide="shown = false">
+        <h2>Account Settings</h2>
 
-            <form id="accountForm" v-on:submit="updateAccount($event)">
-                <input type="text" name="username" class="username" disabled :value="username"/>
-                <input v-model="currentPassword" type="password" placeholder="Current Password" name="currentPassword" class="currentPassword"/>
+        <form id="accountForm" @submit.prevent="updateAccount()">
+            <div class="lpFields">
+                <input type="text" name="username" class="username" disabled :value="username">
+                <input v-model="currentPassword" type="password" placeholder="Current Password" name="currentPassword" class="currentPassword">
                 <hr>
-                <input v-model="newEmail" type="email" placeholder="New Email" name="newEmail" class="newEmail" />
+                <input v-model="newEmail" type="email" placeholder="New Email" name="newEmail" class="newEmail">
                 <hr>
-                <input v-model="newPassword" type="password" placeholder="New Password" name="newPassword" class="newPassword"/>
-                <input v-model="confirmNewPassword" type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword"/>
+                <input v-model="newPassword" type="password" placeholder="New Password" name="newPassword" class="newPassword">
+                <input v-model="confirmNewPassword" type="password" placeholder="Confirm New Password" name="confirmNewPassword" class="confirmNewPassword">
+            </div>
 
-                <ul class="lpError" v-if="errors">
-                    <li v-for="error in errors">{{error.message}}</li>
-                </ul>
+            <errors :errors="errors" />
 
-                <input type="submit" value="Submit" class="lpButton" />
-                <a v-on:click="closeModal" class="lpHref">Cancel</a>
-                <span class="status"></span>
-            </form>
-        </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+            <div class="lpButtons">
+                <button class="lpButton">
+                    Submit
+                    <spinner v-if="saving" />
+                </button>
+                <a class="lpHref" @click="shown = false">Cancel</a>
+                <a class="lpHref" @click="showDeleteAccount">Delete account</a>
+            </div>
+        </form>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import errors from './errors.vue';
+import modal from './modal.vue';
+import spinner from './spinner.vue';
 
 export default {
-    name: "account",
-    mixins: [modalMixin],
-    data: function() {
+    name: 'Account',
+    components: {
+        errors,
+        modal,
+        spinner,
+    },
+    data() {
         return {
+            saving: false,
             errors: [],
-            currentPassword: "",
-            newEmail: "",
-            newPassword: "",
-            confirmNewPassword: ""
-        }
+            currentPassword: '',
+            newEmail: '',
+            newPassword: '',
+            confirmNewPassword: '',
+            shown: false,
+        };
     },
     computed: {
-        library: function() {
+        library() {
             return this.$store.state.library;
         },
-        username: function() {
+        username() {
             return this.$store.state.loggedIn;
-        }
+        },
+    },
+    beforeMount() {
+        bus.$on('showAccount', () => {
+            this.shown = true;
+        });
     },
     methods: {
-        updateAccount: function(evt) {
-            evt.preventDefault();
-
+        updateAccount() {
             this.errors = [];
 
             if (!this.currentPassword) {
-                this.errors.push({field:"currentPassword", message: "Please enter your current password."});
+                this.errors.push({ field: 'currentPassword', message: 'Please enter your current password.' });
             }
 
             if (this.newPassword && this.newPassword != this.confirmNewPassword) {
-                this.errors.push({field:"newPassword", message: "Your passwords don't match."});
+                this.errors.push({ field: 'newPassword', message: "Your passwords don't match." });
             }
 
             if (this.newPassword && (this.newPassword.length < 5 || this.newPassword.length > 60)) {
-                this.errors.push({field:"newPassword", message: "Please enter a password between 5 and 60 characters."});
+                this.errors.push({ field: 'newPassword', message: 'Please enter a password between 5 and 60 characters.' });
             }
 
             if (this.errors.length) {
                 return;
             }
 
-            var data = {username: this.username, currentPassword: this.currentPassword}
+            const data = { username: this.username, currentPassword: this.currentPassword };
 
-            var dirty = false;
+            let dirty = false;
 
             if (this.newPassword) {
                 dirty = true;
@@ -92,32 +102,30 @@ export default {
 
             if (!dirty) return;
 
-            this.currentPassword = "";
+            this.currentPassword = '';
+            this.saving = true;
 
-            fetchJson("/account", {
-                method: "POST",
+            fetchJson('/account', {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
             })
-            .then((response) => {
-                this.closeModal();
-            })
-            .catch((response) => {
-                if (response.json && response.json.errors) {
-                    this.errors = response.json.errors;
-                } else {
-                    this.errors = [{message: "An error occurred while registering. Please try again later."}];
-                }
-            });
-        }
+                .then((response) => {
+                    this.saving = false;
+                    this.shown = false;
+                })
+                .catch((err) => {
+                    this.errors = err;
+                    this.saving = false;
+                });
+        },
+        showDeleteAccount() {
+            this.shown = false;
+            bus.$emit('showDeleteAccount');
+        },
     },
-    beforeMount: function() {
-         bus.$on("showAccount", () => {
-            this.openModal();
-        });
-    }
-}
+};
 </script>

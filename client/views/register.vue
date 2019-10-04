@@ -4,39 +4,47 @@
 
 <template>
     <div id="registerContainer">
-        <div class="lpDialog" id="register">
-            <h2>
-                Register an Account
-                <router-link to="/signin"><a class="lpHref alternateAction">Already registered?</a></router-link>
-            </h2>
+        <modal id="register" :shown="true" :blackout="true">
+            <div class="lpModalHeader">
+                <h2>
+                    Register an account
+                </h2>
+                <router-link to="/signin" class="lpHref">
+                    Already registered?
+                </router-link>
+            </div>
 
-            <span class="info existingData">
-                Your existing data will be saved to your new account upon creation.
-            </span>
-            <registerForm></registerForm>
-        </div>
+            <p v-if="isLocalSaving" class="lpWarning">
+                <strong>Note:</strong> Your existing data on your computer <strong>will</strong> be saved to your new account.
+            </p>
 
-        <blackoutFooter></blackoutFooter>
-        <div class="lpModalOverlay lpBlackout"></div>
+            <registerForm />
+        </modal>
+
+        <blackoutFooter />
+        <globalAlerts />
     </div>
 </template>
 
 <script>
-import blackoutFooter from "../components/blackout-footer.vue";
-import registerForm from "../components/register-form.vue";
+import blackoutFooter from '../components/blackout-footer.vue';
+import globalAlerts from '../components/global-alerts.vue';
+import modal from '../components/modal.vue';
+import registerForm from '../components/register-form.vue';
 
 export default {
-    name: "register",
-    mixins: [],
+    name: 'Register',
     components: {
-        blackoutFooter: blackoutFooter,
-        registerForm: registerForm
+        blackoutFooter,
+        globalAlerts,
+        modal,
+        registerForm,
     },
-    data: function() {
-        return {
-        }
+
+    computed: {
+        isLocalSaving() {
+            return this.$store.state.saveType === 'local';
+        },
     },
-    beforeMount: function() {
-    }
-}
+};
 </script>

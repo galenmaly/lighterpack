@@ -13,7 +13,7 @@ How to run Lighterpack
 4. Install dependancies ```$ npm install```
 5. start mongo ```$ mongod```
 6. Start app ```$ node app.js```
-7. go to http://localhost:3000
+7. go to http://localhost:8080
 
 Running with Vagrant
 -----------

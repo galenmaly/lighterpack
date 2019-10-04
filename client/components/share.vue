@@ -1,73 +1,82 @@
 <style lang="scss">
-
+#share label {
+    font-weight: bold;
+}
 </style>
 
 <template>
-    <span v-if="isSignedIn" class="headerItem hasFlyout">
-        <span id="share" class="lpFlyout" v-on:mouseenter="focusShare">
-            <span class="lpTarget"><i class="lpSprite lpLink"></i> Share</span>
-            <div class="lpContent">
-                <h3>Share your list</h3>
-                <input type="text" id="shareUrl" :value="shareUrl" v-select-on-bus="'show-share-box'"/>
-                <h3>Embed your list</h3>
-                <textarea id="embedUrl" v-select-on-focus>&lt;script src="{{this.baseUrl}}/e/{{this.externalId}}"&gt;&lt;/script&gt;&lt;div id="{{this.externalId}}"&gt;&lt;/div&gt;</textarea>
-                <a :href="csvUrl"  id="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload"></i>Export to CSV</a>
+    <span v-if="isSignedIn" class="headerItem hasPopover">
+        <PopoverHover id="share" @shown="focusShare">
+            <span slot="target"><i class="lpSprite lpLink" /> Share</span>
+            <div slot="content" class="lpFields">
+                <div class="lpField">
+                    <label for="shareUrl">Share your list</label>
+                    <input id="shareUrl" v-select-on-bus="'show-share-box'" type="text" :value="shareUrl">
+                </div>
+                <div class="lpField">
+                    <label for="embedUrl">Embed your list</label>
+                    <textarea id="embedUrl" v-select-on-focus>&lt;script src="{{ this.baseUrl }}/e/{{ this.externalId }}"&gt;&lt;/script&gt;&lt;div id="{{ this.externalId }}"&gt;&lt;/div&gt;</textarea>
+                </div>
+                <a id="csvUrl" :href="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload" />Export to CSV</a>
             </div>
-        </span>
+        </PopoverHover>
     </span>
 </template>
 
 <script>
+import PopoverHover from './popover-hover.vue';
 
-module.exports = {
-    name: "header",
+export default {
+    name: 'Share',
+    components: {
+        PopoverHover,
+    },
     computed: {
-        library: function() {
+        library() {
             return this.$store.state.library;
         },
-        list: function() {
+        list() {
             return this.library.getListById(this.library.defaultListId);
         },
-        isSignedIn: function() {
+        isSignedIn() {
             return this.$store.state.loggedIn;
         },
-        externalId: function() {
-            return this.list.externalId || "";
+        externalId() {
+            return this.list.externalId || '';
         },
-        baseUrl: function() {
-            var location = window.location;
-            return location.origin ? location.origin : location.protocol + '//' + location.hostname;
+        baseUrl() {
+            const location = window.location;
+            return location.origin ? location.origin : `${location.protocol}//${location.hostname}`;
         },
-        shareUrl: function() {
-            return this.baseUrl + "/r/" + this.externalId;
+        shareUrl() {
+            return `${this.baseUrl}/r/${this.externalId}`;
         },
-        csvUrl: function() {
-            return this.baseUrl + "/csv/" + this.externalId;
-        }
+        csvUrl() {
+            return `${this.baseUrl}/csv/${this.externalId}`;
+        },
     },
     methods: {
-        focusShare: function(evt) {
+        focusShare(evt) {
             if (!this.list.externalId) {
-                return fetchJson("/externalId", {
-                    method: "POST",
+                return fetchJson('/externalId', {
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
-                    credentials: 'same-origin'
+                    credentials: 'same-origin',
                 })
-                .then((response) => {
-                    this.$store.commit('setExternalId', {externalId: response.externalId, list: this.list});
-                    setTimeout(() => {
-                        bus.$emit('show-share-box');
-                    },0);
-                })
-                .catch((response) => {
-                    alert("An error occurred while attempting to get an ID for your list. Please try again later."); //TODO
-                });
-            } else {
-                bus.$emit('show-share-box');
+                    .then((response) => {
+                        this.$store.commit('setExternalId', { externalId: response.externalId, list: this.list });
+                        setTimeout(() => {
+                            bus.$emit('show-share-box');
+                        }, 0);
+                    })
+                    .catch((response) => {
+                        alert('An error occurred while attempting to get an ID for your list. Please try again later.'); // TODO
+                    });
             }
-        }
-    }
-}
+            bus.$emit('show-share-box');
+        },
+    },
+};
 </script>

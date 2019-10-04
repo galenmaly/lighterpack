@@ -3,61 +3,67 @@
 </style>
 
 <template>
-    <div v-if="shown">
-        <div id="speedbump" :class="'lpDialog ' + modalClasses">
-            <h2>{{messages.title}}</h2>
+    <modal id="speedbump" :shown="shown" @hide="shown = false">
+        <h2 v-if="messages.title">
+            {{ messages.title }}
+        </h2>
 
-            <p>{{messages.body}}</p>
+        <p>{{ messages.body }}</p>
 
-            <div class="buttons">
-                <button class="lpButton" v-on:click="confirmSpeedbump()" v-focus-on-create>{{messages.confirm}}</button>
-                &nbsp;<button class="lpButton" v-on:click="closeModal()">{{messages.cancel}}</button>
-            </div>
+        <div class="buttons">
+            <button v-focus-on-create class="lpButton" @click="confirmSpeedbump()">
+                {{ messages.confirm }}
+            </button>
+            &nbsp;<button class="lpButton" @click="shown = false">
+                {{ messages.cancel }}
+            </button>
         </div>
-        <div v-on:click="closeModal" :class="'lpModalOverlay ' + modalClasses"></div>
-    </div>
+    </modal>
 </template>
 
 <script>
-const modalMixin = require("../mixins/modal-mixin.js");
+import modal from './modal.vue';
 
-module.exports = {
-    name: "speedbump",
-    mixins: [modalMixin],
-    data: function() {
+export default {
+    name: 'Speedbump',
+    components: {
+        modal,
+    },
+    data() {
         return {
             defaultMessages: {
-                title: "",
-                body: "",
-                confirm: "Yes",
-                cancel: "No"
+                title: '',
+                body: '',
+                confirm: 'Yes',
+                cancel: 'No',
             },
             messages: {},
-            callback: null
-        }
+            callback: null,
+            shown: false,
+        };
+    },
+    beforeMount() {
+        bus.$on('initSpeedbump', (callback, options) => {
+            this.initSpeedbump(callback, options);
+        });
     },
     methods: {
-        initSpeedbump: function(callback, options) {
+        initSpeedbump(callback, options) {
             this.callback = callback;
             this.messages = Vue.util.extend({}, this.defaultMessages);
-            if (typeof options === "string") {
+            if (typeof options === 'string') {
                 this.messages.body = options;
             } else {
                 this.messages = Vue.util.extend(this.messages, options);
             }
-            this.openModal();
+            this.shown = true;
         },
-        confirmSpeedbump: function() {
-            if (this.callback && typeof this.callback === "function") {
+        confirmSpeedbump() {
+            if (this.callback && typeof this.callback === 'function') {
                 this.callback(true);
             }
-            this.closeModal();
+            this.shown = false;
         },
     },
-    beforeMount: function() {
-        bus.$on("initSpeedbump", (callback, options) => {
-            this.initSpeedbump(callback, options);
-        });
-    }
-}
+};
 </script>

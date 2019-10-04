@@ -1,85 +1,178 @@
 <style lang="scss">
+@import "../css/_globals";
+
+#listContainer {
+    flex: 0 0 auto;
+
+    #lists {
+        max-height: 25vh;
+    }
+}
+
+.lpLibraryList {
+    border-top: 1px dotted #999;
+    display: flex;
+    list-style: none;
+    margin: 0 10px;
+    overflow-y: auto;
+    padding: 6px 0;
+    position: relative;
+
+    &:first-child {
+        border-top: none;
+        padding-top: 10px;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.lpActive {
+        color: $yellow1;
+        font-weight: bold;
+
+        .lpRemove {
+            display: none;
+        }
+    }
+
+    &.gu-mirror {
+        background: #606060;
+        border: 1px solid #999;
+        color: #fff;
+    }
+
+    .lpHandle {
+        flex: 0 0 12px;
+        height: 18px;
+        margin-right: 5px;
+    }
+
+    &:hover .lpHandle {
+        visibility: visible;
+    }
+
+    .lpListName {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    .lpRemove {
+        flex: 0 0 8px;
+        margin-bottom: 0;
+    }
+}
+
+.listContainerHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+#addListFlyout {
+    .lpContent a {
+        display: block;
+        margin-bottom: 5px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
 </style>
 
 <template>
     <section id="listContainer">
-        <h2>Lists</h2>
-        <span id="addListFlyout" class="lpFlyout">
-            <span class="lpTarget"><a id="addList" class="lpAdd" v-on:click="newList"><i class="lpSprite lpSpriteAdd"></i>Add new list</a></span>
-            <div class="lpContent">
-                <div><a v-on:click="importCSV" id="importList" class="lpAdd"><i class="lpSprite lpSpriteUpload"></i>Import CSV</a></div>
-                <div><a v-on:click="copyList" sid="copyList" class="lpCopy"><i class="lpSprite lpSpriteCopy"></i>Copy a list</a></div>
-            </div>
-        </span>
+        <div class="listContainerHeader">
+            <h2>Lists</h2>
+            <PopoverHover id="addListFlyout">
+                <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
+                <div slot="content">
+                    <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
+                    <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
+                    <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
+                </div>
+            </PopoverHover>
+        </div>
         <ul id="lists">
-            <li v-for="list in library.lists" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
-                <div class="lpHandle" title="Reorder this item"></div>
-                <span class='lpLibraryListSwitch lpListName' v-on:click="setDefaultList(list)">
-                    {{list | listName}}
+            <li v-for="list in library.lists" :key="list.id" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
+                <div class="lpHandle" title="Reorder this item" />
+                <span class="lpLibraryListSwitch lpListName" @click="setDefaultList(list)">
+                    {{ list | listName }}
                 </span>
-                <a v-on:click="removeList(list)" class="lpRemove" title="Remove this list"><i class="lpSprite lpSpriteRemove"></i></a>
+                <a class="lpRemove" title="Remove this list" @click="removeList(list)"><i class="lpSprite lpSpriteRemove" /></a>
             </li>
         </ul>
     </section>
-    
 </template>
 
 <script>
-const dragula = require("dragula");
+import PopoverHover from './popover-hover.vue';
+
+const dragula = require('dragula');
 
 export default {
-    name: "libraryItem",
-    props: ["list"],
+    name: 'LibraryList',
+    components: {
+        PopoverHover,
+    },
+    filters: {
+        listName(list) {
+            return list.name || 'New list';
+        },
+    },
+    props: ['list'],
     computed: {
         library() {
             return this.$store.state.library;
-        }
+        },
     },
-    filters: {
-        listName: function (list) {
-            return list.name || "New list";
-        }
+    mounted() {
+        this.handleListReorder();
     },
     methods: {
-        setDefaultList: function(list) {
-            this.$store.commit("setDefaultList", list);
+        setDefaultList(list) {
+            this.$store.commit('setDefaultList', list);
         },
-        newList: function() {
-            this.$store.commit("newList");
+        newList() {
+            this.$store.commit('newList');
         },
-        copyList: function() {
-            bus.$emit("copyList");
+        copyList() {
+            bus.$emit('copyList');
         },
-        importCSV: function() {
-            bus.$emit("importCSV");
+        importCSV() {
+            bus.$emit('importCSV');
         },
-        handleListReorder: function() {
-            var $lists = document.getElementById("lists");
-            var drake = dragula([$lists], {
-                moves: function ($el, $source, $handle, $sibling) {
-                    return $handle.classList.contains("lpHandle");
-                }
+        handleListReorder() {
+            const $lists = document.getElementById('lists');
+            const drake = dragula([$lists], {
+                moves($el, $source, $handle, $sibling) {
+                    return $handle.classList.contains('lpHandle');
+                },
             });
-            drake.on("drag", ($el, $target, $source, $sibling) => {
+            drake.on('drag', ($el, $target, $source, $sibling) => {
                 this.dragStartIndex = getElementIndex($el);
             });
-            drake.on("drop", ($el, $target, $source, $sibling) => {
-                this.$store.commit("reorderList", {before: this.dragStartIndex, after: getElementIndex($el)});
+            drake.on('drop', ($el, $target, $source, $sibling) => {
+                this.$store.commit('reorderList', { before: this.dragStartIndex, after: getElementIndex($el) });
                 drake.cancel(true);
             });
         },
-        removeList: function(list) {
-            var callback = function() {
-                this.$store.commit("removeList", list);
+        removeList(list) {
+            const callback = function () {
+                this.$store.commit('removeList', list);
             };
-            var speedbumpOptions = {
-                body: "Are you sure you want to delete this list? This cannot be undone."
+            const speedbumpOptions = {
+                body: 'Are you sure you want to delete this list? This cannot be undone.',
             };
-            bus.$emit("initSpeedbump", callback, speedbumpOptions);
-        }
+            bus.$emit('initSpeedbump', callback, speedbumpOptions);
+        },
     },
-    mounted: function() {
-        this.handleListReorder();
-    }
-}
+};
 </script>

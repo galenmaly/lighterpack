@@ -1,91 +1,162 @@
 <style lang="scss">
+@import "../css/_globals";
 
+#header {
+    align-items: baseline;
+    display: flex;
+    height: 60px;
+    margin: 0 -20px 20px; /* lpList padding */
+    position: relative;
+}
+
+#hamburger {
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.6;
+    transition: transform $transitionDurationSlow;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .lpHasSidebar & {
+        transform: rotate(90deg);
+    }
+}
+
+#lpListName {
+    font-size: 24px;
+    font-weight: 600;
+    padding: 12px 15px;
+}
+
+.headerItem {
+    flex: 0 0 auto;
+    height: 100%;
+    padding: 17px 16px;
+    position: relative;
+
+    &:first-child {
+        padding-left: 20px;
+    }
+
+    .lpPopover {
+        &:hover .lpTarget {
+            color: $blue1;
+        }
+    }
+
+    .lpTarget {
+        font-weight: 600;
+        padding: 17px 16px 15px;
+    }
+
+    &#lpListName {
+        flex: 1 0 auto;
+    }
+
+    &.hasPopover {
+        padding: 0;
+    }
+
+    &.signInRegisterButtons {
+        height: auto;
+        padding: 0 16px;
+    }
+}
 </style>
 
 <template>
-    <div id="main" :class="{lpHasSidebar: library.showSidebar, lpTransition: true}" v-if="isLoaded">
-        <sidebar></sidebar>
+    <div v-if="isLoaded" id="main" :class="{lpHasSidebar: library.showSidebar}">
+        <sidebar />
         <div class="lpList lpTransition">
             <div id="header" class="clearfix">
                 <span class="headerItem">
-                    <a v-on:click="toggleSidebar" id="hamburger" class="lpTransition"><i class="lpSprite lpHamburger"></i></a>
+                    <a id="hamburger" class="lpTransition" @click="toggleSidebar"><i class="lpSprite lpHamburger" /></a>
                 </span>
-                <input v-on:input="updateListName" :value="list.name" id="lpListName" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search"/>
-                <share></share>
-                <listSettings></listSettings>
-                <accountDropdown></accountDropdown>
-                <span class="clearfix"></span>
+                <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
+                <share />
+                <listSettings />
+                <accountDropdown v-if="isSignedIn" />
+                <span v-else class="headerItem signInRegisterButtons">
+                    <router-link to="/register" class="lpButton lpSmall">Register</router-link>
+                    or
+                    <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
+                </span>
+                <span class="clearfix" />
             </div>
 
-            <list></list>
-            
+            <list />
+
             <div id="lpFooter">
-                <div class="lpSiteBy">Site by <a class="lpHref" href="http://www.galenmaly.com/">Galen Maly</a></div>
+                <div class="lpSiteBy">
+                    Site by <a class="lpHref" href="https://www.galenmaly.com/" target="_blank" rel="noopener noreferrer">Galen Maly</a>
+                    and <a class="lpHref" href="https://github.com/galenmaly/lighterpack/graphs/contributors" target="_blank" rel="noopener noreferrer">friends</a>.
+                </div>
                 <div class="lpContact">
-                    Copyleft LighterPack 2017
+                    <a class="lpHref" href="https://github.com/galenmaly/lighterpack" target="_blank" rel="noopener noreferrer">Copyleft</a> LighterPack 2019
                     -
-                    <a class="lpHref" href="https://github.com/galenmaly/lighterpack">Fork me on GitHub</a>
-                    -
-                    <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a></div>
+                    <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a>
+                </div>
             </div>
         </div>
 
-        <speedbump></speedbump>
-        <copyList></copyList>
-        <importCSV></importCSV>
-        <itemImage></itemImage>
-        <itemViewImage></itemViewImage>
-        <itemLink></itemLink>
-        <todo></todo>
-        <help></help>
-        <account></account>
-        <colorPicker></colorPicker>
+        <globalAlerts />
+        <speedbump />
+        <copyList />
+        <importCSV />
+        <itemImage />
+        <itemViewImage />
+        <itemLink />
+        <help />
+        <account />
+        <accountDelete />
     </div>
 </template>
 
 <script>
-const sidebar = require("../components/sidebar.vue");
-const share = require("../components/share.vue");
-const listSettings = require("../components/list-settings.vue");
-const accountDropdown = require("../components/account-dropdown.vue");
-const forgotPassword = require("./forgotPassword.vue");
-const account = require("../components/account.vue");
-const todo = require("../components/todo.vue");
-const help = require("../components/help.vue");
-const list = require("../components/list.vue");
+import globalAlerts from '../components/global-alerts.vue';
+import sidebar from '../components/sidebar.vue';
+import share from '../components/share.vue';
+import listSettings from '../components/list-settings.vue';
+import accountDropdown from '../components/account-dropdown.vue';
+import forgotPassword from './forgot-password.vue';
+import account from '../components/account.vue';
+import accountDelete from '../components/account-delete.vue';
+import help from '../components/help.vue';
+import list from '../components/list.vue';
 
-const colorPicker = require("../components/colorpicker.vue");
-const itemImage = require("../components/item-image.vue");
-const itemViewImage = require("../components/item-view-image.vue");
-const itemLink = require("../components/item-link.vue");
-const importCSV = require("../components/import-csv.vue");
-const copyList = require("../components/copy-list.vue");
-const speedbump = require("../components/speedbump.vue");
+import itemImage from '../components/item-image.vue';
+import itemViewImage from '../components/item-view-image.vue';
+import itemLink from '../components/item-link.vue';
+import importCSV from '../components/import-csv.vue';
+import copyList from '../components/copy-list.vue';
+import speedbump from '../components/speedbump.vue';
 
-module.exports = {
-    name: "dashboard",
-    mixins: [],
+export default {
+    name: 'Dashboard',
     components: {
-        sidebar: sidebar,
-        share: share,
-        listSettings: listSettings,
-        accountDropdown: accountDropdown,
-        forgotPassword: forgotPassword,
-        account: account,
-        todo: todo,
-        help: help,
-        list: list,
-        colorPicker: colorPicker,
-        itemLink: itemLink,
-        copyList: copyList,
-        importCSV: importCSV,
-        itemImage: itemImage,
-        itemViewImage: itemViewImage,
-        speedbump: speedbump
+        sidebar,
+        share,
+        listSettings,
+        accountDropdown,
+        forgotPassword,
+        account,
+        accountDelete,
+        help,
+        list,
+        itemLink,
+        copyList,
+        importCSV,
+        itemImage,
+        itemViewImage,
+        speedbump,
+        globalAlerts,
     },
-    data: function() {
+    mixins: [],
+    data() {
         return {
-            isLoaded: false
+            isLoaded: false,
         };
     },
     computed: {
@@ -94,22 +165,25 @@ module.exports = {
         },
         list() {
             return this.library.getListById(this.library.defaultListId);
+        },
+        isSignedIn() {
+            return this.$store.state.loggedIn;
+        },
+    },
+    beforeMount() {
+        if (!this.$store.state.library) {
+            router.push('/welcome');
+        } else {
+            this.isLoaded = true;
         }
     },
     methods: {
         toggleSidebar() {
-            this.$store.commit("toggleSidebar");
+            this.$store.commit('toggleSidebar');
         },
         updateListName(evt) {
-            this.$store.commit("updateListName", {id: this.list.id, name: evt.target.value});
-        }
+            this.$store.commit('updateListName', { id: this.list.id, name: evt.target.value });
+        },
     },
-    beforeMount() {
-        if (!this.$store.state.library) {
-            router.push("/welcome");
-        } else {
-            this.isLoaded = true;
-        }
-    }
-}
+};
 </script>

@@ -4,80 +4,44 @@
 
 <template>
     <div id="signinContainer">
-        <div class="lpDialog" id="signin">
-            <h2>
-                Sign in
-                <router-link to="/register"><a class="lpHref alternateAction">Need to register?</a></router-link>
-            </h2>
+        <modal id="signin" :shown="true" :blackout="true">
+            <div class="lpModalHeader">
+                <h2>
+                    Sign in
+                </h2>
+                <router-link to="/register" class="lpHref">
+                    Need to register?
+                </router-link>
+            </div>
+            <SigninForm :message="message" />
+        </modal>
 
-            <p class="lpSuccess"></p>
-            <form class="signin" v-on:submit="signin($event)">
-                <p v-if="error" class="lpError">{{error}}</p>
-                <p v-if="message" class="lpSuccess">{{message}}</p>
-                <input v-focus-on-create type="text" placeholder="Username" name="username" class="username" v-model="username"/>
-                <input type="password" placeholder="Password" name="password" class="password" v-model="password" v-select-on-bus="'focus-signin-password'"/>
-                <input type="submit" value="Sign in" class="lpButton" />
-                <span class="status"></span>
-                <router-link to="/forgotPassword" class="lpHref alternateAction">Forgot username/password?</router-link>
-            </form>
-        </div>
-
-        <blackoutFooter></blackoutFooter>
-        <div class="lpModalOverlay lpBlackout"></div>
+        <blackoutFooter />
+        <globalAlerts />
     </div>
 </template>
 
 <script>
-import blackoutFooter from "../components/blackout-footer.vue";
+import blackoutFooter from '../components/blackout-footer.vue';
+import globalAlerts from '../components/global-alerts.vue';
+import modal from '../components/modal.vue';
+import SigninForm from '../components/signin-form.vue';
 
 export default {
-    name: "welcome",
-    mixins: [],
+    name: 'Signin',
     components: {
-        blackoutFooter: blackoutFooter
+        blackoutFooter,
+        globalAlerts,
+        modal,
+        SigninForm,
     },
-    data: function() {
-        return {
-            error: false,
-            username: "",
-            password: "",
-            message: ""
-        }
+    computed: {
+        message() {
+            if (this.$route.path.indexOf('/reset-password') > -1 || this.$route.path.indexOf('/forgot-username') > -1) {
+                return 'An email has been sent to the address associated with your account.';
+            }
+            return '';
+        },
     },
-    methods: {
-        signin: function(evt) {
-            evt.preventDefault();
-
-            return fetchJson("/signin/", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify({username: this.username, password: this.password})
-            })
-            .then((response) => {
-                this.$store.commit('setSyncToken', response.syncToken);
-                this.$store.commit('loadLibraryData', response.library);
-                this.$store.commit('setSaveType', "remote");
-                this.$store.commit('setLoggedIn', response.username)
-                router.push("/");
-            })
-            .catch((response) => {
-                var error = "An error occurred.";
-                if (response.json && response.json.status) {
-                    error = response.json.status;
-                }
-                this.error = error;
-                bus.$emit("focus-signin-password");
-                this.password = "";
-            });
-        }
-    },
-    beforeMount: function() {
-        if (this.$route.path.indexOf("/reset-password") > -1 || this.$route.path.indexOf("/forgot-username") > -1) {
-            this.message = "An email has been sent to the address associated with your account.";
-        }
-    }
-}
+};
 </script>
