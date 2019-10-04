@@ -6,6 +6,7 @@
     height: 60px;
     margin: 0 -20px 20px; /* lpList padding */
     position: relative;
+    align-items: baseline;
 }
 
 #hamburger {
@@ -40,7 +41,6 @@
     }
 
     .lpPopover {
-
         &:hover .lpTarget {
             color: $blue1;
         }
@@ -58,6 +58,11 @@
     &.hasPopover {
         padding: 0;
     }
+
+    &.signInRegisterButtons {
+        padding: 0 16px;
+        height: auto;
+    }
 }
 </style>
 
@@ -72,7 +77,12 @@
                 <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
                 <listSettings />
-                <accountDropdown />
+                <accountDropdown v-if="isSignedIn"/>
+                <span v-else class="headerItem signInRegisterButtons">
+                    <router-link to="/register" class="lpButton lpSmall">Register</router-link>
+                    or
+                    <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
+                </span>
                 <span class="clearfix" />
             </div>
 
@@ -155,6 +165,9 @@ export default {
         },
         list() {
             return this.library.getListById(this.library.defaultListId);
+        },
+        isSignedIn() {
+            return this.$store.state.loggedIn;
         },
     },
     beforeMount() {

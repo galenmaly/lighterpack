@@ -5,22 +5,15 @@
 </style>
 
 <template>
-    <span id="account">
-        <span v-if="isSignedIn" class="headerItem hasPopover">
-            <PopoverHover id="headerPopover">
-                <span slot="target">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
-                <div slot="content">
-                    <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
-                    <a class="lpHref" @click="showHelp">Help</a><br>
-                    <a class="lpHref signout" @click="signout">Sign Out</a>
-                </div>
-            </PopoverHover>
-        </span>
-        <span v-if="!isSignedIn" class="headerItem">
-            <router-link to="/register" class="lpButton lpSmall">Register</router-link>
-            or
-            <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
-        </span>
+    <span class="headerItem hasPopover">
+        <PopoverHover id="headerPopover">
+            <span slot="target">Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span>
+            <div slot="content">
+                <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
+                <a class="lpHref" @click="showHelp">Help</a><br>
+                <a class="lpHref signout" @click="signout">Sign Out</a>
+            </div>
+        </PopoverHover>
     </span>
 </template>
 
@@ -35,9 +28,6 @@ export default {
     computed: {
         library() {
             return this.$store.state.library;
-        },
-        isSignedIn() {
-            return this.$store.state.loggedIn;
         },
         username() {
             return this.$store.state.loggedIn;
