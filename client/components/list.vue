@@ -21,13 +21,25 @@
 }
 
 #getStarted {
-    background: $background1;
-    font-size: 18px;
+    background: darken($background1, 10%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.6;
     height: 220px;
-    padding: 30px 0;
+    padding: $spacingLarge;
 
     h2 {
-        font-size: 30px;
+        font-size: 24px;
+        line-height: 1;
+    }
+    
+    h2, p, ol {
+        margin: 0 0 $spacingMedium;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 }
 
@@ -40,9 +52,10 @@
             <p>Here's what you need to get started:</p>
             <ol>
                 <li>Click on things to edit them. Give your list and category a name.</li>
-                <li>Add new categories and items to your list.</li>
-                <li>When you're done, share your list with others!</li>
+                <li>Add new categories and give items weights to start the visualization.</li>
+                <li v-if="!isLocalSaving">When you're done, share your list with others!</li>
             </ol>
+            <p v-if="isLocalSaving" class="lpWarning"><strong>Note:</strong> Your data is being saved to your local computer. In order to share your lists please register an account.</p>
         </div>
         <list-summary v-if="!isListNew" :list="list" />
 
@@ -97,6 +110,9 @@ export default {
         },
         isListNew() {
             return this.list.totalWeight === 0;
+        },
+        isLocalSaving() {
+            return this.$store.state.saveType === 'local';
         },
     },
     watch: {
