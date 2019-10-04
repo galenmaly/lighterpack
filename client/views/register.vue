@@ -7,7 +7,7 @@
         <modal id="register" :shown="true" :blackout="true">
             <div class="lpModalHeader">
                 <h2>
-                    Register an Account
+                    Register an account
                 </h2>
                 <router-link to="/signin" class="lpHref">
                     Already registered?
