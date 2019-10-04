@@ -16,7 +16,7 @@
         <div class="lpTotalsContainer">
             <ul class="lpTotals lpTable lpDataTable">
                 <li class="lpRow lpHeader">
-                    <span class="lpCell" />
+                    <span class="lpCell">&nbsp;</span>
                     <span class="lpCell">
                         Category
                     </span>
