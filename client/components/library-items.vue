@@ -144,9 +144,11 @@ export default {
             if (!this.searchText) {
                 filteredItems = this.library.items.map(item => Vue.util.extend({}, item));
             } else {
+                const lowerCaseSearchText = this.searchText.toLowerCase();
+
                 for (i = 0; i < this.library.items.length; i++) {
                     item = this.library.items[i];
-                    if (item.name.toLowerCase().indexOf(this.searchText) > -1 || item.description.toLowerCase().indexOf(this.searchText) > -1) {
+                    if (item.name.toLowerCase().indexOf(lowerCaseSearchText) > -1 || item.description.toLowerCase().indexOf(lowerCaseSearchText) > -1) {
                         filteredItems.push(Vue.util.extend({}, item));
                     }
                 }
