@@ -121,7 +121,7 @@ router.get('/r/:id', (req, res) => {
             currencySymbol: library.currencySymbol,
         });
 
-        const renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect, library.totalUnit);
+        const renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect);
 
         let model = {
             listName: list.name,
