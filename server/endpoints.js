@@ -13,8 +13,7 @@ const config = require('config');
 const awesomeLog = require('./log.js');
 
 if (config.get('mailgunAPIKey')) {
-    const domain = 'mg.lighterpack.com';
-    var mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain });
+    var mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
 }
 
 const collections = ['users', 'libraries'];

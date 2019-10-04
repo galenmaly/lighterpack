@@ -12,6 +12,7 @@
     "bindings"      : [""],
     "databaseUrl": "localhost/lighterpack",
     "imgurClientID": "",
+    "mailgunDomain": "",
     "mailgunBaseURL": "",
     "mailgunAPIKey": ""
 }
