@@ -36,8 +36,8 @@
                 </div>
             </div>
         </modal>
-        <form id="imageUpload">
-            <input id="image" type="file" name="image">
+        <form id="imageUpload" ref="imageUploadForm">
+            <input id="image" type="file" name="image" ref="imageInput" @change="uploadImage">
         </form>
     </div>
 </template>
@@ -53,17 +53,12 @@ export default {
     data() {
         return {
             imageUrl: null,
-            imageInput: false,
             item: false,
             uploading: false,
             shown: false,
         };
     },
     mounted() {
-        this.imageInput = document.getElementById('image');
-        this.imageInput.onchange = this.uploadImage;
-
-
         bus.$on('updateItemImage', (item) => {
             this.shown = true;
             this.item = item;
@@ -76,7 +71,7 @@ export default {
             this.shown = false;
         },
         triggerImageUpload() {
-            this.imageInput.click();
+            this.$refs.imageInput.click();
         },
         uploadImage(evt) {
             if (!FormData) {
@@ -99,7 +94,7 @@ export default {
                 alert('File doesnt match png, jpg or gif.');
                 return;
             }
-            const formData = new FormData(document.getElementById('imageUpload'));
+            const formData = new FormData(this.$refs.imageUploadForm);
 
             this.uploading = true;
 
