@@ -1,3 +1,5 @@
+import assignIn from 'lodash/assignIn';
+
 class lpError extends Error {
     constructor(response, statusCode = null) {
         super();
@@ -23,13 +25,15 @@ class lpError extends Error {
 window.fetchJson = (url, options) => {
     const fetchOptions = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: {}
     };
 
     if (options) {
-        Object.assign(fetchOptions, options);
+        assignIn(fetchOptions, options);
+    }
+
+    if (!fetchOptions.body && !fetchOptions.headers['Content-Type']) {
+        fetchOptions.headers['Content-Type'] = 'application/json';
     }
 
     function parseJSON(response) {
