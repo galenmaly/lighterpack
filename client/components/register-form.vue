@@ -16,6 +16,7 @@
                 Register
                 <spinner v-if="saving" />
             </button>
+            <a class="lpHref lpGetStarted" @click="loadLocal">Skip registration</a>
         </div>
     </form>
 </template>
@@ -23,6 +24,9 @@
 <script>
 import errors from './errors.vue';
 import spinner from './spinner.vue';
+
+const dataTypes = require('../dataTypes.js');
+const Library = dataTypes.Library;
 
 export default {
     name: 'RegisterForm',
@@ -40,9 +44,23 @@ export default {
             errors: [],
         };
     },
-    beforeMount() {
+    computed: {
+        isLocalSaving() {
+            return this.$store.state.saveType === 'local';
+        },
     },
     methods: {
+        loadLocal() {
+            if (this.isLocalSaving) {
+                router.push('/');
+                return;
+            }
+            const library = new Library();
+            this.$store.commit('loadLibraryData', JSON.stringify(library.save()));
+            this.$store.commit('setSaveType', 'local');
+            this.$store.commit('setLoggedIn', false);
+            router.push('/');
+        },
         submit() {
             this.errors = [];
 
