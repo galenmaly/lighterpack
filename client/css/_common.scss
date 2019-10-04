@@ -9,7 +9,7 @@
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
         height: 100%;
-        line-height: 1.65em;
+        line-height: 1.3;
         margin: 0;
         padding: 0;
     }
@@ -226,8 +226,7 @@
 
     &.lpSmall {
         font-size: 13px;
-        line-height: 16px;
-        padding: 4px 7px;
+        padding: 5px 10px;
     }
 
     &:hover:not(:disabled),
@@ -346,12 +345,12 @@
 }
 
 #lpWelcomeFooter {
-    background: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.65);
     bottom: 0;
     display: flex;
     justify-content: space-between;
     left: 0;
-    padding: 5px;
+    padding: $spacingSmall;
     position: fixed;
     right: 0;
     z-index: 999999999;
