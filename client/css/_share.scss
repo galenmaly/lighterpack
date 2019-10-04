@@ -91,6 +91,69 @@
     }
 }
 
+.lpDialog {
+    animation: fadein 0.25s linear 0s 1 forwards;
+    opacity: 0;
+    background: #F7F7F7;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+    left: 50%;
+    padding: 35px;
+    position: fixed;
+    text-align: left;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 350px;
+    z-index: 100;
+  }
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .lpDialog.fadeout {
+    animation: fadeout 0.25s linear 0s 1 forwards;
+  }
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  .lpModalOverlay {
+    animation: fadein 0.25s linear 0s 1 forwards;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 90;
+  }
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .lpModalOverlay.fadeout {
+    animation: fadeout 0.25s linear 0s 1 forwards;
+  }
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
 @media only screen and (max-width: 720px) {
     .lpChart {
         max-width: 100%;
