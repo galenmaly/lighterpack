@@ -1,7 +1,17 @@
 LighterPack
 ===========
-LighterPack is a website to track the gear you take on adventures. 
+LighterPack helps you track the gear you bring on adventures.
 
-The original version of LighterPack was built on a node.js/jQuery/vanillaJS/mongo stack, and a rewrite using Vue is in-progress.
+How to run Lighterpack
+-----------
 
-Development on the original verion in the master branch has ceased, please check out the `vue` branch for active development. If you're interested in contributing to LighterPack, please check out the [contributing page](https://github.com/galenmaly/lighterpack/blob/master/CONTRIBUTING.md) 
+1. Install node.js, npm and mongo
+2. ```$ git clone https://github.com/galenmaly/lighterpack.git```
+3. Install dependancies ```$ npm install```
+4. start mongo ```$ mongod```
+5. Start app ```$ npm start```
+6. go to http://localhost:8080
+
+Future non-feature initiatives
+-----------
+- Migrate to postgres document store from mongo

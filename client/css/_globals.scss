@@ -1,0 +1,73 @@
+$background1: #f7f7f7;
+$content: #282828;
+$content2: #666;
+
+$border1: #ccc;
+
+$blue1: #1b77d3;
+$blue2: #3db7ff;
+$darkBlue: #064989;
+
+$green1: #7ab317;
+$green2: #a8d46f;
+
+$orange1: #efa026;
+//$orange1: #ffb036;
+//$orange2: #F18828;
+$orange2: #ee801c;
+
+$red1: #ce1836;
+
+$yellow1: #f2d000;
+$yellow2: #fcefa9;
+
+$darkYellow: #a58c00;
+
+/* spacing */
+$spacingSmaller: 5px;
+$spacingSmall: 10px;
+$spacingMedium: 15px;
+$spacingLarge: 30px;
+
+/* z-index stack */
+$belowSidebar: 10;
+$sidebar: 20;
+$aboveSidebar: 30;
+
+$belowDialog: 90;
+$dialog: 100;
+$aboveDialog: 110;
+
+$transitionDurationFast: 0.1s;
+$transitionDuration: 0.2s;
+$transitionDurationSlow: 0.4s;
+
+@mixin fullBleedLeft() {
+    &::before {
+        background: inherit;
+        border-bottom: inherit;
+        bottom: -1px;
+        content: "";
+        display: block;
+        position: absolute;
+        right: 100%;
+        top: 0;
+        width: 999px;
+        z-index: $belowSidebar;
+    }
+}
+
+@mixin fullBleedRight() {
+    &::after {
+        background: inherit;
+        border-bottom: inherit;
+        bottom: -1px;
+        content: "";
+        display: block;
+        left: 100%;
+        position: absolute;
+        top: 0;
+        width: 999px;
+        z-index: $belowSidebar;
+    }
+}

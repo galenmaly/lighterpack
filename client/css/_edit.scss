@@ -1,0 +1,75 @@
+@import "globals";
+
+.lpSilent {
+    background: transparent;
+    border: 1px solid transparent;
+
+    &:hover {
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    &:focus {
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+        outline: none;
+    }
+
+    &.lpSilentError {
+        background-color: lighten(desaturate($red1, 10%), 40%);
+        border: 1px solid $red1;
+        outline-color: $red1;
+
+        &:focus {
+            background-color: #fff;
+        }
+    }
+}
+
+/* Body */
+
+.addCategory,
+.lpAddItem {
+    margin-left: 20px;
+    margin-top: 6px;
+}
+
+#csv,
+#image {
+    height: 1px;
+    left: -999px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+.lpHref.close {
+    margin-left: 10px;
+}
+
+.gu-mirror {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+    margin: 0 !important;
+    opacity: 0.8;
+    position: fixed !important;
+    z-index: 9999 !important;
+}
+
+.gu-hide {
+    display: none !important;
+}
+
+.gu-unselectable {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+.gu-transit {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}
