@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
+const generate = require('nanoid/generate');
 
 const router = express.Router();
 const fs = require('fs');
@@ -164,35 +165,27 @@ router.post('/externalId', (req, res) => {
 });
 
 function externalId(req, res, user) {
-    const filePath = path.join(__dirname, '../extIds.txt');
+    const id = generate('1234567890abcdefghijklmnopqrstuvwxyz', 6);
+    awesomeLog(req, `Id generated: ${id}`);
 
-    fs.readFile(filePath, (err, data) => {
-        if (!err) {
-            data = data.toString();
-            const position = data.indexOf('\n');
-            if (position != -1) {
-                const myId = data.substr(0, position).trim();
-                data = data.substr(position + 1);
-                fs.writeFile(filePath, data, (err) => {
-                    if (err) {
-                        awesomeLog(req, err);
-                    }
-                });
-                awesomeLog(req, `${user.username} - ${myId}`);
-
-                if (typeof user.externalIds === 'undefined') user.externalIds = [myId];
-                else user.externalIds.push(myId);
-
-                db.users.save(user);
-
-                return res.status(200).json({ externalId: myId });
-            }
-            awesomeLog(req, 'External ID File: no lines found!!!111oneoneone');
-            return res.status(500).json({ message: 'An error occurred, please try again later.' });
+    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
+        if (err) {
+            awesomeLog(req, `Id lookup error for id: ${id}`);
+            res.status(500).send('An error occurred.');
+            return;
         }
-        awesomeLog(req, 'ERROR OPENING EXTERNAL ID FILE');
-        awesomeLog(req, err);
-        return res.status(500).json({ message: 'An error occurred, please try again later.' });
+
+        if (!users.length) {
+            if (typeof user.externalIds === 'undefined') user.externalIds = [id];
+            else user.externalIds.push(id);
+
+            db.users.save(user);
+            awesomeLog(req, `Id: ${id} saved for user ${user.username}`);
+            res.status(200).json({ externalId: id });
+        } else {
+            awesomeLog(req, `Id collision detected for id: ${id}`);
+            externalId(req, res, user);
+        }
     });
 }
 
