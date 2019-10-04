@@ -14,10 +14,9 @@
                 </router-link>
             </div>
 
-            <!-- TODO -->
-            <!--<span class="info existingData">
-                Your existing data will be saved to your new account upon creation.
-            </span>-->
+            <p class="lpWarning" v-if="isLocalSaving">
+                <strong>Note:</strong> Your existing data on your computer <strong>will</strong> be saved to your new account.
+            </p>
 
             <registerForm />
         </modal>
@@ -37,6 +36,12 @@ export default {
         blackoutFooter,
         modal,
         registerForm,
+    },
+    
+    computed: {
+        isLocalSaving() {
+            return this.$store.state.saveType === 'local';
+        },
     },
 };
 </script>
