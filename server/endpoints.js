@@ -131,7 +131,10 @@ router.post('/saveLibrary', (req, res) => {
 });
 
 function saveLibrary(req, res, user) {
-    if (!req.body.username || typeof req.body.syncToken === 'undefined' || !req.body.data) {
+    if (typeof req.body.syncToken === 'undefined') {
+        return res.status(400).send("Please refresh this page to upgrade to the latest version of LighterPack.");
+    }
+    if (!req.body.username || !req.body.data) {
         return res.status(400).json({ message: 'An error occurred while saving your data. Please refresh your browser and try again.' });
     }
 
