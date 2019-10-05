@@ -11,7 +11,7 @@
             <div slot="content" class="lpFields">
                 <div class="lpField">
                     <label for="shareUrl">Share your list</label>
-                    <input id="shareUrl" v-select-on-bus="'show-share-box'" type="text" :value="shareUrl">
+                    <input id="shareUrl" v-select-on-bus="'show-share-box'"  v-select-on-focus type="text" :value="shareUrl">
                 </div>
                 <div class="lpField">
                     <label for="embedUrl">Embed your list</label>
