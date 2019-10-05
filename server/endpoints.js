@@ -477,7 +477,8 @@ function verifyPassword(username, password) {
                             if (sha3password === user.password) {
                                 resolve(user);
                             } else {
-                                reject({ code: 404, message: 'Invalid username and/or password.' });
+                                /* TODO: revert this error message by removing refresh text */
+                                reject({ code: 404, message: 'Invalid username and/or password. Please refresh the page before trying again.' });
                             }
                         } else {
                             // Remove extra layer of hashing. Just bcrypt.
