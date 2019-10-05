@@ -38,16 +38,12 @@ getAllDanglingUsers()
         });
     });
 
-function getAllDanglingUsers() {
+function getAllDanglingUsers(danglingUsers = [], prefixes = "0123456789abcdef".split("")) {
     return new Promise((resolve, reject) => {
-        db.users.find({}, (err, users) => {
-            if (!users.length) {
-                console.log('no users found');
-                return;
-            }
+        const prefix = prefixes.pop();
+        db.users.find({token: { '$regex' : '^' + prefix + '.*'} }, (err, users) => {
             console.log('searching for users with dangling spaces...');
-            const danglingUsers = [];
-
+            console.log(users.length);
             for (const i in users) {
                 const user = users[i];
 
@@ -55,7 +51,12 @@ function getAllDanglingUsers() {
                     danglingUsers.push(user);
                 }
             }
-            resolve(danglingUsers);
+            if (!prefixes.length) {
+                resolve(danglingUsers);
+                return;
+            }
+            resolve(getAllDanglingUsers(danglingUsers, prefixes));
+            
         });
     });
 }
