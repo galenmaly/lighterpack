@@ -69,7 +69,7 @@
             margin-bottom: 0;
         }
 
-        ul {
+        ul, a {
             line-height: 25px;
         }
 
