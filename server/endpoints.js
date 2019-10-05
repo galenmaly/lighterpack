@@ -228,6 +228,7 @@ router.post('/forgotPassword', (req, res) => {
                     const mailOptions = {
                         from: 'LighterPack <info@mg.lighterpack.com>',
                         to: email,
+                        "h:Reply-To": "LighterPack <info@lighterpack.com>",
                         subject: 'Your new LighterPack password',
                         text: message,
                     };
@@ -281,6 +282,7 @@ router.post('/forgotUsername', (req, res) => {
         const mailOptions = {
             from: 'LighterPack <info@mg.lighterpack.com>',
             to: email,
+            "h:Reply-To": "LighterPack <info@lighterpack.com>",
             subject: 'Your LighterPack username',
             text: message,
         };
@@ -309,7 +311,7 @@ function account(req, res, user) {
     verifyPassword(user.username, String(req.body.currentPassword))
         .then((user) => {
             if (req.body.newPassword) {
-                const newPassword = String(req.body.password);
+                const newPassword = String(req.body.newPassword);
                 const errors = [];
 
                 if (newPassword.length < 5 || newPassword.length > 60) {
@@ -319,7 +321,7 @@ function account(req, res, user) {
                 if (errors.length) {
                     return res.status(400).json({ errors });
                 }
-
+                
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newPassword, salt, (err, hash) => {
                         user.password = hash;

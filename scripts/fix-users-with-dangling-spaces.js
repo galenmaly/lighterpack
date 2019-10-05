@@ -142,8 +142,9 @@ function messageUser(user, originalUsername, messageTemplate) {
         message = message.replace("${newUsername}", newUsername);
 
         const mailOptions = {
-            from: 'LighterPack <info@lighterpack.com>',
+            from: 'LighterPack <info@mg.lighterpack.com>',
             to: user.email,
+            "h:Reply-To": "LighterPack <info@lighterpack.com>",
             subject: 'LighterPack account update',
             text: message,
         };
