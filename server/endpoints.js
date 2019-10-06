@@ -30,7 +30,7 @@ const Library = dataTypes.Library;
 eval(`${fs.readFileSync(path.join(__dirname, './sha3.js'))}`);
 
 router.post('/register', (req, res) => {
-    let username = String(req.body.username);
+    let username = String(req.body.username).toLowerCase().trim();
     const password = String(req.body.password);
     let email = String(req.body.email);
 
@@ -39,8 +39,6 @@ router.post('/register', (req, res) => {
     if (!username) {
         errors.push({ field: 'username', message: 'Please enter a username.' });
     }
-
-    username = username.trim();
 
     if (username && (username.length < 3 || username.length > 32)) {
         errors.push({ field: 'username', message: 'Please enter a username between 3 and 32 characters.' });
