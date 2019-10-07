@@ -439,7 +439,7 @@ function authenticateUser(req, res, callback) {
                 return res.status(500).json({ message: 'An error occurred, please try again later.' });
             } if (!users || !users.length) {
                 awesomeLog(req, 'bad cookie!');
-                return res.status(401).json({ message: 'Please log in again.' });
+                return res.status(404).json({ message: 'Please log in again.' });
             }
             callback(req, res, users[0]);
         });
