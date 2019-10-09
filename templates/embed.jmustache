@@ -112,7 +112,7 @@ if (typeof jQuery === "undefined") {
         jq = document.createElement("script");
 
     jq.type = "text/javascript";
-    jq.src = "{{{baseUrl}}}/js/jquery-2.0.3.min.js";
+    jq.src = "{{{baseUrl}}}/js/jquery.min.js";
     jq.onload = init_{{externalId}};
     head.appendChild(jq);
 } else {
