@@ -11,7 +11,7 @@ listReport = function () {
     function init() {
         initEventHandlers();
 
-        if (chartData) {
+        if (typeof chartData !== "undefined") {
             chartData = JSON.parse(unescape(chartData));
             addParents(chartData, false);
             chart = pies({ processedData: chartData, container: $chartContainer, hoverCallback: chartHover });

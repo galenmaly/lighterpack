@@ -37,7 +37,9 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
 let index = fs.readFileSync(path.join(__dirname, '../_index.html'), 'utf8');
 let assetData;
 let shareStylesHtml = '';
+let shareStylesLinks = [];
 let shareScriptsHtml = '';
+let shareScriptsLinks = [];
 let appScriptsHtml = '';
 let appStylesHtml = '';
 
@@ -57,8 +59,10 @@ if (config.get('environment') === 'production') {
     shareAssetFiles.forEach((assetName) => {
         if (assetName.substr(assetName.length - 3) === '.js') {
             shareScriptsHtml += `<script src='/dist/${assetName}'></script>`;
+            shareScriptsLinks.push(assetName);
         } else if (assetName.substr(assetName.length - 4) === '.css') {
             shareStylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
+            shareStylesLinks.push(assetName);
         }
     });
 } else {
@@ -198,6 +202,8 @@ router.get('/e/:id', (req, res) => {
             optionalFields: library.optionalFields,
             renderedDescription: markdown.toHTML(list.description),
             baseUrl: config.get('deployUrl'),
+            styles: shareStylesLinks,
+            scripts: shareScriptsLinks,
         };
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));

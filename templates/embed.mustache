@@ -1,5 +1,8 @@
 <div class="lpList lp {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
-	<link href="{{{baseUrl}}}/css/common.css?v=1" rel="stylesheet" type="text/css" />
+    {{#styles}}
+        <link href="{{{baseUrl}}}/dist/{{{.}}}" rel="stylesheet" type="text/css" />
+    {{/styles}}
+    <style>.lpModalOverlay, #lpImageDialog { display: none;}</style>
     <h2 class="lpListName" >{{listName}}</h2>
     <div class="lpListSummary">
         <div class="lpChartContainer">
