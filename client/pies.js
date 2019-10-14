@@ -289,7 +289,6 @@ module.exports = function (args) {
         if (!hovered) {
             recursivelySetAttribute(data, 'visiblePoints', false);
             data.visiblePoints = true;
-            context.clearRect(0, 0, bounds.x, bounds.y);
             animateAdd();
             return;
         }
