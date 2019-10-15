@@ -191,15 +191,8 @@ function externalId(req, res, user) {
 
 router.post('/forgotPassword', (req, res) => {
     awesomeLog(req);
-    let username = String(req.body.username);
-    if (!username) {
-        awesomeLog(req, `Bad forgot password:${username}`);
-        return res.status(400).json({ errors: [{ message: 'Please enter a username.' }] });
-    }
-
-    username = username.trim();
-
-    if (username.length < 1 || username.length > 32) {
+    let username = String(req.body.username).toLowerCase().trim();
+    if (!username || username.length < 1 || username.length > 32) {
         awesomeLog(req, `Bad forgot password:${username}`);
         return res.status(400).json({ errors: [{ message: 'Please enter a username.' }] });
     }
@@ -251,15 +244,8 @@ router.post('/forgotPassword', (req, res) => {
 
 router.post('/forgotUsername', (req, res) => {
     awesomeLog(req);
-    let email = String(req.body.email);
-    if (!email) {
-        awesomeLog(req, `Bad forgot username:${email}`);
-        return res.status(400).json({ errors: [{ message: 'Please enter a valid email.' }] });
-    }
-
-    email = email.trim();
-
-    if (email.length < 1) {
+    let email = String(req.body.email).toLowerCase().trim();
+    if (!email || email.length < 1) {
         awesomeLog(req, `Bad forgot username:${email}`);
         return res.status(400).json({ errors: [{ message: 'Please enter a valid email.' }] });
     }
