@@ -281,18 +281,20 @@ List.prototype.calculateTotals = function () {
     for (const i in this.categoryIds) {
         const category = this.library.getCategoryById(this.categoryIds[i]);
 
-        category.calculateSubtotal();
+        if (category) {
+            category.calculateSubtotal();
 
-        totalWeight += category.subtotalWeight;
-        totalWornWeight += category.subtotalWornWeight;
-        totalConsumableWeight += category.subtotalConsumableWeight;
+            totalWeight += category.subtotalWeight;
+            totalWornWeight += category.subtotalWornWeight;
+            totalConsumableWeight += category.subtotalConsumableWeight;
 
-        totalPrice += category.subtotalPrice;
-        totalConsumablePrice += category.subtotalConsumablePrice;
+            totalPrice += category.subtotalPrice;
+            totalConsumablePrice += category.subtotalConsumablePrice;
 
-        totalQty += category.subtotalQty;
+            totalQty += category.subtotalQty;
 
-        out.categories.push(category);
+            out.categories.push(category);
+        }
     }
 
     totalBaseWeight = totalWeight - (totalWornWeight + totalConsumableWeight);

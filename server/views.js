@@ -255,30 +255,35 @@ router.get('/csv/:id', (req, res) => {
 
         for (var i in list.categoryIds) {
             const category = library.getCategoryById(list.categoryIds[i]);
-            for (const j in category.categoryItems) {
-                const categoryItem = category.categoryItems[j];
-                const item = library.getItemById(categoryItem.itemId);
+            if (category) {
+                for (const j in category.categoryItems) {
+                    const categoryItem = category.categoryItems[j];
 
-                const itemRow = [item.name];
-                itemRow.push(category.name);
-                itemRow.push(item.description);
-                itemRow.push(`${categoryItem.qty}`);
-                itemRow.push(`${weightUtils.MgToWeight(item.weight, item.authorUnit)}`);
-                itemRow.push(fullUnits[item.authorUnit]);
-                itemRow.push(item.url);
-                itemRow.push(`${item.price}`);
-                itemRow.push(categoryItem.worn ? 'Worn' : '');
-                itemRow.push(categoryItem.consumable ? 'Consumable' : '');
+                    if (categoryItem) {
+                        const item = library.getItemById(categoryItem.itemId);
 
-                for (const k in itemRow) {
-                    const field = itemRow[k];
-                    if (k > 0) out += ',';
-                    if (typeof (field) === 'string') {
-                        if (field.indexOf(',') > -1) out += `"${field.replace(/\"/g, '""')}"`;
-                        else out += field;
-                    } else out += field;
+                        const itemRow = [item.name];
+                        itemRow.push(category.name);
+                        itemRow.push(item.description);
+                        itemRow.push(`${categoryItem.qty}`);
+                        itemRow.push(`${weightUtils.MgToWeight(item.weight, item.authorUnit)}`);
+                        itemRow.push(fullUnits[item.authorUnit]);
+                        itemRow.push(item.url);
+                        itemRow.push(`${item.price}`);
+                        itemRow.push(categoryItem.worn ? 'Worn' : '');
+                        itemRow.push(categoryItem.consumable ? 'Consumable' : '');
+
+                        for (const k in itemRow) {
+                            const field = itemRow[k];
+                            if (k > 0) out += ',';
+                            if (typeof (field) === 'string') {
+                                if (field.indexOf(',') > -1) out += `"${field.replace(/\"/g, '""')}"`;
+                                else out += field;
+                            } else out += field;
+                        }
+                        out += '\n';
+                    }
                 }
-                out += '\n';
             }
         }
 
@@ -406,17 +411,20 @@ const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, uni
 
     for (const i in list.categoryIds) {
         const category = list.library.getCategoryById(list.categoryIds[i]);
-        category.calculateSubtotal();
-        category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, unit);
-        category.subtotalUnit = unit;
 
-        totalWeight += category.subtotalWeight;
-        totalPrice += category.subtotalPrice;
-        totalWornWeight += category.subtotalWornWeight;
-        totalConsumableWeight += category.subtotalConsumableWeight;
-        totalConsumablePrice += category.subtotalConsumablePrice;
-        totalQty += category.subtotalQty;
-        out.categories.push(category);
+        if (category) {
+            category.calculateSubtotal();
+            category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, unit);
+            category.subtotalUnit = unit;
+
+            totalWeight += category.subtotalWeight;
+            totalPrice += category.subtotalPrice;
+            totalWornWeight += category.subtotalWornWeight;
+            totalConsumableWeight += category.subtotalConsumableWeight;
+            totalConsumablePrice += category.subtotalConsumablePrice;
+            totalQty += category.subtotalQty;
+            out.categories.push(category);
+        }
     }
 
     totalPackWeight = totalWeight - (totalWornWeight + totalConsumableWeight);
