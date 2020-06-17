@@ -12,11 +12,30 @@
 }
 
 #librarySearch {
+    position: relative;
+    display: table;
+    margin-bottom: 15px;
+    padding: 0px;
+}
+
+#librarySearch input {
+    display: table-cell;
     background: #666;
     border: 1px solid #888;
     color: #fff;
-    margin-bottom: 15px;
+    width: 100%;
     padding: 3px 6px;
+}
+
+#librarySearch p {
+    position: absolute;
+    right: 0px;
+    top: 3px;
+    padding: 0 8px;
+    margin: 0px;
+    font-size: 1.2em;
+    user-select: none;
+    cursor: pointer;
 }
 
 .lpLibraryItem {
@@ -98,9 +117,12 @@
 <template>
     <section id="libraryContainer">
         <h2>Gear</h2>
-        <input id="librarySearch" v-model="searchText" type="text" placeholder="search items">
+        <div id="librarySearch">
+            <input v-model="searchText" type="text" placeholder="search items"/>
+            <p v-if="searchText.length > 0" @click="clearSearch">&times;</p>
+        </div>
         <ul id="library">
-            <li v-for="item in filteredItems" class="lpLibraryItem" :data-item-id="item.id">
+            <li v-for="item in filteredItems" class="lpLibraryItem" :data-item-id="item.id" :key="item.id">
                 <a v-if="item.url" :href="item.url" target="_blank" class="lpName lpHref">{{ item.name }}</a>
                 <span v-if="!item.url" class="lpName">{{ item.name }}</span>
                 <span class="lpWeight">
@@ -229,6 +251,9 @@ export default {
             };
             bus.$emit('initSpeedbump', callback, speedbumpOptions);
         },
+        clearSearch() {
+            this.searchText = "";
+        }
     },
 };
 </script>
