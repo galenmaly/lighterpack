@@ -91,6 +91,9 @@ Category.prototype.calculateSubtotal = function () {
     for (const i in this.categoryItems) {
         const categoryItem = this.categoryItems[i];
         const item = this.library.getItemById(categoryItem.itemId);
+        if (!item) {
+            continue;
+        }
         this.subtotalWeight += item.weight * categoryItem.qty;
         this.subtotalPrice += item.price * categoryItem.qty;
 
