@@ -32,6 +32,7 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: '/welcome' },
     { path: '/register' },
     { path: '/forgot-password' },
+    { path: '/moderation' },
 ];
 
 let index = fs.readFileSync(path.join(__dirname, '../_index.html'), 'utf8');

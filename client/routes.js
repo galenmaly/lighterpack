@@ -3,6 +3,7 @@ import welcome from './views/welcome.vue';
 import signin from './views/signin.vue';
 import register from './views/register.vue';
 import forgotPassword from './views/forgot-password.vue';
+import moderation from './views/moderation.vue';
 
 export default [
     { path: '/', component: dashboard },
@@ -12,5 +13,6 @@ export default [
     { path: '/signin/forgot-username', component: signin },
     { path: '/register', component: register },
     { path: '/forgot-password', component: forgotPassword },
+    { path: '/moderation', component: moderation },
     { path: '*', component: dashboard },
 ];

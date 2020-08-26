@@ -20,9 +20,11 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static(`${__dirname}/public/`, { maxAge: oneDay }));
 const endpoints = require('./server/endpoints.js');
+const moderationEndpoints = require('./server/moderation-endpoints.js');
 const views = require('./server/views.js');
 
 app.use('/', endpoints);
+app.use('/', moderationEndpoints);
 app.use('/', views);
 
 console.log('-------');

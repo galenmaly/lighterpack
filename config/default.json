@@ -14,5 +14,6 @@
     "imgurClientID": "",
     "mailgunDomain": "",
     "mailgunBaseURL": "",
-    "mailgunAPIKey": ""
+    "mailgunAPIKey": "",
+    "moderators": []
 }

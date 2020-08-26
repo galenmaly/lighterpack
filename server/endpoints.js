@@ -12,6 +12,8 @@ const mongojs = require('mongojs');
 const config = require('config');
 const awesomeLog = require('./log.js');
 
+const { authenticateUser, verifyPassword } = require('./auth.js');
+
 if (config.get('mailgunAPIKey')) {
     var mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
 }
@@ -114,6 +116,7 @@ router.post('/register', (req, res) => {
 router.post('/signin', (req, res) => {
     authenticateUser(req, res, returnLibrary);
 });
+
 
 function returnLibrary(req, res, user) {
     awesomeLog(req, user.username);
@@ -395,107 +398,6 @@ function imageUpload(req, res, user) {
                 return res.send(body);
             });
         });
-    });
-}
-
-function authenticateUser(req, res, callback) {
-    if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
-        return res.status(401).json({ message: 'Please log in.' });
-    }
-    if (req.body.username && req.body.password) {
-        const username = String(req.body.username).toLowerCase().trim();
-        const password = String(req.body.password);
-        verifyPassword(username, password)
-            .then((user) => {
-                generateSession(req, res, user, callback);
-            })
-            .catch((err) => {
-                console.log(err);
-                if (err.code && err.message) {
-                    awesomeLog(req, err.message);
-                    res.status(err.code).json({ message: err.message });
-                } else {
-                    res.status(500).json({ message: 'An error occurred, please try again later.' });
-                }
-            });
-    } else {
-        db.users.find({ token: req.cookies.lp }, (err, users) => {
-            if (err) {
-                awesomeLog(req, `Error on authenticateUser else for:${username}`);
-                return res.status(500).json({ message: 'An error occurred, please try again later.' });
-            } if (!users || !users.length) {
-                awesomeLog(req, 'bad cookie!');
-                return res.status(404).json({ message: 'Please log in again.' });
-            }
-            callback(req, res, users[0]);
-        });
-    }
-}
-
-function verifyPassword(username, password) {
-    return new Promise((resolve, reject) => {
-        db.users.find({ username }, (err, users) => {
-            if (err) {
-                return reject({ code: 500, message: 'An error occurred, please try again later.' });
-            } if (!users || !users.length) {
-                return reject({ code: 404, message: 'Invalid username and/or password.' });
-            }
-
-            const user = users[0];
-
-            bcrypt.compare(password, user.password, (err, result) => {
-                if (err) {
-                    return reject({ code: 500, message: 'An error occurred, please try again later.' });
-                }
-                if (!result) {
-                    const sha3password = CryptoJS.SHA3(password + username).toString(CryptoJS.enc.Base64);
-                    bcrypt.compare(sha3password, user.password, (err, result) => {
-                        if (err) {
-                            reject({ code: 500, message: 'An error occurred, please try again later.' });
-                        }
-                        if (!result) {
-                            /* TODO: reinstate this block after DB migration */
-                            /* reject({code: 404, message: "Invalid username and/or password."}); */
-
-                            /* TODO: remove this block after DB migration */
-                            if (sha3password === user.password) {
-                                resolve(user);
-                            } else {
-                                /* TODO: revert this error message by removing refresh text */
-                                reject({ code: 404, message: 'Invalid username and/or password. Please refresh the page before trying again.' });
-                            }
-                        } else {
-                            // Remove extra layer of hashing. Just bcrypt.
-                            bcrypt.genSalt(10, (err, salt) => {
-                                if (err) {
-                                    return reject({ code: 500, message: 'An error occurred, please try again later.' });
-                                }
-                                bcrypt.hash(password, salt, (err, hash) => {
-                                    if (err) {
-                                        return reject({ code: 500, message: 'An error occurred, please try again later.' });
-                                    }
-                                    user.password = hash;
-                                    db.users.save(user);
-                                    resolve(user);
-                                });
-                            });
-                        }
-                    });
-                } else {
-                    resolve(user);
-                }
-            });
-        });
-    });
-}
-
-function generateSession(req, res, user, callback) {
-    crypto.randomBytes(48, (ex, buf) => {
-        const token = buf.toString('hex');
-        user.token = token;
-        db.users.save(user);
-        res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
-        callback(req, res, user);
     });
 }
 
