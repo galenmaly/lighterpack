@@ -3,7 +3,25 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
+class AssetJsonPlugin {
+    apply(compiler) {
+        compiler.hooks.done.tap(
+            'AssetJsonPlugin',
+            (stats) => {
+                const assetData = {
+                    version: stats.toJson().chunks[0].hash,
+                    files: stats.toJson().assetsByChunkName,
+                };
+
+                require('fs').writeFileSync(
+                    path.join(__dirname, '/public/dist/', 'assets.json'), JSON.stringify(assetData),
+                );
+            });
+    }
+}
+
 module.exports = {
+    mode: 'production',
     entry: {
         app: [
             'whatwg-fetch',
@@ -73,17 +91,6 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: '[name].[chunkhash].css',
         }),
-        function () {
-            this.plugin('done', (stats) => {
-                const assetData = {
-                    version: stats.toJson().chunks[0].hash,
-                    files: stats.toJson().assetsByChunkName,
-                };
-
-                require('fs').writeFileSync(
-                    path.join(__dirname, '/public/dist/', 'assets.json'), JSON.stringify(assetData),
-                );
-            });
-        },
+        new AssetJsonPlugin(),
     ],
 };
