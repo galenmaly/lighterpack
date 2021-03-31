@@ -5,9 +5,45 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const config = require('config');
 const express = require('express');
+const morgan = require('morgan');
+const uuid = require('uuid');
+
+const { logger } = require('./server/log.js');
+
+morgan.token('username', function getUsername (req) {
+    return req.lighterpackusername
+});
+
+
+morgan.token('requestid', function getUsername (req) {
+    return req.uuid
+});
 
 const app = express();
 app.enable('trust proxy');
+
+app.use(function (req, res, next) {
+    req.uuid = uuid.v4();
+    next();
+});
+
+app.use(morgan(function (tokens, req, res) {
+    return JSON.stringify({
+        'timestamp': tokens.date(req, res, 'iso'),
+        'requestid': tokens.requestid(req, res),
+        "remote-addr": tokens['remote-addr'](req, res),
+        'method': tokens.method(req, res),
+        'http-version': tokens['http-version'](req, res),
+        'user-agent': tokens['user-agent'](req, res),
+        'url': tokens.url(req, res),
+        'status': tokens.status(req, res),
+        'referrer': tokens.referrer(req, res),
+        'content-length': tokens.res(req, res, 'content-length'),
+        'response-time': tokens['response-time'](req, res),
+        'username': tokens.username(req, res),
+    })
+}, { stream: logger.stream.write }));
+
 const oneDay = 86400000;
 
 app.use(compression());
@@ -27,8 +63,7 @@ app.use('/', endpoints);
 app.use('/', moderationEndpoints);
 app.use('/', views);
 
-console.log('-------');
-console.log(new Date().toString().substr(0, 24));
+logger.info("Starting up Lighterpack...");
 
 if (config.get('environment') === 'production') {
     webpackConfig = require('./webpack.config');
@@ -42,7 +77,7 @@ webpackCompiler = webpack(webpackConfig);
 config.get('bindings').map(
     (bind) => {
         app.listen(config.get('port'), bind);
-        console.log(`Listening on [${bind}]:${config.get('port')}`);
+        logger.info(`Listening on [${bind}]:${config.get('port')}`);
     },
 );
 
@@ -70,9 +105,9 @@ if (config.get('environment') !== 'production') {
         },
     }).listen(config.get('devServerPort'), (err, result) => {
         if (err) {
-            return console.log(err);
+            return logger.info(err);
         }
 
-        console.log(`Webpack dev server listening on port ${config.get('devServerPort')}`);
+        logger.info(`Webpack dev server listening on port ${config.get('devServerPort')}`);
     });
 }

@@ -44,6 +44,7 @@
         <div v-if="userToInspect" class="lp-moderation-user-to-inspect">
             <h2>{{userToInspect.username}}</h2>
             <section>
+                <button @click="clearSession(userToInspect)">Clear session</button>
                 <button @click="resetPassword(userToInspect)">Reset password</button>
                 <template v-if="newPassword">
                     <strong>New Password:</strong> {{ newPassword }}
@@ -97,6 +98,22 @@ export default {
             this.userToInspect = user;
             this.editableLibrary = JSON.stringify(this.userToInspect.library);
             this.newPassword = null;
+        },
+        clearSession(user) {
+            fetchJson(`/moderation/clear-session`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: user.username}),
+            })
+            .then((response) => {
+                console.log("clear session success");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
         },
         resetPassword(user) {
             fetchJson(`/moderation/reset-password`, {

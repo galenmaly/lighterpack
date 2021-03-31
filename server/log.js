@@ -1,20 +1,41 @@
-function awesomeLog(req, data) {
-    if (!req) {
-        console.log('awesome log but no req? why!?');
-        return;
-    }
-    if (!data) {
-        data = '';
-    }
-    if (data instanceof Object) {
-        data = JSON.stringify(data);
-    }
+const winston = require('winston');
 
-    const d = new Date();
-    const time = d.toISOString();
-    const ua = req.get('user-agent');
-
-    console.log(`${time} - ${req.ip} - ${req.path} - ${ua} - ${data}`);
+class TimestampFirst {
+    constructor(enabled = true) {
+        this.enabled = enabled;
+    }
+    transform(obj) {
+        if (this.enabled) {
+            return Object.assign({
+                timestamp: obj.timestamp
+            }, obj);
+        }
+        return obj;
+    }
 }
 
-module.exports = awesomeLog;
+const logger = winston.createLogger({
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        new TimestampFirst(true),
+        winston.format.json(),
+      ),
+      transports: [new winston.transports.Console()]
+});
+
+const logWithRequest = function(req, data) {
+    if (typeof(data) === "string") {
+        data = {message: data};
+    }
+    
+    if (req && req.uuid) {
+        logger.info({...data, requestid: req.uuid});
+        return;
+    }
+    logger.info(data);
+}
+
+module.exports = {
+    logWithRequest,
+    logger
+};

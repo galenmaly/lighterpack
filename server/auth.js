@@ -4,7 +4,7 @@ const config = require('config');
 const mongojs = require('mongojs');
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
-const awesomeLog = require('./log.js');
+const { logWithRequest } = require('./log.js');
 
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -35,9 +35,9 @@ const authenticateUser = function(req, res, callback) {
                 generateSession(req, res, user, callback);
             })
             .catch((err) => {
-                console.log(err);
+                logWithRequest(req, err);
                 if (err.code && err.message) {
-                    awesomeLog(req, err.message);
+                    logWithRequest(req, {message: `error on verifyPassword for: ${username}`, error: err.message});
                     res.status(err.code).json({ message: err.message });
                 } else {
                     res.status(500).json({ message: 'An error occurred, please try again later.' });
@@ -46,12 +46,13 @@ const authenticateUser = function(req, res, callback) {
     } else {
         db.users.find({ token: req.cookies.lp }, (err, users) => {
             if (err) {
-                awesomeLog(req, `Error on authenticateUser else for:${username}`);
+                logWithRequest(req, {message: `Error on authenticateUser else`, error: err}, );
                 return res.status(500).json({ message: 'An error occurred, please try again later.' });
             } if (!users || !users.length) {
-                awesomeLog(req, 'bad cookie!');
+                logWithRequest(req, {message: `bad cookie!`});
                 return res.status(404).json({ message: 'Please log in again.' });
             }
+            req.lighterpackusername = users[0].username || "UNKNOWN";
             callback(req, res, users[0]);
         });
     }

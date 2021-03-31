@@ -10,7 +10,7 @@ const request = require('request');
 const formidable = require('formidable');
 const mongojs = require('mongojs');
 const config = require('config');
-const awesomeLog = require('./log.js');
+const { logWithRequest } = require('./log.js');
 
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
@@ -23,10 +23,14 @@ router.get('/moderation/search', (req, res) => {
     authenticateModerator(req, res, search);
 });
 
+function escapeRegExp(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  }
+
 function search(req, res) {
-    let searchQuery = String(req.query.q).toLowerCase().trim();
+    let searchQuery = escapeRegExp(String(req.query.q).toLowerCase().trim());
     const nameSearch = new Promise((resolve, reject) => {
-        db.users.find({ 'username': {'$regex': `^${searchQuery}.*`, '$options': 'si'} }, (err, users) => {
+        db.users.find({ 'username': {'$regex': `${searchQuery}.*`, '$options': 'si'} }, (err, users) => {
             if (err) {
                 return reject(err);
             }
@@ -35,7 +39,7 @@ function search(req, res) {
     })
 
     const emailSearch = new Promise((resolve, reject) => {
-        db.users.find({ 'email': {'$regex': `/${searchQuery}/`, '$options': 'si'} }, (err, users) => {
+        db.users.find({ 'email': {'$regex': `${searchQuery}.*`, '$options': 'si'} }, (err, users) => {
             if (err) {
                 return reject(err);
             }
@@ -57,7 +61,7 @@ function search(req, res) {
         res.json({results: allResults});
     })
     .catch((err) => {
-        console.log(err);
+        logWithRequest(req, err);
         res.status(500).json({message: err});
     })
     
@@ -70,14 +74,14 @@ router.post('/moderation/reset-password', (req, res) => {
 
 function resetPassword(req, res, user) {
     let username = String(req.body.username).toLowerCase().trim();
-    console.log(username);
+    logWithRequest(req, {message: 'MODERATION Reset password start', username});
 
     db.users.find({ username }, (err, users) => {
         if (err) {
-            awesomeLog(req, `MODERATION Reset password lookup error for:${username}`);
+            logWithRequest(req, {message: 'MODERATION Reset password lookup error', username });
             return res.status(500).json({ message: 'An error occurred' });
         } if (!users.length) {
-            awesomeLog(req, `MODERATION Reset password for unknown user:${username}`);
+            logWithRequest(req, {message: 'MODERATION Reset password for unknown', username});
             return res.status(500).json({ message: 'An error occurred.' });
         }
         const user = users[0];
@@ -89,13 +93,38 @@ function resetPassword(req, res, user) {
                     user.password = hash;
                     db.users.save(user);
                     const out = { newPassword };
-                    awesomeLog(req, `MODERATION password changed for user:${username}`);
+                    logWithRequest(req, {message: 'MODERATION password changed', username});
                     return res.status(200).json(out);
                 });
             });
         })
     });
 }
+
+router.post('/moderation/clear-session', (req, res) => {
+    authenticateModerator(req, res, clearSession);
+});
+
+function clearSession(req, res, user) {
+    let username = String(req.body.username).toLowerCase().trim();
+    logWithRequest(req, {message: 'MODERATION Clear session start', username});
+
+    db.users.find({ username }, (err, users) => {
+        if (err) {
+            logWithRequest(req, {message: 'MODERATION Clear session lookup error', username });
+            return res.status(500).json({ message: 'An error occurred' });
+        } if (!users.length) {
+            logWithRequest(req, {message: 'MODERATION Clear session for unknown', username});
+            return res.status(500).json({ message: 'An error occurred.' });
+        }
+        const user = users[0];
+        user.token = "";
+        db.users.save(user);
+        logWithRequest(req, {message: 'MODERATION  Clear session succeeded', username});
+        return res.status(200);
+    });
+}
+
 
 
 module.exports = router;

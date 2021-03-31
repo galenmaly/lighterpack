@@ -9,7 +9,7 @@ const extend = require('node.extend');
 const markdown = require('markdown').markdown;
 const config = require('config');
 const mongojs = require('mongojs');
-const awesomeLog = require('./log.js');
+const { logWithRequest, logger } = require('./log.js');
 
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
@@ -78,14 +78,12 @@ index = index.replace('{{scripts}}', appScriptsHtml);
 
 for (let i = 0; i < vueRoutes.length; i++) {
     router.get(vueRoutes[i].path, (req, res) => {
-        awesomeLog(req);
         res.send(index);
     });
 }
 
 router.get('/r/:id', (req, res) => {
     const id = req.params.id;
-    awesomeLog(req);
 
     if (!id) {
         res.status(400).send('No list specified!');
@@ -104,7 +102,7 @@ router.get('/r/:id', (req, res) => {
         let list;
 
         if (!users[0] || typeof (users[0].library) === 'undefined') {
-            awesomeLog(req, 'Undefined users[0].');
+            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
             res.status(500).send('Unknown error.');
         }
 
@@ -146,7 +144,6 @@ router.get('/r/:id', (req, res) => {
 
 router.get('/e/:id', (req, res) => {
     const id = req.params.id;
-    awesomeLog(req);
 
     if (!id) {
         res.status(400).send('No list specified!');
@@ -168,7 +165,7 @@ router.get('/e/:id', (req, res) => {
         let list;
 
         if (!users[0] || typeof (users[0].library) === 'undefined') {
-            awesomeLog(req, 'Undefined users[0].');
+            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
             res.status(500).send('Unknown error.');
         }
 
@@ -214,7 +211,6 @@ router.get('/e/:id', (req, res) => {
 
 router.get('/csv/:id', (req, res) => {
     const id = req.params.id;
-    awesomeLog(req);
 
     if (!id) {
         res.status(400).send('No list specified!');
@@ -236,7 +232,7 @@ router.get('/csv/:id', (req, res) => {
         let list;
 
         if (!users[0] || typeof (users[0].library) === 'undefined') {
-            awesomeLog(req, 'Undefined users[0].');
+            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
             res.status(500).send('Unknown error.');
         }
 
@@ -301,8 +297,8 @@ router.get('/csv/:id', (req, res) => {
 function init() {
     fs.readdir(path.join(__dirname, '../templates'), (err, files) => {
         if (err) {
-            console.log('Error loading templates');
-            console.log(err);
+            logger.info('Error loading templates');
+            logger.info(err);
         }
         files.filter(file => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
             const fileShort = file.substr(0, file.length - 9);
@@ -315,7 +311,7 @@ function init() {
                 shareTemplate = data.toString();
                 shareTemplate = shareTemplate.replace(/\r?\n|\r/g, '');
             } else {
-                console.log('ERROR reading share.mustache');
+                logger.info('ERROR reading share.mustache');
             }
         });
 
@@ -324,7 +320,7 @@ function init() {
                 embedTemplate = data.toString();
                 embedTemplate = embedTemplate.replace(/\r?\n|\r/g, '');
             } else {
-                console.log('ERROR reading embed.mustache');
+                logger.info('ERROR reading embed.mustache');
             }
         });
 
@@ -332,12 +328,12 @@ function init() {
             if (!err) {
                 embedJTemplate = data.toString();
             } else {
-                console.log('ERROR reading embed.jmustache');
+                logger.info('ERROR reading embed.jmustache');
             }
         });
 
         // fs.writeFile(filePath, data, function(err) {
-        console.log('init complete.');
+        logger.info('views init complete.');
     });
 }
 
