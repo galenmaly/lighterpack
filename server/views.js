@@ -38,9 +38,9 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
 let index = fs.readFileSync(path.join(__dirname, '../_index.html'), 'utf8');
 let assetData;
 let shareStylesHtml = '';
-let shareStylesLinks = [];
+const shareStylesLinks = [];
 let shareScriptsHtml = '';
-let shareScriptsLinks = [];
+const shareScriptsLinks = [];
 let appScriptsHtml = '';
 let appStylesHtml = '';
 
@@ -300,7 +300,7 @@ function init() {
             logger.info('Error loading templates');
             logger.info(err);
         }
-        files.filter(file => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
+        files.filter((file) => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
             const fileShort = file.substr(0, file.length - 9);
             const data = fs.readFileSync(path.join(__dirname, '../templates/', file));
             templates[fileShort] = data.toString();

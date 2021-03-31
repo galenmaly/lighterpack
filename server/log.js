@@ -4,11 +4,10 @@ class TimestampFirst {
     constructor(enabled = true) {
         this.enabled = enabled;
     }
+
     transform(obj) {
         if (this.enabled) {
-            return Object.assign({
-                timestamp: obj.timestamp
-            }, obj);
+            return { timestamp: obj.timestamp, ...obj };
         }
         return obj;
     }
@@ -19,23 +18,23 @@ const logger = winston.createLogger({
         winston.format.timestamp(),
         new TimestampFirst(true),
         winston.format.json(),
-      ),
-      transports: [new winston.transports.Console()]
+    ),
+    transports: [new winston.transports.Console()],
 });
 
-const logWithRequest = function(req, data) {
-    if (typeof(data) === "string") {
-        data = {message: data};
+const logWithRequest = function (req, data) {
+    if (typeof (data) === 'string') {
+        data = { message: data };
     }
-    
+
     if (req && req.uuid) {
-        logger.info({...data, requestid: req.uuid});
+        logger.info({ ...data, requestid: req.uuid });
         return;
     }
     logger.info(data);
-}
+};
 
 module.exports = {
     logWithRequest,
-    logger
+    logger,
 };

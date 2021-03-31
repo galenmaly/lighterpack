@@ -10,12 +10,13 @@ module.exports = {
         "plugin:vue/recommended",
     ],
     "parserOptions": {
-        "ecmaVersion": 2017,
+        "ecmaVersion": 2018,
     },
     "globals": {
         "bus": true, // TODO: reduce reliance on bus and remove this from window.
     },
     "rules": {
+        "consistent-return": "off", // Investigate
         "func-names": "off", // TODO
         "gard-for-in": "off", // TODO
         "indent": [ "error", 4 ],  // Stylistic preference
