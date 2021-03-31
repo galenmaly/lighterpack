@@ -10,7 +10,7 @@ const Category = dataTypes.Category;
 const List = dataTypes.List;
 const Library = dataTypes.Library;
 
-const saveInterval = 5000;
+const saveInterval = 10000;
 
 Vue.use(Vuex);
 
