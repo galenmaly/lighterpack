@@ -323,6 +323,9 @@ export default {
         },
         removeItem() {
             this.$store.commit('removeItemFromCategory', { itemId: this.item.id, category: this.category });
+
+            // if the removed item has a blank name remove it from the gear list
+            if (!this.item.name || !this.item.name.trim().length) this.$store.commit('removeItem', { item: this.item });
         },
     },
 };
