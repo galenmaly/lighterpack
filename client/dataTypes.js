@@ -456,6 +456,7 @@ Library.prototype.copyList = function (id) {
         const copiedCategory = this.newCategory({ list: copiedList });
 
         copiedCategory.name = oldCategory.name;
+        copiedCategory.color = oldCategory.color;
 
         for (const j in oldCategory.categoryItems) {
             copiedCategory.addItem(oldCategory.categoryItems[j]);
