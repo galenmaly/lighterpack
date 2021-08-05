@@ -14,9 +14,3 @@ jobs:
         uses: docker/build-push-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: exesse/mongodump-s3/mongodump-s3
-          tag_with_ref: true
