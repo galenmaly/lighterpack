@@ -26,6 +26,9 @@
                     <span class="lpCell">
                         Weight
                     </span>
+                    <span class="lpCell">
+                        In percents 
+                    </span>
                 </li>
                 <li v-for="category in categories" :key="category.id" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
@@ -39,6 +42,9 @@
                     </span>
                     <span class="lpCell lpNumber">
                         <span class="lpDisplaySubtotal" :mg="category.subtotalWeight">{{ category.subtotalWeight | displayWeight(library.totalUnit) }}</span> <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
+                    </span>
+                    <span class="lpCell lpNumber">
+                        <span class="lpDisplayProcent" :mg="category.subtotalWeight / list.totalPackWeight * 100">{{ category.subtotalWeight / list.totalPackWeight * 100 }} %</span>
                     </span>
                 </li>
                 <li class="lpRow lpFooter lpTotal">
