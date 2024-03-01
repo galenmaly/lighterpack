@@ -39,7 +39,7 @@
     "mongojs": "^2.2.2",
     "morgan": "^1.10.0",
     "mustache": "^2.2.1",
-    "nanoid": "2.0.3",
+    "nanoid": "3.1.31",
     "node.extend": "^1.1.5",
     "request": "^2.67.0",
     "sass": "1.32.0",
