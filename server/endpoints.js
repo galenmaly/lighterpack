@@ -388,29 +388,32 @@ function imageUpload(req, res, user) {
         }
 
         const path = files.image.path;
-        const imgurRequest = request.defaults({ json: true });
-        fs.readFile(path, (e, img_data) => {
-            const temp = { uri: 'https://api.imgur.com/3/image', headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` } };
-            temp.body = img_data.toString('base64');
-            imgurRequest.post(temp, (e, r, body) => {
-                if (e) {
-                    logWithRequest(req, 'imgur post fail!');
-                    logWithRequest(req, e);
-                    logWithRequest(req, body);
-                    return res.status(500).json({ message: 'An error occurred.' });
-                } if (!body) {
-                    logWithRequest(req, 'imgur post fail!!');
-                    logWithRequest(req, e);
-                    return res.status(500).json({ message: 'An error occurred.' });
-                } if (r.statusCode !== 200 || body.error) {
-                    logWithRequest(req, 'imgur post fail!!!');
-                    logWithRequest(req, e);
-                    logWithRequest(req, body);
-                    return res.status(500).json({ message: 'An error occurred.' });
-                }
+        const formData = {
+            image: fs.createReadStream(path),
+            type: "file"
+        };
+        request.post({
+            url: 'https://api.imgur.com/3/image',
+            headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` },
+            formData
+        }, (e, r, body) => {
+            if (e) {
+                logWithRequest(req, 'imgur post fail!');
+                logWithRequest(req, e);
                 logWithRequest(req, body);
-                return res.send(body);
-            });
+                return res.status(500).json({ message: 'An error occurred.' });
+            } if (!body) {
+                logWithRequest(req, 'imgur post fail!!');
+                logWithRequest(req, e);
+                return res.status(500).json({ message: 'An error occurred.' });
+            } if (r.statusCode !== 200 || body.error) {
+                logWithRequest(req, 'imgur post fail!!!');
+                logWithRequest(req, e);
+                logWithRequest(req, body);
+                return res.status(500).json({ message: 'An error occurred.' });
+            }
+            logWithRequest(req, body);
+            return res.send(body);
         });
     });
 }
