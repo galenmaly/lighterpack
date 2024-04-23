@@ -6,3 +6,5 @@ node_modules
 app.sublime-project
 app.sublime-workspace
 *.code-workspace
+*.pyc
+*__pycache__*
