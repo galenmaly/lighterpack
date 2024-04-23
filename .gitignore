@@ -10,3 +10,5 @@ app.sublime-workspace
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+*.pyc
+*__pycache__*
