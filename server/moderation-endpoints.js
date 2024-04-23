@@ -176,6 +176,7 @@ function loadLogs(req, res) {
     knex('bucket').where(where)
     .whereNotNull(intervalWhereNotNull)
     .select("*")
+    .orderBy(intervalWhereNotNull)
     .then((result) => {
         res.json({
             results: result
