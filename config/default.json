@@ -15,5 +15,12 @@
     "mailgunDomain": "",
     "mailgunBaseURL": "",
     "mailgunAPIKey": "",
-    "moderators": []
+    "moderators": [],
+    "imageUploadPath": "",
+    "logDatabase": {
+      "host": "",
+      "user": "",
+      "password": "",
+      "database": ""
+    }
 }

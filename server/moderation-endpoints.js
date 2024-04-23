@@ -8,6 +8,10 @@ const { logWithRequest } = require('./log.js');
 
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
+const knex = require('knex')({
+    client: 'pg',
+    connection: config.get('logDatabase')
+});
 
 const { authenticateModerator } = require('./auth.js');
 
@@ -89,6 +93,44 @@ router.post('/moderation/reset-password', (req, res) => {
     authenticateModerator(req, res, resetPassword);
 });
 
+function setLibrary(req, res) {
+    if (config.environment !== 'development') {
+        return res.status(400).json({message: 'This tool is only available in dev mode.'});
+    }
+
+    const username = String(req.body.username).toLowerCase().trim();
+
+    let library;
+    try {
+        library = JSON.parse(req.body.library);
+    } catch (e) {
+        logWithRequest(req, { message: 'MODERATION Set library parsing issue', username: username });
+        return res.status(400).json({ message: 'Bad library data.' });
+    }
+
+    logWithRequest(req, { message: 'MODERATION Set library', username });
+
+    db.users.find({ username }, (err, users) => {
+        if (err) {
+            logWithRequest(req, { message: 'MODERATION Set library lookup error', username });
+            return res.status(500).json({ message: 'An error occurred' });
+        } if (!users.length) {
+            logWithRequest(req, { message: 'MODERATION Set library for unknown', username });
+            return res.status(500).json({ message: 'An error occurred.' });
+        }
+        const user = users[0];
+
+        user.library = library;
+        db.users.save(user);
+
+        logWithRequest(req, { message: 'MODERATION library set', username });
+        return res.status(200).json({message: 'success.'});
+    });
+}
+
+router.post('/moderation/set-library', (req, res) => {
+    authenticateModerator(req, res, setLibrary);
+});
 function clearSession(req, res) {
     const username = String(req.body.username).toLowerCase().trim();
     logWithRequest(req, { message: 'MODERATION Clear session start', username });
@@ -112,5 +154,39 @@ function clearSession(req, res) {
 router.post('/moderation/clear-session', (req, res) => {
     authenticateModerator(req, res, clearSession);
 });
+
+router.get('/moderation/logs', (req, res) => {
+    authenticateModerator(req, res, loadLogs);
+});
+
+function loadLogs(req, res) {
+    let pageName = req.query.page_name || null;
+    let intervalWhereNotNull = req.query.interval === "month" ? "bucket_month" : "bucket_date";
+    let where = {
+        'page_name': pageName,
+        'hour_of_day': null,
+    };
+
+    if (req.query.interval === "month") {
+        where['bucket_date'] = null;
+    }
+
+    console.log(intervalWhereNotNull);
+
+    knex('bucket').where(where)
+    .whereNotNull(intervalWhereNotNull)
+    .select("*")
+    .then((result) => {
+        res.json({
+            results: result
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            message: "An error occurred."
+        });
+    });
+}
 
 module.exports = router;

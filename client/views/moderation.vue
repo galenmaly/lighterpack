@@ -46,6 +46,7 @@
             <section>
                 <button @click="clearSession(userToInspect)">Clear session</button>
                 <button @click="resetPassword(userToInspect)">Reset password</button>
+                <button @click="saveLibrary(userToInspect)">Save library</button>
                 <template v-if="newPassword">
                     <strong>New Password:</strong> {{ newPassword }}
                 </template>
@@ -126,6 +127,21 @@ export default {
             })
             .then((response) => {
                 this.newPassword = response.newPassword;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        },
+        saveLibrary(user) {
+            fetchJson(`/moderation/set-library`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: user.username, library: this.editableLibrary}),
+            })
+            .then(() => {
             })
             .catch((err) => {
                 console.log(err);

@@ -6,6 +6,11 @@ import VueRouter from 'vue-router';
 import routes from './routes';
 import store from './store/store';
 
+import VueApexCharts from 'vue-apexcharts'
+Vue.use(VueApexCharts)
+
+Vue.component('apexchart', VueApexCharts)
+
 const focusDirectives = require('./utils/focus.js');
 const dataTypes = require('./dataTypes.js');
 

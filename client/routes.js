@@ -4,6 +4,7 @@ import signin from './views/signin.vue';
 import register from './views/register.vue';
 import forgotPassword from './views/forgot-password.vue';
 import moderation from './views/moderation.vue';
+import logs from './views/logs.vue';
 
 export default [
     { path: '/', component: dashboard },
@@ -14,5 +15,6 @@ export default [
     { path: '/register', component: register },
     { path: '/forgot-password', component: forgotPassword },
     { path: '/moderation', component: moderation },
+    { path: '/logs', component: logs },
     { path: '*', component: dashboard },
 ];
