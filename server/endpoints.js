@@ -3,12 +3,12 @@ const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
 const generate = require('nanoid/generate');
+const { promisify } = require('util')
 
 const router = express.Router();
 const fs = require('fs');
 const request = require('request');
 const formidable = require('formidable');
-const mongojs = require('mongojs');
 const config = require('config');
 const { logWithRequest } = require('./log.js');
 
@@ -20,8 +20,13 @@ if (config.get('mailgunAPIKey')) {
     mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
 }
 
-const collections = ['users', 'libraries'];
-const db = mongojs(config.get('databaseUrl'), collections);
+const knex = require('knex')({
+    client: 'pg',
+    connection: config.util.cloneDeep(config.get('pgDatabase'))
+});
+
+const randomBytesAsync = promisify(crypto.randomBytes);
+const mailgunSendAsync = promisify(mailgun.messages().send);
 
 const dataTypes = require('../client/dataTypes.js');
 
@@ -34,9 +39,13 @@ const Library = dataTypes.Library;
 eval(`${fs.readFileSync(path.join(__dirname, './sha3.js'))}`);
 
 router.post('/register', (req, res) => {
+    register(req, res);
+});
+
+async function register(req, res) {
     const username = String(req.body.username).toLowerCase().trim();
     const password = String(req.body.password);
-    let email = String(req.body.email);
+    let email = String(req.body.email).trim();
 
     const errors = [];
 
@@ -52,8 +61,6 @@ router.post('/register', (req, res) => {
         errors.push({ field: 'email', message: 'Please enter an email.' });
     }
 
-    email = email.trim();
-
     if (!password) {
         errors.push({ field: 'password', message: 'Please enter a password.' });
     }
@@ -68,53 +75,68 @@ router.post('/register', (req, res) => {
 
     logWithRequest(req, { message: 'Attempting to register', username });
 
-    db.users.find({ username }, (err, users) => {
-        if (err || users.length) {
-            logWithRequest(req, { message: 'User exists', username });
-            return res.status(400).json({ errors: [{ field: 'username', message: 'That username already exists, please pick a different username.' }] });
-        }
-
-        db.users.find({ email }, (err, users) => {
-            if (err || users.length) {
+    try {
+        let conflictingUsers = await knex('users')
+            .where({ username })
+            .orWhere({ email })
+            .select();
+        
+        if (conflictingUsers.length) {
+            if (conflictingUsers[0].username === username || (conflictingUsers.length > 0 && conflictingUsers[0].username === username)) { //hacky
+                logWithRequest(req, { message: 'User exists', username });
+                return res.status(400).json({ errors: [{ field: 'username', message: 'That username already exists, please pick a different username.' }] });
+            } else if (conflictingUsers[0].email === email || (conflictingUsers.length > 0 && conflictingUsers[0].email === email)) { //hacky
                 logWithRequest(req, { message: 'User email exists', email });
                 return res.status(400).json({ errors: [{ field: 'email', message: 'A user with that email already exists.' }] });
+            } else {
+                logWithRequest(req, { message: 'User creation failed for unknown reason', conflictingUsers });
+                return res.status(500).json({ errors: [{ message: 'An unexpected error occurred.' }] });
             }
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+        const tokenBuffer = await randomBytesAsync(48);
+        const token = tokenBuffer.toString('hex');
 
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(password, salt, (err, hash) => {
-                    crypto.randomBytes(48, (ex, buf) => {
-                        const token = buf.toString('hex');
-                        let library;
-                        if (req.body.library) {
-                            try {
-                                library = JSON.parse(req.body.library);
-                            } catch (e) {
-                                logWithRequest(req, { message: 'Library parsing issue', username });
-                                return res.status(400).json({ errors: [{ message: 'Unable to parse your library. Contact support.' }] });
-                            }
-                        } else {
-                            library = new Library().save();
-                        }
+        let library;
+        if (req.body.library) {
+            try {
+                library = JSON.parse(req.body.library);
+            } catch (err) {
+                logWithRequest(req, { message: 'Library parsing issue', username, err, libInput: req.body.library });
+                return res.status(400).json({ errors: [{ message: 'Unable to parse your library. Contact support.' }] });
+            }
+        } else {
+            library = new Library().save();
+        }
 
-                        const newUser = {
-                            username,
-                            password: hash,
-                            email,
-                            token,
-                            library,
-                            syncToken: 0,
-                        };
-                        logWithRequest(req, { message: 'Saving new user', username });
-                        db.users.save(newUser);
-                        const out = { username, library: JSON.stringify(newUser.library), syncToken: 0 };
-                        res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
-                        return res.status(200).json(out);
-                    });
-                });
-            });
-        });
-    });
-});
+        const newSyncToken = 0;
+
+        const newUser = {
+            username,
+            password: hash,
+            email,
+            token,
+            library,
+            sync_token: newSyncToken,
+        };
+
+        logWithRequest(req, { message: 'Saving new user', username });
+
+        try {
+            await knex('users').insert(newUser)
+            const out = { username, library: JSON.stringify(newUser.library), sync_token: newSyncToken };
+            res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
+            return res.status(200).json(out);
+        } catch (err) {
+            logWithRequest(req, { message: 'Error inserting user', newUser, err });
+            return res.status(500).json({ errors: [{ message: 'An error occurred when registering.' }] });
+        }
+    } catch (err) {
+        logWithRequest(req, { message: 'Error searching for conflicting users', err });
+        return res.status(500).json({ errors: [{ message: 'An error occurred.' }] });
+    }
+}
 
 router.post('/signin', (req, res) => {
     authenticateUser(req, res, returnLibrary);
@@ -122,19 +144,15 @@ router.post('/signin', (req, res) => {
 
 function returnLibrary(req, res, user) {
     logWithRequest(req, { message: 'signed in', username: user.username });
-    if (!user.syncToken) {
-        user.syncToken = 0;
-        db.users.save(user);
-    }
-    return res.json({ username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken });
+    return res.json({ username: user.username, library: JSON.stringify(user.library), sync_token: user.sync_token });
 }
 
 router.post('/saveLibrary', (req, res) => {
     authenticateUser(req, res, saveLibrary);
 });
 
-function saveLibrary(req, res, user) {
-    if (typeof req.body.syncToken === 'undefined') {
+async function saveLibrary(req, res, user) {
+    if (typeof req.body.sync_token === 'undefined') { // TODO: is this safe to delete?
         logWithRequest(req, { message: 'Missing syncToken', username: user.username });
         return res.status(400).send('Please refresh this page to upgrade to the latest version of LighterPack.');
     }
@@ -148,7 +166,7 @@ function saveLibrary(req, res, user) {
         return res.status(401).json({ message: 'An error occurred while saving your data. Please refresh your browser and login again.' });
     }
 
-    if (req.body.syncToken != user.syncToken) {
+    if (req.body.sync_token != user.sync_token) {
         logWithRequest(req, { message: 'out of date syncToken', username: user.username });
         return res.status(400).json({ message: 'Your list is out of date - please refresh your browser.' });
     }
@@ -158,121 +176,151 @@ function saveLibrary(req, res, user) {
         library = JSON.parse(req.body.data);
     } catch (e) {
         logWithRequest(req, { message: 'Library parsing issue', username: user.username });
-        return res.status(400).json({ errors: [{ message: 'An error occurred while saving your data - unable to parse library. If this persists, please contact support.' }] });
+        return res.status(400).json({ errors: [{ message: 'An error occurred while saving your data - unable to parse library.' }] });
     }
 
-    user.library = library;
-    user.syncToken++;
-    db.users.save(user, () => {
-        logWithRequest(req, { message: 'saved library', username: user.username });
+    let newSyncToken = user.sync_token++;
 
-        return res.status(200).json({ message: 'success', syncToken: user.syncToken });
-    });
+    try {
+        await knex('users')
+        .where({ user_id: user.user_id })
+        .update({
+            library: library,
+            sync_token: newSyncToken
+        });
+
+        logWithRequest(req, { message: 'saved library', username: user.username });
+        return res.status(200).json({ message: 'success', sync_token: user.sync_token });
+    } catch (err) {
+        logWithRequest(req, { message: 'Library saving error', username: user.username, err });
+        return res.status(500).json({ errors: [{ message: 'An error occurred while saving your data.' }] });
+    }
 }
 
 router.post('/externalId', (req, res) => {
     authenticateUser(req, res, externalId);
 });
 
-function externalId(req, res, user) {
+async function externalId(req, res, user) {
     const id = generate('1234567890abcdefghijklmnopqrstuvwxyz', 6);
     logWithRequest(req, { message: 'Id generated', id });
 
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            logWithRequest(req, { message: 'Id lookup error', id });
-            res.status(500).send('An error occurred.');
+    try {
+        const lists = await knex('list').where({ external_id: id })
+
+        if (lists.length) {
+            logWithRequest(req, { message: 'Id collision detected', id });
+            externalId(req, res, user);
             return;
         }
 
-        if (!users.length) {
-            if (typeof user.externalIds === 'undefined') user.externalIds = [id];
-            else user.externalIds.push(id);
+        try {
+            await knex('list').insert({
+                external_id: id,
+                user_id: user.user_id
+            });
+        } catch (err) {
+            logWithRequest(req, { message: 'Error inserting externalID', err });
+            return res.status(500).json({ errors: [{ message: 'An error occurred.' }] });
+        }   
 
-            db.users.save(user);
-            logWithRequest(req, { message: 'Id saved', id, username: user.username });
-            res.status(200).json({ externalId: id });
-        } else {
-            logWithRequest(req, { message: 'Id collision detected', id });
-            externalId(req, res, user);
-        }
-    });
+        logWithRequest(req, { message: 'Id saved', id, username: user.username });
+        res.status(200).json({ externalId: id });
+    } catch (err) {
+        logWithRequest(req, { message: 'Id lookup error', id, err });
+        return res.status(500).send('An error occurred.');
+    }
 }
 
 router.post('/forgotPassword', (req, res) => {
+    forgotPassword(req, res);
+});
+
+async function forgotPassword(req, res) {
     logWithRequest(req);
+
     const username = String(req.body.username).toLowerCase().trim();
     if (!username || username.length < 1 || username.length > 32) {
         logWithRequest(req, { message: 'Bad forgot password', username });
         return res.status(400).json({ errors: [{ message: 'Please enter a username.' }] });
     }
 
-    db.users.find({ username }, (err, users) => {
-        if (err) {
-            logWithRequest(req, { message: 'Forgot password lookup error', username });
-            return res.status(500).json({ message: 'An error occurred' });
-        } if (!users.length) {
+    try {
+        const users = await knex('users').select({username});
+
+        if (!users.length) {
             logWithRequest(req, { message: 'Forgot password for unknown user', username });
             return res.status(500).json({ message: 'An error occurred.' });
         }
+
         const user = users[0];
-        require('crypto').randomBytes(12, (ex, buf) => {
-            const newPassword = buf.toString('hex');
 
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(newPassword, salt, (err, hash) => {
-                    user.password = hash;
-                    const email = user.email;
+        const newPassword = generate(12);
+        const salt = await bcrypt.genSalt(10);
+        const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-                    const message = `Hello ${username},\n Apparently you forgot your password. Here's your new one: \n\n Username: ${username}\n Password: ${newPassword}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
+        const email = user.email;
 
-                    const mailOptions = {
-                        from: 'LighterPack <info@mg.lighterpack.com>',
-                        to: email,
-                        'h:Reply-To': 'LighterPack <info@lighterpack.com>',
-                        subject: 'Your new LighterPack password',
-                        text: message,
-                    };
+        const message = `Hello ${username},\n It looks like you forgot your password. Here's your new one: \n\n Username: ${username}\n Password: ${newPassword}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
-                    logWithRequest(req, { message: 'Attempting to send new password', email });
-                    mailgun.messages().send(mailOptions, (error, response) => {
-                        if (error) {
-                            logWithRequest(req, error);
-                            return res.status(500).json({ message: 'An error occurred' });
-                        }
-                        db.users.save(user);
-                        const out = { username };
-                        logWithRequest(req, { message: 'Message sent', response: response.message });
-                        logWithRequest(req, { message: 'password changed for user', username });
-                        return res.status(200).json(out);
-                    });
-                });
+        const mailOptions = {
+            from: 'LighterPack <info@mg.lighterpack.com>',
+            to: email,
+            'h:Reply-To': 'LighterPack <info@lighterpack.com>',
+            subject: 'Your new LighterPack password',
+            text: message,
+        };
+
+        logWithRequest(req, { message: 'Attempting to send new password', email });
+        try {
+            const mailgunResponse = await mailgunSendAsync(mailOptions);
+        } catch (err) {
+            logWithRequest(req, err);
+            return res.status(500).json({ message: 'An error occurred' });
+        }
+
+        try {
+            await knex('users').where({user_id: user.user_id}).update({
+                password: newPasswordHash
             });
-        });
-    });
-});
 
-router.post('/forgotUsername', (req, res) => {
+            logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
+            logWithRequest(req, { message: 'password changed for user', username });
+            return res.status(200).json({ username });
+        } catch (err) {
+            logWithRequest(req, { message: 'Error saving new password', err });
+            return res.status(500).json({ message: 'An error occurred' });
+        }
+    } catch (err) {
+        logWithRequest(req, { message: 'Forgot password lookup error', username });
+        return res.status(500).json({ message: 'An error occurred' });
+    }
+};
+
+async function forgotUsername(req, res) {
     logWithRequest(req);
+
     const email = String(req.body.email).toLowerCase().trim();
+
     if (!email || email.length < 1) {
         logWithRequest(req, { message: 'Bad forgot username', email });
         return res.status(400).json({ errors: [{ message: 'Please enter a valid email.' }] });
     }
 
-    db.users.find({ email }, (err, users) => {
-        if (err) {
-            logWithRequest(req, { message: 'Forgot email lookup error', email });
-            return res.status(500).json({ message: 'An error occurred' });
-        } if (!users.length) {
+    try {
+        const users = await knex('users').select({email});
+
+        if (!users.length) {
             logWithRequest(req, { message: 'Forgot email for unknown user', email });
             return res.status(400).json({ message: 'An error occurred' });
         }
+        
         const user = users[0];
         const username = user.username;
 
-        const message = `Hello ${username},\n Apparently you forgot your username. Here It is: \n\n Username: ${username}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
+        const message = `Hello ${username},\n It looks like you forgot your username. Here It is: \n\n Username: ${username}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
+        
         const mailOptions = {
             from: 'LighterPack <info@mg.lighterpack.com>',
             to: email,
@@ -292,82 +340,97 @@ router.post('/forgotUsername', (req, res) => {
             logWithRequest(req, { message: 'sent username message for user', username, email });
             return res.status(200).json(out);
         });
-    });
+    } catch (err) {
+        logWithRequest(req, { message: 'Forgot email lookup error', email });
+        return res.status(500).json({ message: 'An error occurred' });
+    }
+}
+
+router.post('/forgotUsername', (req, res) => {
+    forgotUsername(req, res);
 });
 
 router.post('/account', (req, res) => {
     authenticateUser(req, res, account);
 });
 
-function account(req, res, user) {
-    // TODO: check for duplicate emails
-
+async function account(req, res, user) {
     logWithRequest(req, { message: 'Starting account changes', username: user.username });
-    verifyPassword(user.username, String(req.body.currentPassword))
-        .then((user) => {
-            if (req.body.newPassword) {
-                const newPassword = String(req.body.newPassword);
-                const errors = [];
+    try {
+        await verifyPassword(user.username, String(req.body.currentPassword)); //throws error if invalid
 
-                if (newPassword.length < 5 || newPassword.length > 60) {
-                    errors.push({ field: 'newPassword', message: 'Please enter a password between 5 and 60 characters.' });
-                }
+        if (req.body.newPassword) {
+            const newPassword = String(req.body.newPassword);
+            const errors = [];
 
-                if (errors.length) {
-                    return res.status(400).json({ errors });
-                }
-
-                bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newPassword, salt, (err, hash) => {
-                        user.password = hash;
-                        logWithRequest(req, { message: 'Changing PW', username: user.username });
-
-                        if (req.body.newEmail) {
-                            user.email = String(req.body.newEmail);
-                            logWithRequest(req, { message: 'Changing Email', username: user.username });
-                        }
-
-                        db.users.save(user);
-                        return res.status(200).json({ message: 'success' });
-                    });
-                });
-            } else if (req.body.newEmail) {
-                user.email = String(req.body.newEmail);
-                logWithRequest(req, { message: 'Changing Email', username: user.username });
-                db.users.save(user);
-                return res.status(200).json({ message: 'success' });
+            if (newPassword.length < 5 || newPassword.length > 60) {
+                errors.push({ field: 'newPassword', message: 'Please enter a password between 5 and 60 characters.' });
             }
-        })
-        .catch((err) => {
-            logWithRequest(req, { message: 'Account bad current password', username: user.username });
-            res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
-        });
+
+            if (errors.length) {
+                return res.status(400).json({ errors });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+            logWithRequest(req, { message: 'Changing PW', username: user.username });
+
+            await knex('users').where({user_id: user.user_id}).update({
+                password: newPasswordHash
+            });
+        } 
+        
+        if (req.body.newEmail) {
+            let email = String(req.body.newEmail).trim();
+
+            let conflictingUsers = await knex('users')
+                .where({ email })
+                .select();
+
+            if (conflictingUsers.length) {
+                logWithRequest(req, { message: 'User email exists', email });
+                return res.status(400).json({ errors: [{ field: 'email', message: 'A user with that email already exists.' }] });
+            }
+
+            logWithRequest(req, { message: 'Changing Email', username: user.username });
+
+            await knex('users').where({user_id: user.user_id}).update({
+                email
+            });
+        }
+
+        return res.status(200).json({ message: 'success' });
+    } catch (err) {
+        logWithRequest(req, { message: 'Account bad current password', username: user.username, err });
+        res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+    }
 }
 
 router.post('/delete-account', (req, res) => {
     authenticateUser(req, res, deleteAccount);
 });
 
-function deleteAccount(req, res, user) {
+async function deleteAccount(req, res, user) {
     logWithRequest(req, { message: 'Starting account delete', username: user.username });
 
-    verifyPassword(user.username, String(req.body.password))
-        .then((user) => {
-            if (req.body.username !== user.username) {
-                logWithRequest(req, { message: 'Bad account deletion - wrong user', requestedUsername: req.body.username, initiatedby: user.username });
-                return Promise.reject(new Error('An error occurred, please try logging out and in again.'));
-            }
+    try {
+        await verifyPassword(user.username, String(req.body.password)); //throws error if invalid
 
-            db.users.remove(user, true);
+        if (req.body.username !== user.username) {
+            logWithRequest(req, { message: 'Bad account deletion - wrong user', requestedUsername: req.body.username, initiatedby: user.username });
+            return res.status(400).json({ message: 'An error occurred, please try logging out and in again.'});
+        }
 
-            logWithRequest(req, { message: 'Completed account delete', username: user.username });
+        await knex('users').where({username: user.username}).del();
 
-            return res.status(200).json({ message: 'success' });
-        })
-        .catch((err) => {
-            logWithRequest(req, { message: 'Bad account deletion - invalid password', username: req.body.username });
-            res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
-        });
+        logWithRequest(req, { message: 'Completed account delete', username: user.username });
+
+        return res.status(200).json({ message: 'success' });
+    } catch (err) {
+        logWithRequest(req, { message: 'Bad account deletion - invalid password', username: req.body.username, err });
+        res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+    }
 }
 
 router.post('/imageUpload', (req, res) => {
