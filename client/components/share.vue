@@ -49,10 +49,16 @@ export default {
             return location.origin ? location.origin : `${location.protocol}//${location.hostname}`;
         },
         shareUrl() {
-            return `${this.baseUrl}/r/${this.externalId}`;
+            if (this.externalId) {
+                return `${this.baseUrl}/r/${this.externalId}`;
+            }
+            return '';
         },
         csvUrl() {
-            return `${this.baseUrl}/csv/${this.externalId}`;
+            if (this.externalId) {
+                return `${this.baseUrl}/csv/${this.externalId}`;
+            }
+            return '';
         },
     },
     methods: {
