@@ -8,11 +8,12 @@ const Mustache = require('mustache');
 const extend = require('node.extend');
 const markdown = require('markdown').markdown;
 const config = require('config');
-const mongojs = require('mongojs');
 const { logWithRequest, logger } = require('./log.js');
 
-const collections = ['users', 'libraries'];
-const db = mongojs(config.get('databaseUrl'), collections);
+const knex = require('knex')({
+    client: 'pg',
+    connection: config.util.cloneDeep(config.get('pgDatabase'))
+});
 
 const weightUtils = require('../client/utils/weight.js');
 const dataTypes = require('../client/dataTypes.js');
@@ -83,36 +84,50 @@ for (let i = 0; i < vueRoutes.length; i++) {
 }
 
 router.get('/r/:id', (req, res) => {
-    const id = req.params.id;
+    renderListView(req, res);
+});
+
+async function renderListView(req, res) {
+    const id = String(req.params.id).trim();
 
     if (!id) {
         res.status(400).send('No list specified!');
         return;
     }
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+
+    try {
+        const users = await knex('users')
+            .join('list', 'users.user_id', '=', 'list.user_id')
+            .select('users.library')
+            .where({'list.external_id': id });
+
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
+
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
-        library.load(users[0].library);
+        library.load(user.library);
         for (const i in library.lists) {
             if (library.lists[i].externalId && library.lists[i].externalId == id) {
                 library.defaultListId = library.lists[i].id;
                 list = library.lists[i];
                 break;
             }
+        }
+
+        if (!list) { //List is in the DB but not the library
+            res.status(400).send('Invalid list specified.');
+            return;
         }
 
         const chartData = escape(JSON.stringify(list.renderChart('total', false)));
@@ -139,37 +154,46 @@ router.get('/r/:id', (req, res) => {
 
         model = extend(model, templates);
         res.send(Mustache.render(shareTemplate, model));
-    });
-});
+    } catch (err) {
+        logWithRequest(req, {message: 'error rendering list', err});
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 router.get('/e/:id', (req, res) => {
-    const id = req.params.id;
+    renderEmberView(req, res);
+});
+
+async function renderEmberView(req, res) {
+    const id = String(req.params.id).trim();
 
     if (!id) {
         res.status(400).send('No list specified!');
         return;
     }
 
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+    try {
+        const users = await knex('users')
+            .join('list', 'users.user_id', '=', 'list.user_id')
+            .select('users.library')
+            .where({'list.external_id': id });
 
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
 
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
-        library.load(users[0].library);
+        library.load(user.library);
         for (const i in library.lists) {
             if (library.lists[i].externalId && library.lists[i].externalId == id) {
                 library.defaultListId = library.lists[i].id;
@@ -206,10 +230,17 @@ router.get('/e/:id', (req, res) => {
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));
-    });
-});
+    } catch (err) {
+        logWithRequest(req, {message: 'error rendering ember', err});
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 router.get('/csv/:id', (req, res) => {
+    renderListCSV(req, res);   
+});
+
+async function renderListCSV(req, res) {
     const id = req.params.id;
 
     if (!id) {
@@ -217,23 +248,25 @@ router.get('/csv/:id', (req, res) => {
         return;
     }
 
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+    try {
+        const users = await knex('users')
+            .join('list', 'users.user_id', '=', 'list.user_id')
+            .select('users.library')
+            .where({'list.external_id': id });
 
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
 
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
         library.load(users[0].library);
@@ -291,14 +324,16 @@ router.get('/csv/:id', (req, res) => {
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', `attachment;filename=${filename}.csv`);
         res.send(out);
-    });
-});
+    } catch (err) {
+        logWithRequest(req, {message: 'error rendering csv', err});
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 function init() {
     fs.readdir(path.join(__dirname, '../templates'), (err, files) => {
         if (err) {
-            logger.info('Error loading templates');
-            logger.info(err);
+            logger.error({message: 'Error loading templates', err});
         }
         files.filter((file) => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
             const fileShort = file.substr(0, file.length - 9);
@@ -311,7 +346,7 @@ function init() {
                 shareTemplate = data.toString();
                 shareTemplate = shareTemplate.replace(/\r?\n|\r/g, '');
             } else {
-                logger.info('ERROR reading share.mustache');
+                logger.error({message: 'ERROR reading share.mustache', err});
             }
         });
 
@@ -320,7 +355,7 @@ function init() {
                 embedTemplate = data.toString();
                 embedTemplate = embedTemplate.replace(/\r?\n|\r/g, '');
             } else {
-                logger.info('ERROR reading embed.mustache');
+                logger.error({message: 'ERROR reading embed.mustache', err});
             }
         });
 
@@ -328,7 +363,7 @@ function init() {
             if (!err) {
                 embedJTemplate = data.toString();
             } else {
-                logger.info('ERROR reading embed.jmustache');
+                logger.error({message: 'ERROR reading embed.jmustache', err});
             }
         });
 
