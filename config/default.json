@@ -11,6 +11,12 @@
     "devServerPort" : 8080,
     "bindings"      : [""],
     "databaseUrl": "localhost/lighterpack",
+    "pgDatabase": {
+      "host": "",
+      "user": "",
+      "password": "",
+      "database": ""
+    },
     "imgurClientID": "",
     "mailgunDomain": "",
     "mailgunBaseURL": "",
