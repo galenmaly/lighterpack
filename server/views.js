@@ -8,11 +8,12 @@ const Mustache = require('mustache');
 const extend = require('node.extend');
 const markdown = require('markdown').markdown;
 const config = require('config');
-const mongojs = require('mongojs');
 const { logWithRequest, logger } = require('./log.js');
 
-const collections = ['users', 'libraries'];
-const db = mongojs(config.get('databaseUrl'), collections);
+const knex = require('knex')({
+    client: 'pg',
+    connection: config.get('pgDatabase')
+});
 
 const weightUtils = require('../client/utils/weight.js');
 const dataTypes = require('../client/dataTypes.js');
@@ -83,30 +84,39 @@ for (let i = 0; i < vueRoutes.length; i++) {
 }
 
 router.get('/r/:id', (req, res) => {
-    const id = req.params.id;
+    renderListView(req, res);
+});
+
+async function renderListView(req, res) {
+    const id = String(req.params.id).trim();
 
     if (!id) {
         res.status(400).send('No list specified!');
         return;
     }
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+
+    try {
+        const users = await knex('user')
+            .join('list', 'user.user_id', '=', 'list.user_id')
+            .select('user.library')
+            .where({'list.external_id': id });
+
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
+
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
-        library.load(users[0].library);
+        library.load(user.library);
         for (const i in library.lists) {
             if (library.lists[i].externalId && library.lists[i].externalId == id) {
                 library.defaultListId = library.lists[i].id;
@@ -139,37 +149,45 @@ router.get('/r/:id', (req, res) => {
 
         model = extend(model, templates);
         res.send(Mustache.render(shareTemplate, model));
-    });
-});
+    } catch (err) {
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 router.get('/e/:id', (req, res) => {
-    const id = req.params.id;
+    renderEmberView(req, res);
+});
+
+async function renderEmberView(req, res) {
+    const id = String(req.params.id).trim();
 
     if (!id) {
         res.status(400).send('No list specified!');
         return;
     }
 
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+    try {
+        const users = await knex('user')
+            .join('list', 'user.user_id', '=', 'list.user_id')
+            .select('user.library')
+            .where({'list.external_id': id });
 
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
 
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
-        library.load(users[0].library);
+        library.load(user.library);
         for (const i in library.lists) {
             if (library.lists[i].externalId && library.lists[i].externalId == id) {
                 library.defaultListId = library.lists[i].id;
@@ -206,10 +224,16 @@ router.get('/e/:id', (req, res) => {
         model = extend(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));
-    });
-});
+    } catch (err) {
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 router.get('/csv/:id', (req, res) => {
+    renderListCSV(req, res);   
+});
+
+async function renderListCSV(req, res) {
     const id = req.params.id;
 
     if (!id) {
@@ -217,23 +241,25 @@ router.get('/csv/:id', (req, res) => {
         return;
     }
 
-    db.users.find({ 'library.lists.externalId': id }, (err, users) => {
-        if (err) {
-            res.status(500).send('An error occurred.');
-            return;
-        }
+    try {
+        const users = await knex('user')
+            .join('list', 'user.user_id', '=', 'list.user_id')
+            .select('user.library')
+            .where({'list.external_id': id });
 
         if (!users.length) {
             res.status(400).send('Invalid list specified.');
             return;
         }
 
+        const user = users[0];
+
         const library = new Library();
         let list;
 
-        if (!users[0] || typeof (users[0].library) === 'undefined') {
-            logWithRequest(req, `Undefined users[0] for library with list ID ${id}`);
-            res.status(500).send('Unknown error.');
+        if (typeof (user.library) === 'undefined') {
+            logWithRequest(req, `Undefined user library with list ID ${id}`);
+            return res.status(500).send('Unknown error.');
         }
 
         library.load(users[0].library);
@@ -291,8 +317,10 @@ router.get('/csv/:id', (req, res) => {
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', `attachment;filename=${filename}.csv`);
         res.send(out);
-    });
-});
+    } catch (err) {
+        return res.status(500).send('An error occurred.');
+    }
+}
 
 function init() {
     fs.readdir(path.join(__dirname, '../templates'), (err, files) => {
