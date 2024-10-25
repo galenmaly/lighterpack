@@ -277,7 +277,7 @@ const store = new Vuex.Store({
                 credentials: 'same-origin',
             })
                 .then((response) => {
-                    context.commit('setSyncToken', response.syncToken);
+                    context.commit('setSyncToken', response.sync_token);
                     context.commit('loadLibraryData', response.library);
                     context.commit('setSaveType', 'remote');
                     context.commit('setLoggedIn', response.username);
@@ -330,14 +330,14 @@ const store = new Vuex.Store({
 
                     return fetchJson('/saveLibrary/', {
                         method: 'POST',
-                        body: JSON.stringify({ syncToken: state.syncToken, username: state.loggedIn, data: saveData }),
+                        body: JSON.stringify({ sync_token: state.syncToken, username: state.loggedIn, data: saveData }),
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         credentials: 'same-origin',
                     })
                         .then((response) => {
-                            store.commit('setSyncToken', response.syncToken);
+                            store.commit('setSyncToken', response.sync_token);
                             store.commit('setIsSaving', false);
                         })
                         .catch((response) => {

@@ -69,7 +69,7 @@ export default {
                 body: JSON.stringify({ username: this.username, password: this.password }),
             })
                 .then((response) => {
-                    this.$store.commit('setSyncToken', response.syncToken);
+                    this.$store.commit('setSyncToken', response.sync_token);
                     this.$store.commit('loadLibraryData', response.library);
                     this.$store.commit('setSaveType', 'remote');
                     this.$store.commit('setLoggedIn', response.username);
