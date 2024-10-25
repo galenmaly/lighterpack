@@ -13,8 +13,25 @@ class TimestampFirst {
     }
 }
 
+const enumerateErrorFormat = winston.format(info => {
+    if (typeof(info) === 'object') {
+        for (let key in info) {
+            const value = info[key];
+            if (value instanceof Error) {
+                info[key] = {
+                    message: value.message,
+                    stack: value.stack
+                };
+            }
+        }
+    }
+
+    return info;
+}); 
+
 const logger = winston.createLogger({
     format: winston.format.combine(
+        enumerateErrorFormat(),
         winston.format.timestamp(),
         new TimestampFirst(true),
         winston.format.json(),
@@ -31,8 +48,15 @@ const logWithRequest = function (req, data) {
         logger.info({ ...data, requestid: req.uuid });
         return;
     }
+
+    if (data.err) {
+        logger.error(data);
+        return;
+    }
+    
     logger.info(data);
 };
+
 
 module.exports = {
     logWithRequest,
