@@ -162,7 +162,7 @@ export default {
         setUnit(unit) {
             this.item.authorUnit = unit;
             this.$store.commit('updateItemUnit', unit);
-            this.saveWeight(); // calling saveWeight preserves the text in the weight box instead of converting units.
+            this.setDisplayWeight()
         },
         savePrice() {
             const priceFloat = parseFloat(this.displayPrice, 10);
