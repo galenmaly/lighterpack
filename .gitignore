@@ -6,6 +6,7 @@ node_modules
 app.sublime-project
 app.sublime-workspace
 *.code-workspace
+*.pyc
 /test-results/
 /playwright-report/
 /blob-report/
