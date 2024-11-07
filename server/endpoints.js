@@ -119,6 +119,8 @@ async function register(req, res) {
             token,
             library,
             sync_token: newSyncToken,
+            registered:  new Date(),
+            loas_seen: new Date()
         };
 
         logWithRequest(req, { message: 'Saving new user', username });
@@ -139,11 +141,16 @@ async function register(req, res) {
 }
 
 router.post('/signin', (req, res) => {
-    authenticateUser(req, res, returnLibrary);
+    authenticateUser(req, res, signin);
 });
 
-function returnLibrary(req, res, user) {
+async function signin(req, res, user) {
     logWithRequest(req, { message: 'signed in', username: user.username });
+    await knex('users')
+        .where({ user_id: user.user_id })
+        .update({
+            last_seen: new Date()
+        });
     return res.json({ username: user.username, library: JSON.stringify(user.library), sync_token: user.sync_token });
 }
 
@@ -186,7 +193,8 @@ async function saveLibrary(req, res, user) {
         .where({ user_id: user.user_id })
         .update({
             library: library,
-            sync_token: newSyncToken
+            sync_token: newSyncToken,
+            last_seen: new Date()
         });
 
         logWithRequest(req, { message: 'saved library', username: user.username });
