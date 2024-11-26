@@ -12,6 +12,14 @@ How to run Lighterpack
 5. Start app ```$ npm start```
 6. go to http://localhost:8080
 
+Running with Docker & Docker compose
+-----------
+
+1. Install docker & docker-compose
+2. `docker-compose up`
+3. Visit http://localhost:8080
+
+
 Future non-feature initiatives
 -----------
 - Migrate to postgres document store from mongo
