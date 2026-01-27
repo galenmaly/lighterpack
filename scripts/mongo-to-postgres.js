@@ -1,12 +1,13 @@
 // Takes a json mongo export file and writes to the postgres database
 
 const config = require('config');
+const { cloneDeep } = require('lodash');
 const fs = require('fs');
 const readline = require('readline');
 const dataTypes = require('../client/dataTypes.js');
 const knex = require('knex')({
     client: 'pg',
-    connection: config.util.cloneDeep(config.get('pgDatabase'))
+    connection: cloneDeep(config.get('pgDatabase'))
 });
 
 if (process.argv.length !== 4) {
