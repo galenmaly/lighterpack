@@ -1,8 +1,3 @@
-
-/*
-  Application defaults, do not edit.
-  Use local.json to change for your deployment.
-*/
 {
     "environment"   : "development",
     "deployUrl": "http://localhost:3000",

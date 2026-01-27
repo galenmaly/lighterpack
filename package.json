@@ -4,9 +4,9 @@
   "description": "LighterPack =========== LighterPack is a website to track the gear you take on adventures. It is still in Beta.",
   "main": "app.js",
   "scripts": {
-    "dev": "node --max-old-space-size=8192 app.js",
-    "start": "webpack-cli --config ./webpack.config.js && node app.js",
-    "build": "webpack-cli --config ./webpack.config.js",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider node --max-old-space-size=8192 app.js",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack-cli --config ./webpack.config.js && node app.js",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack-cli --config ./webpack.config.js",
     "lint:css": "./node_modules/.bin/stylelint \"client/**/*.{scss,vue}\" --fix",
     "lint:js": "./node_modules/.bin/eslint --ext .vue --ext .js ./ --fix"
   },
@@ -25,7 +25,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "compression": "^1.7.3",
-    "config": "^1.21.0",
+    "config": "^4.2.0",
     "cookie-parser": "^1.4.0",
     "css-loader": "3.5.3",
     "dragula": "^3.7.2",
@@ -58,7 +58,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.1",
+    "@playwright/test": "^1.58.0",
     "@types/node": "^22.7.9",
     "eslint": "7.23.0",
     "eslint-config-airbnb-base": "14.2.1",

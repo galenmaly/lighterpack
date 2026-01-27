@@ -1,11 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('config');
+const { cloneDeep } = require('lodash');
 const { promisify } = require('util')
 
 const knex = require('knex')({
     client: 'pg',
-    connection: config.util.cloneDeep(config.get('pgDatabase'))
+    connection: cloneDeep(config.get('pgDatabase'))
 });
 
 const bcrypt = require('bcryptjs');

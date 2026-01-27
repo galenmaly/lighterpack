@@ -10,6 +10,7 @@ const fs = require('fs');
 const request = require('request');
 const formidable = require('formidable');
 const config = require('config');
+const { cloneDeep } = require('lodash');
 const { logWithRequest } = require('./log.js');
 
 const { authenticateUser, verifyPassword } = require('./auth.js');
@@ -22,7 +23,7 @@ if (config.get('mailgunAPIKey')) {
 
 const knex = require('knex')({
     client: 'pg',
-    connection: config.util.cloneDeep(config.get('pgDatabase'))
+    connection: cloneDeep(config.get('pgDatabase'))
 });
 
 const randomBytesAsync = promisify(crypto.randomBytes);
@@ -120,7 +121,7 @@ async function register(req, res) {
             library,
             sync_token: newSyncToken,
             registered:  new Date(),
-            loas_seen: new Date()
+            last_seen: new Date()
         };
 
         logWithRequest(req, { message: 'Saving new user', username });

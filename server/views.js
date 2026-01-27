@@ -8,11 +8,12 @@ const Mustache = require('mustache');
 const extend = require('node.extend');
 const markdown = require('markdown').markdown;
 const config = require('config');
+const { cloneDeep } = require('lodash');
 const { logWithRequest, logger } = require('./log.js');
 
 const knex = require('knex')({
     client: 'pg',
-    connection: config.util.cloneDeep(config.get('pgDatabase'))
+    connection: cloneDeep(config.get('pgDatabase'))
 });
 
 const weightUtils = require('../client/utils/weight.js');

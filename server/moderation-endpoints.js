@@ -3,11 +3,12 @@ const express = require('express');
 
 const router = express.Router();
 const config = require('config');
+const { cloneDeep } = require('lodash');
 const { logWithRequest } = require('./log.js');
 
 const knex = require('knex')({
     client: 'pg',
-    connection: config.util.cloneDeep(config.get('pgDatabase'))
+    connection: cloneDeep(config.get('pgDatabase'))
 });
 
 const { authenticateModerator } = require('./auth.js');
