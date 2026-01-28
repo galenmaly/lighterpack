@@ -145,15 +145,6 @@ A good video tutorial for first time users can be found [here](https://www.youtu
 - [webpack-dev-server](https://www.npmjs.com/package/packawebpack-dev-servergeName)
 - [webpack-hot-middleware](https://www.npmjs.com/package/webpack-hot-middleware)
 
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-- [packageName](https://www.npmjs.com/package/packageName)
-
 ### Other Credits
 
 - [Devicion](https://devicon.dev/)
