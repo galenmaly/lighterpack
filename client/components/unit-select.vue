@@ -71,7 +71,7 @@
 </style>
 
 <template>
-    <div class="lpUnitSelect" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle($event)">
+    <div class="lpUnitSelect" data-testid="unit-select" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle($event)">
         <select class="lpUnit lpInvisible" :value="unit" @keyup="keyup($event)" @focus="focusSelect" @blur="blurSelect">
             <option v-for="unit in units" :value="unit">
                 {{ unit }}

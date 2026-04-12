@@ -8,7 +8,9 @@
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack-cli --config ./webpack.config.js && node app.js",
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack-cli --config ./webpack.config.js",
     "lint:css": "./node_modules/.bin/stylelint \"client/**/*.{scss,vue}\" --fix",
-    "lint:js": "./node_modules/.bin/eslint --ext .vue --ext .js ./ --fix"
+    "lint:js": "./node_modules/.bin/eslint --ext .vue --ext .js ./ --fix",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider playwright test",
+    "test:ui": "NODE_OPTIONS=--openssl-legacy-provider playwright test --ui"
   },
   "repository": {
     "type": "git",

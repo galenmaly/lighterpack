@@ -1,240 +1,182 @@
 import { test, expect } from '@playwright/test';
 
-import { testRoot } from './utils';
-import { registerUser } from './auth-utils';
+import { registerUser, generateTestUser } from './auth-utils';
+import { createCategory, addItem } from './test-helpers';
 
 test.describe('Weight Units', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `wt${now}`;
-    const email = `wt+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('wt');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    // Create a category
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Test Category');
-    await categoryInput.blur();
-
-    // Add an item
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Test Item');
+    // Create a category with an item
+    const category = await createCategory(page, 'Test Category');
+    await addItem(category, 'Test Item');
   });
 
   test('should default to ounces (oz)', async ({ page }) => {
-    const unitDisplay = page.locator('div.lpUnitSelect span.lpDisplay').first();
+    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
     await expect(unitDisplay).toHaveText('oz');
   });
 
   test('should change unit to pounds (lb)', async ({ page }) => {
     // Click unit selector to open dropdown
-    await page.locator('div.lpUnitSelect').first().click();
+    await page.getByTestId('unit-select').first().click();
 
     // Select pounds
     await page.locator('ul.lpUnitDropdown li.lb').first().click();
 
     // Verify unit changed
-    const unitDisplay = page.locator('div.lpUnitSelect span.lpDisplay').first();
+    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
     await expect(unitDisplay).toHaveText('lb');
   });
 
   test('should change unit to grams (g)', async ({ page }) => {
-    await page.locator('div.lpUnitSelect').first().click();
+    await page.getByTestId('unit-select').first().click();
     await page.locator('ul.lpUnitDropdown li.g').first().click();
 
-    const unitDisplay = page.locator('div.lpUnitSelect span.lpDisplay').first();
+    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
     await expect(unitDisplay).toHaveText('g');
   });
 
   test('should change unit to kilograms (kg)', async ({ page }) => {
-    await page.locator('div.lpUnitSelect').first().click();
+    await page.getByTestId('unit-select').first().click();
     await page.locator('ul.lpUnitDropdown li.kg').first().click();
 
-    const unitDisplay = page.locator('div.lpUnitSelect span.lpDisplay').first();
+    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
     await expect(unitDisplay).toHaveText('kg');
   });
 
   test('should save weight with unit', async ({ page }) => {
-    const weightInput = page.locator('input.lpWeight').first();
+    const category = page.getByTestId('category').first();
+    const itemRow = category.getByTestId('item-row').last();
+    const weightInput = itemRow.getByTestId('item-weight');
+    const unitSelect = itemRow.getByTestId('unit-select');
+
     await weightInput.fill('2.5');
     await weightInput.blur();
 
     // Change to pounds
-    await page.locator('div.lpUnitSelect').first().click();
-    await page.locator('ul.lpUnitDropdown li.lb').first().click();
+    await unitSelect.click();
+    await itemRow.locator('ul.lpUnitDropdown li.lb').click();
 
-    // Verify weight is still 2.5 (now in lb)
+    // Verify unit display shows lb
+    const unitDisplay = unitSelect.locator('span.lpDisplay');
+    await expect(unitDisplay).toHaveText('lb');
+
+    // Verify weight value is still 2.5
     await expect(weightInput).toHaveValue('2.5');
+
+    // Verify category subtotal reflects the weight in lb (2.5 lb = 40 oz)
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^40(\.0+)?$/);
   });
 });
 
 test.describe('Weight Calculations', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `calc${now}`;
-    const email = `calc+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('calc');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
   test('should calculate category subtotal', async ({ page }) => {
-    // Create a new category (added at end of list)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    await category.locator('input.lpCategoryName').fill('Shelter');
-    await category.locator('input.lpCategoryName').blur();
-
-    // Get initial item count
-    const initialCount = await category.locator('li.lpItem').count();
-
-    // Add first item: 32 oz to THIS category
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 1);
-    const firstItem = category.locator('li.lpItem').last();
-    await firstItem.locator('input.lpName').fill('Tent');
-    await firstItem.locator('input.lpWeight').fill('32');
-    await firstItem.locator('input.lpWeight').blur();
-
-    // Add second item: 16 oz to THIS category
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 2);
-    const secondItem = category.locator('li.lpItem').last();
-    await secondItem.locator('input.lpName').fill('Footprint');
-    await secondItem.locator('input.lpWeight').fill('16');
-    await secondItem.locator('input.lpWeight').blur();
+    const category = await createCategory(page, 'Shelter');
+    await addItem(category, 'Tent', { weight: '32' });
+    await addItem(category, 'Footprint', { weight: '16' });
 
     // Subtotal should be 48 oz
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('48');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^48(\.0+)?$/);
   });
 
   test('should calculate total weight across categories', async ({ page }) => {
-    // Create first category with items
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Shelter');
-    await page.locator('input.lpCategoryName').first().blur();
+    const firstCategory = await createCategory(page, 'Shelter');
+    await addItem(firstCategory, 'Tent', { weight: '32' });
 
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Tent');
-    await page.locator('input.lpWeight').first().fill('32');
-    await page.locator('input.lpWeight').first().blur();
+    const secondCategory = await createCategory(page, 'Sleep');
+    await addItem(secondCategory, 'Sleeping Bag', { weight: '28' });
 
-    // Create second category with items
-    await page.click('a.addCategory');
-    const categories = page.locator('input.lpCategoryName');
-    await categories.last().fill('Sleep');
-    await categories.last().blur();
+    // Total should be 60 oz
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*60(\.0+)?\s*$/);
+  });
 
-    // Add item to second category
-    const addItemButtons = page.locator('a.lpAddItem');
-    await addItemButtons.last().click();
+  test('should convert total weight when total unit changes', async ({ page }) => {
+    const category = await createCategory(page, 'Unit Conversion');
+    await addItem(category, 'Fuel', { weight: '16' });
 
-    const allItems = page.locator('li.lpItem');
-    await allItems.last().locator('input.lpName').fill('Sleeping Bag');
-    await allItems.last().locator('input.lpWeight').fill('28');
-    await allItems.last().locator('input.lpWeight').blur();
+    const totalUnitSelect = page.locator('.lpTotalUnit').getByTestId('unit-select');
+    await totalUnitSelect.click();
+    await page.locator('ul.lpUnitDropdown li.lb').first().click();
 
-    // Total should be 60 oz - check the total row
-    await expect(page.getByText('Total')).toBeVisible();
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*1(\.0+)?\s*$/);
+  });
+
+  test('should sum mixed item units correctly', async ({ page }) => {
+    const category = await createCategory(page, 'Mixed Units');
+
+    // Add first item: 1 lb (use returned locator since createCategory adds a default item)
+    const itemOne = await addItem(category, 'Item LB', { weight: '1', unit: 'lb' });
+
+    // Verify first item is in lb
+    await expect(itemOne.getByTestId('unit-select').locator('span.lpDisplay')).toHaveText('lb');
+
+    // Add second item: 16 oz
+    const itemTwo = await addItem(category, 'Item OZ', { weight: '16', unit: 'oz' });
+
+    // Verify second item is in oz
+    await expect(itemTwo.getByTestId('unit-select').locator('span.lpDisplay')).toHaveText('oz');
+
+    // Total should be 1 lb + 16 oz = 16 oz + 16 oz = 32 oz
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*32(\.0+)?\s*$/);
   });
 
   test('should handle quantity multiplier in calculations', async ({ page }) => {
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Food');
-    await page.locator('input.lpCategoryName').first().blur();
-
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Energy Bar');
-    await page.locator('input.lpWeight').first().fill('2');
-    await page.locator('input.lpQty').first().clear();
-    await page.locator('input.lpQty').first().fill('10');
-    await page.locator('input.lpQty').first().blur();
+    const category = await createCategory(page, 'Food');
+    await addItem(category, 'Energy Bar', { weight: '2', quantity: '10' });
 
     // Subtotal should be 2 * 10 = 20 oz
-    const category = page.locator('li.lpCategory').first();
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('20');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^20(\.0+)?$/);
   });
 
   test('should handle mixed units in display', async ({ page }) => {
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Heavy Gear');
-    await page.locator('input.lpCategoryName').first().blur();
-
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Bear Canister');
-    // 48 oz = 3 lb
-    await page.locator('input.lpWeight').first().fill('48');
-    await page.locator('input.lpWeight').first().blur();
+    const category = await createCategory(page, 'Heavy Gear');
+    await addItem(category, 'Bear Canister', { weight: '48' });
 
     // The display should show 48 oz
-    const category = page.locator('li.lpCategory').first();
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('48');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^48(\.0+)?$/);
   });
 
   test('should update totals when item deleted', async ({ page }) => {
-    // Create a new category (added at end of list)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    await category.locator('input.lpCategoryName').fill('Gear');
-    await category.locator('input.lpCategoryName').blur();
-
-    // Get initial item count
-    const initialCount = await category.locator('li.lpItem').count();
-
-    // Add first item to THIS category (10 oz)
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 1);
-    const firstItemIndex = initialCount; // Index of the first item we add
-    await category.locator('li.lpItem').nth(firstItemIndex).locator('input.lpName').fill('Item 1');
-    await category.locator('li.lpItem').nth(firstItemIndex).locator('input.lpWeight').fill('10');
-    await category.locator('li.lpItem').nth(firstItemIndex).locator('input.lpWeight').blur();
-
-    // Add second item to THIS category (20 oz)
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 2);
-    const secondItemIndex = initialCount + 1;
-    await category.locator('li.lpItem').nth(secondItemIndex).locator('input.lpName').fill('Item 2');
-    await category.locator('li.lpItem').nth(secondItemIndex).locator('input.lpWeight').fill('20');
-    await category.locator('li.lpItem').nth(secondItemIndex).locator('input.lpWeight').blur();
+    const category = await createCategory(page, 'Gear');
+    const firstItem = await addItem(category, 'Item 1', { weight: '10' });
+    await addItem(category, 'Item 2', { weight: '20' });
 
     // Verify subtotal is 30
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('30');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^30(\.0+)?$/);
 
-    // Delete first item we added (Item 1 with 10 oz) - hover first to reveal button
-    // Note: Item deletion in a category is immediate (no confirmation modal)
-    const itemToDelete = category.locator('li.lpItem').nth(firstItemIndex);
-    await itemToDelete.hover();
-    await itemToDelete.locator('a.lpRemoveItem').click();
+    // Delete first item (Item 1 with 10 oz) - hover first to reveal button
+    await firstItem.hover();
+    await firstItem.getByTitle('Remove this item').click();
 
     // Subtotal should now be 20 (only Item 2 remains)
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('20');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^20(\.0+)?$/);
   });
 });
 
 test.describe('Weight Input Behavior', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `inp${now}`;
-    const email = `inp+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('inp');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Test');
-    await page.locator('input.lpCategoryName').first().blur();
-
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Test Item');
+    const category = await createCategory(page, 'Test');
+    await addItem(category, 'Test Item');
   });
 
   test('should accept decimal weights', async ({ page }) => {
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
     await weightInput.fill('3.75');
     await weightInput.blur();
 
@@ -242,7 +184,7 @@ test.describe('Weight Input Behavior', () => {
   });
 
   test('should accept zero weight', async ({ page }) => {
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
     await weightInput.fill('0');
     await weightInput.blur();
 
@@ -250,7 +192,7 @@ test.describe('Weight Input Behavior', () => {
   });
 
   test('should increment weight with up arrow key', async ({ page }) => {
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
     await weightInput.fill('5');
     await weightInput.focus();
     await page.keyboard.press('ArrowUp');
@@ -261,7 +203,7 @@ test.describe('Weight Input Behavior', () => {
   });
 
   test('should decrement weight with down arrow key', async ({ page }) => {
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
     await weightInput.fill('5');
     await weightInput.focus();
     await page.keyboard.press('ArrowDown');
@@ -269,5 +211,13 @@ test.describe('Weight Input Behavior', () => {
     // Weight should decrement
     const value = await weightInput.inputValue();
     expect(parseFloat(value)).toBeLessThan(5);
+  });
+
+  test('should round weight display to two decimals', async ({ page }) => {
+    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
+    await weightInput.fill('0.335');
+    await weightInput.blur();
+
+    await expect(weightInput).toHaveValue('0.34');
   });
 });

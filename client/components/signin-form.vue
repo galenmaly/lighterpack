@@ -1,5 +1,5 @@
 <template>
-    <form class="signin" @submit.prevent="signin">
+    <form class="signin" data-testid="signin-form" @submit.prevent="signin">
         <p v-if="message" class="lpSuccess">
             {{ message }}
         </p>

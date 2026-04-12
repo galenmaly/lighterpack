@@ -279,6 +279,11 @@ async function renderListCSV(req, res) {
             }
         }
 
+        if (!list) {
+            res.status(400).send('Invalid list specified.');
+            return;
+        }
+
         const fullUnits = {
             oz: 'ounce', lb: 'pound', g: 'gram', kg: 'kilogram',
         };

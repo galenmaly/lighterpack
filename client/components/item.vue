@@ -52,7 +52,7 @@
 </style>
 
 <template>
-    <li :id="item.id" :class="'lpItem '+ item.classes">
+    <li :id="item.id" :class="'lpItem '+ item.classes" data-testid="item-row">
         <span class="lpHandleCell">
             <div class="lpItemHandle lpHandle" title="Reorder this item" />
         </span>
@@ -69,14 +69,14 @@
             <i :class="'lpSprite lpStar lpStar' + categoryItem.star" title="Star this item" @click="cycleStar" />
         </span>
         <span v-if="library.optionalFields['price']" class="lpPriceCell">
-            <input v-model="displayPrice" v-empty-if-zero type="text" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" @input="savePrice" @keydown.up="incrementPrice($event)" @keydown.down="decrementPrice($event)" @blur="setDisplayPrice">
+            <input v-model="displayPrice" v-empty-if-zero data-testid="item-price" type="text" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" @input="savePrice" @keydown.up="incrementPrice($event)" @keydown.down="decrementPrice($event)" @blur="setDisplayPrice">
         </span>
         <span class="lpWeightCell lpNumber">
-            <input v-model="displayWeight" v-empty-if-zero type="text" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" @input="saveWeight" @keydown.up="incrementWeight($event)" @keydown.down="decrementWeight($event)">
+            <input v-model="displayWeight" v-empty-if-zero data-testid="item-weight" type="text" :class="{lpWeight: true, lpNumber: true, lpSilent: true, lpSilentError: weightError}" @input="saveWeight" @keydown.up="incrementWeight($event)" @keydown.down="decrementWeight($event)">
             <unitSelect :unit="item.authorUnit" :on-change="setUnit" />
         </span>
         <span class="lpQtyCell">
-            <input v-model="displayQty" type="text" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)">
+            <input v-model="displayQty" data-testid="item-qty" type="text" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)">
             <span class="lpArrows">
                 <span class="lpSprite lpUp" @click="incrementQty($event)" />
                 <span class="lpSprite lpDown" @click="decrementQty($event)" />

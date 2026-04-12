@@ -1,31 +1,32 @@
 import { test, expect } from '@playwright/test';
 
 import { testRoot } from './utils';
-import { registerUser } from './auth-utils';
+import { registerUser, generateTestUser } from './auth-utils';
+import { createCategory, addItem, getCategoryNames } from './test-helpers';
 
 test.describe('List Sharing', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `share${now}`;
-    const email = `share+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('share');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Set a list name
-    await page.locator('input.lpListName').fill('My Gear List');
-    await page.locator('input.lpListName').blur();
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('My Gear List');
+    await listNameInput.blur();
 
     // Create a category with items for a meaningful list
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Shelter');
-    await page.locator('input.lpCategoryName').first().blur();
+    await page.getByText('Add new category', { exact: true }).click();
+    const category = page.getByTestId('category').first();
+    await category.getByPlaceholder('Category Name', { exact: true }).fill('Shelter');
+    await category.getByPlaceholder('Category Name', { exact: true }).blur();
 
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Tent');
-    await page.locator('input.lpWeight').first().fill('32');
-    await page.locator('input.lpWeight').first().blur();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    await itemRow.getByPlaceholder('Name', { exact: true }).fill('Tent');
+    await itemRow.getByTestId('item-weight').fill('32');
+    await itemRow.getByTestId('item-weight').blur();
   });
 
   test('should generate a share URL', async ({ page }) => {
@@ -57,8 +58,7 @@ test.describe('List Sharing', () => {
     }).toPass();
   });
 
-  // TODO: Share page not rendering correctly - investigate server-side rendering
-  test.skip('shared list should display correctly', async ({ page }) => {
+  test('shared list should display correctly', async ({ page }) => {
     await page.getByText('Share', { exact: true }).hover();
 
     // Wait for share URL to be populated (async fetch)
@@ -66,24 +66,30 @@ test.describe('List Sharing', () => {
     await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
     const shareUrl = await shareUrlInput.inputValue();
 
-    // Wait for data to sync to server
-    await page.waitForTimeout(1000);
+    // Poll until the share URL returns 200. The endpoint returns 400 until saveLibrary
+    // has persisted the library with the matching externalId, so this implicitly waits
+    // for the auto-save to complete (up to 30s).
+    await expect(async () => {
+      const response = await page.request.get(shareUrl);
+      expect(response.status()).toBe(200);
+    }).toPass({ timeout: 30000 });
 
-    // Navigate to shared list and wait for it to load
-    await page.goto(shareUrl, { waitUntil: 'networkidle' });
+    await page.goto(shareUrl);
 
-    // Verify list name is visible (shared page uses h1.lpListName)
-    await expect(page.locator('h1.lpListName')).toContainText('My Gear List', { timeout: 10000 });
-
-    // Verify category is visible
-    await expect(page.getByText('Shelter')).toBeVisible();
-
-    // Verify item is visible
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('My Gear List');
+    await expect(page.getByRole('heading', { name: 'Shelter' })).toBeVisible();
     await expect(page.getByText('Tent')).toBeVisible();
   });
 
   test('should have embed code', async ({ page }) => {
     await page.getByText('Share', { exact: true }).hover();
+
+    const shareUrlInput = page.getByLabel('Share your list');
+    await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
+    const shareUrl = await shareUrlInput.inputValue();
+    const shareMatch = shareUrl.match(/\/r\/([a-zA-Z0-9]+)/);
+    expect(shareMatch).not.toBeNull();
+    const externalId = shareMatch ? shareMatch[1] : '';
 
     const embedTextarea = page.getByLabel('Embed your list');
     await expect(embedTextarea).toBeVisible();
@@ -91,88 +97,233 @@ test.describe('List Sharing', () => {
     // Verify embed code contains script tag
     const embedCode = await embedTextarea.inputValue();
     expect(embedCode).toContain('<script');
+    expect(embedCode).toContain(`/e/${externalId}`);
+    expect(embedCode).toContain(`id="${externalId}"`);
   });
 });
 
 test.describe('CSV Export', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `csv${now}`;
-    const email = `csv+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('csv');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Set up a list with items to export
-    await page.locator('input.lpListName').fill('Export Test List');
-    await page.locator('input.lpListName').blur();
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('Export Test List');
+    await listNameInput.blur();
 
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('Gear');
-    await page.locator('input.lpCategoryName').first().blur();
+    await page.getByText('Add new category', { exact: true }).click();
+    const category = page.getByTestId('category').first();
+    await category.getByPlaceholder('Category Name', { exact: true }).fill('Gear');
+    await category.getByPlaceholder('Category Name', { exact: true }).blur();
 
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Backpack');
-    await page.locator('input.lpDescription').first().fill('Ultralight 40L');
-    await page.locator('input.lpWeight').first().fill('24');
-    await page.locator('input.lpWeight').first().blur();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    await itemRow.getByPlaceholder('Name', { exact: true }).fill('Backpack');
+    await itemRow.getByPlaceholder('Description', { exact: true }).fill('Ultralight 40L');
+    await itemRow.getByTestId('item-weight').fill('24');
+    await itemRow.getByTestId('item-weight').blur();
   });
 
   test('should have CSV export link', async ({ page }) => {
     await page.getByText('Share', { exact: true }).hover();
 
-    const csvLink = page.getByText('Export to CSV');
+    const shareUrlInput = page.getByLabel('Share your list');
+    await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
+    const shareUrl = await shareUrlInput.inputValue();
+    const shareMatch = shareUrl.match(/\/r\/([a-zA-Z0-9]+)/);
+    expect(shareMatch).not.toBeNull();
+    const externalId = shareMatch ? shareMatch[1] : '';
+
+    const csvLink = page.locator('#csvUrl');
     await expect(csvLink).toBeVisible();
+
+    const csvHref = await csvLink.getAttribute('href');
+    expect(csvHref).toContain(`/csv/${externalId}`);
   });
 
-  // TODO: CSV endpoint returns 500 - investigate server-side issue
-  test.skip('should download CSV file', async ({ page }) => {
+  test('should download CSV file', async ({ page }) => {
     await page.getByText('Share', { exact: true }).hover();
 
-    // Wait for share URL to be populated (CSV needs externalId)
     const shareUrlInput = page.getByLabel('Share your list');
     await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
 
-    // Wait for data to sync to server
-    await page.waitForTimeout(500);
-
-    // Get the CSV link href
     const csvLink = page.locator('#csvUrl');
     const csvUrl = await csvLink.getAttribute('href');
     expect(csvUrl).toContain('/csv/');
 
-    // Verify CSV endpoint returns valid response
+    // Poll until the CSV endpoint returns 200. Like the share view, it returns 400 until
+    // saveLibrary has persisted the library with the matching externalId.
+    await expect(async () => {
+      const response = await page.request.get(csvUrl!);
+      expect(response.status()).toBe(200);
+    }).toPass({ timeout: 30000 });
+
     const response = await page.request.get(csvUrl!);
-    expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toContain('text/csv');
   });
 });
 
 test.describe('CSV Import', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `imp${now}`;
-    const email = `imp+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('imp');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
-  test('should have import CSV option', async ({ page }) => {
-    // Look for import option in sidebar
-    const importLink = page.getByText('Import CSV');
-    await expect(importLink).toBeVisible();
+  test('should open file chooser from import CSV option', async ({ page }) => {
+    // Open the add list popover to reveal the import option
+    await page.getByText('Add new list', { exact: true }).first().hover();
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByText('Import CSV', { exact: true }).click(),
+    ]);
+
+    expect(fileChooser).toBeTruthy();
+  });
+
+  test('should reject non-CSV uploads', async ({ page }) => {
+    const dialogPromise = page.waitForEvent('dialog').then(async (dialog) => {
+      const message = dialog.message();
+      await dialog.accept();
+      return message;
+    });
+    await page.getByText('Add new list', { exact: true }).first().hover();
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByText('Import CSV', { exact: true }).click(),
+    ]);
+
+    await fileChooser.setFiles({
+      name: 'not-csv.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('not a csv'),
+    });
+
+    const dialogMessage = await dialogPromise;
+    expect(dialogMessage).toContain('Please select a CSV.');
+  });
+
+  test('should reject CSVs with invalid content', async ({ page }) => {
+    const dialogPromise = page.waitForEvent('dialog').then(async (dialog) => {
+      const message = dialog.message();
+      await dialog.accept();
+      return message;
+    });
+    await page.getByText('Add new list', { exact: true }).first().hover();
+
+    const invalidCsv = [
+      'Item Name,Category,Description,Qty,Weight,Unit',
+      'Bad Item,Test,Invalid unit,1,2,stone',
+    ].join('\n');
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByText('Import CSV', { exact: true }).click(),
+    ]);
+
+    await fileChooser.setFiles({
+      name: 'invalid.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(invalidCsv),
+    });
+
+    const dialogMessage = await dialogPromise;
+    expect(dialogMessage).toContain('Unable to load spreadsheet');
+  });
+
+  test('should import a valid CSV and create categories/items', async ({ page }) => {
+    await page.getByText('Add new list', { exact: true }).first().hover();
+
+    const validCsv = [
+      'Item Name,Category,Description,Qty,Weight,Unit',
+      'Tent,Shelter,Two-person,1,32,oz',
+      'Stove,Kitchen,Canister,2,4,oz',
+    ].join('\n');
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByText('Import CSV', { exact: true }).click(),
+    ]);
+
+    await fileChooser.setFiles({
+      name: 'Trip List.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(validCsv),
+    });
+
+    await expect(page.locator('#importValidate')).toBeVisible();
+    await page.getByText('Import List', { exact: true }).click();
+
+    await expect(page.getByPlaceholder('List Name', { exact: true })).toHaveValue('Trip List');
+
+    const categoryNames = await getCategoryNames(page);
+    expect(categoryNames).toContain('Shelter');
+    expect(categoryNames).toContain('Kitchen');
+
+    const itemNames = await page.getByTestId('item-row').evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const input = node.querySelector('input.lpName');
+        return input ? input.value : '';
+      }),
+    );
+    expect(itemNames).toContain('Tent');
+    expect(itemNames).toContain('Stove');
+  });
+
+  test('should import quantities and units correctly', async ({ page }) => {
+    await page.getByText('Add new list', { exact: true }).first().hover();
+
+    const validCsv = [
+      'Item Name,Category,Description,Qty,Weight,Unit',
+      'Water Bottle,Hydration,Filtered,2,16,oz',
+      'Fuel Canister,Cooking,Isobutane,1,0.5,lb',
+    ].join('\n');
+
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByText('Import CSV', { exact: true }).click(),
+    ]);
+
+    await fileChooser.setFiles({
+      name: 'Units.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(validCsv),
+    });
+
+    await expect(page.locator('#importValidate')).toBeVisible();
+    await page.getByText('Import List', { exact: true }).click();
+
+    await expect(page.getByPlaceholder('List Name', { exact: true })).toHaveValue('Units');
+
+    const itemRows = page.getByTestId('item-row');
+    const itemNames = await itemRows.evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const input = node.querySelector('input.lpName');
+        return input ? input.value : '';
+      }),
+    );
+    expect(itemNames).toContain('Water Bottle');
+    expect(itemNames).toContain('Fuel Canister');
+
+    const qtyValues = await itemRows.evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const input = node.querySelector('input.lpQty');
+        return input ? input.value : '';
+      }),
+    );
+    expect(qtyValues).toContain('2');
   });
 });
 
 test.describe('Share URL Persistence', () => {
   test('share URL should remain the same after modifications', async ({ page }) => {
-    const now = Date.now();
-    const username = `persist${now}`;
-    const email = `persist+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('persist');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
@@ -187,9 +338,10 @@ test.describe('Share URL Persistence', () => {
     await page.click('body', { position: { x: 10, y: 10 } });
 
     // Add some content
-    await page.click('a.addCategory');
-    await page.locator('input.lpCategoryName').first().fill('New Category');
-    await page.locator('input.lpCategoryName').first().blur();
+    await page.getByText('Add new category', { exact: true }).click();
+    const category = page.getByTestId('category').first();
+    await category.getByPlaceholder('Category Name', { exact: true }).fill('New Category');
+    await category.getByPlaceholder('Category Name', { exact: true }).blur();
 
     // Check share URL again
     await page.getByText('Share', { exact: true }).hover();
@@ -199,46 +351,33 @@ test.describe('Share URL Persistence', () => {
     expect(updatedShareUrl).toBe(initialShareUrl);
   });
 
-  // TODO: Share page not rendering correctly - investigate server-side rendering
-  test.skip('modifications should be reflected in shared view', async ({ page }) => {
-    const now = Date.now();
-    const username = `reflect${now}`;
-    const email = `reflect+${now}@lighterpack.com`;
-    const password = 'testtest';
+  test('modifications should be reflected in shared view', async ({ page }) => {
+    const { username, password, email } = generateTestUser('reflect');
 
     await registerUser(page, username, password, email);
 
-    // Set list name
-    await page.locator('input.lpListName').fill('Updated List');
-    await page.locator('input.lpListName').blur();
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('Updated List');
+    await listNameInput.blur();
 
-    // Add content to the last category (newly created ones are added at end)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    await category.locator('input.lpCategoryName').fill('Category 1');
-    await category.locator('input.lpCategoryName').blur();
+    const category = await createCategory(page, 'Category 1');
+    await addItem(category, 'Test Item', { weight: '10' });
 
-    await category.locator('a.lpAddItem').click();
-    const item = category.locator('li.lpItem').last();
-    await item.locator('input.lpName').fill('Test Item');
-    await item.locator('input.lpWeight').fill('10');
-    await item.locator('input.lpWeight').blur();
-
-    // Get share URL (wait for async fetch)
     await page.getByText('Share', { exact: true }).hover();
     const shareUrlInput = page.getByLabel('Share your list');
     await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
     const shareUrl = await shareUrlInput.inputValue();
 
-    // Wait for data to sync
-    await page.waitForTimeout(1000);
+    // Poll until the share URL returns 200 (implicitly waits for saveLibrary)
+    await expect(async () => {
+      const response = await page.request.get(shareUrl);
+      expect(response.status()).toBe(200);
+    }).toPass({ timeout: 30000 });
 
-    // Visit shared URL and wait for load
-    await page.goto(shareUrl, { waitUntil: 'networkidle' });
+    await page.goto(shareUrl);
 
-    // Verify content is visible (use locator for class-based h1)
-    await expect(page.locator('h1.lpListName')).toContainText('Updated List', { timeout: 10000 });
-    await expect(page.getByText('Category 1')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Updated List');
+    await expect(page.getByRole('heading', { name: 'Category 1' })).toBeVisible();
     await expect(page.getByText('Test Item')).toBeVisible();
   });
 });

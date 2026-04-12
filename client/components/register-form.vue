@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <form class="lpRegister lpFields" @submit.prevent="submit">
+    <form class="lpRegister lpFields" data-testid="register-form" @submit.prevent="submit">
         <div class="lpFields">
             <input v-model="username" v-focus-on-create type="text" placeholder="Username" name="username">
             <input v-model="email" type="email" placeholder="Email" name="email">

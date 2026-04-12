@@ -11,7 +11,7 @@
 </style>
 
 <template>
-    <li :id="category.id" class="lpCategory">
+    <li :id="category.id" class="lpCategory" data-testid="category">
         <ul class="lpItems lpDataTable">
             <li class="lpHeader lpItemsHeader">
                 <span class="lpHandleCell">
@@ -32,7 +32,7 @@
                     {{ category.subtotalPrice | displayPrice(library.currencySymbol) }}
                 </span>
                 <span class="lpWeightCell lpNumber lpSubtotal">
-                    <span class="lpDisplaySubtotal">{{ category.subtotalWeight | displayWeight(library.totalUnit) }}</span>
+                    <span class="lpDisplaySubtotal" data-testid="category-subtotal-weight">{{ category.subtotalWeight | displayWeight(library.totalUnit) }}</span>
                     <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </span>
                 <span class="lpQtyCell lpSubtotal">

@@ -1,33 +1,27 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 
-import { testRoot } from './utils';
-import { registerUser } from './auth-utils';
+import { registerUser, generateTestUser } from './auth-utils';
+import { createCategory, addItem, markItemAsWorn, markItemAsConsumable } from './test-helpers';
+
+// Helper to get the test category (last one created)
+const getTestCategory = (page: Page): Locator => page.getByTestId('category').last();
 
 test.describe('Item Management', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `item${now}`;
-    const email = `item+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('item');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Create a NEW category for items (added at end of list)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    await category.locator('input.lpCategoryName').fill('Test Category');
-    await category.locator('input.lpCategoryName').blur();
+    await createCategory(page, 'Test Category');
   });
-
-  // Helper to get the test category (last one created)
-  const getTestCategory = (page) => page.locator('li.lpCategory').last();
 
   test('should add a new item', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
+    await category.getByText('Add new item', { exact: true }).click();
 
-    const nameInput = category.locator('input.lpName').first();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await expect(nameInput).toBeVisible();
     await nameInput.fill('Backpack');
     await nameInput.blur();
@@ -37,8 +31,8 @@ test.describe('Item Management', () => {
 
   test('should edit item name', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
-    const nameInput = category.locator('input.lpName').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await nameInput.fill('Tent');
     await nameInput.blur();
 
@@ -52,12 +46,12 @@ test.describe('Item Management', () => {
 
   test('should edit item description', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
+    await category.getByText('Add new item', { exact: true }).click();
 
-    const nameInput = category.locator('input.lpName').first();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await nameInput.fill('Sleeping Bag');
 
-    const descInput = category.locator('input.lpDescription').first();
+    const descInput = category.getByTestId('item-row').last().getByPlaceholder('Description');
     await descInput.fill('20 degree down bag');
     await descInput.blur();
 
@@ -66,12 +60,12 @@ test.describe('Item Management', () => {
 
   test('should set item weight', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
+    await category.getByText('Add new item', { exact: true }).click();
 
-    const nameInput = category.locator('input.lpName').first();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await nameInput.fill('Water Bottle');
 
-    const weightInput = category.locator('input.lpWeight').first();
+    const weightInput = category.getByTestId('item-row').last().getByTestId('item-weight');
     await weightInput.fill('5.5');
     await weightInput.blur();
 
@@ -80,12 +74,12 @@ test.describe('Item Management', () => {
 
   test('should set item quantity', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
+    await category.getByText('Add new item', { exact: true }).click();
 
-    const nameInput = category.locator('input.lpName').first();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await nameInput.fill('Tent Stake');
 
-    const qtyInput = category.locator('input.lpQty').first();
+    const qtyInput = category.getByTestId('item-row').last().getByTestId('item-qty');
     await qtyInput.clear();
     await qtyInput.fill('8');
     await qtyInput.blur();
@@ -95,108 +89,119 @@ test.describe('Item Management', () => {
 
   test('should delete an item', async ({ page }) => {
     const category = getTestCategory(page);
-    await category.locator('a.lpAddItem').click();
-    const item = category.locator('li.lpItem').first();
-    const nameInput = item.locator('input.lpName');
+    await category.getByText('Add new item', { exact: true }).click();
+    const item = category.getByTestId('item-row').first();
+    const nameInput = item.getByPlaceholder('Name');
     await nameInput.fill('Item To Delete');
     await nameInput.blur();
 
     // Count items before deletion
-    const initialCount = await category.locator('li.lpItem').count();
+    const initialCount = await category.getByTestId('item-row').count();
 
     // Hover over item row to reveal delete button, then click it
     // Note: Item deletion in a category is immediate (no confirmation modal)
     await item.hover();
-    await item.locator('a.lpRemoveItem').click();
+    await item.getByTitle('Remove this item').click();
 
     // Verify item count decreased
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount - 1);
+    await expect(category.getByTestId('item-row')).toHaveCount(initialCount - 1);
   });
 
   test('should toggle star rating', async ({ page }) => {
-    await page.click('a.lpAddItem');
-    const nameInput = page.locator('input.lpName').first();
+    const category = getTestCategory(page);
+    await category.getByText('Add new item', { exact: true }).click();
+    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
     await nameInput.fill('Starred Item');
     await nameInput.blur();
 
-    // Hover over the item to reveal the star icon, then click it
-    const itemRow = page.locator('li.lpItem').first();
+    // Hover over the item to reveal the star icon
+    const itemRow = category.getByTestId('item-row').first();
     await itemRow.hover();
-    const starIcon = itemRow.locator('i.lpStar');
-    await starIcon.click();
+    const starIcon = itemRow.getByTitle('Star this item');
 
-    // Star should have changed class (lpStar1, lpStar2, etc.)
-    await expect(starIcon).not.toHaveClass(/lpStar0/);
+    // Initially should be lpStar0 (no star)
+    await expect(starIcon).toHaveClass(/lpStar0/);
+
+    // Click once - should be lpStar1
+    await starIcon.click();
+    await expect(starIcon).toHaveClass(/lpStar1/);
+
+    // Click again - should be lpStar2
+    await starIcon.click();
+    await expect(starIcon).toHaveClass(/lpStar2/);
+
+    // Click again - should be lpStar3
+    await starIcon.click();
+    await expect(starIcon).toHaveClass(/lpStar3/);
+
+    // Click again - should cycle back to lpStar0
+    await starIcon.click();
+    await expect(starIcon).toHaveClass(/lpStar0/);
   });
 
   test('should add multiple items to category', async ({ page }) => {
+    const category = getTestCategory(page);
     const items = ['Tent', 'Sleeping Bag', 'Sleeping Pad', 'Pillow'];
 
     for (const itemName of items) {
-      await page.click('a.lpAddItem');
-      const nameInputs = page.locator('input.lpName');
-      const lastInput = nameInputs.last();
+      await category.getByText('Add new item', { exact: true }).click();
+      const lastInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
       await lastInput.fill(itemName);
       await lastInput.blur();
     }
 
     // Verify all items exist by checking item count
-    const nameInputs = page.locator('input.lpName');
-    const count = await nameInputs.count();
+    const count = await category.getByTestId('item-row').count();
     expect(count).toBeGreaterThanOrEqual(items.length);
   });
 
   test('should calculate weight correctly with quantity', async ({ page }) => {
-    await page.click('a.lpAddItem');
+    const category = getTestCategory(page);
+    await category.getByText('Add new item', { exact: true }).click();
 
-    const nameInput = page.locator('input.lpName').first();
+    const itemRow = category.getByTestId('item-row').last();
+    const nameInput = itemRow.getByPlaceholder('Name');
     await nameInput.fill('Fuel Canister');
 
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = itemRow.getByTestId('item-weight');
     await weightInput.fill('8');
 
-    const qtyInput = page.locator('input.lpQty').first();
+    const qtyInput = itemRow.getByTestId('item-qty');
     await qtyInput.clear();
     await qtyInput.fill('3');
     await qtyInput.blur();
 
     // The category subtotal should be 8 * 3 = 24 oz
-    const category = page.locator('li.lpCategory').first();
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('24');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^24(\.0+)?$/);
   });
 });
 
 test.describe('Item Worn/Consumable Toggles', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `worn${now}`;
-    const email = `worn+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('worn');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    // Worn and consumable should be enabled by default based on the page snapshot
+    // Worn and consumable should be enabled by default
     // Create a category
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Clothing');
-    await categoryInput.blur();
+    await createCategory(page, 'Clothing');
   });
 
   test('should mark item as worn', async ({ page }) => {
-    await page.click('a.lpAddItem');
-    const nameInput = page.locator('input.lpName').first();
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    const nameInput = itemRow.getByPlaceholder('Name');
     await nameInput.fill('Hiking Boots');
 
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = itemRow.getByTestId('item-weight');
     await weightInput.fill('32');
     await weightInput.blur();
 
     // Hover over the item to reveal icons, then click worn
-    const itemRow = page.locator('li.lpItem').first();
     await itemRow.hover();
-    const wornIcon = itemRow.locator('i.lpWorn');
+    const wornIcon = itemRow.getByTitle('Mark this item as worn');
     await wornIcon.click();
 
     // Verify worn is active
@@ -204,74 +209,152 @@ test.describe('Item Worn/Consumable Toggles', () => {
   });
 
   test('should mark item as consumable', async ({ page }) => {
-    await page.click('a.lpAddItem');
-    const nameInput = page.locator('input.lpName').first();
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    const nameInput = itemRow.getByPlaceholder('Name');
     await nameInput.fill('Trail Mix');
 
-    const weightInput = page.locator('input.lpWeight').first();
+    const weightInput = itemRow.getByTestId('item-weight');
     await weightInput.fill('16');
     await weightInput.blur();
 
     // Hover over the item to reveal icons, then click consumable
-    const itemRow = page.locator('li.lpItem').first();
     await itemRow.hover();
-    const consumableIcon = itemRow.locator('i.lpConsumable');
+    const consumableIcon = itemRow.getByTitle('Mark this item as a consumable');
     await consumableIcon.click();
 
     // Verify consumable is active
     await expect(consumableIcon).toHaveClass(/lpActive/);
   });
 
+  test('should prevent consumable when worn is active', async ({ page }) => {
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    await itemRow.getByPlaceholder('Name', { exact: true }).fill('Jacket');
+
+    const weightInput = itemRow.getByTestId('item-weight');
+    await weightInput.fill('12');
+    await weightInput.blur();
+
+    await itemRow.hover();
+    const wornIcon = itemRow.getByTitle('Mark this item as worn');
+    const consumableIcon = itemRow.getByTitle('Mark this item as a consumable');
+    await wornIcon.click();
+
+    await expect(wornIcon).toHaveClass(/lpActive/);
+    await consumableIcon.click();
+    await expect(consumableIcon).not.toHaveClass(/lpActive/);
+  });
+
+  test('should prevent worn when consumable is active', async ({ page }) => {
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    await itemRow.getByPlaceholder('Name', { exact: true }).fill('Water');
+
+    const weightInput = itemRow.getByTestId('item-weight');
+    await weightInput.fill('16');
+    await weightInput.blur();
+
+    await itemRow.hover();
+    const wornIcon = itemRow.getByTitle('Mark this item as worn');
+    const consumableIcon = itemRow.getByTitle('Mark this item as a consumable');
+
+    // Mark as consumable first
+    await consumableIcon.click();
+    await expect(consumableIcon).toHaveClass(/lpActive/);
+
+    // Try to mark as worn - should not work
+    await wornIcon.click();
+    await expect(wornIcon).not.toHaveClass(/lpActive/);
+
+    // Consumable should still be active
+    await expect(consumableIcon).toHaveClass(/lpActive/);
+  });
+
+  test('should count only one worn item even with quantity > 1', async ({ page }) => {
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    await itemRow.getByPlaceholder('Name', { exact: true }).fill('Socks');
+
+    const weightInput = itemRow.getByTestId('item-weight');
+    await weightInput.fill('10');
+    await weightInput.blur();
+
+    const qtyInput = itemRow.getByTestId('item-qty');
+    await qtyInput.clear();
+    await qtyInput.fill('3');
+    await qtyInput.blur();
+
+    await itemRow.hover();
+    const wornIcon = itemRow.getByTitle('Mark this item as worn');
+    await wornIcon.click();
+    await expect(wornIcon).toHaveClass(/lpActive/);
+
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*30(\.0+)?\s*$/);
+    await expect(page.getByTestId('worn-weight')).toHaveText(/^\s*10(\.0+)?\s*$/);
+    await expect(page.getByTestId('base-weight')).toHaveText(/^\s*20(\.0+)?\s*$/);
+  });
+
   test('worn items should be excluded from base weight', async ({ page }) => {
+    const category = page.getByTestId('category').first();
     // Add a regular item
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Backpack');
-    await page.locator('input.lpWeight').first().fill('32');
-    await page.locator('input.lpWeight').first().blur();
+    await category.getByText('Add new item', { exact: true }).click();
+    const firstItem = category.getByTestId('item-row').last();
+    await firstItem.getByPlaceholder('Name').fill('Backpack');
+    await firstItem.getByTestId('item-weight').fill('32');
+    await firstItem.getByTestId('item-weight').blur();
 
     // Add a worn item
-    await page.click('a.lpAddItem');
-    const items = page.locator('li.lpItem');
-    await items.last().locator('input.lpName').fill('Boots');
-    await items.last().locator('input.lpWeight').fill('48');
-    await items.last().locator('input.lpWeight').blur();
+    await category.getByText('Add new item', { exact: true }).click();
+    const items = category.getByTestId('item-row');
+    await items.last().getByPlaceholder('Name').fill('Boots');
+    await items.last().getByTestId('item-weight').fill('48');
+    await items.last().getByTestId('item-weight').blur();
 
     // Hover and mark as worn
     await items.last().hover();
-    await items.last().locator('i.lpWorn').click();
+    await items.last().getByTitle('Mark this item as worn').click();
 
     // Verify the worn icon is active
-    await expect(items.last().locator('i.lpWorn')).toHaveClass(/lpActive/);
+    await expect(items.last().getByTitle('Mark this item as worn')).toHaveClass(/lpActive/);
+
+    // Total weight should include worn + non-worn
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*80(\.0+)?\s*$/);
+
+    // Worn weight should be listed separately
+    await expect(page.getByTestId('worn-weight')).toHaveText(/^\s*48(\.0+)?\s*$/);
+
+    // Base weight should exclude worn weight
+    await expect(page.getByTestId('base-weight')).toHaveText(/^\s*32(\.0+)?\s*$/);
   });
 });
 
 test.describe('Item Link and Image', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `link${now}`;
-    const email = `link+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('link');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Create a category
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Gear');
-    await categoryInput.blur();
+    await createCategory(page, 'Gear');
   });
 
   test('should add URL to item', async ({ page }) => {
-    await page.click('a.lpAddItem');
-    const nameInput = page.locator('input.lpName').first();
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    const nameInput = itemRow.getByPlaceholder('Name');
     await nameInput.fill('Tent');
     await nameInput.blur();
 
     // Hover over the item to reveal icons, then click link
-    const itemRow = page.locator('li.lpItem').first();
     await itemRow.hover();
-    const linkIcon = itemRow.locator('i.lpLink');
+    const linkIcon = itemRow.getByTitle('Add a link for this item');
     await linkIcon.click();
 
     // A modal dialog appears for adding a link
@@ -290,5 +373,43 @@ test.describe('Item Link and Image', () => {
     // Link icon should now be active (has lpActive class)
     await itemRow.hover();
     await expect(linkIcon).toHaveClass(/lpActive/);
+  });
+
+  test('should remove URL from item', async ({ page }) => {
+    const category = page.getByTestId('category').first();
+    await category.getByText('Add new item', { exact: true }).click();
+    const itemRow = category.getByTestId('item-row').last();
+    const nameInput = itemRow.getByPlaceholder('Name');
+    await nameInput.fill('Linked Item');
+    await nameInput.blur();
+
+    // Add a link first
+    await itemRow.hover();
+    const linkIcon = itemRow.getByTitle('Add a link for this item');
+    await linkIcon.click();
+
+    const modal = page.locator('#itemLinkDialog');
+    await expect(modal).toBeVisible();
+
+    await modal.getByPlaceholder('Item Link').fill('https://example.com/item');
+    await modal.locator('input[type="submit"]').click();
+    await expect(modal).not.toBeVisible();
+
+    // Verify link is active
+    await itemRow.hover();
+    await expect(linkIcon).toHaveClass(/lpActive/);
+
+    // Now remove the link
+    await linkIcon.click();
+    await expect(modal).toBeVisible();
+
+    // Clear the URL field and save
+    await modal.getByPlaceholder('Item Link').clear();
+    await modal.locator('input[type="submit"]').click();
+    await expect(modal).not.toBeVisible();
+
+    // Link icon should no longer be active
+    await itemRow.hover();
+    await expect(linkIcon).not.toHaveClass(/lpActive/);
   });
 });

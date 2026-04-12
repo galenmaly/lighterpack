@@ -1,37 +1,27 @@
 import { test, expect } from '@playwright/test';
 
-import { testRoot } from './utils';
-import { registerUser } from './auth-utils';
+import { registerUser, generateTestUser } from './auth-utils';
+import { createCategory, addItem, getCategoryNames } from './test-helpers';
 
 test.describe('Category Management', () => {
   test.beforeEach(async ({ page }) => {
-    const now = Date.now();
-    const username = `cat${now}`;
-    const email = `cat+${now}@lighterpack.com`;
-    const password = 'testtest';
+    const { username, password, email } = generateTestUser('cat');
 
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
   test('should create a new category', async ({ page }) => {
-    await page.click('a.addCategory');
-
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await expect(categoryInput).toBeVisible();
-    await categoryInput.fill('Shelter');
-    await categoryInput.blur();
+    const category = await createCategory(page, 'Shelter');
 
     // Verify category appears by checking the input value
-    await expect(categoryInput).toHaveValue('Shelter');
+    await expect(category.getByPlaceholder('Category Name', { exact: true })).toHaveValue('Shelter');
   });
 
   test('should edit category name', async ({ page }) => {
     // Create a category first
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Clothing');
-    await categoryInput.blur();
+    const category = await createCategory(page, 'Clothing');
+    const categoryInput = category.getByPlaceholder('Category Name', { exact: true });
 
     // Edit the name
     await categoryInput.clear();
@@ -44,110 +34,80 @@ test.describe('Category Management', () => {
 
   test('should delete a category', async ({ page }) => {
     // Create a new category (added at end of list)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    const categoryInput = category.locator('input.lpCategoryName');
-    await categoryInput.fill('To Delete');
-    await categoryInput.blur();
+    const category = await createCategory(page, 'To Delete');
 
     // Count categories before deletion
-    const initialCount = await page.locator('li.lpCategory').count();
+    const initialCount = await page.getByTestId('category').count();
 
     // Hover over the category header to reveal delete button
-    const categoryHeader = category.locator('li.lpHeader');
+    const categoryHeader = category.locator('li').first();
     await categoryHeader.hover();
 
     // Click the remove button within the hovered category
-    await categoryHeader.locator('a.lpRemoveCategory').click();
+    await category.getByTitle('Remove this category').click();
 
     // Confirm deletion in speedbump modal
-    await page.locator('.lpModal button.lpButton').filter({ hasText: 'Yes' }).click();
+    await page.getByRole('button', { name: 'Yes' }).click();
 
     // Verify category count decreased
-    await expect(page.locator('li.lpCategory')).toHaveCount(initialCount - 1);
+    await expect(page.getByTestId('category')).toHaveCount(initialCount - 1);
   });
 
   test('should create multiple categories', async ({ page }) => {
     const categoryNames = ['Shelter', 'Sleep System', 'Clothing', 'Food'];
 
     for (const name of categoryNames) {
-      await page.click('a.addCategory');
-      const categoryInputs = page.locator('input.lpCategoryName');
-      const lastInput = categoryInputs.last();
-      await lastInput.fill(name);
-      await lastInput.blur();
+      await createCategory(page, name);
     }
 
-    // Verify all categories exist by checking category count
-    const categoryInputs = page.locator('input.lpCategoryName');
-    const count = await categoryInputs.count();
-    expect(count).toBeGreaterThanOrEqual(categoryNames.length);
+    // Verify all categories exist by checking category names
+    const createdNames = await getCategoryNames(page);
+    for (const name of categoryNames) {
+      expect(createdNames).toContain(name);
+    }
   });
 
   test('should show category subtotals', async ({ page }) => {
-    // Create a category
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Shelter');
-    await categoryInput.blur();
+    // Create a category with item
+    const category = await createCategory(page, 'Shelter');
+    await addItem(category, 'Tent', { weight: '32' });
 
-    // Add an item with weight
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Tent');
-    await page.locator('input.lpWeight').first().fill('32');
-    await page.locator('input.lpWeight').first().blur();
-
-    // Check that subtotal shows the weight - use the weight cell specifically
-    const category = page.locator('li.lpCategory').first();
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('32');
+    // Check that subtotal shows the weight
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^32(\.0+)?$/);
   });
 
   test('should update subtotals when adding multiple items', async ({ page }) => {
-    // Create a new category (added at end of list)
-    await page.click('a.addCategory');
-    const category = page.locator('li.lpCategory').last();
-    await category.locator('input.lpCategoryName').fill('Gear');
-    await category.locator('input.lpCategoryName').blur();
-
-    // Get initial item count in this category
-    const initialCount = await category.locator('li.lpItem').count();
-
-    // Add first item to THIS category
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 1);
-    const firstItem = category.locator('li.lpItem').last();
-    await firstItem.locator('input.lpName').fill('Item 1');
-    await firstItem.locator('input.lpWeight').fill('10');
-    await firstItem.locator('input.lpWeight').blur();
-
-    // Add second item to THIS category
-    await category.locator('a.lpAddItem').click();
-    await expect(category.locator('li.lpItem')).toHaveCount(initialCount + 2);
-    const secondItem = category.locator('li.lpItem').last();
-    await secondItem.locator('input.lpName').fill('Item 2');
-    await secondItem.locator('input.lpWeight').fill('20');
-    await secondItem.locator('input.lpWeight').blur();
+    // Create a new category with items
+    const category = await createCategory(page, 'Gear');
+    await addItem(category, 'Item 1', { weight: '10' });
+    await addItem(category, 'Item 2', { weight: '20' });
 
     // Check that subtotal shows combined weight (30 oz)
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('30');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^30(\.0+)?$/);
   });
 
   test('should handle category with quantity items', async ({ page }) => {
-    // Create a category
-    await page.click('a.addCategory');
-    const categoryInput = page.locator('input.lpCategoryName').first();
-    await categoryInput.fill('Food');
-    await categoryInput.blur();
-
-    // Add an item with quantity
-    await page.click('a.lpAddItem');
-    await page.locator('input.lpName').first().fill('Energy Bar');
-    await page.locator('input.lpWeight').first().fill('2');
-    await page.locator('input.lpQty').first().fill('5');
-    await page.locator('input.lpQty').first().blur();
+    // Create a category with item that has quantity
+    const category = await createCategory(page, 'Food');
+    await addItem(category, 'Energy Bar', { weight: '2', quantity: '5' });
 
     // Check that subtotal accounts for quantity (2 * 5 = 10 oz)
-    const category = page.locator('li.lpCategory').first();
-    await expect(category.locator('.lpWeightCell.lpSubtotal')).toContainText('10');
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^10(\.0+)?$/);
+  });
+
+  test('should update totals when a category is deleted', async ({ page }) => {
+    const categoryA = await createCategory(page, 'Alpha');
+    await addItem(categoryA, 'Item A', { weight: '10' });
+
+    const categoryB = await createCategory(page, 'Beta');
+    await addItem(categoryB, 'Item B', { weight: '20' });
+
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*30(\.0+)?\s*$/);
+
+    await categoryB.locator('.lpItemsHeader').hover();
+    await categoryB.getByTitle('Remove this category').click();
+    await page.getByRole('button', { name: 'Yes' }).click();
+
+    await expect(page.getByTestId('total-weight')).toHaveText(/^\s*10(\.0+)?\s*$/);
   });
 });
