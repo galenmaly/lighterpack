@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <modal id="speedbump" :shown="shown" @hide="shown = false">
+    <modal id="speedbump" :shown="shown" @hide="$emit('hide')">
         <h2 v-if="messages.title">
             {{ messages.title }}
         </h2>
@@ -14,7 +14,7 @@
             <button v-focus-on-create class="lpButton" @click="confirmSpeedbump()">
                 {{ messages.confirm }}
             </button>
-            &nbsp;<button class="lpButton" @click="shown = false">
+            &nbsp;<button class="lpButton" @click="$emit('hide')">
                 {{ messages.cancel }}
             </button>
         </div>
@@ -24,45 +24,51 @@
 <script>
 import modal from './modal.vue';
 
+const defaultMessages = {
+    title: '',
+    body: '',
+    confirm: 'Yes',
+    cancel: 'No',
+};
+
 export default {
     name: 'Speedbump',
     components: {
         modal,
     },
-    data() {
-        return {
-            defaultMessages: {
-                title: '',
-                body: '',
-                confirm: 'Yes',
-                cancel: 'No',
-            },
-            messages: {},
-            callback: null,
-            shown: false,
-        };
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
+        speedbumpCallback: {
+            type: Function,
+            default: null,
+        },
+        speedbumpOptions: {
+            type: [Object, String],
+            default: null,
+        },
     },
-    beforeMount() {
-        bus.$on('initSpeedbump', (callback, options) => {
-            this.initSpeedbump(callback, options);
-        });
+    emits: ['hide'],
+    computed: {
+        messages() {
+            const msgs = Object.assign({}, defaultMessages);
+            if (!this.speedbumpOptions) return msgs;
+            if (typeof this.speedbumpOptions === 'string') {
+                msgs.body = this.speedbumpOptions;
+            } else {
+                Object.assign(msgs, this.speedbumpOptions);
+            }
+            return msgs;
+        },
     },
     methods: {
-        initSpeedbump(callback, options) {
-            this.callback = callback;
-            this.messages = Vue.util.extend({}, this.defaultMessages);
-            if (typeof options === 'string') {
-                this.messages.body = options;
-            } else {
-                this.messages = Vue.util.extend(this.messages, options);
-            }
-            this.shown = true;
-        },
         confirmSpeedbump() {
-            if (this.callback && typeof this.callback === 'function') {
-                this.callback(true);
+            if (this.speedbumpCallback && typeof this.speedbumpCallback === 'function') {
+                this.speedbumpCallback(true);
             }
-            this.shown = false;
+            this.$emit('hide');
         },
     },
 };

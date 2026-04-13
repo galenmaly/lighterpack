@@ -102,15 +102,20 @@
         </div>
 
         <globalAlerts />
-        <speedbump />
-        <copyList />
-        <importCSV />
-        <itemImage />
-        <itemViewImage />
-        <itemLink />
-        <help />
-        <account />
-        <accountDelete />
+        <speedbump
+            :shown="showSpeedbump"
+            :speedbump-callback="speedbumpCallback"
+            :speedbump-options="speedbumpOptions"
+            @hide="showSpeedbump = false"
+        />
+        <copyList :shown="showCopyList" @hide="showCopyList = false" />
+        <importCSV ref="importCSVRef" />
+        <itemImage :shown="showItemImage" :item="itemImageItem" @hide="showItemImage = false" />
+        <itemViewImage :shown="showItemViewImage" :image-url="itemViewImageUrl" @hide="showItemViewImage = false" />
+        <itemLink :shown="showItemLink" :item="itemLinkItem" @hide="showItemLink = false" />
+        <help :shown="showHelp" @hide="showHelp = false" />
+        <account :shown="showAccount" @hide="showAccount = false" />
+        <accountDelete :shown="showDeleteAccount" @hide="showDeleteAccount = false" />
     </div>
 </template>
 
@@ -120,7 +125,6 @@ import sidebar from '../components/sidebar.vue';
 import share from '../components/share.vue';
 import listSettings from '../components/list-settings.vue';
 import accountDropdown from '../components/account-dropdown.vue';
-import forgotPassword from './forgot-password.vue';
 import account from '../components/account.vue';
 import accountDelete from '../components/account-delete.vue';
 import help from '../components/help.vue';
@@ -140,7 +144,6 @@ export default {
         share,
         listSettings,
         accountDropdown,
-        forgotPassword,
         account,
         accountDelete,
         help,
@@ -153,10 +156,40 @@ export default {
         speedbump,
         globalAlerts,
     },
+    provide() {
+        return {
+            openAccount: () => { this.showAccount = true; },
+            openHelp: () => { this.showHelp = true; },
+            openDeleteAccount: () => { this.showDeleteAccount = true; },
+            openCopyList: () => { this.showCopyList = true; },
+            openImportCSV: () => { this.$refs.importCSVRef.triggerUpload(); },
+            openItemImage: (item) => { this.itemImageItem = item; this.showItemImage = true; },
+            openItemViewImage: (imageUrl) => { this.itemViewImageUrl = imageUrl; this.showItemViewImage = true; },
+            openItemLink: (item) => { this.itemLinkItem = item; this.showItemLink = true; },
+            initSpeedbump: (callback, options) => {
+                this.speedbumpCallback = callback;
+                this.speedbumpOptions = options;
+                this.showSpeedbump = true;
+            },
+        };
+    },
     mixins: [],
     data() {
         return {
             isLoaded: false,
+            showAccount: false,
+            showHelp: false,
+            showDeleteAccount: false,
+            showCopyList: false,
+            showItemImage: false,
+            itemImageItem: null,
+            showItemViewImage: false,
+            itemViewImageUrl: '',
+            showItemLink: false,
+            itemLinkItem: null,
+            showSpeedbump: false,
+            speedbumpCallback: null,
+            speedbumpOptions: null,
         };
     },
     computed: {
@@ -172,7 +205,7 @@ export default {
     },
     beforeMount() {
         if (!this.$store.state.library) {
-            router.push('/welcome');
+            this.$router.push('/welcome');
         } else {
             this.isLoaded = true;
         }

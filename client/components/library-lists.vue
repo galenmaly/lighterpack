@@ -92,19 +92,21 @@
         <div class="listContainerHeader">
             <h2>Lists</h2>
             <PopoverHover id="addListFlyout">
-                <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
-                <div slot="content">
-                    <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
-                    <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
-                    <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
-                </div>
+                <template #target><span><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span></template>
+                <template #content>
+                    <div>
+                        <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
+                        <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
+                        <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
+                    </div>
+                </template>
             </PopoverHover>
         </div>
         <ul id="lists">
             <li v-for="list in library.lists" :key="list.id" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
                 <div class="lpHandle" title="Reorder this item" />
                 <span class="lpLibraryListSwitch lpListName" @click="setDefaultList(list)">
-                    {{ list | listName }}
+                    {{ listName(list) }}
                 </span>
                 <a class="lpRemove" title="Remove this list" @click="removeList(list)"><i class="lpSprite lpSpriteRemove" /></a>
             </li>
@@ -115,18 +117,14 @@
 <script>
 import PopoverHover from './popover-hover.vue';
 
-const dragula = require('dragula');
+import dragula from 'dragula';
 
 export default {
     name: 'LibraryList',
     components: {
         PopoverHover,
     },
-    filters: {
-        listName(list) {
-            return list.name || 'New list';
-        },
-    },
+    inject: ['openCopyList', 'openImportCSV', 'initSpeedbump'],
     props: ['list'],
     computed: {
         library() {
@@ -137,6 +135,9 @@ export default {
         this.handleListReorder();
     },
     methods: {
+        listName(list) {
+            return list.name || 'New list';
+        },
         setDefaultList(list) {
             this.$store.commit('setDefaultList', list);
         },
@@ -144,10 +145,10 @@ export default {
             this.$store.commit('newList');
         },
         copyList() {
-            bus.$emit('copyList');
+            this.openCopyList();
         },
         importCSV() {
-            bus.$emit('importCSV');
+            this.openImportCSV();
         },
         handleListReorder() {
             const $lists = document.getElementById('lists');
@@ -171,7 +172,7 @@ export default {
             const speedbumpOptions = {
                 body: 'Are you sure you want to delete this list? This cannot be undone.',
             };
-            bus.$emit('initSpeedbump', callback, speedbumpOptions);
+            this.initSpeedbump(callback, speedbumpOptions);
         },
     },
 };

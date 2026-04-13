@@ -72,12 +72,11 @@ export default {
     mounted() {
         this.csvInput = document.getElementById('csv');
         this.csvInput.onchange = this.importCSV;
-
-        bus.$on('importCSV', () => {
-            this.csvInput.click();
-        });
     },
     methods: {
+        triggerUpload() {
+            this.csvInput.click();
+        },
         importCSV(evt) {
             const file = evt.target.files[0];
             const name = file.name;

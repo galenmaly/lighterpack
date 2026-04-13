@@ -3,12 +3,12 @@
 </style>
 
 <template>
-    <modal id="itemLinkDialog" :shown="shown" @hide="shown = false">
+    <modal id="itemLinkDialog" :shown="shown" @hide="$emit('hide')">
         <h2>Add a link for this item</h2>
         <form id="itemLinkForm" @submit.prevent="addLink">
             <input v-model="url" type="text" d="itemLink" placeholder="Item Link">
             <input type="submit" class="lpButton" value="Save">
-            <a class="lpHref close" @click="shown = false">Cancel</a>
+            <a class="lpHref close" @click="$emit('hide')">Cancel</a>
         </form>
     </modal>
 </template>
@@ -21,24 +21,31 @@ export default {
     components: {
         modal,
     },
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
+        item: {
+            type: Object,
+            default: null,
+        },
+    },
+    emits: ['hide'],
     data() {
         return {
             url: '',
-            item: false,
-            shown: false,
         };
     },
-    beforeMount() {
-        bus.$on('updateItemLink', (item) => {
-            this.shown = true;
-            this.item = item;
-            this.url = item.url;
-        });
+    watch: {
+        item(newItem) {
+            this.url = newItem ? newItem.url : '';
+        },
     },
     methods: {
         addLink() {
             this.$store.commit('updateItemLink', { url: this.url, item: this.item });
-            this.shown = false;
+            this.$emit('hide');
         },
     },
 };

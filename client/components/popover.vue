@@ -122,7 +122,7 @@ export default {
     beforeMount() {
         this.bindEscape();
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.unbindEscape();
     },
     methods: {

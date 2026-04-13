@@ -91,15 +91,14 @@
 <script>
 import unitSelect from './unit-select.vue';
 
-const utilsMixin = require('../mixins/utils-mixin.js');
-const weightUtils = require('../utils/weight.js');
+import weightUtils from '../utils/weight.js';
 
 export default {
     name: 'Item',
     components: {
         unitSelect,
     },
-    mixins: [utilsMixin],
+    inject: ['openItemImage', 'openItemViewImage', 'openItemLink'],
     props: ['category', 'itemContainer'],
     data() {
         return {
@@ -117,10 +116,10 @@ export default {
             return this.$store.state.library;
         },
         item() {
-            return Vue.util.extend({}, this.itemContainer.item);
+            return Object.assign({}, this.itemContainer.item);
         },
         categoryItem() {
-            return Vue.util.extend({}, this.itemContainer.categoryItem);
+            return Object.assign({}, this.itemContainer.categoryItem);
         },
         thumbnailImage() {
             if (this.item.image) {
@@ -211,13 +210,13 @@ export default {
             this.displayWeight = weightUtils.MgToWeight(this.item.weight, this.item.authorUnit);
         },
         updateItemLink() {
-            bus.$emit('updateItemLink', this.item);
+            this.openItemLink(this.item);
         },
         updateItemImage() {
-            bus.$emit('updateItemImage', this.item);
+            this.openItemImage(this.item);
         },
         viewItemImage() {
-            bus.$emit('viewItemImage', this.fullImage);
+            this.openItemViewImage(this.fullImage);
         },
         toggleWorn() {
             if (this.categoryItem.consumable) {

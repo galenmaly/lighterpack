@@ -1,4 +1,4 @@
-import assignIn from 'lodash/assignIn';
+import assignIn from 'lodash/assignIn.js';
 
 class lpError extends Error {
     constructor(response, statusCode = null) {
@@ -67,7 +67,7 @@ window.fetchJson = (url, options) => {
                     return resolve(response.json);
                 }
                 if (response.status && (response.status === 401 || response.status === 403)) {
-                    bus.$emit('unauthorized');
+                    window.location = '/signin';
                     return;
                 }
 

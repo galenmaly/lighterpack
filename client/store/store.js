@@ -1,20 +1,12 @@
-import Vuex from 'vuex';
-import Vue from 'vue';
-import debounce from 'lodash/debounce';
+import { createStore } from 'vuex';
+import debounce from 'lodash/debounce.js';
 
-const weightUtils = require('../utils/weight.js');
-const dataTypes = require('../dataTypes.js');
-
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
+import weightUtils from '../utils/weight.js';
+import { Item, Category, List, Library } from '../dataTypes.js';
 
 const saveInterval = 10000;
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const store = createStore({
     state: {
         library: false,
         isSaving: false,
@@ -22,7 +14,6 @@ const store = new Vuex.Store({
         saveType: null,
         lastSaveData: null,
         loggedIn: false,
-        directiveInstances: {},
         globalAlerts: [],
     },
     getters: {
@@ -45,8 +36,8 @@ const store = new Vuex.Store({
         },
         signout(state) {
             createCookie('lp', '', -1);
-            state.library = false; // duplicate logic
-            state.loggedIn = false; // duplicate logic
+            state.library = false;
+            state.loggedIn = false;
         },
         setLoggedIn(state, loggedIn) {
             state.loggedIn = loggedIn;
@@ -180,13 +171,11 @@ const store = new Vuex.Store({
             const item = state.library.getItemById(args.item.id);
             item.imageUrl = args.imageUrl;
             state.library.optionalFields.images = true;
-            bus.$emit('optionalFieldChanged');
         },
         updateItemImage(state, args) {
             const item = state.library.getItemById(args.item.id);
             item.image = args.image;
             state.library.optionalFields.images = true;
-            bus.$emit('optionalFieldChanged');
         },
         updateItemUnit(state, unit) {
             state.library.itemUnit = unit;
@@ -243,12 +232,6 @@ const store = new Vuex.Store({
         save() {
             // no-op
         },
-        addDirectiveInstance(state, { key, value }) {
-            state.directiveInstances[key] = value;
-        },
-        removeDirectiveInstance(state, key) {
-            delete state.directiveInstances[key];
-        },
     },
     actions: {
         init(context) {
@@ -257,7 +240,7 @@ const store = new Vuex.Store({
             } if (localStorage.library) {
                 return context.dispatch('loadLocal');
             }
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 context.commit('setLoggedIn', false);
                 context.commit('clearLibraryData');
                 resolve();
@@ -285,7 +268,7 @@ const store = new Vuex.Store({
                 })
                 .catch((response) => {
                     if (response.status == 401) {
-                        bus.$emit('unauthorized');
+                        window.location = '/signin';
                     } else {
                         return new Promise((resolve, reject) => {
                             reject('An error occurred while fetching your data, please try again later.');
@@ -348,7 +331,7 @@ const store = new Vuex.Store({
                                 error = response.json.status;
                             }
                             if (response.status == 401) {
-                                bus.$emit('unauthorized', error);
+                                window.location = '/signin';
                             } else {
                                 alert(error); // TODO
                             }

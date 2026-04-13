@@ -1,60 +1,37 @@
-import '@babel/polyfill';
-
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import './css/lighterpack.scss';
+import { createApp } from 'vue';
+import { createRouter, createWebHistory, RouterView } from 'vue-router';
 
 import routes from './routes';
 import store from './store/store';
+import { selectOnFocus, focusOnCreate, emptyIfZero, clickOutside } from './utils/focus.js';
 
-const focusDirectives = require('./utils/focus.js');
-const dataTypes = require('./dataTypes.js');
+import './utils/utils.js';
 
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
-
-Vue.use(VueRouter);
-
-const utils = require('./utils/utils.js');
-
-window.Vue = Vue; // surfacing Vue globally for utils methods
-window.bus = new Vue(); // global event bus
-window.router = new VueRouter({
-    mode: 'history',
+const router = createRouter({
+    history: createWebHistory(),
     routes,
 });
 
-bus.$on('unauthorized', (error) => {
-    window.location = '/signin';
-});
+const app = createApp(RouterView);
+
+app.use(router);
+app.use(store);
+
+app.directive('select-on-focus', selectOnFocus);
+app.directive('focus-on-create', focusOnCreate);
+app.directive('empty-if-zero', emptyIfZero);
+app.directive('click-outside', clickOutside);
 
 store.dispatch('init')
     .then(() => {
-        initLighterPack();
+        app.mount('#lp');
+        window.LighterPack = { $store: store };
     })
     .catch((error) => {
         if (!store.state.library) {
             router.push('/welcome');
         }
-        initLighterPack();
+        app.mount('#lp');
+        window.LighterPack = { $store: store };
     });
-
-var initLighterPack = function () {
-    window.LighterPack = new Vue({
-        router,
-        store,
-        data: {
-            path: '',
-            fatal: '',
-        },
-        watch: {
-            $route(to, from) {
-                this.path = to.path;
-            },
-        },
-        mounted() {
-            this.path = router.currentRoute.path;
-        },
-    }).$mount('#lp');
-};

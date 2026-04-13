@@ -1,24 +1,24 @@
-const fs = require('fs');
-const path = require('path');
-const config = require('config');
-const { cloneDeep } = require('lodash');
-const { promisify } = require('util')
+import fs from 'fs';
+import path from 'path';
+import config from 'config';
+import cloneDeep from 'lodash/cloneDeep.js';
+import { promisify } from 'util';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import Knex from 'knex';
+import { logWithRequest } from './log.js';
 
-const knex = require('knex')({
+const knex = Knex({
     client: 'pg',
     connection: cloneDeep(config.get('pgDatabase'))
 });
-
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const { logWithRequest } = require('./log.js');
 
 const moderatorList = config.get('moderators');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
 // one day in many years this can go away.
-eval(`${fs.readFileSync(path.join(__dirname, './sha3.js'))}`);
+eval(`${fs.readFileSync(path.join(import.meta.dirname, './sha3.js'))}`);
 
 const authenticateModerator = async function (req, res, callback) {
     authenticateUser(req, res, (req, res, user) => {
@@ -76,13 +76,13 @@ const authenticateUser = async function (req, res, callback) {
 const verifyPassword = async function (username, password) {
     try {
         const users = await knex('users').select().where({username});
-        
+
         if (!users.length) {
             throw new Error({ code: 404, message: 'Invalid username and/or password.' });
         }
 
         const user = users[0];
-        const match = await  bcrypt.compare(password, user.password);
+        const match = await bcrypt.compare(password, user.password);
 
         if (match) {
             return user;
@@ -103,7 +103,7 @@ const verifyPassword = async function (username, password) {
             return user;
         }
 
-        if (sha3password === user.password) { 
+        if (sha3password === user.password) {
             const salt = await bcrypt.genSalt(10);
             const newPasswordHash = await bcrypt.hash(password, salt);
 
@@ -136,10 +136,4 @@ function isModerator(username) {
     return moderatorList.indexOf(username) > -1;
 }
 
-module.exports = {
-    authenticateModerator,
-    authenticateUser,
-    verifyPassword,
-    generateSession,
-    isModerator,
-};
+export { authenticateModerator, authenticateUser, verifyPassword, generateSession, isModerator };

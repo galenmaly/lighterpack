@@ -132,7 +132,7 @@ $welcomeVerticalSpacing: 80px;
                                 <h3><strong>3.</strong>Share your lists with others</h3>
                             </li>
                         </ul>
-                        <img id="lpWelcomeScreenshot" src="/images/screenshot.jpg" alt="A screenshot of the LighterPack interface">
+                        <img id="lpWelcomeScreenshot" :src="'/images/screenshot.jpg'" alt="A screenshot of the LighterPack interface">
                     </div>
                 </div>
                 <div class="lpWelcomeSigninContainer">
@@ -167,7 +167,7 @@ export default {
     },
     beforeMount() {
         if (this.$store.state.library) {
-            router.push('/');
+            this.$router.push('/');
         }
     },
 };

@@ -1,30 +1,27 @@
-const Vue = require('vue');
-const path = require('path');
-const fs = require('fs');
-const express = require('express');
+import path from 'path';
+import fs from 'fs';
+import express from 'express';
+import Mustache from 'mustache';
+import extend from 'node.extend';
+import { markdown } from 'markdown';
+import config from 'config';
+import cloneDeep from 'lodash/cloneDeep.js';
+import Knex from 'knex';
+import { logWithRequest, logger } from './log.js';
+import weightUtils from '../client/utils/weight.js';
+import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
-const Mustache = require('mustache');
-const extend = require('node.extend');
-const markdown = require('markdown').markdown;
-const config = require('config');
-const { cloneDeep } = require('lodash');
-const { logWithRequest, logger } = require('./log.js');
 
-const knex = require('knex')({
+const knex = Knex({
     client: 'pg',
     connection: cloneDeep(config.get('pgDatabase'))
 });
 
-const weightUtils = require('../client/utils/weight.js');
-const dataTypes = require('../client/dataTypes.js');
-
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
-
 const templates = {};
+let shareTemplate = '';
+let embedTemplate = '';
+let embedJTemplate = '';
 
 const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: '/' },
@@ -37,8 +34,7 @@ const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: '/moderation' },
 ];
 
-let index = fs.readFileSync(path.join(__dirname, '../_index.html'), 'utf8');
-let assetData;
+let index = fs.readFileSync(path.join(import.meta.dirname, '../_index.html'), 'utf8');
 let shareStylesHtml = '';
 const shareStylesLinks = [];
 let shareScriptsHtml = '';
@@ -46,33 +42,40 @@ const shareScriptsLinks = [];
 let appScriptsHtml = '';
 let appStylesHtml = '';
 
-if (config.get('environment') === 'production') {
-    assetData = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/dist/assets.json'), 'utf8'));
-    const appAssetFiles = assetData.files.app;
+const manifestPath = path.join(import.meta.dirname, '../public/dist/.vite/manifest.json');
+const hasBuiltAssets = fs.existsSync(manifestPath);
 
-    appAssetFiles.forEach((assetName) => {
-        if (assetName.substr(assetName.length - 3) === '.js') {
-            appScriptsHtml += `<script src='/dist/${assetName}'></script>`;
-        } else if (assetName.substr(assetName.length - 4) === '.css') {
-            appStylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
-        }
-    });
+if (hasBuiltAssets) {
+    // Production / test: serve pre-built Vite assets
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-    const shareAssetFiles = assetData.files.share;
-    shareAssetFiles.forEach((assetName) => {
-        if (assetName.substr(assetName.length - 3) === '.js') {
-            shareScriptsHtml += `<script src='/dist/${assetName}'></script>`;
-            shareScriptsLinks.push(assetName);
-        } else if (assetName.substr(assetName.length - 4) === '.css') {
-            shareStylesHtml += `<link rel='stylesheet' href='/dist/${assetName}' />`;
-            shareStylesLinks.push(assetName);
-        }
-    });
+    // App entry
+    const appEntry = manifest['client/lighterpack.js'];
+    if (appEntry) {
+        appScriptsHtml += `<script type="module" src='/dist/${appEntry.file}'></script>`;
+        (appEntry.css || []).forEach((cssFile) => {
+            appStylesHtml += `<link rel='stylesheet' href='/dist/${cssFile}' />`;
+        });
+    }
+
+    // Share entry
+    const shareEntry = manifest['client/share-entry.js'];
+    if (shareEntry) {
+        shareScriptsHtml += `<script type="module" src='/dist/${shareEntry.file}'></script>`;
+        shareScriptsLinks.push(shareEntry.file);
+        (shareEntry.css || []).forEach((cssFile) => {
+            shareStylesHtml += `<link rel='stylesheet' href='/dist/${cssFile}' />`;
+            shareStylesLinks.push(cssFile);
+        });
+    }
 } else {
+    // Dev without a build: proxy to Vite dev server (port 5173).
     appStylesHtml = '';
-    appScriptsHtml = '<script src=\'/dist/app.js\'></script>';
+    appScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
+        + '<script type="module" src="http://localhost:5173/client/lighterpack.js"></script>';
     shareStylesHtml = '';
-    shareScriptsHtml = '<script src=\'/dist/share.js\'></script>';
+    shareScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
+        + '<script type="module" src="http://localhost:5173/client/share-entry.js"></script>';
 }
 
 index = index.replace('{{styles}}', appStylesHtml);
@@ -337,17 +340,17 @@ async function renderListCSV(req, res) {
 }
 
 function init() {
-    fs.readdir(path.join(__dirname, '../templates'), (err, files) => {
+    fs.readdir(path.join(import.meta.dirname, '../templates'), (err, files) => {
         if (err) {
             logger.error({message: 'Error loading templates', err});
         }
         files.filter((file) => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
             const fileShort = file.substr(0, file.length - 9);
-            const data = fs.readFileSync(path.join(__dirname, '../templates/', file));
+            const data = fs.readFileSync(path.join(import.meta.dirname, '../templates/', file));
             templates[fileShort] = data.toString();
         });
 
-        fs.readFile(path.join(__dirname, '../templates/share.mustache'), (err, data) => {
+        fs.readFile(path.join(import.meta.dirname, '../templates/share.mustache'), (err, data) => {
             if (!err) {
                 shareTemplate = data.toString();
                 shareTemplate = shareTemplate.replace(/\r?\n|\r/g, '');
@@ -356,7 +359,7 @@ function init() {
             }
         });
 
-        fs.readFile(path.join(__dirname, '../templates/embed.mustache'), (err, data) => {
+        fs.readFile(path.join(import.meta.dirname, '../templates/embed.mustache'), (err, data) => {
             if (!err) {
                 embedTemplate = data.toString();
                 embedTemplate = embedTemplate.replace(/\r?\n|\r/g, '');
@@ -365,7 +368,7 @@ function init() {
             }
         });
 
-        fs.readFile(path.join(__dirname, '../templates/embed.jmustache'), (err, data) => {
+        fs.readFile(path.join(import.meta.dirname, '../templates/embed.jmustache'), (err, data) => {
             if (!err) {
                 embedJTemplate = data.toString();
             } else {
@@ -396,7 +399,7 @@ const renderItem = function (item, args) {
     const out = {
         classes, unit, displayWeight, unitSelect, showImages: args.showImages, showPrices: args.showPrices, starClass, displayPrice, currencySymbol: args.currencySymbol,
     };
-    Vue.util.extend(out, item);
+    Object.assign(out, item);
 
     return Mustache.render(args.itemTemplate, out);
 };
@@ -413,8 +416,8 @@ const renderCategory = function (category, args) {
     category.calculateSubtotal();
     category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
     category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
-    let temp = Vue.util.extend({}, category);
-    temp = Vue.util.extend(temp, {
+    let temp = Object.assign({}, category);
+    Object.assign(temp, {
         items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol, showPrices: args.showPrices,
     });
 
@@ -433,7 +436,7 @@ const renderList = function (list, args) {
 };
 
 var renderLibrary = function (library, args) {
-    Vue.util.extend(args, { itemUnit: library.itemUnit, totalUnit: library.totalUnit });
+    Object.assign(args, { itemUnit: library.itemUnit, totalUnit: library.totalUnit });
     return renderList(library.getListById(library.defaultListId), args);
 };
 
@@ -500,4 +503,4 @@ function renderUnitSelect(unit, unitSelectTemplate, weight) {
 
 init();
 
-module.exports = router;
+export default router;

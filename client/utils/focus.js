@@ -1,78 +1,52 @@
-import Vue from 'vue';
-import uniqueId from 'lodash/uniqueId';
+const clickOutsideHandlers = new WeakMap();
 
-import store from '../store/store.js';
-
-Vue.directive('select-on-focus', {
-    inserted(el) {
-        el.addEventListener('focus', (evt) => {
+export const selectOnFocus = {
+    mounted(el) {
+        el.addEventListener('focus', () => {
             el.select();
         });
     },
-});
+};
 
-Vue.directive('focus-on-create', {
-    inserted(el, binding) {
-        if (binding.expression && binding.value || !binding.expression) {
+export const focusOnCreate = {
+    mounted(el, binding) {
+        if (binding.value !== undefined ? binding.value : true) {
             el.focus();
         }
     },
-});
+};
 
-Vue.directive('focus-on-bus', {
-    inserted(el, binding) {
-        bus.$on(binding.value, () => {
-            el.focus();
-        });
-    },
-});
-
-Vue.directive('select-on-bus', {
-    inserted(el, binding) {
-        bus.$on(binding.value, () => {
-            el.select();
-        });
-    },
-});
-
-Vue.directive('empty-if-zero', {
-    inserted(el) {
-        el.addEventListener('focus', (evt) => {
+export const emptyIfZero = {
+    mounted(el) {
+        el.addEventListener('focus', () => {
             if (el.value === '0' || el.value === '0.00') {
                 el.dataset.originalValue = el.value;
                 el.value = '';
             }
         });
 
-        el.addEventListener('blur', (evt) => {
+        el.addEventListener('blur', () => {
             if (el.value === '') {
                 el.value = el.dataset.originalValue || '0';
             }
         });
     },
-});
+};
 
-Vue.directive('click-outside', {
-    inserted(el, binding) {
+export const clickOutside = {
+    mounted(el, binding) {
         const handler = (evt) => {
-            if (el.contains(evt.target)) {
-                return;
-            }
-            if (binding && typeof binding.value === 'function') {
-                binding.value();
-            }
+            if (el.contains(evt.target)) return;
+            if (typeof binding.value === 'function') binding.value();
         };
-
+        clickOutsideHandlers.set(el, handler);
         window.addEventListener('click', handler);
-
-        // Store handler to clean up later
-        el.dataset.clickoutside = uniqueId();
-        store.commit('addDirectiveInstance', { key: el.dataset.clickoutside, value: handler });
     },
-    unbind(el) {
-        // clean up event handlers
-        const handler = store.state.directiveInstances[el.dataset.clickoutside];
-        store.commit('removeDirectiveInstance', el.dataset.clickoutside);
-        window.removeEventListener('click', handler);
+    unmounted(el) {
+        const handler = clickOutsideHandlers.get(el);
+        if (handler) {
+            window.removeEventListener('click', handler);
+            clickOutsideHandlers.delete(el);
+        }
     },
-});
+};

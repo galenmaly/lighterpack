@@ -5,7 +5,7 @@
         </p>
         <div class="lpFields">
             <input v-model="username" v-focus-on-create type="text" placeholder="Username" name="username" class="username">
-            <input v-model="password" v-select-on-bus="'focus-signin-password'" type="password" placeholder="Password" name="password" class="password">
+            <input ref="passwordInput" v-model="password" type="password" placeholder="Password" name="password" class="password">
         </div>
 
         <errors :errors="errors" />
@@ -78,7 +78,7 @@ export default {
                 })
                 .catch((err) => {
                     this.errors = err;
-                    bus.$emit('focus-signin-password');
+                    this.$refs.passwordInput.select();
                     this.password = '';
                     this.fetching = false;
                 });

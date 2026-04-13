@@ -1,43 +1,38 @@
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const path = require('path');
-const express = require('express');
-const generate = require('nanoid/generate');
-const { promisify } = require('util')
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs';
+import express from 'express';
+import generate from 'nanoid/generate.js';
+import { promisify } from 'util';
+import requestLib from 'request';
+import formidable from 'formidable';
+import config from 'config';
+import cloneDeep from 'lodash/cloneDeep.js';
+import Knex from 'knex';
+import mailgunJs from 'mailgun-js';
+import { logWithRequest } from './log.js';
+import { authenticateUser, verifyPassword } from './auth.js';
+import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
-const fs = require('fs');
-const request = require('request');
-const formidable = require('formidable');
-const config = require('config');
-const { cloneDeep } = require('lodash');
-const { logWithRequest } = require('./log.js');
-
-const { authenticateUser, verifyPassword } = require('./auth.js');
 
 let mailgun;
-
+let mailgunSendAsync;
 if (config.get('mailgunAPIKey')) {
-    mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
+    mailgun = mailgunJs({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
+    mailgunSendAsync = promisify(mailgun.messages().send.bind(mailgun.messages()));
 }
 
-const knex = require('knex')({
+const knex = Knex({
     client: 'pg',
     connection: cloneDeep(config.get('pgDatabase'))
 });
 
 const randomBytesAsync = promisify(crypto.randomBytes);
-const mailgunSendAsync = promisify(mailgun.messages().send);
-
-const dataTypes = require('../client/dataTypes.js');
-
-const Item = dataTypes.Item;
-const Category = dataTypes.Category;
-const List = dataTypes.List;
-const Library = dataTypes.Library;
 
 // one day in many years this can go away.
-eval(`${fs.readFileSync(path.join(__dirname, './sha3.js'))}`);
+eval(`${fs.readFileSync(path.join(import.meta.dirname, './sha3.js'))}`);
 
 router.post('/register', (req, res) => {
     register(req, res);
@@ -81,7 +76,7 @@ async function register(req, res) {
             .where({ username })
             .orWhere({ email })
             .select();
-        
+
         if (conflictingUsers.length) {
             if (conflictingUsers[0].username === username || (conflictingUsers.length > 0 && conflictingUsers[0].username === username)) { //hacky
                 logWithRequest(req, { message: 'User exists', username });
@@ -120,14 +115,14 @@ async function register(req, res) {
             token,
             library,
             sync_token: newSyncToken,
-            registered:  new Date(),
+            registered: new Date(),
             last_seen: new Date()
         };
 
         logWithRequest(req, { message: 'Saving new user', username });
 
         try {
-            await knex('users').insert(newUser)
+            await knex('users').insert(newUser);
             const out = { username, library: JSON.stringify(newUser.library), sync_token: newSyncToken };
             res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
             return res.status(200).json(out);
@@ -160,7 +155,7 @@ router.post('/saveLibrary', (req, res) => {
 });
 
 async function saveLibrary(req, res, user) {
-    if (typeof req.body.sync_token === 'undefined') { // TODO: is this safe to delete?
+    if (typeof req.body.sync_token === 'undefined') {
         logWithRequest(req, { message: 'Missing syncToken', username: user.username });
         return res.status(400).send('Please refresh this page to upgrade to the latest version of LighterPack.');
     }
@@ -215,7 +210,7 @@ async function externalId(req, res, user) {
     logWithRequest(req, { message: 'Id generated', id });
 
     try {
-        const lists = await knex('list').where({ external_id: id })
+        const lists = await knex('list').where({ external_id: id });
 
         if (lists.length) {
             logWithRequest(req, { message: 'Id collision detected', id });
@@ -231,7 +226,7 @@ async function externalId(req, res, user) {
         } catch (err) {
             logWithRequest(req, { message: 'Error inserting externalID', err });
             return res.status(500).json({ errors: [{ message: 'An error occurred.' }] });
-        }   
+        }
 
         logWithRequest(req, { message: 'Id saved', id, username: user.username });
         res.status(200).json({ externalId: id });
@@ -264,7 +259,7 @@ async function forgotPassword(req, res) {
 
         const user = users[0];
 
-        const newPassword = generate(12);
+        const newPassword = generate('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 12);
         const salt = await bcrypt.genSalt(10);
         const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
@@ -283,6 +278,7 @@ async function forgotPassword(req, res) {
         logWithRequest(req, { message: 'Attempting to send new password', email });
         try {
             const mailgunResponse = await mailgunSendAsync(mailOptions);
+            logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
         } catch (err) {
             logWithRequest(req, err);
             return res.status(500).json({ message: 'An error occurred' });
@@ -293,7 +289,6 @@ async function forgotPassword(req, res) {
                 password: newPasswordHash
             });
 
-            logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
             logWithRequest(req, { message: 'password changed for user', username });
             return res.status(200).json({ username });
         } catch (err) {
@@ -304,7 +299,11 @@ async function forgotPassword(req, res) {
         logWithRequest(req, { message: 'Forgot password lookup error', username });
         return res.status(500).json({ message: 'An error occurred' });
     }
-};
+}
+
+router.post('/forgotUsername', (req, res) => {
+    forgotUsername(req, res);
+});
 
 async function forgotUsername(req, res) {
     logWithRequest(req);
@@ -323,13 +322,12 @@ async function forgotUsername(req, res) {
             logWithRequest(req, { message: 'Forgot email for unknown user', email });
             return res.status(400).json({ message: 'An error occurred' });
         }
-        
+
         const user = users[0];
         const username = user.username;
 
-        const message = `Hello ${username},\n It looks like you forgot your username. Here It is: \n\n Username: ${username}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
+        const message = `Hello ${username},\n It looks like you forgot your username. Here it is: \n\n Username: ${username}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
-        
         const mailOptions = {
             from: 'LighterPack <info@mg.lighterpack.com>',
             to: email,
@@ -344,20 +342,15 @@ async function forgotUsername(req, res) {
                 logWithRequest(req, error);
                 return res.status(500).json({ message: 'An error occurred' });
             }
-            const out = { email };
             logWithRequest(req, { message: 'Message sent', response: response.message });
             logWithRequest(req, { message: 'sent username message for user', username, email });
-            return res.status(200).json(out);
+            return res.status(200).json({ email });
         });
     } catch (err) {
         logWithRequest(req, { message: 'Forgot email lookup error', email });
         return res.status(500).json({ message: 'An error occurred' });
     }
 }
-
-router.post('/forgotUsername', (req, res) => {
-    forgotUsername(req, res);
-});
 
 router.post('/account', (req, res) => {
     authenticateUser(req, res, account);
@@ -366,7 +359,7 @@ router.post('/account', (req, res) => {
 async function account(req, res, user) {
     logWithRequest(req, { message: 'Starting account changes', username: user.username });
     try {
-        await verifyPassword(user.username, String(req.body.currentPassword)); //throws error if invalid
+        await verifyPassword(user.username, String(req.body.currentPassword));
 
         if (req.body.newPassword) {
             const newPassword = String(req.body.newPassword);
@@ -388,8 +381,8 @@ async function account(req, res, user) {
             await knex('users').where({user_id: user.user_id}).update({
                 password: newPasswordHash
             });
-        } 
-        
+        }
+
         if (req.body.newEmail) {
             let email = String(req.body.newEmail).trim();
 
@@ -424,11 +417,11 @@ async function deleteAccount(req, res, user) {
     logWithRequest(req, { message: 'Starting account delete', username: user.username });
 
     try {
-        await verifyPassword(user.username, String(req.body.password)); //throws error if invalid
+        await verifyPassword(user.username, String(req.body.password));
 
         if (req.body.username !== user.username) {
             logWithRequest(req, { message: 'Bad account deletion - wrong user', requestedUsername: req.body.username, initiatedby: user.username });
-            return res.status(400).json({ message: 'An error occurred, please try logging out and in again.'});
+            return res.status(400).json({ message: 'An error occurred, please try logging out and in again.' });
         }
 
         await knex('users').where({username: user.username}).del();
@@ -443,7 +436,6 @@ async function deleteAccount(req, res, user) {
 }
 
 router.post('/imageUpload', (req, res) => {
-    // authenticateUser(req, res, imageUpload);
     imageUpload(req, res, {});
 });
 
@@ -459,12 +451,12 @@ function imageUpload(req, res, user) {
             return res.status(500).json({ message: 'An error occurred' });
         }
 
-        const path = files.image.path;
+        const filePath = files.image.path;
         const formData = {
-            image: fs.createReadStream(path),
-            type: "file"
+            image: fs.createReadStream(filePath),
+            type: 'file'
         };
-        request.post({
+        requestLib.post({
             url: 'https://api.imgur.com/3/image',
             headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` },
             formData
@@ -490,4 +482,4 @@ function imageUpload(req, res, user) {
     });
 }
 
-module.exports = router;
+export default router;

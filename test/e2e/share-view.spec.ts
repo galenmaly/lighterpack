@@ -197,17 +197,8 @@ test.describe('Share View', () => {
     const tentItem = page.locator('li.lpItem').filter({ hasText: 'Tent' });
     const unitSelect = tentItem.locator('.lpUnitSelect');
 
-    // Debug: call listReport() explicitly and check if events attach + weight updates
-    const debug = await page.evaluate(() => {
-      const jq = (window as any).$;
-      const listReportExists = typeof (window as any).listReport === 'function';
-      if (listReportExists) (window as any).listReport();
-      const weightBefore = jq('li.lpItem').filter((_, el: Element) => el.textContent?.includes('Tent')).find('.lpWeight').text();
-      jq('.lpList').find('.lpUnitSelect li.lb').first().trigger('click');
-      const weightAfter = jq('li.lpItem').filter((_, el: Element) => el.textContent?.includes('Tent')).find('.lpWeight').text();
-      return { listReportExists, weightBefore, weightAfter };
-    });
-    console.log('DEBUG:', JSON.stringify(debug));
+    // Dispatch a click directly on the lb option — bypasses visibility, bubbles up to the list handler
+    await tentItem.locator('.lpUnitSelect li.lb').first().dispatchEvent('click');
 
     await expect(tentItem.locator('.lpWeight')).toHaveText('2');
     await expect(unitSelect.locator('span.lpDisplay')).toHaveText('lb');

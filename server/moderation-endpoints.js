@@ -1,17 +1,18 @@
-const bcrypt = require('bcryptjs');
-const express = require('express');
+import bcrypt from 'bcryptjs';
+import express from 'express';
+import config from 'config';
+import cloneDeep from 'lodash/cloneDeep.js';
+import generate from 'nanoid/generate.js';
+import Knex from 'knex';
+import { logWithRequest } from './log.js';
+import { authenticateModerator } from './auth.js';
 
 const router = express.Router();
-const config = require('config');
-const { cloneDeep } = require('lodash');
-const { logWithRequest } = require('./log.js');
 
-const knex = require('knex')({
+const knex = Knex({
     client: 'pg',
     connection: cloneDeep(config.get('pgDatabase'))
 });
-
-const { authenticateModerator } = require('./auth.js');
 
 function escapeRegExp(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
@@ -60,14 +61,14 @@ async function resetPassword(req, res) {
 
         const salt = await bcrypt.genSalt(10);
         const newPasswordHash = await bcrypt.hash(newPassword, salt);
-       
+
         await knex('users').where({username}).update({
             password: newPasswordHash
         });
-                   
+
         logWithRequest(req, { message: 'MODERATION password changed', username });
         return res.status(200).json({ newPassword });
-    } catch (err) {        
+    } catch (err) {
         logWithRequest(req, { message: 'MODERATION Reset password lookup error', username });
         return res.status(500).json({ message: 'An error occurred' });
     }
@@ -83,7 +84,7 @@ async function clearSession(req, res) {
 
     try {
         const users = await knex('users').select().where({username});
-        
+
         if (!users.length) {
             logWithRequest(req, { message: 'MODERATION Clear session for unknown', username });
             return res.status(500).json({ message: 'An error occurred.' });
@@ -93,7 +94,7 @@ async function clearSession(req, res) {
             token: ''
         });
 
-        logWithRequest(req, { message: 'MODERATION  Clear session succeeded', username });
+        logWithRequest(req, { message: 'MODERATION Clear session succeeded', username });
         return res.status(200);
     } catch (err) {
         logWithRequest(req, { message: 'MODERATION Clear session lookup error', username });
@@ -105,4 +106,4 @@ router.post('/moderation/clear-session', (req, res) => {
     authenticateModerator(req, res, clearSession);
 });
 
-module.exports = router;
+export default router;

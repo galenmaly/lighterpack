@@ -5,7 +5,7 @@
 </style>
 
 <template>
-    <modal id="deleteAccount" :shown="shown" @hide="shown = false">
+    <modal id="deleteAccount" :shown="shown" @hide="$emit('hide')">
         <h2>Delete account?</h2>
 
         <form id="accountForm" @submit.prevent="deleteAccount()">
@@ -23,7 +23,7 @@
 
             <div class="lpButtons">
                 <input type="submit" value="Permanently delete account" :class="{'lpButton': true, 'lpButtonDisabled': !isConfirmationComplete}">
-                <a class="lpHref" @click="shown = false">Cancel</a>
+                <a class="lpHref" @click="$emit('hide')">Cancel</a>
             </div>
         </form>
     </modal>
@@ -39,24 +39,25 @@ export default {
         errors,
         modal,
     },
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
+    },
+    emits: ['hide'],
     data() {
         return {
             deleting: false,
             errors: [],
             confirmationText: '',
             currentPassword: '',
-            shown: false,
         };
     },
     computed: {
         isConfirmationComplete() {
             return this.confirmationText.toLocaleLowerCase() === 'delete my account';
         },
-    },
-    beforeMount() {
-        bus.$on('showDeleteAccount', () => {
-            this.shown = true;
-        });
     },
     methods: {
         deleteAccount() {
@@ -84,6 +85,7 @@ export default {
             })
                 .then((response) => {
                     this.deleting = false;
+                    this.$emit('hide');
                     this.$store.commit('signout');
                     this.$router.push('/signin');
                 })

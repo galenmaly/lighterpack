@@ -1,4 +1,4 @@
-const winston = require('winston');
+import winston from 'winston';
 
 class TimestampFirst {
     constructor(enabled = true) {
@@ -27,7 +27,7 @@ const enumerateErrorFormat = winston.format(info => {
     }
 
     return info;
-}); 
+});
 
 const logger = winston.createLogger({
     format: winston.format.combine(
@@ -53,12 +53,8 @@ const logWithRequest = function (req, data) {
         logger.error(data);
         return;
     }
-    
+
     logger.info(data);
 };
 
-
-module.exports = {
-    logWithRequest,
-    logger,
-};
+export { logWithRequest, logger };

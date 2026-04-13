@@ -14,5 +14,5 @@ export default [
     { path: '/register', component: register },
     { path: '/forgot-password', component: forgotPassword },
     { path: '/moderation', component: moderation },
-    { path: '*', component: dashboard },
+    { path: '/:pathMatch(.*)*', component: dashboard },
 ];

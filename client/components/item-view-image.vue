@@ -11,7 +11,7 @@
 </style>
 
 <template>
-    <modal id="lpImageDialog" :shown="shown" @hide="shown = false">
+    <modal id="lpImageDialog" :shown="shown" @hide="$emit('hide')">
         <img :src="imageUrl">
     </modal>
 </template>
@@ -24,17 +24,16 @@ export default {
     components: {
         modal,
     },
-    data() {
-        return {
-            imageUrl: '',
-            shown: false,
-        };
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
+        imageUrl: {
+            type: String,
+            default: '',
+        },
     },
-    mounted() {
-        bus.$on('viewItemImage', (imageUrl) => {
-            this.shown = true;
-            this.imageUrl = imageUrl;
-        });
-    },
+    emits: ['hide'],
 };
 </script>

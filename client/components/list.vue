@@ -87,7 +87,7 @@
 import category from './category.vue';
 import listSummary from './list-summary.vue';
 
-const dragula = require('dragula');
+import dragula from 'dragula';
 
 export default {
     name: 'List',
@@ -123,7 +123,7 @@ export default {
     },
     watch: {
         categories() {
-            Vue.nextTick(() => {
+            this.$nextTick(() => {
                 this.handleItemReorder();
             });
         },

@@ -70,8 +70,8 @@
     }
 }
 
-.lpModal-enter,
-.lpModal-leave-active {
+.lpModal-enter-from,
+.lpModal-leave-to {
     opacity: 0;
 
     &.lpModal {
@@ -120,7 +120,7 @@ export default {
     beforeMount() {
         this.bindEscape();
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.unbindEscape();
     },
     methods: {

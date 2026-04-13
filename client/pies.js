@@ -1,6 +1,6 @@
-const colorUtils = require('./utils/color.js');
+import colorUtils from './utils/color.js';
 
-module.exports = function (args) {
+export default function (args) {
     let container;
     let context;
     let srcData;

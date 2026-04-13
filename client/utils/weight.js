@@ -1,4 +1,4 @@
-module.exports = (function () {
+export default (function () {
     function WeightToMg(value, unit) {
         if (unit == 'g') {
             return value * 1000;

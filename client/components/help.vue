@@ -7,7 +7,7 @@
 </style>
 
 <template>
-    <modal id="help" :shown="shown" @hide="shown = false">
+    <modal id="help" :shown="shown" @hide="$emit('hide')">
         <h2>Help</h2>
 
         <p>Getting Started:</p>
@@ -35,15 +35,12 @@ export default {
     components: {
         modal,
     },
-    data() {
-        return {
-            shown: false,
-        };
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
     },
-    beforeMount() {
-        bus.$on('showHelp', () => {
-            this.shown = true;
-        });
-    },
+    emits: ['hide'],
 };
 </script>

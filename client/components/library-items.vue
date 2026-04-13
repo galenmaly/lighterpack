@@ -104,7 +104,7 @@
                 <a v-if="item.url" :href="item.url" target="_blank" class="lpName lpHref">{{ item.name }}</a>
                 <span v-if="!item.url" class="lpName">{{ item.name }}</span>
                 <span class="lpWeight">
-                    {{ item.weight | displayWeight(item.authorUnit) }}
+                    {{ displayWeight(item.weight, item.authorUnit) }}
                     {{ item.authorUnit }}
                 </span>
                 <span class="lpDescription">
@@ -119,12 +119,12 @@
 
 <script>
 import utilsMixin from '../mixins/utils-mixin.js';
-
-const dragula = require('dragula');
+import dragula from 'dragula';
 
 export default {
     name: 'LibraryItem',
     mixins: [utilsMixin],
+    inject: ['initSpeedbump'],
     props: ['item'],
     data() {
         return {
@@ -142,14 +142,14 @@ export default {
             let item;
             let filteredItems = [];
             if (!this.searchText) {
-                filteredItems = this.library.items.map(item => Vue.util.extend({}, item));
+                filteredItems = this.library.items.map(item => Object.assign({}, item));
             } else {
                 const lowerCaseSearchText = this.searchText.toLowerCase();
 
                 for (i = 0; i < this.library.items.length; i++) {
                     item = this.library.items[i];
                     if (item.name.toLowerCase().indexOf(lowerCaseSearchText) > -1 || item.description.toLowerCase().indexOf(lowerCaseSearchText) > -1) {
-                        filteredItems.push(Vue.util.extend({}, item));
+                        filteredItems.push(Object.assign({}, item));
                     }
                 }
             }
@@ -174,7 +174,7 @@ export default {
     },
     watch: {
         categories() {
-            Vue.nextTick(() => {
+            this.$nextTick(() => {
                 this.handleItemDrag();
             });
         },
@@ -227,7 +227,7 @@ export default {
             const speedbumpOptions = {
                 body: 'Are you sure you want to delete this item? This cannot be undone.',
             };
-            bus.$emit('initSpeedbump', callback, speedbumpOptions);
+            this.initSpeedbump(callback, speedbumpOptions);
         },
     },
 };

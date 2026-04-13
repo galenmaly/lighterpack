@@ -1,4 +1,4 @@
-module.exports = (function () {
+export default (function () {
     function getColor(index, baseColor) {
         if (baseColor) {
             const hsv = rgbToHsv(baseColor);

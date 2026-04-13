@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <modal id="accountSettings" :shown="shown" @hide="shown = false">
+    <modal id="accountSettings" :shown="shown" @hide="$emit('hide')">
         <h2>Account Settings</h2>
 
         <form id="accountForm" @submit.prevent="updateAccount()">
@@ -24,7 +24,7 @@
                     Submit
                     <spinner v-if="saving" />
                 </button>
-                <a class="lpHref" @click="shown = false">Cancel</a>
+                <a class="lpHref" @click="$emit('hide')">Cancel</a>
                 <a class="lpHref" @click="showDeleteAccount">Delete account</a>
             </div>
         </form>
@@ -43,6 +43,14 @@ export default {
         modal,
         spinner,
     },
+    inject: ['openDeleteAccount'],
+    props: {
+        shown: {
+            type: Boolean,
+            required: true,
+        },
+    },
+    emits: ['hide'],
     data() {
         return {
             saving: false,
@@ -51,21 +59,12 @@ export default {
             newEmail: '',
             newPassword: '',
             confirmNewPassword: '',
-            shown: false,
         };
     },
     computed: {
-        library() {
-            return this.$store.state.library;
-        },
         username() {
             return this.$store.state.loggedIn;
         },
-    },
-    beforeMount() {
-        bus.$on('showAccount', () => {
-            this.shown = true;
-        });
     },
     methods: {
         updateAccount() {
@@ -83,22 +82,13 @@ export default {
                 this.errors.push({ field: 'newPassword', message: 'Please enter a password between 5 and 60 characters.' });
             }
 
-            if (this.errors.length) {
-                return;
-            }
+            if (this.errors.length) return;
 
             const data = { username: this.username, currentPassword: this.currentPassword };
-
             let dirty = false;
 
-            if (this.newPassword) {
-                dirty = true;
-                data.newPassword = this.newPassword;
-            }
-            if (this.newEmail) {
-                dirty = true;
-                data.newEmail = this.newEmail;
-            }
+            if (this.newPassword) { dirty = true; data.newPassword = this.newPassword; }
+            if (this.newEmail) { dirty = true; data.newEmail = this.newEmail; }
 
             if (!dirty) return;
 
@@ -107,15 +97,13 @@ export default {
 
             fetchJson('/account', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
                 body: JSON.stringify(data),
             })
-                .then((response) => {
+                .then(() => {
                     this.saving = false;
-                    this.shown = false;
+                    this.$emit('hide');
                 })
                 .catch((err) => {
                     this.errors = err;
@@ -123,8 +111,8 @@ export default {
                 });
         },
         showDeleteAccount() {
-            this.shown = false;
-            bus.$emit('showDeleteAccount');
+            this.$emit('hide');
+            this.openDeleteAccount();
         },
     },
 };
