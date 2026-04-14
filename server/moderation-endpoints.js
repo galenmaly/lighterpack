@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import express from 'express';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
-import generate from 'nanoid/generate.js';
+import { customAlphabet } from 'nanoid';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
 import { authenticateModerator } from './auth.js';
@@ -36,8 +36,8 @@ async function search(req, res) {
 
         res.json({ results: bridgeUserResults });
     } catch (err) {
-        logWithRequest(req, err);
-        res.status(500).json({ message: err });
+        logWithRequest(req, { message: 'moderation search error', err });
+        res.status(500).json({ message: 'An error occurred.' });
     }
 }
 
@@ -57,7 +57,7 @@ async function resetPassword(req, res) {
             return res.status(500).json({ message: 'An error occurred.' });
         }
 
-        const newPassword = generate('1234567890abcdefghijklmnopqrstuvwxyz', 20);
+        const newPassword = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 20)();
 
         const salt = await bcrypt.genSalt(10);
         const newPasswordHash = await bcrypt.hash(newPassword, salt);
@@ -69,7 +69,7 @@ async function resetPassword(req, res) {
         logWithRequest(req, { message: 'MODERATION password changed', username });
         return res.status(200).json({ newPassword });
     } catch (err) {
-        logWithRequest(req, { message: 'MODERATION Reset password lookup error', username });
+        logWithRequest(req, { message: 'MODERATION Reset password lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });
     }
 }
@@ -97,7 +97,7 @@ async function clearSession(req, res) {
         logWithRequest(req, { message: 'MODERATION Clear session succeeded', username });
         return res.status(200);
     } catch (err) {
-        logWithRequest(req, { message: 'MODERATION Clear session lookup error', username });
+        logWithRequest(req, { message: 'MODERATION Clear session lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });
     }
 }

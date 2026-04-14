@@ -1,13 +1,3 @@
-<style lang="scss">
-
-.lpLegend {
-    &:hover {
-        border-color: #666;
-        cursor: pointer;
-    }
-}
-</style>
-
 <template>
     <div class="lpListSummary">
         <div class="lpChartContainer">
@@ -29,7 +19,7 @@
                 </li>
                 <li v-for="category in categories" :key="category.id" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
-                        <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @colorChange="updateColor(category, $event)" />
+                        <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @color-change="updateColor(category, $event)" />
                     </span>
                     <span class="lpCell">
                         {{ category.name }}
@@ -176,3 +166,13 @@ export default {
 };
 
 </script>
+
+<style lang="scss">
+
+.lpLegend {
+    &:hover {
+        border-color: #666;
+        cursor: pointer;
+    }
+}
+</style>

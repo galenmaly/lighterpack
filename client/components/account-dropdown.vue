@@ -1,9 +1,3 @@
-<style lang="scss">
-#headerPopover .lpContent {
-    min-width: 9em;
-}
-</style>
-
 <template>
     <span class="headerItem hasPopover">
         <PopoverHover id="headerPopover">
@@ -50,3 +44,9 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+#headerPopover .lpContent {
+    min-width: 9em;
+}
+</style>

@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <modal id="accountSettings" :shown="shown" @hide="$emit('hide')">
         <h2>Account Settings</h2>
@@ -35,6 +31,7 @@
 import errors from './errors.vue';
 import modal from './modal.vue';
 import spinner from './spinner.vue';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'Account',
@@ -117,3 +114,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

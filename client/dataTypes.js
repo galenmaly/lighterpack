@@ -199,8 +199,8 @@ List.prototype.renderChart = function (type, linkParent) {
 
     if (typeof linkParent === 'undefined') linkParent = true;
 
-    for (var i in this.categoryIds) {
-        var category = this.library.getCategoryById(this.categoryIds[i]);
+    for (const i in this.categoryIds) {
+        const category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             category.calculateSubtotal();
 
@@ -222,12 +222,12 @@ List.prototype.renderChart = function (type, linkParent) {
         return `${name}: ${weightUtils.MgToWeight(valueMg, unit)} ${unit}`;
     };
 
-    for (var i in this.categoryIds) {
-        var category = this.library.getCategoryById(this.categoryIds[i]);
+    for (const i in this.categoryIds) {
+        const category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
             const points = {};
 
-            var categoryTotal;
+            let categoryTotal;
             if (type === 'consumable') {
                 categoryTotal = category.subtotalConsumableWeight;
             } else if (type === 'worn') {
@@ -249,14 +249,14 @@ List.prototype.renderChart = function (type, linkParent) {
                 let name = getTooltipText(item.name, value, item.authorUnit);
                 const color = colorUtils.getColor(j, tempColor);
                 if (item.qty > 1) name += ` x ${item.qty}`;
-                var percent = value / categoryTotal;
+                const percent = value / categoryTotal;
                 const tempItem = {
                     value, id: item.id, name, color, percent,
                 };
                 if (linkParent) tempItem.parent = tempCategory;
                 points[j] = tempItem;
             }
-            var percent = categoryTotal / total;
+            const percent = categoryTotal / total;
             const tempCategoryData = {
                 points, color: category.color, id: category.id, name: getTooltipText(category.name, categoryTotal, this.library.totalUnit), total: categoryTotal, percent, visiblePoints: false,
             };
@@ -350,7 +350,7 @@ const Library = function () {
 Library.prototype.firstRun = function () {
     const firstList = this.newList();
     const firstCategory = this.newCategory({ list: firstList });
-    const firstItem = this.newItem({ category: firstCategory });
+    this.newItem({ category: firstCategory });
 };
 
 Library.prototype.newItem = function ({ category, _isNew }) {
@@ -427,7 +427,7 @@ Library.prototype.removeList = function (id) {
     if (Object.size(this.lists) == 1) return;
     const list = this.getListById(id);
 
-    for (var i = 0; i < list.categoryIds; i++) {
+    for (let i = 0; i < list.categoryIds.length; i++) {
         this.removeCategory(list.categoryIds[i], true);
     }
 
@@ -436,7 +436,7 @@ Library.prototype.removeList = function (id) {
 
     if (this.defaultListId == id) {
         let newId = -1;
-        for (var i in lists) {
+        for (const i in this.lists) {
             newId = i;
             break;
         }
@@ -499,21 +499,21 @@ Library.prototype.getItemsInCurrentList = function () {
 Library.prototype.findCategoryWithItemById = function (itemId, listId) {
     if (listId) {
         const list = this.getListById(listId);
-        for (i in list.categoryIds) {
-            var category = this.getCategoryById(list.categoryIds[i]);
+        for (const i in list.categoryIds) {
+            const category = this.getCategoryById(list.categoryIds[i]);
             if (category) {
-                for (var j in category.categoryItems) {
-                    var categoryItem = category.categoryItems[j];
+                for (const j in category.categoryItems) {
+                    const categoryItem = category.categoryItems[j];
                     if (categoryItem.itemId == itemId) return category;
                 }
             }
         }
     } else {
-        for (var i in this.categories) {
-            var category = this.categories[i];
+        for (const i in this.categories) {
+            const category = this.categories[i];
             if (category) {
-                for (var j in category.categoryItems) {
-                    var categoryItem = category.categoryItems[j];
+                for (const j in category.categoryItems) {
+                    const categoryItem = category.categoryItems[j];
                     if (categoryItem.itemId == itemId) return category;
                 }
             }
@@ -547,17 +547,17 @@ Library.prototype.save = function () {
     out.currencySymbol = this.currencySymbol;
 
     out.items = [];
-    for (var i in this.items) {
+    for (const i in this.items) {
         out.items.push(this.items[i].save());
     }
 
     out.categories = [];
-    for (var i in this.categories) {
+    for (const i in this.categories) {
         out.categories.push(this.categories[i].save());
     }
 
     out.lists = [];
-    for (var i in this.lists) {
+    for (const i in this.lists) {
         out.lists.push(this.lists[i].save());
     }
 
@@ -577,24 +577,24 @@ Library.prototype.load = function (serializedLibrary) {
 
     assignIn(this.optionalFields, serializedLibrary.optionalFields);
 
-    for (var i in serializedLibrary.items) {
-        var temp = new Item({ id: serializedLibrary.items[i].id });
+    for (const i in serializedLibrary.items) {
+        const temp = new Item({ id: serializedLibrary.items[i].id });
         temp.load(serializedLibrary.items[i]);
         this.items.push(temp);
         this.idMap[temp.id] = temp;
     }
 
     this.categories = [];
-    for (var i in serializedLibrary.categories) {
-        var temp = new Category({ id: serializedLibrary.categories[i].id, library: this });
+    for (const i in serializedLibrary.categories) {
+        const temp = new Category({ id: serializedLibrary.categories[i].id, library: this });
         temp.load(serializedLibrary.categories[i]);
         this.categories.push(temp);
         this.idMap[temp.id] = temp;
     }
 
     this.lists = [];
-    for (var i in serializedLibrary.lists) {
-        var temp = new List({ id: serializedLibrary.lists[i].id, library: this });
+    for (const i in serializedLibrary.lists) {
+        const temp = new List({ id: serializedLibrary.lists[i].id, library: this });
         temp.load(serializedLibrary.lists[i]);
         this.lists.push(temp);
         this.idMap[temp.id] = temp;
@@ -702,7 +702,7 @@ Library.prototype.fixDuplicateIds = function (serializedLibrary) {
         foundIds[list.id].push({ type: 'list', list });
     });
 
-    for (id in foundIds) {
+    for (const id in foundIds) {
         if (foundIds[id].length > 1) {
             const duplicateSet = foundIds[id];
             duplicateSet.forEach((duplicate, index) => {
@@ -756,7 +756,7 @@ Object.size = function (obj) {
     let size = 0; let
         key;
     for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
+        if (Object.prototype.hasOwnProperty.call(obj, key)) size++;
     }
     return size;
 };

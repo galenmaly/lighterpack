@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <div id="lpWelcomeFooter">
         <div class="lpSiteBy">
@@ -21,3 +17,7 @@ export default {
     name: 'BlackoutFooter',
 };
 </script>
+
+<style lang="scss">
+
+</style>

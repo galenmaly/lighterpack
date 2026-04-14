@@ -28,7 +28,7 @@ store.dispatch('init')
         app.mount('#lp');
         window.LighterPack = { $store: store };
     })
-    .catch((error) => {
+    .catch((_error) => {
         if (!store.state.library) {
             router.push('/welcome');
         }

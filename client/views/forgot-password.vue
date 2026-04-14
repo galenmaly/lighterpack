@@ -1,11 +1,3 @@
-<style lang="scss">
-
-#forgotPassword {
-    width: 620px;
-}
-
-</style>
-
 <template>
     <div id="forgotPasswordContainer">
         <modal id="forgotPassword" :shown="true" :blackout="true">
@@ -53,6 +45,7 @@
 import blackoutFooter from '../components/blackout-footer.vue';
 import errors from '../components/errors.vue';
 import modal from '../components/modal.vue';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'ForgotPassword',
@@ -81,7 +74,7 @@ export default {
                 credentials: 'same-origin',
                 body: JSON.stringify({ username: this.forgotPasswordUsername }),
             })
-                .then((response) => {
+                .then((_response) => {
                     this.$router.push('/signin/reset-password');
                 })
                 .catch((response) => {
@@ -103,7 +96,7 @@ export default {
                 credentials: 'same-origin',
                 body: JSON.stringify({ email: this.forgotUsernameEmail }),
             })
-                .then((response) => {
+                .then((_response) => {
                     this.$router.push('/signin/forgot-username');
                 })
                 .catch((response) => {
@@ -117,3 +110,11 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+#forgotPassword {
+    width: 620px;
+}
+
+</style>

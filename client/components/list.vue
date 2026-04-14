@@ -1,52 +1,3 @@
-<style lang="scss">
-@import "../css/_globals";
-
-#listDescriptionContainer {
-    margin: 25px 0;
-
-    h3,
-    p {
-        display: inline-block;
-        margin: 0 0 5px;
-    }
-
-    h3 {
-        margin-right: 10px;
-    }
-
-    textarea {
-        height: 65px;
-        width: 100%;
-    }
-}
-
-#getStarted {
-    background: darken($background1, 10%);
-    display: flex;
-    flex-direction: column;
-    height: 220px;
-    justify-content: center;
-    line-height: 1.6;
-    padding: $spacingLarge;
-
-    h2 {
-        font-size: 24px;
-        line-height: 1;
-    }
-
-    h2,
-    p,
-    ol {
-        margin: 0 0 $spacingMedium;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
-
-</style>
-
 <template>
     <div class="lpListBody">
         <div v-if="isListNew" id="getStarted">
@@ -88,20 +39,19 @@ import category from './category.vue';
 import listSummary from './list-summary.vue';
 
 import dragula from 'dragula';
+import { getElementIndex } from '../utils/utils.js';
 
 export default {
     name: 'List',
     components: {
         listSummary,
         category,
-        categoryDragStartIndex: false,
-        itemDragId: false,
     },
-    mixins: [],
     data() {
         return {
-            onboardingCompleted: false,
             itemDrake: null,
+            categoryDragStartIndex: null,
+            itemDragId: null,
         };
     },
     computed: {
@@ -145,7 +95,7 @@ export default {
             }
             const $categoryItems = Array.prototype.slice.call(document.getElementsByClassName('lpItems'));
             const drake = dragula($categoryItems, {
-                moves($el, $source, $handle, $sibling) {
+                moves($el, $source, $handle, _$sibling) {
                     return $handle.classList.contains('lpItemHandle');
                 },
                 accepts($el, $target, $source, $sibling) {
@@ -155,10 +105,10 @@ export default {
                     return true;
                 },
             });
-            drake.on('drag', ($el, $target, $source, $sibling) => {
+            drake.on('drag', ($el, _$target, _$source, _$sibling) => {
                 this.itemDragId = parseInt($el.id); // fragile
             });
-            drake.on('drop', ($el, $target, $source, $sibling) => {
+            drake.on('drop', ($el, $target, _$source, _$sibling) => {
                 const categoryId = parseInt($target.parentElement.id); // fragile
                 this.$store.commit('reorderItem', {
                     list: this.list, itemId: this.itemDragId, categoryId, dropIndex: getElementIndex($el) - 1,
@@ -170,14 +120,14 @@ export default {
         handleCategoryReorder() {
             const $categories = document.getElementsByClassName('lpCategories')[0];
             const drake = dragula([$categories], {
-                moves(el, $source, $handle, $sibling) {
+                moves(_el, _$source, $handle, _$sibling) {
                     return $handle.classList.contains('lpCategoryHandle');
                 },
             });
-            drake.on('drag', ($el, $target, $source, $sibling) => {
+            drake.on('drag', ($el, _$target, _$source, _$sibling) => {
                 this.categoryDragStartIndex = getElementIndex($el);
             });
-            drake.on('drop', ($el, $target, $source, $sibling) => {
+            drake.on('drop', ($el, _$target, _$source, _$sibling) => {
                 this.$store.commit('reorderCategory', { list: this.list, before: this.categoryDragStartIndex, after: getElementIndex($el) });
                 drake.cancel(true);
             });
@@ -185,3 +135,53 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+@use 'sass:color';
+@import "../css/_globals";
+
+#listDescriptionContainer {
+    margin: 25px 0;
+
+    h3,
+    p {
+        display: inline-block;
+        margin: 0 0 5px;
+    }
+
+    h3 {
+        margin-right: 10px;
+    }
+
+    textarea {
+        height: 65px;
+        width: 100%;
+    }
+}
+
+#getStarted {
+    background: color.adjust($background1, $lightness: -10%);
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+    justify-content: center;
+    line-height: 1.6;
+    padding: $spacingLarge;
+
+    h2 {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    h2,
+    p,
+    ol {
+        margin: 0 0 $spacingMedium;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+</style>

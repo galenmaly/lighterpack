@@ -1,15 +1,3 @@
-<style lang="scss">
-
-#itemImageDialog {
-    width: 640px;
-
-    .imageUploadDescription {
-        margin-bottom: 19px;
-    }
-}
-
-</style>
-
 <template>
     <modal id="lpImageDialog" :shown="shown" @hide="$emit('hide')">
         <img :src="imageUrl">
@@ -37,3 +25,15 @@ export default {
     emits: ['hide'],
 };
 </script>
+
+<style lang="scss">
+
+#itemImageDialog {
+    width: 640px;
+
+    .imageUploadDescription {
+        margin-bottom: 19px;
+    }
+}
+
+</style>

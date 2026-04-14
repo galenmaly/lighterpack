@@ -1,11 +1,3 @@
-<style lang="scss">
-
-#help {
-    width: 800px;
-}
-
-</style>
-
 <template>
     <modal id="help" :shown="shown" @hide="$emit('hide')">
         <h2>Help</h2>
@@ -44,3 +36,11 @@ export default {
     emits: ['hide'],
 };
 </script>
+
+<style lang="scss">
+
+#help {
+    width: 800px;
+}
+
+</style>

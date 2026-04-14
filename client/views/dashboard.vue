@@ -1,71 +1,3 @@
-<style lang="scss">
-@import "../css/_globals";
-
-#header {
-    align-items: baseline;
-    display: flex;
-    height: 60px;
-    margin: 0 -20px 20px; /* lpList padding */
-    position: relative;
-}
-
-#hamburger {
-    cursor: pointer;
-    display: inline-block;
-    opacity: 0.6;
-    transition: transform $transitionDurationSlow;
-
-    &:hover {
-        opacity: 1;
-    }
-
-    .lpHasSidebar & {
-        transform: rotate(90deg);
-    }
-}
-
-#lpListName {
-    font-size: 24px;
-    font-weight: 600;
-    padding: 12px 15px;
-}
-
-.headerItem {
-    flex: 0 0 auto;
-    height: 100%;
-    padding: 17px 16px;
-    position: relative;
-
-    &:first-child {
-        padding-left: 20px;
-    }
-
-    .lpPopover {
-        &:hover .lpTarget {
-            color: $blue1;
-        }
-    }
-
-    .lpTarget {
-        font-weight: 600;
-        padding: 17px 16px 15px;
-    }
-
-    &#lpListName {
-        flex: 1 0 auto;
-    }
-
-    &.hasPopover {
-        padding: 0;
-    }
-
-    &.signInRegisterButtons {
-        height: auto;
-        padding: 0 16px;
-    }
-}
-</style>
-
 <template>
     <div v-if="isLoaded" id="main" :class="{lpHasSidebar: library.showSidebar}">
         <sidebar />
@@ -74,7 +6,7 @@
                 <span class="headerItem">
                     <a id="hamburger" class="lpTransition" data-testid="toggle-sidebar" @click="toggleSidebar"><i class="lpSprite lpHamburger" /></a>
                 </span>
-                <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
+                <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
                 <listSettings />
                 <accountDropdown v-if="isSignedIn" />
@@ -173,7 +105,6 @@ export default {
             },
         };
     },
-    mixins: [],
     data() {
         return {
             isLoaded: false,
@@ -220,3 +151,71 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+@import "../css/_globals";
+
+#header {
+    align-items: baseline;
+    display: flex;
+    height: 60px;
+    margin: 0 -20px 20px; /* lpList padding */
+    position: relative;
+}
+
+#hamburger {
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.6;
+    transition: transform $transitionDurationSlow;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .lpHasSidebar & {
+        transform: rotate(90deg);
+    }
+}
+
+#lpListName {
+    font-size: 24px;
+    font-weight: 600;
+    padding: 12px 15px;
+}
+
+.headerItem {
+    flex: 0 0 auto;
+    height: 100%;
+    padding: 17px 16px;
+    position: relative;
+
+    &:first-child {
+        padding-left: 20px;
+    }
+
+    .lpPopover {
+        &:hover .lpTarget {
+            color: $blue1;
+        }
+    }
+
+    .lpTarget {
+        font-weight: 600;
+        padding: 17px 16px 15px;
+    }
+
+    &#lpListName {
+        flex: 1 0 auto;
+    }
+
+    &.hasPopover {
+        padding: 0;
+    }
+
+    &.signInRegisterButtons {
+        height: auto;
+        padding: 0 16px;
+    }
+}
+</style>

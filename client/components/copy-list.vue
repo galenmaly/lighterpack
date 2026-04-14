@@ -1,8 +1,3 @@
-<style lang="scss">
-@import "../css/_globals";
-
-</style>
-
 <template>
     <modal id="copyListDialog" :shown="shown" @hide="$emit('hide')">
         <h2>Choose the list to copy</h2>
@@ -54,3 +49,8 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+@import "../css/_globals";
+
+</style>

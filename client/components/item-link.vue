@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <modal id="itemLinkDialog" :shown="shown" @hide="$emit('hide')">
         <h2>Add a link for this item</h2>
@@ -50,3 +46,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

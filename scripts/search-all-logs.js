@@ -43,14 +43,14 @@ async function importLogFile(fileName) {
 
                 s.resume();
             })
-            .on('error', function(err){
-                console.log('Error while reading file.', err);
-                reject(err);
-            })
-            .on('end', function(){
-                resolve(logLines);
-            })
-        );
+                .on('error', function(err){
+                    console.log('Error while reading file.', err);
+                    reject(err);
+                })
+                .on('end', function(){
+                    resolve(logLines);
+                })
+            );
     });
 }
 

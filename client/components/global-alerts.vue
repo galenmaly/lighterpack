@@ -1,3 +1,23 @@
+<template>
+    <ul v-if="alerts && alerts.length" class="lpGlobalAlerts">
+        <li v-for="alert in alerts" :key="alert.message" class="lpGlobalAlert">
+            {{ alert.message }}
+        </li>
+    </ul>
+</template>
+
+<script>
+
+export default {
+    name: 'GlobalAlerts',
+    computed: {
+        alerts() {
+            return this.$store.state.globalAlerts;
+        },
+    },
+};
+</script>
+
 <style lang="scss">
 @import "../css/_globals";
 
@@ -28,23 +48,3 @@
     }
 }
 </style>
-
-<template>
-    <ul v-if="alerts && alerts.length" class="lpGlobalAlerts">
-        <li v-for="alert in alerts" class="lpGlobalAlert">
-            {{ alert.message }}
-        </li>
-    </ul>
-</template>
-
-<script>
-
-export default {
-    name: 'GlobalAlerts',
-    computed: {
-        alerts() {
-            return this.$store.state.globalAlerts;
-        },
-    },
-};
-</script>

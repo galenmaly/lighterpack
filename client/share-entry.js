@@ -1,14 +1,6 @@
 import './css/share.scss';
 import pies from './pies.js';
 
-function WeightToMg(value, unit) {
-    if (unit === 'g') return value * 1000;
-    if (unit === 'kg') return value * 1000000;
-    if (unit === 'oz') return value * 28349.5;
-    if (unit === 'lb') return value * 453592;
-    return value;
-}
-
 function MgToWeight(value, unit) {
     if (unit === 'g') return Math.round(100 * value / 1000.0) / 100;
     if (unit === 'kg') return Math.round(100 * value / 1000000.0) / 100;

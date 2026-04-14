@@ -1,9 +1,6 @@
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import compression from 'compression';
 import config from 'config';
 import express from 'express';
-import morgan from 'morgan';
 import { v4 as uuidv4 } from 'uuid';
 
 import { logger } from './server/log.js';
@@ -11,45 +8,35 @@ import endpoints from './server/endpoints.js';
 import moderationEndpoints from './server/moderation-endpoints.js';
 import views from './server/views.js';
 
-morgan.token('username', function getUsername(req) {
-    return req.lighterpackusername;
-});
-
-morgan.token('requestid', function getRequestId(req) {
-    return req.uuid;
-});
-
 const app = express();
 app.enable('trust proxy');
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     req.uuid = uuidv4();
+    const startTime = Date.now();
+    res.on('finish', () => {
+        logger.info({
+            requestid: req.uuid,
+            'remote-addr': req.ip,
+            method: req.method,
+            'http-version': `${req.httpVersionMajor}.${req.httpVersionMinor}`,
+            'user-agent': req.headers['user-agent'],
+            url: req.originalUrl,
+            status: res.statusCode,
+            referrer: req.headers.referer || req.headers.referrer,
+            'content-length': res.getHeader('content-length'),
+            'response-time': Date.now() - startTime,
+            username: req.lighterpackusername,
+        });
+    });
     next();
 });
 
-app.use(morgan(function (tokens, req, res) {
-    return JSON.stringify({
-        'timestamp': tokens.date(req, res, 'iso'),
-        'requestid': tokens.requestid(req, res),
-        'remote-addr': tokens['remote-addr'](req, res),
-        'method': tokens.method(req, res),
-        'http-version': tokens['http-version'](req, res),
-        'user-agent': tokens['user-agent'](req, res),
-        'url': tokens.url(req, res),
-        'status': tokens.status(req, res),
-        'referrer': tokens.referrer(req, res),
-        'content-length': tokens.res(req, res, 'content-length'),
-        'response-time': tokens['response-time'](req, res),
-        'username': tokens.username(req, res),
-    });
-}, { stream: logger.stream.write }));
-
 const oneDay = 86400000;
 
-app.use(compression());
 app.use(cookieParser());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({
     extended: true,
     limit: '50mb',
 }));

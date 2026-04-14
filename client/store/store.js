@@ -2,7 +2,8 @@ import { createStore } from 'vuex';
 import debounce from 'lodash/debounce.js';
 
 import weightUtils from '../utils/weight.js';
-import { Item, Category, List, Library } from '../dataTypes.js';
+import { Library } from '../dataTypes.js';
+import { fetchJson, readCookie, createCookie, arrayMove } from '../utils/utils.js';
 
 const saveInterval = 10000;
 
@@ -48,7 +49,7 @@ const store = createStore({
                 libraryData = JSON.parse(libraryData);
                 library.load(libraryData);
                 state.library = library;
-            } catch (err) {
+            } catch (_err) {
                 state.globalAlerts.push({ message: 'An error occurred while loading your data.' });
             }
             state.lastSaveData = JSON.stringify(library.save());
@@ -79,13 +80,13 @@ const store = createStore({
         },
         newCategory(state, list) {
             const category = state.library.newCategory({ list, _isNew: true });
-            const item = state.library.newItem({ category });
+            state.library.newItem({ category });
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         newList(state) {
             const list = state.library.newList();
             const category = state.library.newCategory({ list });
-            const item = state.library.newItem({ category });
+            state.library.newItem({ category });
             list.calculateTotals();
             state.library.defaultListId = list.id;
         },

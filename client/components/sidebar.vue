@@ -1,3 +1,27 @@
+<template>
+    <div id="sidebar">
+        <div id="scrollable">
+            <h1>LighterPack <span>(beta)</span></h1>
+
+            <libraryLists />
+            <libraryItems />
+        </div>
+    </div>
+</template>
+
+<script>
+import libraryItems from './library-items.vue';
+import libraryLists from './library-lists.vue';
+
+export default {
+    name: 'Sidebar',
+    components: {
+        libraryItems,
+        libraryLists,
+    },
+};
+</script>
+
 <style lang="scss">
 @import "../css/_globals";
 
@@ -16,7 +40,7 @@ $sidebarPadding: 20px;
     padding-right: $sidebarPadding;
     position: fixed;
     transition: opacity $transitionDurationSlow ease-in-out 0s;
-    width: $sidebarWidth + $sidebarOverflow + $sidebarPadding*2;
+    width: $sidebarWidth + $sidebarOverflow + $sidebarPadding * 2;
     z-index: $sidebar;
 
     .lpHasSidebar & {
@@ -24,11 +48,11 @@ $sidebarPadding: 20px;
     }
 
     h1 {
-        @include fullBleedLeft();
+        @include fullBleedLeft;
 
         height: 60px;
         margin: 0 -20px 20px 0;
-        padding: 20px 0 20px;
+        padding: 20px 0;
         position: relative;
 
         span {
@@ -71,27 +95,3 @@ $sidebarPadding: 20px;
 }
 
 </style>
-
-<template>
-    <div id="sidebar">
-        <div id="scrollable">
-            <h1>LighterPack <span>(beta)</span></h1>
-
-            <libraryLists />
-            <libraryItems />
-        </div>
-    </div>
-</template>
-
-<script>
-import libraryItems from './library-items.vue';
-import libraryLists from './library-lists.vue';
-
-export default {
-    name: 'Sidebar',
-    components: {
-        libraryItems,
-        libraryLists,
-    },
-};
-</script>

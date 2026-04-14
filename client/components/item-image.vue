@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <div>
         <modal id="itemImageDialog" :shown="shown" @hide="$emit('hide')">
@@ -37,13 +33,14 @@
             </div>
         </modal>
         <form id="imageUpload" ref="imageUploadForm">
-            <input id="image" type="file" name="image" ref="imageInput" @change="uploadImage">
+            <input id="image" ref="imageInput" type="file" name="image" @change="uploadImage">
         </form>
     </div>
 </template>
 
 <script>
 import modal from './modal.vue';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'ItemImage',
@@ -118,8 +115,11 @@ export default {
         },
         removeItemImage() {
             this.$store.commit('removeItemImage', this.item);
-            this.item.image = '';
         },
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

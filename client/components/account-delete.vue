@@ -1,9 +1,3 @@
-<style lang="scss">
-#deleteAccount {
-    width: 400px;
-}
-</style>
-
 <template>
     <modal id="deleteAccount" :shown="shown" @hide="$emit('hide')">
         <h2>Delete account?</h2>
@@ -32,6 +26,7 @@
 <script>
 import errors from './errors.vue';
 import modal from './modal.vue';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'Account',
@@ -83,7 +78,7 @@ export default {
                 credentials: 'same-origin',
                 body: JSON.stringify({ username: this.$store.state.loggedIn, password: this.currentPassword }),
             })
-                .then((response) => {
+                .then((_response) => {
                     this.deleting = false;
                     this.$emit('hide');
                     this.$store.commit('signout');
@@ -97,3 +92,9 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+#deleteAccount {
+    width: 400px;
+}
+</style>

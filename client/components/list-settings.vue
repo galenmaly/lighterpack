@@ -1,38 +1,3 @@
-<style lang="scss">
-
-#csvUrl {
-    display: block;
-    margin-top: 15px;
-}
-
-#lpOptionalFields {
-    margin: 0;
-    padding: 0;
-}
-
-.lpOptionalField {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-#lpPriceSettings {
-    input {
-        display: inline-block;
-        margin-left: 10px;
-        width: 50px;
-    }
-}
-
-#share .lpContent {
-    width: 330px;
-}
-
-#settings .lpContent {
-    width: 200px;
-}
-</style>
-
 <template>
     <span v-if="isSignedIn" id="settings" class="headerItem hasPopover">
         <PopoverHover>
@@ -132,3 +97,38 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+#csvUrl {
+    display: block;
+    margin-top: 15px;
+}
+
+#lpOptionalFields {
+    margin: 0;
+    padding: 0;
+}
+
+.lpOptionalField {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#lpPriceSettings {
+    input {
+        display: inline-block;
+        margin-left: 10px;
+        width: 50px;
+    }
+}
+
+#share .lpContent {
+    width: 330px;
+}
+
+#settings .lpContent {
+    width: 200px;
+}
+</style>

@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
-import extend from 'node.extend';
 import { markdown } from 'markdown';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
@@ -156,7 +155,7 @@ async function renderListView(req, res) {
             styles: shareStylesHtml,
         };
 
-        model = extend(model, templates);
+        Object.assign(model, templates);
         res.send(Mustache.render(shareTemplate, model));
     } catch (err) {
         logWithRequest(req, {message: 'error rendering list', err});
@@ -231,7 +230,7 @@ async function renderEmberView(req, res) {
             styles: shareStylesLinks,
             scripts: shareScriptsLinks,
         };
-        model = extend(model, templates);
+        Object.assign(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
         res.send(Mustache.render(embedJTemplate, model));
     } catch (err) {
@@ -292,7 +291,7 @@ async function renderListCSV(req, res) {
         };
         let out = 'Item Name,Category,desc,qty,weight,unit,url,price,worn,consumable\n';
 
-        for (var i in list.categoryIds) {
+        for (const i in list.categoryIds) {
             const category = library.getCategoryById(list.categoryIds[i]);
             if (category) {
                 for (const j in category.categoryItems) {
@@ -316,7 +315,7 @@ async function renderListCSV(req, res) {
                             const field = itemRow[k];
                             if (k > 0) out += ',';
                             if (typeof (field) === 'string') {
-                                if (field.indexOf(',') > -1) out += `"${field.replace(/\"/g, '""')}"`;
+                                if (field.indexOf(',') > -1) out += `"${field.replace(/"/g, '""')}"`;
                                 else out += field;
                             } else out += field;
                         }
@@ -328,7 +327,7 @@ async function renderListCSV(req, res) {
 
         let filename = list.name;
         if (!filename) filename = id;
-        filename = filename.replace(/[^a-z0-9\-]/gi, '_');
+        filename = filename.replace(/[^a-z0-9-]/gi, '_');
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', `attachment;filename=${filename}.csv`);
@@ -409,7 +408,7 @@ const renderCategory = function (category, args) {
     for (const i in category.categoryItems) {
         const categoryItem = category.categoryItems[i];
         const item = category.library.getItemById(categoryItem.itemId);
-        extend(item, categoryItem);
+        Object.assign(item, categoryItem);
         items += renderItem(item, args);
     }
 

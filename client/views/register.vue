@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <div id="registerContainer">
         <modal id="register" :shown="true" :blackout="true">
@@ -48,3 +44,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

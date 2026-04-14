@@ -1,13 +1,12 @@
-<style lang="scss">
-@import "../css/_globals";
-
-</style>
-
 <template>
     <div @mouseenter="show" @mouseleave="startHideTimeout">
         <Popover :shown="shown">
-            <template #target><slot name="target" /></template>
-            <template #content><slot name="content" /></template>
+            <template #target>
+                <slot name="target" />
+            </template>
+            <template #content>
+                <slot name="content" />
+            </template>
         </Popover>
     </div>
 </template>
@@ -20,6 +19,7 @@ export default {
     components: {
         Popover,
     },
+    emits: ['shown', 'hidden'],
     data() {
         return {
             shown: false,
@@ -45,3 +45,8 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+@import "../css/_globals";
+
+</style>

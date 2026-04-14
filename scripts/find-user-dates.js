@@ -153,19 +153,19 @@ async function importLogFile(fileName) {
 
                 s.resume();
             })
-            .on('error', function(err){
-                console.log('Error while reading file.', err);
-                reject(err);
-            })
-            .on('end', function(){
-                userRegistrationQueue.forEach((userRegistration) => {
-                    addUserIfDoesntExist(userRegistration.username, userRegistration.registered, "log");
-                    usernames[userRegistration.username].registered = userRegistration.registered;
-                });
-                console.log('Read entire file.')
-                resolve();
-            })
-        );
+                .on('error', function(err){
+                    console.log('Error while reading file.', err);
+                    reject(err);
+                })
+                .on('end', function(){
+                    userRegistrationQueue.forEach((userRegistration) => {
+                        addUserIfDoesntExist(userRegistration.username, userRegistration.registered, "log");
+                        usernames[userRegistration.username].registered = userRegistration.registered;
+                    });
+                    console.log('Read entire file.')
+                    resolve();
+                })
+            );
     });
 }
 
@@ -210,14 +210,14 @@ async function importDatabaseFile(fileName) {
 
                 s.resume();
             })
-            .on('error', function(err){
-                console.log('Error while reading file.', err);
-                reject(err);
-            })
-            .on('end', function(){
-                resolve();
-            })
-        );
+                .on('error', function(err){
+                    console.log('Error while reading file.', err);
+                    reject(err);
+                })
+                .on('end', function(){
+                    resolve();
+                })
+            );
     });
 }
 

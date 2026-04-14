@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <div id="signinContainer">
         <modal id="signin" :shown="true" :blackout="true">
@@ -45,3 +41,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

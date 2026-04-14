@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <form class="lpRegister lpFields" data-testid="register-form" @submit.prevent="submit">
         <div class="lpFields">
@@ -26,6 +22,7 @@ import errors from './errors.vue';
 import spinner from './spinner.vue';
 
 import { Library } from '../dataTypes.js';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'RegisterForm',
@@ -131,3 +128,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

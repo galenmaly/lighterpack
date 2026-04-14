@@ -145,21 +145,21 @@ function fixUser(user, messageTemplate, shouldSendMessage) {
         console.log("----")
         console.log(originalUsername)
         findNewUsername(user.username.trim())
-        .then((newUsername) => {
-            return renameUser(user, newUsername);
-        })
-        .then(() => {
+            .then((newUsername) => {
+                return renameUser(user, newUsername);
+            })
+            .then(() => {
             // uncomment me
             /*if (shouldSendMessage) { 
                 return messageUser(user, originalUsername, messageTemplate);
             }*/
-            return Promise.resolve();
-        })
-        .then(() => {
-            console.log(originalUsername);
-            resolve();
-        })
-        .catch(reject);
+                return Promise.resolve();
+            })
+            .then(() => {
+                console.log(originalUsername);
+                resolve();
+            })
+            .catch(reject);
     });
 }
 

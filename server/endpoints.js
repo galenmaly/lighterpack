@@ -3,9 +3,8 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
-import generate from 'nanoid/generate.js';
+import { customAlphabet } from 'nanoid';
 import { promisify } from 'util';
-import requestLib from 'request';
 import formidable from 'formidable';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
@@ -178,7 +177,7 @@ async function saveLibrary(req, res, user) {
     try {
         library = JSON.parse(req.body.data);
     } catch (e) {
-        logWithRequest(req, { message: 'Library parsing issue', username: user.username });
+        logWithRequest(req, { message: 'Library parsing issue', username: user.username, err: e });
         return res.status(400).json({ errors: [{ message: 'An error occurred while saving your data - unable to parse library.' }] });
     }
 
@@ -186,12 +185,12 @@ async function saveLibrary(req, res, user) {
 
     try {
         await knex('users')
-        .where({ user_id: user.user_id })
-        .update({
-            library: library,
-            sync_token: newSyncToken,
-            last_seen: new Date()
-        });
+            .where({ user_id: user.user_id })
+            .update({
+                library: library,
+                sync_token: newSyncToken,
+                last_seen: new Date()
+            });
 
         logWithRequest(req, { message: 'saved library', username: user.username });
         return res.status(200).json({ message: 'success', sync_token: user.sync_token });
@@ -206,7 +205,7 @@ router.post('/externalId', (req, res) => {
 });
 
 async function externalId(req, res, user) {
-    const id = generate('1234567890abcdefghijklmnopqrstuvwxyz', 6);
+    const id = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 6)();
     logWithRequest(req, { message: 'Id generated', id });
 
     try {
@@ -259,7 +258,7 @@ async function forgotPassword(req, res) {
 
         const user = users[0];
 
-        const newPassword = generate('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 12);
+        const newPassword = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 12)();
         const salt = await bcrypt.genSalt(10);
         const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
@@ -296,7 +295,7 @@ async function forgotPassword(req, res) {
             return res.status(500).json({ message: 'An error occurred' });
         }
     } catch (err) {
-        logWithRequest(req, { message: 'Forgot password lookup error', username });
+        logWithRequest(req, { message: 'Forgot password lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });
     }
 }
@@ -347,7 +346,7 @@ async function forgotUsername(req, res) {
             return res.status(200).json({ email });
         });
     } catch (err) {
-        logWithRequest(req, { message: 'Forgot email lookup error', email });
+        logWithRequest(req, { message: 'Forgot email lookup error', email, err });
         return res.status(500).json({ message: 'An error occurred' });
     }
 }
@@ -439,47 +438,41 @@ router.post('/imageUpload', (req, res) => {
     imageUpload(req, res, {});
 });
 
-function imageUpload(req, res, user) {
-    const form = new formidable.IncomingForm();
-    form.parse(req, (err, fields, files) => {
-        if (err) {
-            logWithRequest(req, 'form parse error');
-            return res.status(500).json({ message: 'An error occurred' });
-        }
-        if (!files || !files.image) {
-            logWithRequest(req, 'No image in upload');
-            return res.status(500).json({ message: 'An error occurred' });
-        }
+async function imageUpload(req, res, _user) {
+    let files;
+    try {
+        [, files] = await formidable().parse(req);
+    } catch (err) {
+        logWithRequest(req, { message: 'form parse error', err });
+        return res.status(500).json({ message: 'An error occurred' });
+    }
 
-        const filePath = files.image.path;
-        const formData = {
-            image: fs.createReadStream(filePath),
-            type: 'file'
-        };
-        requestLib.post({
-            url: 'https://api.imgur.com/3/image',
+    if (!files?.image?.[0]) {
+        logWithRequest(req, 'No image in upload');
+        return res.status(500).json({ message: 'An error occurred' });
+    }
+
+    const fd = new FormData();
+    fd.append('image', new Blob([fs.readFileSync(files.image[0].filepath)]));
+    fd.append('type', 'file');
+
+    try {
+        const r = await fetch('https://api.imgur.com/3/image', {
+            method: 'POST',
             headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` },
-            formData
-        }, (e, r, body) => {
-            if (e) {
-                logWithRequest(req, 'imgur post fail!');
-                logWithRequest(req, e);
-                logWithRequest(req, body);
-                return res.status(500).json({ message: 'An error occurred.' });
-            } if (!body) {
-                logWithRequest(req, 'imgur post fail!!');
-                logWithRequest(req, e);
-                return res.status(500).json({ message: 'An error occurred.' });
-            } if (r.statusCode !== 200 || body.error) {
-                logWithRequest(req, 'imgur post fail!!!');
-                logWithRequest(req, e);
-                logWithRequest(req, body);
-                return res.status(500).json({ message: 'An error occurred.' });
-            }
-            logWithRequest(req, body);
-            return res.send(body);
+            body: fd,
         });
-    });
+        const body = await r.text();
+        if (!r.ok) {
+            logWithRequest(req, { message: 'imgur post fail', status: r.status, body });
+            return res.status(500).json({ message: 'An error occurred.' });
+        }
+        logWithRequest(req, { message: 'imgur post success', body });
+        return res.send(body);
+    } catch (err) {
+        logWithRequest(req, { message: 'imgur post fail', err });
+        return res.status(500).json({ message: 'An error occurred.' });
+    }
 }
 
 export default router;

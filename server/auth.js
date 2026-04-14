@@ -18,6 +18,7 @@ const moderatorList = config.get('moderators');
 const randomBytesAsync = promisify(crypto.randomBytes);
 
 // one day in many years this can go away.
+/* global CryptoJS */
 eval(`${fs.readFileSync(path.join(import.meta.dirname, './sha3.js'))}`);
 
 const authenticateModerator = async function (req, res, callback) {
@@ -116,6 +117,7 @@ const verifyPassword = async function (username, password) {
 
         throw new Error({ code: 404, message: 'Invalid username and/or password.' });
     } catch (err) {
+        logWithRequest(null, { message: 'verifyPassword DB error', err });
         throw new Error({ code: 500, message: 'An error occurred, please try again later.' });
     }
 };

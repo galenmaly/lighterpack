@@ -22,7 +22,7 @@ class lpError extends Error {
     }
 }
 
-window.fetchJson = (url, options) => {
+export function fetchJson(url, options) {
     const fetchOptions = {
         method: 'GET',
         headers: {}
@@ -45,7 +45,7 @@ window.fetchJson = (url, options) => {
 
                     try {
                         json = text ? JSON.parse(text) : {};
-                    } catch (err) {
+                    } catch (_err) {
                         json = { message: response };
                     }
 
@@ -85,9 +85,9 @@ window.fetchJson = (url, options) => {
                 return reject(new lpError(err));
             });
     });
-};
+}
 
-window.readCookie = function (name) {
+export function readCookie(name) {
     const nameEQ = `${name}=`;
     const ca = document.cookie.split(';');
     for (let i = 0; i < ca.length; i++) {
@@ -96,29 +96,30 @@ window.readCookie = function (name) {
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
-};
+}
 
-window.createCookie = function (name, value, days) {
+export function createCookie(name, value, days) {
+    let expires = '';
     if (days) {
         const date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        var expires = `; expires=${date.toGMTString()}`;
-    } else var expires = '';
+        expires = `; expires=${date.toGMTString()}`;
+    }
     document.cookie = `${name}=${value}${expires}; path=/`;
-};
+}
 
-window.getElementIndex = function (node) {
+export function getElementIndex(node) {
     let index = 0;
     while ((node = node.previousElementSibling)) {
         index++;
     }
     return index;
-};
+}
 
-window.arrayMove = function (inputArray, oldIndex, newIndex) {
+export function arrayMove(inputArray, oldIndex, newIndex) {
     const array = inputArray.slice();
     const element = array[oldIndex];
     array.splice(oldIndex, 1);
     array.splice(newIndex, 0, element);
     return array;
-};
+}

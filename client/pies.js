@@ -14,10 +14,7 @@ export default function (args) {
     let hoverCallback = null;
     let clickCallback = null;
     const backgroundColor = 'rgb(245,245,245)';
-    const firstRing = { inner: 25, outer: 70 };
-    const secondRing = { inner: 80, outer: 120 };
     let tooltip;
-    const isAnimating = false;
     const frameRate = 10;
 
     function init() {
@@ -71,8 +68,8 @@ export default function (args) {
         let total = 0;
         data.points = {};
 
-        for (var key in srcData) {
-            var value = srcData[key];
+        for (const key in srcData) {
+            const value = srcData[key];
             if (typeof (value) === 'object') {
                 total += preprocess(value).total;
             } else {
@@ -81,8 +78,8 @@ export default function (args) {
         }
         data.total = total;
 
-        for (var key in srcData) {
-            var value = srcData[key];
+        for (const key in srcData) {
+            const value = srcData[key];
             if (typeof (value) === 'object') {
                 data.points[key] = preprocess(value, data);
                 data.points[key].name = key;
@@ -105,7 +102,6 @@ export default function (args) {
     }
 
     function render(myData) {
-        const offset = 5;
         let parentColor = false;
         let angleMultiplier = 1;
         let lastAngle = 0.0;
@@ -113,7 +109,6 @@ export default function (args) {
         const maxRadius = myData.innerMaxRadius;
 
         if (myData.startAngle) lastAngle = myData.startAngle;
-        const startAngle = lastAngle;
         if (myData.angleMultiplier) angleMultiplier = myData.angleMultiplier;
 
         if (myData.color) {
@@ -123,8 +118,6 @@ export default function (args) {
         let count = 0;
         for (const key in myData.points) {
             const slice = myData.points[key];
-
-            slice.startAngle = startAngle;
 
             slice.minRadius = minRadius;
             slice.maxRadius = maxRadius;
@@ -285,7 +278,7 @@ export default function (args) {
         }
     }
 
-    function clickHandle(evt) {
+    function clickHandle(_evt) {
         if (!hovered) {
             recursivelySetAttribute(data, 'visiblePoints', false);
             data.visiblePoints = true;
@@ -329,9 +322,6 @@ export default function (args) {
                 const found = findHovered(i, angle, radius);
                 if (found) return found;
             }
-            let startAngle = 0;
-            if (typeof i.parent.startAngle !== 'undefined') startAngle = i.parent.startAngle;
-
             if (radius < i.maxRadius && radius > i.minRadius) {
                 if (i.minAngle <= Math.PI * 2 && i.maxAngle > Math.PI * 2 && (angle > i.minAngle || angle + Math.PI * 2 < i.maxAngle)) {
                     return i;
@@ -345,12 +335,6 @@ export default function (args) {
         return null;
     }
 
-    function findSectionById(id) {
-        for (const i in data.points) {
-            if (data.points[i].id && data.points[i].id == id) return data.points[i];
-        }
-        return false;
-    }
 
     function recursivelySetAttribute(data, key, value) {
         data[key] = value;
@@ -388,13 +372,13 @@ export default function (args) {
     function setVisibleRings(rings, data) {
         // pass in old visible rings to translate to new data
         if (typeof data.id !== 'undefined') {
-            for (var i in rings) {
+            for (const i in rings) {
                 if (data.id == rings[i].id) {
                     data.visiblePoints = true;
                 }
             }
         }
-        for (var i in data.points) {
+        for (const i in data.points) {
             setVisibleRings(rings, data.points[i]);
         }
     }

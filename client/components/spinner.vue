@@ -1,3 +1,13 @@
+<template>
+    <div class="lpSpinner" />
+</template>
+
+<script>
+export default {
+    name: 'Spinner',
+};
+</script>
+
 <style lang="scss">
 @import "../css/_globals";
 
@@ -35,13 +45,3 @@ $spinnerSize: 18px;
     transform: translateY(-50%) translateX(50%);
 }
 </style>
-
-<template>
-    <div class="lpSpinner" />
-</template>
-
-<script>
-export default {
-    name: 'Spinner',
-};
-</script>

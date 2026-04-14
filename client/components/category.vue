@@ -1,15 +1,3 @@
-<style lang="scss">
-
-.lpQtySubtotal {
-    padding-right: 25px; /* Accommodates delete column */
-}
-
-.lpPriceSubtotal { /* unused? */
-    padding-right: 4px;
-}
-
-</style>
-
 <template>
     <li :id="category.id" class="lpCategory" data-testid="category">
         <ul class="lpItems lpDataTable">
@@ -84,3 +72,15 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+.lpQtySubtotal {
+    padding-right: 25px; /* Accommodates delete column */
+}
+
+.lpPriceSubtotal { /* unused? */
+    padding-right: 4px;
+}
+
+</style>

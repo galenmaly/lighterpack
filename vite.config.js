@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import path from 'path';
 
 export default defineConfig({
     plugins: [vue()],
@@ -15,8 +14,8 @@ export default defineConfig({
         rollupOptions: {
             external: (id) => id.startsWith('/images/') || id.startsWith('/fonts/'),
             input: {
-                app: path.resolve(__dirname, 'client/lighterpack.js'),
-                share: path.resolve(__dirname, 'client/share-entry.js'),
+                app: `${import.meta.dirname}/client/lighterpack.js`,
+                share: `${import.meta.dirname}/client/share-entry.js`,
             },
         },
     },

@@ -1,56 +1,3 @@
-<style lang="scss">
-
-.lpItem {
-    &:hover,
-    &.ui-sortable-helper {
-        background: #fff;
-
-        .lpRemove,
-        .lpWorn,
-        .lpConsumable,
-        .lpCamera,
-        .lpLink,
-        .lpHandle,
-        .lpArrows,
-        .lpStar {
-            visibility: visible;
-        }
-    }
-
-    input,
-    select {
-        padding: 3px;
-    }
-}
-
-.lpArrows {
-    display: inline-block;
-    height: 14px;
-    position: relative;
-    visibility: hidden;
-    width: 10px;
-
-    .lpUp,
-    .lpDown {
-        cursor: pointer;
-        left: 0;
-        margin: 2px;
-        opacity: 0.5;
-        position: absolute;
-        top: 0;
-
-        &:hover {
-            opacity: 1;
-        }
-    }
-
-    .lpDown {
-        top: 11px;
-    }
-}
-
-</style>
-
 <template>
     <li :id="item.id" :class="'lpItem '+ item.classes" data-testid="item-row">
         <span class="lpHandleCell">
@@ -325,4 +272,57 @@ export default {
         },
     },
 };
-</script>,
+</script>
+
+<style lang="scss">
+
+.lpItem {
+    &:hover,
+    &.ui-sortable-helper {
+        background: #fff;
+
+        .lpRemove,
+        .lpWorn,
+        .lpConsumable,
+        .lpCamera,
+        .lpLink,
+        .lpHandle,
+        .lpArrows,
+        .lpStar {
+            visibility: visible;
+        }
+    }
+
+    input,
+    select {
+        padding: 3px;
+    }
+}
+
+.lpArrows {
+    display: inline-block;
+    height: 14px;
+    position: relative;
+    visibility: hidden;
+    width: 10px;
+
+    .lpUp,
+    .lpDown {
+        cursor: pointer;
+        left: 0;
+        margin: 2px;
+        opacity: 0.5;
+        position: absolute;
+        top: 0;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .lpDown {
+        top: 11px;
+    }
+}
+
+</style>,

@@ -27,15 +27,15 @@ getAllDanglingUsers()
         console.log ('---- starting fix ----');
 
         fixUsers(autoFixableUsers, autoFixableMessage)
-        .then(() => {
-            return fixUsers(samePersonUsers, samePersonMessage);
-        })
-        .then(() => {
-            return fixUsers(differentPersonUsers, differentPersonMessage);
-        })
-        .then(() => {
-            console.log('---- done ----');
-        });
+            .then(() => {
+                return fixUsers(samePersonUsers, samePersonMessage);
+            })
+            .then(() => {
+                return fixUsers(differentPersonUsers, differentPersonMessage);
+            })
+            .then(() => {
+                console.log('---- done ----');
+            });
     });
 
 function getAllDanglingUsers(danglingUsers = [], prefixes = "0123456789abcdef".split("")) {
@@ -110,10 +110,10 @@ function fixUsers(users, messageTemplate) {
         }
         const user = users.pop();
         fixUser(user, messageTemplate)
-        .then(() => {
-            resolve(fixUsers(users, messageTemplate));
-        })
-        .catch(reject);
+            .then(() => {
+                resolve(fixUsers(users, messageTemplate));
+            })
+            .catch(reject);
     });
 }
 
@@ -121,17 +121,17 @@ function fixUser(user, messageTemplate) {
     return new Promise((resolve, reject) => {
         const originalUsername = user.username;
         findNewUsername(user.username.trim())
-        .then((newUsername) => {
-            return renameUser(user, newUsername);
-        })
-        .then(() => {
-            return messageUser(user, originalUsername, messageTemplate);
-        })
-        .then(() => {
-            console.log(originalUsername);
-            resolve();
-        })
-        .catch(reject);
+            .then((newUsername) => {
+                return renameUser(user, newUsername);
+            })
+            .then(() => {
+                return messageUser(user, originalUsername, messageTemplate);
+            })
+            .then(() => {
+                console.log(originalUsername);
+                resolve();
+            })
+            .catch(reject);
     });
 }
 

@@ -1,9 +1,3 @@
-<style lang="scss">
-#share label {
-    font-weight: bold;
-}
-</style>
-
 <template>
     <span v-if="isSignedIn" class="headerItem hasPopover">
         <PopoverHover id="share" @shown="focusShare">
@@ -16,7 +10,7 @@
                     </div>
                     <div class="lpField">
                         <label for="embedUrl">Embed your list</label>
-                        <textarea id="embedUrl" v-select-on-focus>&lt;script src="{{ this.baseUrl }}/e/{{ this.externalId }}"&gt;&lt;/script&gt;&lt;div id="{{ this.externalId }}"&gt;&lt;/div&gt;</textarea>
+                        <textarea id="embedUrl" v-select-on-focus :value="embedCode" readonly />
                     </div>
                     <a id="csvUrl" :href="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload" />Export to CSV</a>
                 </div>
@@ -27,6 +21,7 @@
 
 <script>
 import PopoverHover from './popover-hover.vue';
+import { fetchJson } from '../utils/utils.js';
 
 export default {
     name: 'Share',
@@ -62,9 +57,13 @@ export default {
             }
             return '';
         },
+        embedCode() {
+            return `<script src="${this.baseUrl}/e/${this.externalId}"></` + `script><div id="${this.externalId}"></div>`;
+            // Note: split to avoid prematurely closing the script tag
+        },
     },
     methods: {
-        focusShare(evt) {
+        focusShare(_evt) {
             const selectShareInput = () => {
                 this.$nextTick(() => {
                     if (this.$refs.shareInput) this.$refs.shareInput.select();
@@ -82,7 +81,7 @@ export default {
                         this.$store.commit('setExternalId', { externalId: response.externalId, list: this.list });
                         selectShareInput();
                     })
-                    .catch((response) => {
+                    .catch((_response) => {
                         alert('An error occurred while attempting to get an ID for your list. Please try again later.'); // TODO
                     });
             }
@@ -91,3 +90,9 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+#share label {
+    font-weight: bold;
+}
+</style>

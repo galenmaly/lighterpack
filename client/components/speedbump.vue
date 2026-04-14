@@ -1,7 +1,3 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <modal id="speedbump" :shown="shown" @hide="$emit('hide')">
         <h2 v-if="messages.title">
@@ -73,3 +69,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>

@@ -1,17 +1,3 @@
-<style lang="scss">
-
-#importValidate {
-    height: 500px;
-    overflow-y: scroll;
-    width: 650px;
-
-    .lpButton {
-        margin-bottom: 30px;
-    }
-}
-
-</style>
-
 <template>
     <div id="importCSV">
         <modal id="importValidate" :shown="shown" @hide="shown = false">
@@ -26,7 +12,7 @@
                         <span class="lpCell">Weight</span>
                         <span class="lpCell">Unit</span>
                     </li>
-                    <li v-for="row in importData.data" class="lpRow">
+                    <li v-for="row in importData.data" :key="row.name" class="lpRow">
                         <span class="lpCell">{{ row.name }}</span>
                         <span class="lpCell">{{ row.category }}</span>
                         <span class="lpCell">{{ row.description }}</span>
@@ -80,8 +66,6 @@ export default {
         importCSV(evt) {
             const file = evt.target.files[0];
             const name = file.name;
-            const size = file.size;
-            const type = file.type;
 
             if (file.name.length < 1) {
                 return;
@@ -97,7 +81,7 @@ export default {
             const reader = new FileReader();
 
             reader.onload = ((theFile) => {
-                this.validateImport(theFile.target.result, file.name.substring(0, file.name.length - 4).replace(/\_/g, ' '));
+                this.validateImport(theFile.target.result, file.name.substring(0, file.name.length - 4).replace(/_/g, ' '));
             });
 
             reader.readAsText(file);
@@ -116,16 +100,17 @@ export default {
                 ), 'gi',
             );
 
-            while (arrMatches = objPattern.exec(strData)) {
+            while ((arrMatches = objPattern.exec(strData))) {
                 const strMatchedDelimiter = arrMatches[1];
                 if (strMatchedDelimiter.length && (strMatchedDelimiter != strDelimiter)) {
                     arrData.push([]);
                 }
 
+                let strMatchedValue;
                 if (arrMatches[2]) {
-                    var strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
+                    strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
                 } else {
-                    var strMatchedValue = arrMatches[3];
+                    strMatchedValue = arrMatches[3];
                 }
 
                 arrData[arrData.length - 1].push(strMatchedValue);
@@ -169,3 +154,17 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+#importValidate {
+    height: 500px;
+    overflow-y: scroll;
+    width: 650px;
+
+    .lpButton {
+        margin-bottom: 30px;
+    }
+}
+
+</style>

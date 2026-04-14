@@ -1,10 +1,6 @@
-<style lang="scss">
-
-</style>
-
 <template>
     <ul v-if="sanitizedErrors && sanitizedErrors.length" class="lpError">
-        <li v-for="error in sanitizedErrors">
+        <li v-for="error in sanitizedErrors" :key="error.message">
             {{ error.message }}
         </li>
     </ul>
@@ -61,3 +57,7 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+</style>
