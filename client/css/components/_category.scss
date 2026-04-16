@@ -14,8 +14,8 @@
     }
 
     &.gu-mirror {
-        background: #f7f7f7;
-        border: 1px solid #999;
+        background: var(--lp-bg);
+        border: 1px solid var(--lp-border-subtle);
     }
 }
 

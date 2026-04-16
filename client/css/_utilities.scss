@@ -125,8 +125,8 @@
     input[type="email"],
     input[type="password"],
     textarea {
-        background: #fff;
-        border: 1px solid $border1;
+        background: var(--lp-surface);
+        border: 1px solid var(--lp-border);
         display: block;
         margin: 0 0 $spacingMedium;
         padding: $spacingSmall;
@@ -222,8 +222,8 @@
 }
 
 .lpWarning {
-    background: $yellow2;
-    border: 1px solid $darkYellow;
+    background: var(--lp-warning-bg);
+    border: 1px solid var(--lp-warning-border);
     border-radius: 5px;
     padding: 10px;
 }
@@ -243,14 +243,14 @@
     border: 1px solid transparent;
 
     &:hover {
-        background-color: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.15);
+        background-color: var(--lp-surface);
+        border: 1px solid var(--lp-silent-border);
     }
 
     &:focus {
-        background-color: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+        background-color: var(--lp-surface);
+        border: 1px solid var(--lp-silent-border);
+        box-shadow: 0 1px 3px var(--lp-silent-shadow) inset;
         outline: none;
     }
 
@@ -260,7 +260,7 @@
         outline-color: $red1;
 
         &:focus {
-            background-color: #fff;
+            background-color: var(--lp-surface);
         }
     }
 }

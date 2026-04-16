@@ -280,7 +280,7 @@ export default {
 .lpItem {
     &:hover,
     &.ui-sortable-helper {
-        background: #fff;
+        background: var(--lp-surface);
 
         .lpRemove,
         .lpWorn,

@@ -64,7 +64,7 @@ export default {
 @import "../css/_globals";
 
 .lpModal {
-    background: $background1;
+    background: var(--lp-bg);
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
     left: 50%;
     max-height: calc(90% - (#{$spacingLarge} * 2));

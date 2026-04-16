@@ -30,9 +30,9 @@ $sidebarOverflow: 1000px;
 $sidebarPadding: 20px;
 
 #sidebar {
-    background: #555;
+    background: var(--lp-sidebar-bg);
     box-shadow: -7px 0 7px rgba(0, 0, 0, 0.2) inset;
-    color: #fff;
+    color: var(--lp-sidebar-text);
     height: 100%;
     margin-left: -$sidebarOverflow;
     opacity: 0;
@@ -56,7 +56,7 @@ $sidebarPadding: 20px;
         position: relative;
 
         span {
-            color: #aaa;
+            color: var(--lp-sidebar-muted);
         }
     }
 
@@ -71,7 +71,7 @@ $sidebarPadding: 20px;
     }
 
     ul {
-        background: #606060;
+        background: var(--lp-sidebar-list-bg);
         margin: 0;
         overflow-x: hidden;
         padding: 0;

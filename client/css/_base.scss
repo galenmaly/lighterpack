@@ -1,11 +1,54 @@
 @import "globals";
 
+// Light-theme defaults (all CSS custom properties live here so they're
+// declared exactly once per bundle — component @imports pull in _globals only).
+.lp {
+    color-scheme: light;
+    --lp-bg: #{$background1};
+    --lp-surface: #ffffff;
+    --lp-text: #{$content};
+    --lp-text-muted: #{$content2};
+    --lp-text-footer: #777;
+    --lp-border: #{$border1};
+    --lp-border-subtle: #aaa;
+    --lp-tooltip-bg: #444;
+    --lp-tooltip-text: #ffffff;
+    --lp-silent-border: rgba(0, 0, 0, 0.15);
+    --lp-silent-shadow: rgba(0, 0, 0, 0.15);
+    --lp-sidebar-bg: #555;
+    --lp-sidebar-list-bg: #606060;
+    --lp-sidebar-item-bg: #666;
+    --lp-sidebar-item-border: #999;
+    --lp-sidebar-text: #ffffff;
+    --lp-sidebar-muted: #aaa;
+    --lp-sidebar-text-muted: #ccc;
+    --lp-welcome-footer-bg: rgba(255, 255, 255, 0.65);
+    --lp-get-started-bg: #dedede;
+    --lp-welcome-panel-bg: rgba(255, 255, 255, 0.9);
+    --lp-warning-bg: #{$yellow2};
+    --lp-warning-border: #{$darkYellow};
+    --lp-hover-bg: #{$yellow2};
+}
+
+// Auto dark mode: follows OS when no explicit override is set by the JS toggle.
+// The share page (no JS) always uses this path.
+@media (prefers-color-scheme: dark) {
+    .lp:not([data-theme="light"]) {
+        @include lp-dark-theme;
+    }
+}
+
+// Explicit dark mode set by the theme toggle (overrides OS preference).
+.lp[data-theme="dark"] {
+    @include lp-dark-theme;
+}
+
 .lp {
     &,
     body {
-        background: $background1;
+        background: var(--lp-bg);
         box-sizing: border-box;
-        color: $content;
+        color: var(--lp-text);
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
         height: 100%;
@@ -16,14 +59,15 @@
 
     hr {
         border: none;
-        border-top: 1px solid #aaa;
+        border-top: 1px solid var(--lp-border-subtle);
         margin: 25px 0;
     }
 
     input,
     select,
-    textarea {
-        color: $content;
+    textarea,
+    button {
+        color: var(--lp-text);
         font-family: 'Open Sans', sans-serif;
         font-size: 13px;
     }
@@ -37,14 +81,14 @@
     }
 
     .hover {
-        background: $yellow2;
+        background: var(--lp-hover-bg);
     }
 
     .tooltip {
-        background: #444;
-        border: 1px solid #fff;
+        background: var(--lp-tooltip-bg);
+        border: 1px solid var(--lp-surface);
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-        color: #fff;
+        color: var(--lp-tooltip-text);
         display: none;
         padding: 3px;
         position: absolute;
@@ -69,7 +113,7 @@
     min-height: 100%;
     position: relative;
     text-align: left;
-    transition: all $transitionDurationSlow;
+    transition: max-width $transitionDurationSlow;
 
     &.lpHasSidebar {
         max-width: 1280px;
@@ -77,14 +121,14 @@
 }
 
 #lpFooter {
-    color: #777;
+    color: var(--lp-text-footer);
     display: flex;
     justify-content: space-between;
     padding: 150px 0 20px;
 }
 
 #lpWelcomeFooter {
-    background: rgba(255, 255, 255, 0.65);
+    background: var(--lp-welcome-footer-bg);
     bottom: 0;
     display: flex;
     justify-content: space-between;

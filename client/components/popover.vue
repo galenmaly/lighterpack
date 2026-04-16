@@ -64,9 +64,9 @@ export default {
     }
 
     .lpContent {
-        background: #fff;
+        background: var(--lp-surface);
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-        color: $content;
+        color: var(--lp-text);
         left: 50%;
         margin-top: 15px;
         min-width: 100%;
@@ -81,7 +81,7 @@ export default {
         z-index: $dialog;
 
         &::before {
-            background-color: #fff;
+            background-color: var(--lp-surface);
             box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
             content: "";
             display: block;
@@ -96,7 +96,7 @@ export default {
         }
 
         &::after {
-            background: #fff;
+            background: var(--lp-surface);
             content: "";
             display: block;
             height: 15px;
@@ -124,7 +124,7 @@ export default {
         }
 
         hr {
-            border-color: $border1;
+            border-color: var(--lp-border);
             margin: 7px -0;
             padding: 0;
         }

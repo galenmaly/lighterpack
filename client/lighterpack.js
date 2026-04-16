@@ -1,4 +1,5 @@
 import './css/lighterpack.scss';
+import { initTheme } from './utils/theme.js';
 import { createApp } from 'vue';
 import { createRouter, createWebHistory, RouterView } from 'vue-router';
 
@@ -7,6 +8,8 @@ import store from './store/store';
 import { selectOnFocus, focusOnCreate, emptyIfZero, clickOutside } from './utils/focus.js';
 
 import './utils/utils.js';
+
+initTheme();
 
 const router = createRouter({
     history: createWebHistory(),

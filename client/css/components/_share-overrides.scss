@@ -13,7 +13,7 @@
 
     .lpItem {
         &:hover {
-            background: #fff;
+            background: var(--lp-surface);
         }
 
         .lpActionsCell {

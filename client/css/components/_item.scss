@@ -10,14 +10,14 @@
 .lpItemsHeader,
 .lpItemsFooter {
     align-items: center;
-    border-top: 1px dotted #aaa;
+    border-top: 1px dotted var(--lp-border-subtle);
     display: flex;
     flex-direction: row;
     justify-content: stretch;
 
     &.gu-mirror {
-        background: #f7f7f7;
-        border: 1px solid #999;
+        background: var(--lp-bg);
+        border: 1px solid var(--lp-border-subtle);
     }
 
     .lpHandleCell {
@@ -94,7 +94,7 @@
 
 .lpItemsHeader {
     align-items: flex-end;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid var(--lp-border-subtle);
     border-top: none;
     height: 31px;
 }

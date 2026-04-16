@@ -2,6 +2,37 @@ $background1: #f7f7f7;
 $content: #282828;
 $content2: #666;
 $border1: #ccc;
+
+// Dark-theme CSS custom property values.
+// Used as a mixin so _base.scss can apply them in both the media query
+// and the [data-theme="dark"] selector without repeating the values.
+@mixin lp-dark-theme {
+    color-scheme: dark;
+    --lp-bg: #1e1e1e;
+    --lp-surface: #2d2d2d;
+    --lp-text: #e0e0e0;
+    --lp-text-muted: #9a9a9a;
+    --lp-text-footer: #888;
+    --lp-border: #3e3e3e;
+    --lp-border-subtle: #4a4a4a;
+    --lp-tooltip-bg: #111111;
+    --lp-tooltip-text: #e0e0e0;
+    --lp-silent-border: rgba(255, 255, 255, 0.12);
+    --lp-silent-shadow: rgba(0, 0, 0, 0.4);
+    --lp-sidebar-bg: #252525;
+    --lp-sidebar-list-bg: #2f2f2f;
+    --lp-sidebar-item-bg: #333333;
+    --lp-sidebar-item-border: #444444;
+    --lp-sidebar-text: #e0e0e0;
+    --lp-sidebar-muted: #666666;
+    --lp-sidebar-text-muted: #777777;
+    --lp-welcome-footer-bg: rgba(0, 0, 0, 0.65);
+    --lp-get-started-bg: #2a2a2a;
+    --lp-welcome-panel-bg: rgba(30, 30, 30, 0.92);
+    --lp-warning-bg: #2e2700;
+    --lp-warning-border: #786800;
+    --lp-hover-bg: #3a3500;
+}
 $blue1: #1b77d3;
 $blue2: #3db7ff;
 $darkBlue: #064989;

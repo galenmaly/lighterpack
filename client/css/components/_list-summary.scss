@@ -8,7 +8,7 @@
 }
 
 .lpLegend {
-    border: 1px solid #fff;
+    border: 1px solid var(--lp-surface);
     display: block;
     height: 10px;
     width: 10px;
@@ -29,7 +29,7 @@
 
     &.lpHeader {
         .lpCell {
-            border-bottom: 1px solid #aaa;
+            border-bottom: 1px solid var(--lp-border-subtle);
             vertical-align: bottom;
         }
 
@@ -41,12 +41,12 @@
 
 .lpFooter {
     .lpCell {
-        border-top: 1px solid #aaa;
+        border-top: 1px solid var(--lp-border-subtle);
     }
 }
 
 .lpCell {
-    border-top: 1px dotted #aaa;
+    border-top: 1px dotted var(--lp-border-subtle);
     display: table-cell;
     padding: 1px 8px;
 

@@ -172,7 +172,7 @@ export default {
 
 .lpLegend {
     &:hover {
-        border-color: #666;
+        border-color: var(--lp-text-muted);
         cursor: pointer;
     }
 }

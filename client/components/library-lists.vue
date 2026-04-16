@@ -104,7 +104,7 @@ export default {
 }
 
 .lpLibraryList {
-    border-top: 1px dotted #999;
+    border-top: 1px dotted var(--lp-sidebar-item-border);
     display: flex;
     list-style: none;
     margin: 0 10px;
@@ -131,9 +131,9 @@ export default {
     }
 
     &.gu-mirror {
-        background: #606060;
-        border: 1px solid #999;
-        color: #fff;
+        background: var(--lp-sidebar-list-bg);
+        border: 1px solid var(--lp-sidebar-item-border);
+        color: var(--lp-sidebar-text);
     }
 
     .lpHandle {

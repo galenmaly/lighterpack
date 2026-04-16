@@ -14,7 +14,7 @@
 
 .lpDialog {
     animation: lp-fadein 0.25s linear 0s 1 forwards;
-    background: #f7f7f7;
+    background: var(--lp-bg);
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
     left: 50%;
     opacity: 0;

@@ -137,7 +137,6 @@ export default {
 </script>
 
 <style lang="scss">
-@use 'sass:color';
 @import "../css/components/list";
 @import "../css/_globals";
 
@@ -161,7 +160,7 @@ export default {
 }
 
 #getStarted {
-    background: color.adjust($background1, $lightness: -10%);
+    background: var(--lp-get-started-bg);
     display: flex;
     flex-direction: column;
     height: 220px;

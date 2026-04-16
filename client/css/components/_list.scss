@@ -5,7 +5,7 @@
     min-height: 100%;
     padding: 0 20px;
     position: relative;
-    transition: all $transitionDurationSlow;
+    transition: margin-left $transitionDurationSlow;
     z-index: $aboveSidebar;
 
     .lpHasSidebar & {
@@ -30,6 +30,6 @@
 
 #lpListDescription {
     h2 {
-        border-bottom: 1px solid #aaa;
+        border-bottom: 1px solid var(--lp-border-subtle);
     }
 }

@@ -9,6 +9,7 @@
                 <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
                 <listSettings />
+                <themeToggle />
                 <accountDropdown v-if="isSignedIn" />
                 <span v-else class="headerItem signInRegisterButtons">
                     <router-link to="/register" class="lpButton lpSmall">Register</router-link>
@@ -68,6 +69,7 @@ import itemLink from '../components/item-link.vue';
 import importCSV from '../components/import-csv.vue';
 import copyList from '../components/copy-list.vue';
 import speedbump from '../components/speedbump.vue';
+import themeToggle from '../components/theme-toggle.vue';
 
 export default {
     name: 'Dashboard',
@@ -87,6 +89,7 @@ export default {
         itemViewImage,
         speedbump,
         globalAlerts,
+        themeToggle,
     },
     provide() {
         return {

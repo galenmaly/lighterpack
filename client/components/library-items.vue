@@ -151,15 +151,15 @@ export default {
 }
 
 #librarySearch {
-    background: #666;
-    border: 1px solid #888;
-    color: #fff;
+    background: var(--lp-sidebar-item-bg);
+    border: 1px solid var(--lp-sidebar-item-border);
+    color: var(--lp-sidebar-text);
     margin-bottom: 15px;
     padding: 3px 6px;
 }
 
 .lpLibraryItem {
-    border-top: 1px dotted #999;
+    border-top: 1px dotted var(--lp-sidebar-item-border);
     list-style: none;
     margin: 0 10px 5px;
     min-height: 43px;
@@ -177,9 +177,9 @@ export default {
     }
 
     &.gu-mirror {
-        background: #606060;
-        border: 1px solid #999;
-        color: #fff;
+        background: var(--lp-sidebar-list-bg);
+        border: 1px solid var(--lp-sidebar-item-border);
+        color: var(--lp-sidebar-text);
     }
 
     .lpName {
@@ -197,7 +197,7 @@ export default {
 
     .lpDescription {
         clear: both;
-        color: #ccc;
+        color: var(--lp-sidebar-text-muted);
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -226,8 +226,8 @@ export default {
     }
 
     #main > & {
-        background: #666;
-        color: #fff;
+        background: var(--lp-sidebar-item-bg);
+        color: var(--lp-sidebar-text);
         padding: 10px;
         width: 235px;
     }

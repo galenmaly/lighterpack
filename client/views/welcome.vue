@@ -1,10 +1,5 @@
 <template>
     <div id="lpWelcomeContainer">
-        <div id="lpLaunchBanner">
-            <div class="lpContainer">
-                <strong>Welcome to the new version of LighterPack!</strong> We hope you like it, and if you have any questions please <a href="mailto:info@lighterpack.com" class="lpHref">get in touch</a>.
-            </div>
-        </div>
         <div id="lpWelcome" class="lpContainer">
             <h1><strong>LighterPack</strong> helps you track the gear you bring on adventures.</h1>
             <div class="lpWelcomeContent">
@@ -110,7 +105,7 @@ $welcomeVerticalSpacing: 80px;
 
 .lpWelcomeRegisterContainer,
 .lpWelcomeSigninContainer {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--lp-welcome-panel-bg);
     border-top: 2px solid $orange1;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
     padding: $spacingLarge;
@@ -157,16 +152,6 @@ $welcomeVerticalSpacing: 80px;
 #lpWelcomeScreenshot {
     box-shadow: 0 3px 5px 2px rgba(0, 0, 0, 0.3);
     max-width: 96%; // visual alignment with content
-}
-
-#lpLaunchBanner {
-    background: $yellow1;
-    left: 0;
-    padding: $spacingSmall;
-    position: fixed;
-    right: 0;
-    text-align: center;
-    top: 0;
 }
 
 </style>

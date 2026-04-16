@@ -9,8 +9,8 @@
 
     &:hover,
     &.lpHover {
-        background: #fff;
-        border: 1px solid $border1;
+        background: var(--lp-surface);
+        border: 1px solid var(--lp-border);
 
         i {
             opacity: 1;
@@ -22,7 +22,7 @@
     }
 
     &.lpOpen {
-        background: #fff;
+        background: var(--lp-surface);
 
         .lpUnitDropdown {
             display: block;
@@ -35,8 +35,8 @@
     }
 
     .lpUnitDropdown {
-        background: #fff;
-        border: 1px solid #ccc;
+        background: var(--lp-surface);
+        border: 1px solid var(--lp-border);
         display: none;
         left: 0;
         padding: 0;
