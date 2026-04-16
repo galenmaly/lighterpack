@@ -44,17 +44,14 @@ const logWithRequest = function (req, data) {
         data = { message: data };
     }
 
-    if (req && req.uuid) {
-        logger.info({ ...data, requestid: req.uuid });
+    const enriched = req && req.uuid ? { ...data, requestid: req.uuid } : data;
+
+    if (enriched.err) {
+        logger.error(enriched);
         return;
     }
 
-    if (data.err) {
-        logger.error(data);
-        return;
-    }
-
-    logger.info(data);
+    logger.info(enriched);
 };
 
 export { logWithRequest, logger };

@@ -95,7 +95,7 @@ async function clearSession(req, res) {
         });
 
         logWithRequest(req, { message: 'MODERATION Clear session succeeded', username });
-        return res.status(200);
+        return res.status(200).json({ message: 'success' });
     } catch (err) {
         logWithRequest(req, { message: 'MODERATION Clear session lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });

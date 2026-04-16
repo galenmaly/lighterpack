@@ -181,7 +181,7 @@ async function saveLibrary(req, res, user) {
         return res.status(400).json({ errors: [{ message: 'An error occurred while saving your data - unable to parse library.' }] });
     }
 
-    let newSyncToken = user.sync_token++;
+    const newSyncToken = user.sync_token + 1;
 
     try {
         await knex('users')
@@ -193,7 +193,7 @@ async function saveLibrary(req, res, user) {
             });
 
         logWithRequest(req, { message: 'saved library', username: user.username });
-        return res.status(200).json({ message: 'success', sync_token: user.sync_token });
+        return res.status(200).json({ message: 'success', sync_token: newSyncToken });
     } catch (err) {
         logWithRequest(req, { message: 'Library saving error', username: user.username, err });
         return res.status(500).json({ errors: [{ message: 'An error occurred while saving your data.' }] });
@@ -253,7 +253,7 @@ async function forgotPassword(req, res) {
 
         if (!users.length) {
             logWithRequest(req, { message: 'Forgot password for unknown user', username });
-            return res.status(500).json({ message: 'An error occurred.' });
+            return res.status(400).json({ message: 'An error occurred.' });
         }
 
         const user = users[0];
@@ -357,9 +357,15 @@ router.post('/account', (req, res) => {
 
 async function account(req, res, user) {
     logWithRequest(req, { message: 'Starting account changes', username: user.username });
+
     try {
         await verifyPassword(user.username, String(req.body.currentPassword));
+    } catch (err) {
+        logWithRequest(req, { message: 'Account bad current password', username: user.username, err });
+        return res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+    }
 
+    try {
         if (req.body.newPassword) {
             const newPassword = String(req.body.newPassword);
             const errors = [];
@@ -403,8 +409,8 @@ async function account(req, res, user) {
 
         return res.status(200).json({ message: 'success' });
     } catch (err) {
-        logWithRequest(req, { message: 'Account bad current password', username: user.username, err });
-        res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+        logWithRequest(req, { message: 'Account update error', username: user.username, err });
+        return res.status(500).json({ errors: [{ message: 'An error occurred while updating your account.' }] });
     }
 }
 
@@ -448,8 +454,8 @@ async function imageUpload(req, res, _user) {
     }
 
     if (!files?.image?.[0]) {
-        logWithRequest(req, 'No image in upload');
-        return res.status(500).json({ message: 'An error occurred' });
+        logWithRequest(req, { message: 'No image in upload' });
+        return res.status(400).json({ message: 'No image provided.' });
     }
 
     const fd = new FormData();

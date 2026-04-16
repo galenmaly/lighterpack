@@ -47,6 +47,23 @@ app.use('/', endpoints);
 app.use('/', moderationEndpoints);
 app.use('/', views);
 
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+    const status = err.status || err.statusCode || 500;
+    logger.error({
+        requestid: req.uuid,
+        message: 'Unhandled request error',
+        status,
+        err: { message: err.message, stack: err.stack, type: err.type },
+        url: req.originalUrl,
+        method: req.method,
+    });
+    if (res.headersSent) return;
+    if (status < 500) {
+        return res.status(status).json({ message: 'Invalid request.' });
+    }
+    return res.status(500).json({ message: 'An unexpected error occurred.' });
+});
+
 logger.info('Starting up Lighterpack...');
 
 config.get('bindings').map((bind) => {
