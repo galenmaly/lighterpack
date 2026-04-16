@@ -26,6 +26,22 @@ app.directive('focus-on-create', focusOnCreate);
 app.directive('empty-if-zero', emptyIfZero);
 app.directive('click-outside', clickOutside);
 
+window.addEventListener('beforeunload', (e) => {
+    const { library, saveType, lastSaveData, isSaving } = store.state;
+    if (!library || !saveType) return;
+    if (isSaving) {
+        e.preventDefault();
+        return;
+    }
+    const currentData = JSON.stringify(library.save());
+    const hasUnsavedChanges = saveType === 'remote'
+        ? currentData !== lastSaveData
+        : currentData !== localStorage.library;
+    if (hasUnsavedChanges) {
+        e.preventDefault();
+    }
+});
+
 store.dispatch('init')
     .then(() => {
         app.mount('#lp');
