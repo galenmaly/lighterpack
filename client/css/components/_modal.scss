@@ -1,0 +1,48 @@
+// Share-page image dialog and overlay
+// Note: the Vue app uses its own .lpModal (in modal.vue) with transition-based animation.
+// These animation-based styles are for the non-Vue share page only.
+
+@keyframes lp-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes lp-fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.lpDialog {
+    animation: lp-fadein 0.25s linear 0s 1 forwards;
+    background: #f7f7f7;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+    left: 50%;
+    opacity: 0;
+    padding: 35px;
+    position: fixed;
+    text-align: left;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 350px;
+    z-index: 100;
+
+    &.fadeout {
+        animation: lp-fadeout 0.25s linear 0s 1 forwards;
+    }
+}
+
+.lpModalOverlay {
+    animation: lp-fadein 0.25s linear 0s 1 forwards;
+    background: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 90;
+
+    &.fadeout {
+        animation: lp-fadeout 0.25s linear 0s 1 forwards;
+    }
+}

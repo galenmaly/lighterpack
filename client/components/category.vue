@@ -74,13 +74,12 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/components/category";
+@import "../css/components/item";
 
-.lpQtySubtotal {
-    padding-right: 25px; /* Accommodates delete column */
+// Hover-show rules for category drag handle and remove button
+.lpCategory .lpHeader:hover .lpRemove,
+.lpCategory .lpHeader:hover .lpHandle {
+    visibility: visible;
 }
-
-.lpPriceSubtotal { /* unused? */
-    padding-right: 4px;
-}
-
 </style>

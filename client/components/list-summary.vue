@@ -168,6 +168,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/components/list-summary";
 
 .lpLegend {
     &:hover {

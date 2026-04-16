@@ -1,0 +1,60 @@
+@import "../globals";
+
+.lpListSummary {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.lpLegend {
+    border: 1px solid #fff;
+    display: block;
+    height: 10px;
+    width: 10px;
+}
+
+.lpTable {
+    display: table;
+    margin: 0;
+    padding: 0;
+}
+
+.lpRow {
+    display: table-row;
+
+    &:first-child > .lpCell {
+        border-top: none;
+    }
+
+    &.lpHeader {
+        .lpCell {
+            border-bottom: 1px solid #aaa;
+            vertical-align: bottom;
+        }
+
+        + .lpRow .lpCell {
+            border-top: none;
+        }
+    }
+}
+
+.lpFooter {
+    .lpCell {
+        border-top: 1px solid #aaa;
+    }
+}
+
+.lpCell {
+    border-top: 1px dotted #aaa;
+    display: table-cell;
+    padding: 1px 8px;
+
+    &:first-child {
+        padding-left: 0;
+    }
+
+    &:last-child {
+        padding-right: 0;
+    }
+}

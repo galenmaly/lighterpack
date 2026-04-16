@@ -1,0 +1,35 @@
+@import "../globals";
+
+.lpList {
+    background: inherit;
+    min-height: 100%;
+    padding: 0 20px;
+    position: relative;
+    transition: all $transitionDurationSlow;
+    z-index: $aboveSidebar;
+
+    .lpHasSidebar & {
+        margin-left: 320px;
+    }
+}
+
+#totals {
+    margin: 0;
+    padding: 0 0 0 10px;
+    text-align: left;
+}
+
+#chart.activeHover {
+    cursor: pointer;
+}
+
+.lpCategories {
+    margin: 0;
+    padding: 0;
+}
+
+#lpListDescription {
+    h2 {
+        border-bottom: 1px solid #aaa;
+    }
+}

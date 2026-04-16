@@ -1,0 +1,300 @@
+@use 'sass:color';
+@import "globals";
+
+// Links
+.lpHref {
+    color: $blue1;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.lpHref.close {
+    margin-left: 10px;
+}
+
+// Layout helpers
+.lpInvisible {
+    height: 1px;
+    left: -9999px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+.lpNotSupported {
+    background: $red1;
+    color: #fff;
+    font-size: 24px;
+    padding: 100px;
+    text-align: center;
+}
+
+.lpNumber {
+    text-align: right;
+}
+
+.lpHalf {
+    float: left;
+    width: 50%;
+}
+
+.lpAlignRight {
+    text-align: right;
+}
+
+// Add / copy links
+.lpAdd,
+.lpCopy {
+    color: $green1;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+
+    i {
+        margin-right: 5px;
+    }
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    #sidebar & {
+        color: $green1;
+    }
+}
+
+// Spacing helpers for add-item/category links
+.addCategory,
+.lpAddItem {
+    margin-left: 20px;
+    margin-top: 6px;
+}
+
+// Drag handle
+.lpHandle {
+    background: url("/images/handle.png");
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    float: left;
+    height: 24px;
+    margin-top: 2px;
+    visibility: hidden;
+    width: 12px;
+}
+
+// Remove button
+.lpRemove {
+    border-radius: 16px;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 8px;
+    margin-bottom: 3px;
+    opacity: 0.4;
+    padding: 5px 6px 6px;
+    visibility: hidden;
+
+    &:hover {
+        background: $red1;
+        box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25) inset;
+        opacity: 1;
+    }
+}
+
+// Hover-show rules for sidebar library items
+// TODO: move to library-items.vue / library-lists.vue when those get style blocks
+.lpLibraryList:hover .lpRemove,
+.lpLibraryItem:hover .lpRemove,
+.lpLibraryItem:hover .lpHandle {
+    visibility: visible;
+}
+
+// Shared header/subtotal weight
+.lpHeader,
+.lpSubtotal {
+    font-weight: 600;
+}
+
+// Form fields
+.lpFields {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+        background: #fff;
+        border: 1px solid $border1;
+        display: block;
+        margin: 0 0 $spacingMedium;
+        padding: $spacingSmall;
+        width: 100%;
+
+        &:focus {
+            border-color: $orange1;
+            outline: none;
+        }
+    }
+}
+
+.lpButtons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+    > * {
+        margin-bottom: $spacingMedium;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Primary button
+.lp .lpButton {
+    background-image: linear-gradient(165deg, $orange1 50%, $orange2 100%);
+    background-position: 100% 100%;
+    background-size: 200%;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0) inset, 0 0 2px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
+    padding: 8px 20px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+    width: auto;
+
+    &.lpSmall {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+
+    &:hover:not(:disabled),
+    &:active {
+        background-position: 0 0;
+        box-shadow: 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 1px 3px color.adjust($orange2, $lightness: -25%);
+    }
+
+    &:focus,
+    &:active {
+        outline: none;
+    }
+
+    &:focus:not(:active) {
+        box-shadow: 0 0 0 1px color.adjust($orange2, $lightness: -15%) inset, 0 1px 3px color.adjust($orange2, $lightness: -25%);
+        outline: none;
+    }
+
+    &::-moz-focus-inner {
+        border: none;
+    }
+
+    &:disabled,
+    &.lpButtonDisabled {
+        cursor: default;
+        opacity: 0.5;
+    }
+}
+
+.lpButtons .lpButton {
+    width: 100%;
+}
+
+// Status messages
+.lpError {
+    color: $red1;
+}
+
+.lpSuccess {
+    color: color.adjust($green1, $lightness: -10%);
+}
+
+.lpWarning {
+    background: $yellow2;
+    border: 1px solid $darkYellow;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+// Image dialog sizing (Vue version)
+#lpImageDialog {
+    width: auto;
+
+    img {
+        max-width: 800px;
+    }
+}
+
+// Silent / subtle inline inputs
+.lpSilent {
+    background: transparent;
+    border: 1px solid transparent;
+
+    &:hover {
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    &:focus {
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+        outline: none;
+    }
+
+    &.lpSilentError {
+        background-color: color.adjust($red1, $saturation: -10%, $lightness: 40%);
+        border: 1px solid $red1;
+        outline-color: $red1;
+
+        &:focus {
+            background-color: #fff;
+        }
+    }
+}
+
+// Hidden file inputs
+#csv,
+#image {
+    height: 1px;
+    left: -999px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+// Dragula drag-and-drop
+.gu-mirror {
+    filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+    margin: 0 !important;
+    opacity: 0.8;
+    position: fixed !important;
+    z-index: 9999 !important;
+}
+
+.gu-hide {
+    display: none !important;
+}
+
+.gu-unselectable {
+    user-select: none !important;
+}
+
+.gu-transit {
+    filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}

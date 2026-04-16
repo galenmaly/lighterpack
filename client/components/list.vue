@@ -138,6 +138,7 @@ export default {
 
 <style lang="scss">
 @use 'sass:color';
+@import "../css/components/list";
 @import "../css/_globals";
 
 #listDescriptionContainer {
