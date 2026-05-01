@@ -9,8 +9,7 @@
     "vite": "vite",
     "start": "vite build && node app.js",
     "build": "vite build",
-    "lint:css": "./node_modules/.bin/stylelint \"client/**/*.{scss,vue}\" --fix",
-    "lint:js": "./node_modules/.bin/eslint ./ --fix",
+    "lint": "./node_modules/.bin/eslint ./ --fix",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
   },
@@ -24,7 +23,6 @@
     "@vitejs/plugin-vue": "^6.0.6",
     "bcryptjs": "^3.0.3",
     "config": "^4.4.1",
-    "cookie-parser": "^1.4.7",
     "dragula": "^3.7.3",
     "express": "^5.1.0",
     "formidable": "^3.5.0",
@@ -47,10 +45,6 @@
     "@types/node": "^25.6.0",
     "eslint": "^10.2.0",
     "eslint-plugin-vue": "^10.8.0",
-    "globals": "^16.0.0",
-    "postcss-html": "^1.7.0",
-    "stylelint": "^17.7.0",
-    "stylelint-config-standard-scss": "^17.0.0",
-    "stylelint-order": "^8.1.1"
+    "globals": "^16.0.0"
   }
 }

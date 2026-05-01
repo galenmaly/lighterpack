@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import config from 'config';
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -34,7 +33,14 @@ app.use((req, res, next) => {
 
 const oneDay = 86400000;
 
-app.use(cookieParser());
+app.use((req, _res, next) => {
+    req.cookies = {};
+    for (const part of (req.headers.cookie || '').split(';')) {
+        const [key, ...val] = part.trim().split('=');
+        if (key) req.cookies[decodeURIComponent(key)] = decodeURIComponent(val.join('='));
+    }
+    next();
+});
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({
     extended: true,
