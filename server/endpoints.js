@@ -9,18 +9,23 @@ import formidable from 'formidable';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
-import mailgunJs from 'mailgun-js';
 import { logWithRequest } from './log.js';
 import { authenticateUser, verifyPassword } from './auth.js';
 import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
 
-let mailgun;
-let mailgunSendAsync;
-if (config.get('mailgunAPIKey')) {
-    mailgun = mailgunJs({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
-    mailgunSendAsync = promisify(mailgun.messages().send.bind(mailgun.messages()));
+async function sendMail({ from, to, replyTo, subject, text }) {
+    const apiKey = config.get('mailgunAPIKey');
+    const domain = config.get('mailgunDomain');
+    const body = new URLSearchParams({ from, to, subject, text, 'h:Reply-To': replyTo });
+    const response = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString('base64')}` },
+        body,
+    });
+    if (!response.ok) throw new Error(`Mailgun error: ${response.status} ${await response.text()}`);
+    return response.json();
 }
 
 const knex = Knex({
@@ -266,17 +271,15 @@ async function forgotPassword(req, res) {
 
         const message = `Hello ${username},\n It looks like you forgot your password. Here's your new one: \n\n Username: ${username}\n Password: ${newPassword}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
-        const mailOptions = {
-            from: 'LighterPack <info@mg.lighterpack.com>',
-            to: email,
-            'h:Reply-To': 'LighterPack <info@lighterpack.com>',
-            subject: 'Your new LighterPack password',
-            text: message,
-        };
-
         logWithRequest(req, { message: 'Attempting to send new password', email });
         try {
-            const mailgunResponse = await mailgunSendAsync(mailOptions);
+            const mailgunResponse = await sendMail({
+                from: 'LighterPack <info@mg.lighterpack.com>',
+                to: email,
+                replyTo: 'LighterPack <info@lighterpack.com>',
+                subject: 'Your new LighterPack password',
+                text: message,
+            });
             logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
         } catch (err) {
             logWithRequest(req, err);
@@ -327,24 +330,22 @@ async function forgotUsername(req, res) {
 
         const message = `Hello ${username},\n It looks like you forgot your username. Here it is: \n\n Username: ${username}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
-        const mailOptions = {
-            from: 'LighterPack <info@mg.lighterpack.com>',
-            to: email,
-            'h:Reply-To': 'LighterPack <info@lighterpack.com>',
-            subject: 'Your LighterPack username',
-            text: message,
-        };
-
         logWithRequest(req, { message: 'Attempting to send username', email, username });
-        mailgun.messages().send(mailOptions, (error, response) => {
-            if (error) {
-                logWithRequest(req, error);
-                return res.status(500).json({ message: 'An error occurred' });
-            }
-            logWithRequest(req, { message: 'Message sent', response: response.message });
-            logWithRequest(req, { message: 'sent username message for user', username, email });
-            return res.status(200).json({ email });
-        });
+        try {
+            const mailgunResponse = await sendMail({
+                from: 'LighterPack <info@mg.lighterpack.com>',
+                to: email,
+                replyTo: 'LighterPack <info@lighterpack.com>',
+                subject: 'Your LighterPack username',
+                text: message,
+            });
+            logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
+        } catch (err) {
+            logWithRequest(req, err);
+            return res.status(500).json({ message: 'An error occurred' });
+        }
+        logWithRequest(req, { message: 'sent username message for user', username, email });
+        return res.status(200).json({ email });
     } catch (err) {
         logWithRequest(req, { message: 'Forgot email lookup error', email, err });
         return res.status(500).json({ message: 'An error occurred' });

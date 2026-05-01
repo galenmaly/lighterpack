@@ -4,8 +4,16 @@ const mongojs = require('mongojs');
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
 
-if (config.get('mailgunAPIKey')) {
-    var mailgun = require('mailgun-js')({ apiKey: config.get('mailgunAPIKey'), domain: config.get('mailgunDomain') });
+async function sendMail({ from, to, replyTo, subject, text }) {
+    const apiKey = config.get('mailgunAPIKey');
+    const domain = config.get('mailgunDomain');
+    const body = new URLSearchParams({ from, to, subject, text, 'h:Reply-To': replyTo });
+    const response = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString('base64')}` },
+        body,
+    });
+    if (!response.ok) throw new Error(`Mailgun error: ${response.status} ${await response.text()}`);
 }
 
 const autoFixableMessage = "Hello ${originalUsername},\n\nWhile performing some system updates we noticed your username had some extra spaces at the beginning or end of it. We were able to rename your username to remove the extraneous spaces. Your new username is ${newUsername}. \n\nYou will have to reset your password to be able log in again which can be done at https://lighterpack.com/forgot-password \n\nApologies for any inconvenience, and if you have any isssues please reply to this email with details. \n\nThanks! \n\nThe LighterPack team";
@@ -135,29 +143,16 @@ function fixUser(user, messageTemplate) {
     });
 }
 
-function messageUser(user, originalUsername, messageTemplate) {
-    return new Promise((resolve, reject) => {
-        const newUsername = user.username;
-
-        let message = messageTemplate.replace("${originalUsername}", originalUsername);
-        message = message.replace("${newUsername}", newUsername);
-
-        const mailOptions = {
-            from: 'LighterPack <info@mg.lighterpack.com>',
-            to: user.email,
-            "h:Reply-To": "LighterPack <info@lighterpack.com>",
-            subject: 'LighterPack account update',
-            text: message,
-        };
-        
-
-        mailgun.messages().send(mailOptions, (error, response) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve();
-        });
+async function messageUser(user, originalUsername, messageTemplate) {
+    const newUsername = user.username;
+    let message = messageTemplate.replace("${originalUsername}", originalUsername);
+    message = message.replace("${newUsername}", newUsername);
+    await sendMail({
+        from: 'LighterPack <info@mg.lighterpack.com>',
+        to: user.email,
+        replyTo: 'LighterPack <info@lighterpack.com>',
+        subject: 'LighterPack account update',
+        text: message,
     });
 }
 

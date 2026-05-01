@@ -15,7 +15,19 @@ const mongojs = require('mongojs');
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
 
-const dryRun = false; // uncomment mailgun fo real
+const dryRun = false;
+
+async function sendMail({ from, to, replyTo, subject, text }) {
+    const apiKey = config.get('mailgunAPIKey');
+    const domain = config.get('mailgunDomain');
+    const body = new URLSearchParams({ from, to, subject, text, 'h:Reply-To': replyTo });
+    const response = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString('base64')}` },
+        body,
+    });
+    if (!response.ok) throw new Error(`Mailgun error: ${response.status} ${await response.text()}`);
+}
 console.log(`Dry run: ${dryRun}`);
 
 const dumpPath = "C:\\dev\\_databases\\users.json";
@@ -107,36 +119,26 @@ function findNewUsername(originalUsername, suffix = 0) {
     });
 }
 
-function messageUser(user, originalUsername, messageTemplate) {
-    return new Promise((resolve, reject) => {
-        const newUsername = user.username;
+async function messageUser(user, originalUsername, messageTemplate) {
+    const newUsername = user.username;
+    let message = messageTemplate.replace("${originalUsername}", originalUsername);
+    message = message.replace("${originalUsername}", originalUsername);
+    message = message.replace("${newUsername}", newUsername);
 
-        let message = messageTemplate.replace("${originalUsername}", originalUsername);
-        message = message.replace("${originalUsername}", originalUsername);
-        
-        message = message.replace("${newUsername}", newUsername);
+    const mailOptions = {
+        from: 'LighterPack <info@mg.lighterpack.com>',
+        to: user.email,
+        replyTo: 'LighterPack <info@lighterpack.com>',
+        subject: 'LighterPack account update',
+        text: message,
+    };
 
-        const mailOptions = {
-            from: 'LighterPack <info@mg.lighterpack.com>',
-            to: user.email,
-            "h:Reply-To": "LighterPack <info@lighterpack.com>",
-            subject: 'LighterPack account update',
-            text: message,
-        };
+    if (dryRun) {
+        console.log(mailOptions);
+        return;
+    }
 
-        if (dryRun) {
-            console.log(mailOptions);
-            return resolve();
-        } 
-        
-        mailgun.messages().send(mailOptions, (error, response) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve();
-        });
-    });
+    await sendMail(mailOptions);
 }
 
 function fixUser(user, messageTemplate, shouldSendMessage) {

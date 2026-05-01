@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
-import { markdown } from 'markdown';
+import { marked } from 'marked';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
@@ -150,7 +150,7 @@ async function renderListView(req, res) {
             renderedCategories,
             renderedTotals,
             optionalFields: library.optionalFields,
-            renderedDescription: markdown.toHTML(list.description),
+            renderedDescription: marked(list.description),
             scripts: shareScriptsHtml,
             styles: shareStylesHtml,
         };
@@ -212,7 +212,7 @@ async function renderEmberView(req, res) {
             categoryTemplate: templates.t_categoryShare,
             optionalFields: library.optionalFields,
             unitSelectTemplate: templates.t_unitSelect,
-            renderedDescription: markdown.toHTML(list.description),
+            renderedDescription: marked(list.description),
             currencySymbol: library.currencySymbol,
         });
 
@@ -225,7 +225,7 @@ async function renderEmberView(req, res) {
             renderedCategories,
             renderedTotals,
             optionalFields: library.optionalFields,
-            renderedDescription: markdown.toHTML(list.description),
+            renderedDescription: marked(list.description),
             baseUrl: config.get('deployUrl'),
             styles: shareStylesLinks,
             scripts: shareScriptsLinks,
