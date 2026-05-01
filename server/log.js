@@ -1,46 +1,17 @@
-import winston from 'winston';
-
-class TimestampFirst {
-    constructor(enabled = true) {
-        this.enabled = enabled;
-    }
-
-    transform(obj) {
-        if (this.enabled) {
-            return { timestamp: obj.timestamp, ...obj };
-        }
-        return obj;
-    }
+function serialize(obj) {
+    const out = { timestamp: new Date().toISOString() };
+    for (const [k, v] of Object.entries(obj ?? {}))
+        out[k] = v instanceof Error ? { message: v.message, stack: v.stack } : v;
+    return out;
 }
 
-const enumerateErrorFormat = winston.format(info => {
-    if (typeof(info) === 'object') {
-        for (let key in info) {
-            const value = info[key];
-            if (value instanceof Error) {
-                info[key] = {
-                    message: value.message,
-                    stack: value.stack
-                };
-            }
-        }
-    }
-
-    return info;
-});
-
-const logger = winston.createLogger({
-    format: winston.format.combine(
-        enumerateErrorFormat(),
-        winston.format.timestamp(),
-        new TimestampFirst(true),
-        winston.format.json(),
-    ),
-    transports: [new winston.transports.Console()],
-});
+const logger = {
+    info:  (obj) => process.stdout.write(JSON.stringify(serialize(obj)) + '\n'),
+    error: (obj) => process.stderr.write(JSON.stringify(serialize(obj)) + '\n'),
+};
 
 const logWithRequest = function (req, data) {
-    if (typeof (data) === 'string') {
+    if (typeof data === 'string') {
         data = { message: data };
     }
 
