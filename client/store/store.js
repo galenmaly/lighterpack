@@ -302,7 +302,7 @@ const store = createStore({
 
                 const saveRemotely = function (saveData) {
                     if (state.isSaving) {
-                        setTimeout(() => { store.commit('save', true); }, saveInterval + 1);
+                        setTimeout(() => saveRemotely(null), saveInterval + 1);
                         return;
                     }
 
@@ -311,7 +311,6 @@ const store = createStore({
                     }
 
                     store.commit('setIsSaving', true);
-                    store.commit('setLastSaveData', saveData);
 
                     return fetchJson('/saveLibrary/', {
                         method: 'POST',
@@ -323,6 +322,7 @@ const store = createStore({
                     })
                         .then((response) => {
                             store.commit('setSyncToken', response.sync_token);
+                            store.commit('setLastSaveData', saveData);
                             store.commit('setIsSaving', false);
                         })
                         .catch((response) => {
