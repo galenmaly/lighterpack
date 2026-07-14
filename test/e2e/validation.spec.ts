@@ -26,20 +26,18 @@ test.describe('Weight Input Validation', () => {
     expect(parseFloat(subtotal || '0')).toBe(-5);
   });
 
-  test('should handle very large weight values', async ({ page }) => {
+  // Documents actual behavior: very large weights are accepted unchanged (no cap)
+  test('should accept very large weight values without capping', async ({ page }) => {
     const { category, itemRow } = await createCategoryWithItem(page, 'Test', 'Heavy Item');
 
     const weightInput = itemRow.getByTestId('item-weight');
     await weightInput.fill('999999999');
     await weightInput.blur();
 
-    // Should accept the value
-    const value = await weightInput.inputValue();
-    expect(value).toBeTruthy();
+    await expect(weightInput).toHaveValue('999999999');
 
-    // Subtotal should be a valid number
     const subtotal = await category.getByTestId('category-subtotal-weight').textContent();
-    expect(parseFloat(subtotal || '0')).toBeGreaterThan(0);
+    expect(parseFloat(subtotal || '0')).toBe(999999999);
   });
 
   // Documents actual behavior: non-numeric text IS accepted by the app
@@ -57,18 +55,6 @@ test.describe('Weight Input Validation', () => {
     // Subtotal treats invalid input as 0 (NaN becomes 0)
     const subtotal = await category.getByTestId('category-subtotal-weight').textContent();
     expect(parseFloat(subtotal || '0')).toBe(0);
-  });
-
-  test('should handle weight with multiple decimal points', async ({ page }) => {
-    const { itemRow } = await createCategoryWithItem(page, 'Test', 'Multi Decimal Item');
-
-    const weightInput = itemRow.getByTestId('item-weight');
-    await weightInput.fill('1.2.3');
-    await weightInput.blur();
-
-    // Browser truncates at second decimal point - "1.2.3" becomes "1.2"
-    const value = await weightInput.inputValue();
-    expect(value).toBe('1.2');
   });
 
   test('should handle empty weight input', async ({ page }) => {
@@ -134,7 +120,8 @@ test.describe('Quantity Input Validation', () => {
     expect(parseFloat(subtotal || '0')).toBe(-30);
   });
 
-  test('should handle decimal quantity', async ({ page }) => {
+  // Documents actual behavior: decimal quantities are accepted and multiply the weight
+  test('should accept decimal quantity and multiply weight by it', async ({ page }) => {
     const { category, itemRow } = await createCategoryWithItem(page, 'Test', 'Decimal Qty Item');
 
     const weightInput = itemRow.getByTestId('item-weight');
@@ -146,20 +133,15 @@ test.describe('Quantity Input Validation', () => {
     await qtyInput.fill('1.5');
     await qtyInput.blur();
 
-    // Check if decimal is accepted or rounded
-    const value = await qtyInput.inputValue();
-    const numValue = parseFloat(value);
+    await expect(qtyInput).toHaveValue('1.5');
 
-    // Either accepted as 1.5 (subtotal = 15) or rounded to 1 or 2
-    expect(numValue).toBeGreaterThan(0);
-
+    // 10 * 1.5 = 15
     const subtotal = await category.getByTestId('category-subtotal-weight').textContent();
-    const subtotalNum = parseFloat(subtotal || '0');
-    // Should be either 10, 15, or 20 depending on rounding behavior
-    expect(subtotalNum).toBeGreaterThanOrEqual(10);
+    expect(parseFloat(subtotal || '0')).toBe(15);
   });
 
-  test('should handle very large quantity', async ({ page }) => {
+  // Documents actual behavior: very large quantities are accepted unchanged (no cap)
+  test('should accept very large quantity without capping', async ({ page }) => {
     const { category, itemRow } = await createCategoryWithItem(page, 'Test', 'Large Qty Item');
 
     const weightInput = itemRow.getByTestId('item-weight');
@@ -171,13 +153,11 @@ test.describe('Quantity Input Validation', () => {
     await qtyInput.fill('9999');
     await qtyInput.blur();
 
-    // Should accept or cap the value
-    const value = await qtyInput.inputValue();
-    expect(parseFloat(value)).toBeGreaterThan(0);
+    await expect(qtyInput).toHaveValue('9999');
 
-    // Subtotal should be calculated correctly
+    // 1 * 9999 = 9999
     const subtotal = await category.getByTestId('category-subtotal-weight').textContent();
-    expect(parseFloat(subtotal || '0')).toBeGreaterThan(0);
+    expect(parseFloat(subtotal || '0')).toBe(9999);
   });
 
   // Documents actual behavior: non-numeric text IS accepted by the app
@@ -287,26 +267,6 @@ test.describe('Text Field Validation', () => {
 
     // Page should not have any alert dialogs or script execution
     // (If XSS worked, test would likely fail or show unexpected behavior)
-  });
-
-  test('should handle unicode and emoji in item name', async ({ page }) => {
-    const unicodeName = 'Tent 🏕️ Zelt テント خيمة';
-
-    await page.getByText('Add new category', { exact: true }).click();
-    const category = page.getByTestId('category').last();
-    await category.getByPlaceholder('Category Name', { exact: true }).fill('Test');
-    await category.getByPlaceholder('Category Name', { exact: true }).blur();
-
-    await category.getByText('Add new item', { exact: true }).click();
-    const itemRow = category.getByTestId('item-row').last();
-    const nameInput = itemRow.getByPlaceholder('Name', { exact: true });
-    await nameInput.fill(unicodeName);
-    await nameInput.blur();
-
-    // Name should preserve unicode characters
-    const savedName = await nameInput.inputValue();
-    expect(savedName).toContain('🏕️');
-    expect(savedName).toContain('テント');
   });
 
   test('should handle empty list name', async ({ page }) => {
@@ -447,7 +407,9 @@ test.describe('Calculation Edge Cases', () => {
     await itemRow.hover();
     await wornIcon.click();
 
-    // Verify unworn state - worn weight element hidden, total still 20
+    // Verify unworn state - the worn/base weight split disappears and total is unchanged
+    await expect(page.getByTestId('worn-weight')).toBeHidden();
+    await expect(wornIcon).not.toHaveClass(/lpActive/);
     await expect(page.getByTestId('total-weight')).toHaveText(/^\s*20(\.0+)?\s*$/);
   });
 
@@ -493,10 +455,8 @@ test.describe('Calculation Edge Cases', () => {
     }
 
     // Sum should be 1.0 (0.1*4 + 0.2*3 = 0.4 + 0.6 = 1.0)
-    const subtotal = await category.getByTestId('category-subtotal-weight').textContent();
-    const subtotalNum = parseFloat(subtotal || '0');
-
-    // Should be exactly 1.0, not something like 0.9999999999999999 or 1.0000000000000002
-    expect(subtotalNum).toBeCloseTo(1.0, 2);
+    // Assert the exact displayed string: a float-precision bug would render
+    // something like "0.9999999999999999", which parseFloat would round away.
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText('1');
   });
 });

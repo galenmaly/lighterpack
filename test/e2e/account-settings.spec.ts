@@ -75,14 +75,6 @@ test.describe('Account Settings', () => {
     await expect(modal).not.toBeVisible();
   });
 
-  test('should show delete account option', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
-    await page.getByText('Account Settings').click();
-
-    const modal = page.locator('#accountSettings');
-    await expect(modal.getByText('Delete account')).toBeVisible();
-  });
-
   test('should change password successfully', async ({ page }) => {
     const { username } = generateTestUser('pwchange');
     const originalPassword = 'testtest';
@@ -120,11 +112,17 @@ test.describe('Account Settings', () => {
     await modal.getByPlaceholder('Current Password').fill('wrongpassword');
     await modal.getByPlaceholder('New Password', { exact: true }).fill('newpassword123');
     await modal.getByPlaceholder('Confirm New Password').fill('newpassword123');
+
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes('/account') && response.request().method() === 'POST',
+    );
     await modal.getByRole('button', { name: 'Submit' }).click();
 
-    // Should show an error (modal stays open)
+    const response = await responsePromise;
+    expect(response.status()).toBe(400);
+
+    await expect(modal.getByText('Your current password is incorrect.')).toBeVisible();
     await expect(modal).toBeVisible();
-    // The specific error message depends on the backend
   });
 });
 

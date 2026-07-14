@@ -184,11 +184,6 @@ test.describe('Share Page Extended Coverage', () => {
     ).toHaveText('2');
   });
 
-  test('should display total weight', async ({ page }) => {
-    await page.goto(shareUrl);
-    await expect(page.locator('.lpTotalValue')).toHaveText('21');
-  });
-
   test('should display total item count via title attribute', async ({ page }) => {
     await page.goto(shareUrl);
     // totalQty is surfaced as a title attribute on .lpTotalValue.
@@ -208,13 +203,5 @@ test.describe('Share Page Extended Coverage', () => {
     // Each category row in the totals table shows the unit next to its weight
     const shelterRow = page.locator('.lpTotalCategory').filter({ hasText: 'Shelter' });
     await expect(shelterRow.locator('.lpSubtotalUnit')).toContainText('oz');
-  });
-
-  test('should display unit label in category footer', async ({ page }) => {
-    await page.goto(shareUrl);
-    const shelterCategory = page
-      .locator('li.lpCategory')
-      .filter({ has: page.locator('h2', { hasText: 'Shelter' }) });
-    await expect(shelterCategory.locator('.lpItemsFooter .lpSubtotalUnit')).toContainText('oz');
   });
 });

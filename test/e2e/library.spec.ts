@@ -166,7 +166,7 @@ test.describe('Library Item Management', () => {
     await expect(page.locator('#library').getByText('Keep This Item', { exact: true })).toBeVisible();
   });
 
-  test('should show library items from all lists', async ({ page }) => {
+  test('should show library items from multiple categories', async ({ page }) => {
     const { username, password, email } = generateTestUser('liball');
 
     await registerUser(page, username, password, email);

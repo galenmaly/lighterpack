@@ -1,7 +1,7 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
 import { registerUser, generateTestUser } from './auth-utils';
-import { createCategory, addItem, markItemAsWorn, markItemAsConsumable } from './test-helpers';
+import { createCategory, addItem, enableSetting, markItemAsWorn, markItemAsConsumable } from './test-helpers';
 
 // Helper to get the test category (last one created)
 const getTestCategory = (page: Page): Locator => page.getByTestId('category').last();
@@ -17,74 +17,38 @@ test.describe('Item Management', () => {
     await createCategory(page, 'Test Category');
   });
 
-  test('should add a new item', async ({ page }) => {
+  test('item fields round-trip through the model, save, and reload', async ({ page }) => {
+    await enableSetting(page, 'Item prices');
+
     const category = getTestCategory(page);
-    await category.getByText('Add new item', { exact: true }).click();
+    await addItem(category, 'Tent ⛺', {
+      description: '3-season, 2 person',
+      weight: '40',
+      unit: 'oz',
+      quantity: '2',
+      price: '150',
+    });
 
-    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-    await expect(nameInput).toBeVisible();
-    await nameInput.fill('Backpack');
-    await nameInput.blur();
+    // The computed subtotal reflects the model, not just the input values
+    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^80(\.0+)?$/);
 
-    await expect(nameInput).toHaveValue('Backpack');
-  });
+    // Wait for the real (10s-debounced) save to complete, then reload
+    await page.waitForResponse(
+      (response) => response.url().includes('saveLibrary') && response.status() === 200,
+      { timeout: 15000 },
+    );
+    await page.reload();
+    await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
 
-  test('should edit item name', async ({ page }) => {
-    const category = getTestCategory(page);
-    await category.getByText('Add new item', { exact: true }).click();
-    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-    await nameInput.fill('Tent');
-    await nameInput.blur();
-
-    // Edit the name
-    await nameInput.clear();
-    await nameInput.fill('Ultralight Tent');
-    await nameInput.blur();
-
-    await expect(nameInput).toHaveValue('Ultralight Tent');
-  });
-
-  test('should edit item description', async ({ page }) => {
-    const category = getTestCategory(page);
-    await category.getByText('Add new item', { exact: true }).click();
-
-    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-    await nameInput.fill('Sleeping Bag');
-
-    const descInput = category.getByTestId('item-row').last().getByPlaceholder('Description');
-    await descInput.fill('20 degree down bag');
-    await descInput.blur();
-
-    await expect(descInput).toHaveValue('20 degree down bag');
-  });
-
-  test('should set item weight', async ({ page }) => {
-    const category = getTestCategory(page);
-    await category.getByText('Add new item', { exact: true }).click();
-
-    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-    await nameInput.fill('Water Bottle');
-
-    const weightInput = category.getByTestId('item-row').last().getByTestId('item-weight');
-    await weightInput.fill('5.5');
-    await weightInput.blur();
-
-    await expect(weightInput).toHaveValue('5.5');
-  });
-
-  test('should set item quantity', async ({ page }) => {
-    const category = getTestCategory(page);
-    await category.getByText('Add new item', { exact: true }).click();
-
-    const nameInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-    await nameInput.fill('Tent Stake');
-
-    const qtyInput = category.getByTestId('item-row').last().getByTestId('item-qty');
-    await qtyInput.clear();
-    await qtyInput.fill('8');
-    await qtyInput.blur();
-
-    await expect(qtyInput).toHaveValue('8');
+    const savedCategory = getTestCategory(page);
+    const savedRow = savedCategory.getByTestId('item-row').last();
+    await expect(savedRow.getByPlaceholder('Name', { exact: true })).toHaveValue('Tent ⛺');
+    await expect(savedRow.getByPlaceholder('Description', { exact: true })).toHaveValue('3-season, 2 person');
+    await expect(savedRow.getByTestId('item-weight')).toHaveValue('40');
+    await expect(savedRow.getByTestId('item-qty')).toHaveValue('2');
+    // prices are formatted to two decimals when loaded from a save
+    await expect(savedRow.getByTestId('item-price')).toHaveValue('150.00');
+    await expect(savedCategory.getByTestId('category-subtotal-weight')).toHaveText(/^80(\.0+)?$/);
   });
 
   test('should delete an item', async ({ page }) => {
@@ -137,22 +101,6 @@ test.describe('Item Management', () => {
     // Click again - should cycle back to lpStar0
     await starIcon.click();
     await expect(starIcon).toHaveClass(/lpStar0/);
-  });
-
-  test('should add multiple items to category', async ({ page }) => {
-    const category = getTestCategory(page);
-    const items = ['Tent', 'Sleeping Bag', 'Sleeping Pad', 'Pillow'];
-
-    for (const itemName of items) {
-      await category.getByText('Add new item', { exact: true }).click();
-      const lastInput = category.getByTestId('item-row').last().getByPlaceholder('Name');
-      await lastInput.fill(itemName);
-      await lastInput.blur();
-    }
-
-    // Verify all items exist by checking item count
-    const count = await category.getByTestId('item-row').count();
-    expect(count).toBeGreaterThanOrEqual(items.length);
   });
 
   test('should calculate weight correctly with quantity', async ({ page }) => {

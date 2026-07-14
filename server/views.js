@@ -3,12 +3,43 @@ import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
 import { marked } from 'marked';
+
+const escapeAttribute = (str) => String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+// Allow relative URLs and http/https/mailto; reject every other scheme
+// (javascript:, data:, vbscript:, ...). Control chars and whitespace are
+// stripped before matching because browsers ignore them inside URLs.
+const isSafeHref = (href) => {
+    // strip control chars and whitespace (charCode <= 0x20) before matching,
+    // because browsers ignore them inside URLs ("java\tscript:" runs)
+    const cleaned = Array.from(String(href || '')).filter((ch) => ch.charCodeAt(0) > 0x20).join('');
+    return !/^[a-z][a-z0-9+.-]*:/i.test(cleaned) || /^(https?|mailto):/i.test(cleaned);
+};
+
+marked.use({
+    renderer: {
+        // Inline HTML tags are dropped (their surrounding text survives as its
+        // own tokens). Block HTML swallows the whole line into one token, so
+        // escape it to visible text instead of silently losing user content.
+        html({ text, block }) { return block ? escapeAttribute(text) : ''; },
+        link({ href, title, text }) {
+            if (!isSafeHref(href)) return text;
+            const titleAttr = title ? ` title="${escapeAttribute(title)}"` : '';
+            return `<a href="${escapeAttribute(href)}"${titleAttr}>${text}</a>`;
+        },
+    },
+});
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest, logger } from './log.js';
 import weightUtils from '../client/utils/weight.js';
 import { Library } from '../client/dataTypes.js';
+import { listToCsv } from './csv.js';
 
 const router = express.Router();
 
@@ -205,6 +236,11 @@ async function renderEmberView(req, res) {
             }
         }
 
+        if (!list) { // List is in the DB but not the library
+            res.status(400).send('Invalid list specified.');
+            return;
+        }
+
         const chartData = escape(JSON.stringify(list.renderChart('total', false)));
 
         const renderedCategories = renderLibrary(library, {
@@ -286,44 +322,7 @@ async function renderListCSV(req, res) {
             return;
         }
 
-        const fullUnits = {
-            oz: 'ounce', lb: 'pound', g: 'gram', kg: 'kilogram',
-        };
-        let out = 'Item Name,Category,desc,qty,weight,unit,url,price,worn,consumable\n';
-
-        for (const i in list.categoryIds) {
-            const category = library.getCategoryById(list.categoryIds[i]);
-            if (category) {
-                for (const j in category.categoryItems) {
-                    const categoryItem = category.categoryItems[j];
-
-                    if (categoryItem) {
-                        const item = library.getItemById(categoryItem.itemId);
-
-                        const itemRow = [item.name];
-                        itemRow.push(category.name);
-                        itemRow.push(item.description);
-                        itemRow.push(`${categoryItem.qty}`);
-                        itemRow.push(`${weightUtils.MgToWeight(item.weight, item.authorUnit)}`);
-                        itemRow.push(fullUnits[item.authorUnit]);
-                        itemRow.push(item.url);
-                        itemRow.push(`${item.price}`);
-                        itemRow.push(categoryItem.worn ? 'Worn' : '');
-                        itemRow.push(categoryItem.consumable ? 'Consumable' : '');
-
-                        for (const k in itemRow) {
-                            const field = itemRow[k];
-                            if (k > 0) out += ',';
-                            if (typeof (field) === 'string') {
-                                if (field.indexOf(',') > -1) out += `"${field.replace(/"/g, '""')}"`;
-                                else out += field;
-                            } else out += field;
-                        }
-                        out += '\n';
-                    }
-                }
-            }
-        }
+        const out = listToCsv(library, list);
 
         let filename = list.name;
         if (!filename) filename = id;
@@ -400,6 +399,10 @@ const renderItem = function (item, args) {
     };
     Object.assign(out, item);
 
+    // Mustache escapes HTML but not URL schemes, so drop unsafe hrefs
+    // (javascript:, data:, ...) before the item name is rendered as a link.
+    if (out.url && !isSafeHref(out.url)) out.url = '';
+
     return Mustache.render(args.itemTemplate, out);
 };
 
@@ -408,6 +411,7 @@ const renderCategory = function (category, args) {
     for (const i in category.categoryItems) {
         const categoryItem = category.categoryItems[i];
         const item = category.library.getItemById(categoryItem.itemId);
+        if (!item) continue; // defensive: skip a dangling itemId instead of throwing
         Object.assign(item, categoryItem);
         items += renderItem(item, args);
     }

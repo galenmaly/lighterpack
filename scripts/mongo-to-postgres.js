@@ -1,11 +1,13 @@
 // Takes a json mongo export file and writes to the postgres database
 
-const config = require('config');
-const { cloneDeep } = require('lodash');
-const fs = require('fs');
-const readline = require('readline');
-const dataTypes = require('../client/dataTypes.js');
-const knex = require('knex')({
+import fs from 'fs';
+import readline from 'readline';
+import config from 'config';
+import cloneDeep from 'lodash/cloneDeep.js';
+import Knex from 'knex';
+import { Library } from '../client/dataTypes.js';
+
+const knex = Knex({
     client: 'pg',
     connection: cloneDeep(config.get('pgDatabase'))
 });
@@ -70,14 +72,14 @@ async function processLineByLine(dumpPath, userDates) {
         if (!dryRun) {
             try {
                 await knex('users').insert(userBatch);
-                const library = new dataTypes.Library();
+                const library = new Library();
                 try {
                     library.load(user.library);
-    
+
                     const userResult = await knex('users').select('user_id').where({username: user.username});
                     const userId = userResult[0].user_id;
-                    
-                    library.lists.forEach(async (list) => {
+
+                    for (const list of library.lists) {
                         if (list.externalId) {
                             const listInsert = {
                                 external_id: list.externalId,
@@ -90,8 +92,8 @@ async function processLineByLine(dumpPath, userDates) {
                                 duplicateLists.push(list.externalId);
                             }
                         }
-                    });
-    
+                    }
+
                 } catch (err) {
                     console.log(err);
                 }
@@ -115,4 +117,5 @@ processLineByLine(dumpPath, userDates).then(() => {
     console.log(unknownRegistrationCount);
     console.log(JSON.stringify(duplicateUsers));
     console.log(JSON.stringify(duplicateLists));
+    return knex.destroy();
 });

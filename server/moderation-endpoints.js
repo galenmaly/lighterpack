@@ -23,8 +23,8 @@ async function search(req, res) {
 
     try {
         let userResults = await knex('users')
-            .whereILike({ username: `%${searchQuery}%` })
-            .orWhereILike({ email: `%${searchQuery}%` })
+            .whereILike('username', `%${searchQuery}%`)
+            .orWhereILike('email', `%${searchQuery}%`)
             .select('*');
 
         const bridgeUserResults = userResults

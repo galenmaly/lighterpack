@@ -35,63 +35,34 @@ test.describe('Forgot Password Flow', () => {
     await expect(page).toHaveURL(/\/signin/);
   });
 
-  test('should submit forgot password form', async ({ page }) => {
-    const usernameInput = page.locator('form.forgotPassword input.username');
-    await usernameInput.fill('nonexistentuser');
+  test('should show error when resetting password for an unknown username', async ({ page }) => {
+    // Generated but never registered, so it's guaranteed not to exist
+    const { username } = generateTestUser('ghost');
+    await page.locator('form.forgotPassword input.username').fill(username);
 
-    const submitButton = page.locator('form.forgotPassword input[type="submit"]');
-    await submitButton.click();
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes('/forgotPassword') && response.request().method() === 'POST',
+    );
+    await page.locator('form.forgotPassword input[type="submit"]').click();
 
-    // Either redirects to reset confirmation or shows error for non-existent user
-    // The behavior depends on backend - we just verify the form submits
-    await expect(async () => {
-      const hasError = await page.locator('form.forgotPassword').getByText(/error|not found/i).count();
-      const hasRedirect = page.url().includes('reset-password');
-      expect(hasError > 0 || hasRedirect).toBe(true);
-    }).toPass({ timeout: 5000 });
+    const response = await responsePromise;
+    expect(response.status()).toBe(400);
+    await expect(page.locator('form.forgotPassword'))
+      .toContainText('An error occurred, please try again later.');
   });
 
-  test('should submit forgot username form', async ({ page }) => {
-    const emailInput = page.locator('form.forgotUsername input.email');
-    await emailInput.fill('test@example.com');
+  test('should show error when recovering username for an unknown email', async ({ page }) => {
+    const { email } = generateTestUser('ghost');
+    await page.locator('form.forgotUsername input.email').fill(email);
 
-    const submitButton = page.locator('form.forgotUsername input[type="submit"]');
-    await submitButton.click();
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes('/forgotUsername') && response.request().method() === 'POST',
+    );
+    await page.locator('form.forgotUsername input[type="submit"]').click();
 
-    // Either redirects to confirmation or shows error
-    await expect(async () => {
-      const hasError = await page.locator('form.forgotUsername').getByText(/error|not found/i).count();
-      const hasRedirect = page.url().includes('forgot-username');
-      expect(hasError > 0 || hasRedirect).toBe(true);
-    }).toPass({ timeout: 5000 });
-  });
-
-  test('should show error for empty username submission', async ({ page }) => {
-    const submitButton = page.locator('form.forgotPassword input[type="submit"]');
-    await submitButton.click();
-
-    // Should show validation error or stay on page
-    await expect(page.locator('#forgotPassword')).toBeVisible();
-  });
-
-  test('should show error for empty email submission', async ({ page }) => {
-    const submitButton = page.locator('form.forgotUsername input[type="submit"]');
-    await submitButton.click();
-
-    // Should show validation error or stay on page
-    await expect(page.locator('#forgotPassword')).toBeVisible();
-  });
-});
-
-test.describe('Password Recovery Navigation', () => {
-  test('should navigate to forgot password from sign in page', async ({ page }) => {
-    await page.goto(`${testRoot}signin`);
-
-    // Look for forgot password link
-    const forgotLink = page.getByText(/forgot/i);
-    if (await forgotLink.count() > 0) {
-      await forgotLink.first().click();
-      await expect(page).toHaveURL(/\/forgot-password/);
-    }
+    const response = await responsePromise;
+    expect(response.status()).toBe(400);
+    await expect(page.locator('form.forgotUsername'))
+      .toContainText('An error occurred, please try again later.');
   });
 });

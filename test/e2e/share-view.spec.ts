@@ -10,6 +10,73 @@ import {
   setItemStarRating,
 } from './test-helpers';
 
+test.describe('Share View — XSS', () => {
+  let shareUrl: string;
+
+  test.beforeAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    const { username, password, email } = generateTestUser('xss');
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
+
+    await enableSetting(page, 'List descriptions');
+
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('XSS Test List');
+    await listNameInput.blur();
+
+    const descriptionInput = page.locator('#listDescription');
+    await descriptionInput.waitFor({ state: 'visible' });
+
+    await page.evaluate(() => {
+      const store = (window as any).LighterPack.$store;
+      const list = store.state.library.getListById(store.state.library.defaultListId);
+      list.description = '<script>window.__xss=true</script> normal text [bad link](javascript:window.__xss=true)';
+      store.commit('updateListDescription', list);
+    });
+
+    await createCategory(page, 'Gear');
+
+    await page.getByText('Share', { exact: true }).hover();
+    const shareUrlInput = page.getByLabel('Share your list');
+    await expect(shareUrlInput).toHaveValue(/\/r\/[a-zA-Z0-9]+/, { timeout: 10000 });
+    shareUrl = await shareUrlInput.inputValue();
+
+    await expect(async () => {
+      const response = await page.request.get(shareUrl);
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toContain('normal text');
+    }).toPass({ timeout: 30000 });
+
+    await page.close();
+  });
+
+  test('should not execute injected script tags in list description', async ({ page }) => {
+    await page.goto(shareUrl);
+    await expect(page.locator('#lpListDescription')).toBeVisible();
+
+    const xssExecuted = await page.evaluate(() => (window as any).__xss === true);
+    expect(xssExecuted).toBe(false);
+  });
+
+  test('should not render script tags in list description DOM', async ({ page }) => {
+    await page.goto(shareUrl);
+    const scriptTags = await page.locator('#lpListDescription script').count();
+    expect(scriptTags).toBe(0);
+  });
+
+  test('should not render javascript: links in list description', async ({ page }) => {
+    await page.goto(shareUrl);
+    const jsLinks = await page.locator('#lpListDescription a[href^="javascript:"]').count();
+    expect(jsLinks).toBe(0);
+  });
+
+  test('should still render safe markdown text in list description', async ({ page }) => {
+    await page.goto(shareUrl);
+    await expect(page.locator('#lpListDescription')).toContainText('normal text');
+  });
+});
+
 /**
  * Test data weights (all in oz for easy math):
  *   Tent      32 oz × 1 = 32 oz  (Shelter)

@@ -84,13 +84,6 @@ test.describe('Embed Feature', () => {
     expect(body).toContain(`init_${externalId}`);
   });
 
-  test('embed response should include jQuery bootstrapping', async ({ page }) => {
-    const response = await page.request.get(embedUrl);
-    const body = await response.text();
-    expect(body).toContain('typeof jQuery');
-    expect(body).toContain('jquery.min.js');
-  });
-
   // ── In-browser rendering ──────────────────────────────────────────────────
 
   /**

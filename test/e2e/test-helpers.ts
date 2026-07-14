@@ -239,16 +239,6 @@ export const disableSetting = async (page: Page, settingLabel: string): Promise<
 };
 
 /**
- * Waits for the auto-save to complete by waiting for network idle.
- * Use this after making changes that trigger auto-save.
- */
-export const waitForAutoSave = async (page: Page): Promise<void> => {
-  // The app auto-saves after 10 seconds of inactivity
-  // For tests, we can trigger a save by waiting for network activity to settle
-  await page.waitForLoadState('networkidle');
-};
-
-/**
  * Marks an item as worn.
  */
 export const markItemAsWorn = async (itemRow: Locator): Promise<void> => {

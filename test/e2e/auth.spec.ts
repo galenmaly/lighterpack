@@ -4,10 +4,83 @@ import { testRoot } from './utils';
 
 import { registerUser, loginUser, logoutUser, generateTestUser } from './auth-utils';
 
-test('has title', async ({ page }) => {
-  await page.goto(testRoot);
+test.describe('Cookie security', () => {
+  let username: string;
+  let password: string;
 
-  await expect(page).toHaveTitle(/LighterPack/);
+  test.beforeEach(async ({ page }) => {
+    const user = generateTestUser('cookie');
+    username = user.username;
+    password = user.password;
+    await registerUser(page, username, password, user.email);
+    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+  });
+
+  test('lp cookie is httpOnly', async ({ page }) => {
+    const cookies = await page.context().cookies();
+    const lp = cookies.find((c) => c.name === 'lp');
+    expect(lp).toBeDefined();
+    expect(lp!.httpOnly).toBe(true);
+  });
+
+  test('lp cookie has sameSite=Lax and ~1 year expiry', async ({ page }) => {
+    const cookies = await page.context().cookies();
+    const lp = cookies.find((c) => c.name === 'lp');
+    expect(lp).toBeDefined();
+    expect(lp!.sameSite).toBe('Lax');
+    const oneYear = 365 * 24 * 60 * 60;
+    const now = Date.now() / 1000;
+    expect(lp!.expires).toBeGreaterThan(now + oneYear - 86400);
+    expect(lp!.expires).toBeLessThan(now + oneYear + 86400);
+  });
+
+  test('lp_loggedin cookie is set and readable by JavaScript', async ({ page }) => {
+    const cookies = await page.context().cookies();
+    const indicator = cookies.find((c) => c.name === 'lp_loggedin');
+    expect(indicator).toBeDefined();
+    expect(indicator!.httpOnly).toBe(false);
+    const visibleToJs = await page.evaluate(() => document.cookie.includes('lp_loggedin='));
+    expect(visibleToJs).toBe(true);
+  });
+
+  test('session persists across page reload', async ({ page }) => {
+    await page.reload();
+    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+  });
+
+  test('signout clears cookies and invalidates the session token server-side', async ({ page }) => {
+    const cookiesBefore = await page.context().cookies();
+    const lpBefore = cookiesBefore.find((c) => c.name === 'lp');
+    expect(lpBefore).toBeDefined();
+
+    await logoutUser(page);
+
+    const cookies = await page.context().cookies();
+    expect(cookies.find((c) => c.name === 'lp_loggedin')).toBeUndefined();
+
+    // Replaying the pre-signout session cookie must no longer authenticate
+    const response = await page.request.post(`${testRoot}saveLibrary/`, {
+      headers: { Cookie: `lp=${lpBefore!.value}` },
+      data: {},
+    });
+    expect(response.status()).toBe(404);
+    const body = await response.json();
+    expect(body.message).toContain('log in');
+  });
+});
+
+test.describe('Cookie security — guest flow', () => {
+  test('guest with no cookies and no localStorage stays on welcome page', async ({ page }) => {
+    await page.context().clearCookies();
+    await page.goto(testRoot);
+    await page.evaluate(() => localStorage.clear());
+    await page.goto(testRoot);
+
+    // Should not be redirected to /signin
+    await expect(page).not.toHaveURL(/\/signin/);
+    // Should show the welcome/landing content
+    await expect(page.getByText('Sign in', { exact: true }).first()).toBeVisible();
+  });
 });
 
 test.describe('User Authentication Tests', () => {
@@ -33,17 +106,6 @@ test.describe('User Authentication Tests', () => {
     await loginUser(page, username, password);
     await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
-  });
-
-  test('should successfully log out', async ({ page }) => {
-    await page.goto(testRoot);
-
-    // Register a new user first
-    const { username, password, email } = generateTestUser('logout');
-
-    await registerUser(page, username, password, email);
-    await logoutUser(page);
-    await expect(page.getByRole('heading').filter({hasText: 'Sign in'})).toBeVisible();
   });
 
   test('should successfully change password', async ({ page }) => {
@@ -99,6 +161,11 @@ test.describe('User Authentication Tests', () => {
 
     await page.getByText('Permanently delete account').click();
     await expect(page.getByRole('heading').filter({hasText: 'Sign in'})).toBeVisible();
+
+    // The account must actually be gone: logging in with the same credentials fails
+    await loginUser(page, username, password);
+    await expect(page.getByTestId('signin-form').locator('.lpError')).toBeVisible();
+    await expect(page.getByText(`Signed in as ${username}`)).not.toBeVisible();
   });
 
   test('should show validation errors when registering with missing fields', async ({ page }) => {

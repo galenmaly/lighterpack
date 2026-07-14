@@ -78,10 +78,10 @@ export default {
                 credentials: 'same-origin',
                 body: JSON.stringify({ username: this.$store.state.loggedIn, password: this.currentPassword }),
             })
-                .then((_response) => {
+                .then(async (_response) => {
                     this.deleting = false;
                     this.$emit('hide');
-                    this.$store.commit('signout');
+                    await this.$store.dispatch('signout');
                     this.$router.push('/signin');
                 })
                 .catch((err) => {

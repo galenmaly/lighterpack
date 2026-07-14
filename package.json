@@ -11,7 +11,8 @@
     "build": "vite build",
     "lint": "./node_modules/.bin/eslint ./ --fix",
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "test:unit": "node --test \"test/unit/**/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -42,7 +43,6 @@
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.6.0",
     "eslint": "^10.2.0",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^16.0.0"

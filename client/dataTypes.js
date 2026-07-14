@@ -139,16 +139,14 @@ Category.prototype.load = function (input) {
 
     assignIn(this, input);
 
-    this.categoryItems.forEach((categoryItem, index) => {
+    this.categoryItems = this.categoryItems.filter((categoryItem) => this.library.getItemById(categoryItem.itemId));
+    this.categoryItems.forEach((categoryItem) => {
         delete categoryItem._isNew;
         if (typeof categoryItem.price !== 'undefined') {
             delete categoryItem.price;
         }
         if (!categoryItem.star) {
             categoryItem.star = 0;
-        }
-        if (!this.library.getItemById(categoryItem.itemId)) {
-            this.categoryItems.splice(index, 1);
         }
     });
 };
@@ -435,12 +433,7 @@ Library.prototype.removeList = function (id) {
     delete this.idMap[id];
 
     if (this.defaultListId == id) {
-        let newId = -1;
-        for (const i in this.lists) {
-            newId = i;
-            break;
-        }
-        this.defaultListId = newId;
+        this.defaultListId = this.lists[0].id;
     }
 };
 

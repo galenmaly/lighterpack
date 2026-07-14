@@ -7,6 +7,13 @@ import endpoints from './server/endpoints.js';
 import moderationEndpoints from './server/moderation-endpoints.js';
 import views from './server/views.js';
 
+// Backstop: a rejected promise that escapes a handler (e.g. a transient DB
+// error on a detached async call) would otherwise terminate the process on
+// modern Node. Log it and keep serving.
+process.on('unhandledRejection', (err) => {
+    logger.error({ message: 'Unhandled promise rejection', err: { message: err?.message, stack: err?.stack } });
+});
+
 const app = express();
 app.enable('trust proxy');
 

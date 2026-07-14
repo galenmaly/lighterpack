@@ -15,17 +15,6 @@ export function generateTestUser(prefix = 'test') {
     return { username, email, password };
 }
 
-export async function getSharedUser() {
-    /* TODO: after migrating to postgres have this method actually create the user if it doesn't already exist. */
-    /* TODO: should also be a uniqueUser method for tests that alter the user state */
-
-    const password = 'testtest';
-    const username = 'testuser';
-    const email = 'testuser@lighterpack.com';
-
-    return { username, password, email };
-}
-
 export async function registerUser(page, username, password, email) {
     await page.goto(testRoot);
 
@@ -46,7 +35,10 @@ export async function loginUser(page, username, password) {
     await signinForm.getByRole('button', { name: 'Sign in' }).click();
 }
 
-export async function logoutUser(page) { 
+export async function logoutUser(page) {
     await page.getByText('Signed in as').hover();
-    await page.getByText('Sign out').click();
+    await Promise.all([
+        page.waitForURL('**/signin'),
+        page.getByText('Sign out').click(),
+    ]);
 }

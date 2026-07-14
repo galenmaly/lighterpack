@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import { customAlphabet } from 'nanoid';
@@ -10,10 +9,12 @@ import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
-import { authenticateUser, verifyPassword } from './auth.js';
+import { authenticateUser, verifyPassword, sessionCookieOptions } from './auth.js';
 import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
+
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 async function sendMail({ from, to, replyTo, subject, text }) {
     const apiKey = config.get('mailgunAPIKey');
@@ -35,8 +36,6 @@ const knex = Knex({
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
-// one day in many years this can go away.
-eval(`${fs.readFileSync(path.join(import.meta.dirname, './sha3.js'))}`);
 
 router.post('/register', (req, res) => {
     register(req, res);
@@ -59,6 +58,8 @@ async function register(req, res) {
 
     if (!email) {
         errors.push({ field: 'email', message: 'Please enter an email.' });
+    } else if (!isValidEmail(email)) {
+        errors.push({ field: 'email', message: 'Please enter a valid email.' });
     }
 
     if (!password) {
@@ -82,16 +83,16 @@ async function register(req, res) {
             .select();
 
         if (conflictingUsers.length) {
-            if (conflictingUsers[0].username === username || (conflictingUsers.length > 0 && conflictingUsers[0].username === username)) { //hacky
+            if (conflictingUsers.some((u) => u.username === username)) {
                 logWithRequest(req, { message: 'User exists', username });
                 return res.status(400).json({ errors: [{ field: 'username', message: 'That username already exists, please pick a different username.' }] });
-            } else if (conflictingUsers[0].email === email || (conflictingUsers.length > 0 && conflictingUsers[0].email === email)) { //hacky
+            }
+            if (conflictingUsers.some((u) => u.email === email)) {
                 logWithRequest(req, { message: 'User email exists', email });
                 return res.status(400).json({ errors: [{ field: 'email', message: 'A user with that email already exists.' }] });
-            } else {
-                logWithRequest(req, { message: 'User creation failed for unknown reason', conflictingUsers });
-                return res.status(500).json({ errors: [{ message: 'An unexpected error occurred.' }] });
             }
+            logWithRequest(req, { message: 'User creation failed for unknown reason', conflictingUsers });
+            return res.status(500).json({ errors: [{ message: 'An unexpected error occurred.' }] });
         }
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
@@ -128,9 +129,16 @@ async function register(req, res) {
         try {
             await knex('users').insert(newUser);
             const out = { username, library: JSON.stringify(newUser.library), sync_token: newSyncToken };
-            res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
+            const opts = sessionCookieOptions();
+            res.cookie('lp', token, opts);
+            res.cookie('lp_loggedin', '1', { ...opts, httpOnly: false });
             return res.status(200).json(out);
         } catch (err) {
+            if (err.code === '23505') {
+                // lost a race against a concurrent registration for the same username/email
+                logWithRequest(req, { message: 'Register unique violation race', username, email, err });
+                return res.status(400).json({ errors: [{ message: 'That username or email already exists, please pick a different one.' }] });
+            }
             logWithRequest(req, { message: 'Error inserting user', newUser, err });
             return res.status(500).json({ errors: [{ message: 'An error occurred when registering.' }] });
         }
@@ -189,13 +197,20 @@ async function saveLibrary(req, res, user) {
     const newSyncToken = user.sync_token + 1;
 
     try {
-        await knex('users')
-            .where({ user_id: user.user_id })
+        // Guard against a lost update from a concurrent save (e.g. two tabs):
+        // only write if the stored sync_token still matches what we read.
+        const updated = await knex('users')
+            .where({ user_id: user.user_id, sync_token: user.sync_token })
             .update({
                 library: library,
                 sync_token: newSyncToken,
                 last_seen: new Date()
             });
+
+        if (!updated) {
+            logWithRequest(req, { message: 'out of date syncToken (concurrent save)', username: user.username });
+            return res.status(400).json({ message: 'Your list is out of date - please refresh your browser.' });
+        }
 
         logWithRequest(req, { message: 'saved library', username: user.username });
         return res.status(200).json({ message: 'success', sync_token: newSyncToken });
@@ -254,7 +269,7 @@ async function forgotPassword(req, res) {
     }
 
     try {
-        const users = await knex('users').select({username});
+        const users = await knex('users').where({username});
 
         if (!users.length) {
             logWithRequest(req, { message: 'Forgot password for unknown user', username });
@@ -271,6 +286,18 @@ async function forgotPassword(req, res) {
 
         const message = `Hello ${username},\n It looks like you forgot your password. Here's your new one: \n\n Username: ${username}\n Password: ${newPassword}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
 
+        // Persist the new password before emailing it, so the password we send
+        // is always the one that actually works. (Emailing first meant a failed
+        // save left the user with a password that didn't match.)
+        try {
+            await knex('users').where({user_id: user.user_id}).update({
+                password: newPasswordHash
+            });
+        } catch (err) {
+            logWithRequest(req, { message: 'Error saving new password', err });
+            return res.status(500).json({ message: 'An error occurred' });
+        }
+
         logWithRequest(req, { message: 'Attempting to send new password', email });
         try {
             const mailgunResponse = await sendMail({
@@ -286,17 +313,8 @@ async function forgotPassword(req, res) {
             return res.status(500).json({ message: 'An error occurred' });
         }
 
-        try {
-            await knex('users').where({user_id: user.user_id}).update({
-                password: newPasswordHash
-            });
-
-            logWithRequest(req, { message: 'password changed for user', username });
-            return res.status(200).json({ username });
-        } catch (err) {
-            logWithRequest(req, { message: 'Error saving new password', err });
-            return res.status(500).json({ message: 'An error occurred' });
-        }
+        logWithRequest(req, { message: 'password changed for user', username });
+        return res.status(200).json({ username });
     } catch (err) {
         logWithRequest(req, { message: 'Forgot password lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });
@@ -318,7 +336,9 @@ async function forgotUsername(req, res) {
     }
 
     try {
-        const users = await knex('users').select({email});
+        // Emails are stored as-typed, so match case-insensitively — otherwise a
+        // user whose stored email has any uppercase letter can never recover it.
+        const users = await knex('users').whereRaw('lower(email) = ?', [email]);
 
         if (!users.length) {
             logWithRequest(req, { message: 'Forgot email for unknown user', email });
@@ -363,6 +383,9 @@ async function account(req, res, user) {
         await verifyPassword(user.username, String(req.body.currentPassword));
     } catch (err) {
         logWithRequest(req, { message: 'Account bad current password', username: user.username, err });
+        if (err.code === 500) {
+            return res.status(500).json({ errors: [{ message: err.message }] });
+        }
         return res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
     }
 
@@ -392,8 +415,13 @@ async function account(req, res, user) {
         if (req.body.newEmail) {
             let email = String(req.body.newEmail).trim();
 
+            if (!isValidEmail(email)) {
+                return res.status(400).json({ errors: [{ field: 'email', message: 'Please enter a valid email.' }] });
+            }
+
             let conflictingUsers = await knex('users')
                 .where({ email })
+                .whereNot({ user_id: user.user_id })
                 .select();
 
             if (conflictingUsers.length) {
@@ -424,33 +452,64 @@ async function deleteAccount(req, res, user) {
 
     try {
         await verifyPassword(user.username, String(req.body.password));
-
-        if (req.body.username !== user.username) {
-            logWithRequest(req, { message: 'Bad account deletion - wrong user', requestedUsername: req.body.username, initiatedby: user.username });
-            return res.status(400).json({ message: 'An error occurred, please try logging out and in again.' });
+    } catch (err) {
+        logWithRequest(req, { message: 'Bad account deletion - invalid password', username: req.body.username, err });
+        if (err.code === 500) {
+            return res.status(500).json({ errors: [{ message: err.message }] });
         }
+        return res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+    }
 
-        await knex('users').where({username: user.username}).del();
+    if (req.body.username !== user.username) {
+        logWithRequest(req, { message: 'Bad account deletion - wrong user', requestedUsername: req.body.username, initiatedby: user.username });
+        return res.status(400).json({ message: 'An error occurred, please try logging out and in again.' });
+    }
+
+    try {
+        // list rows FK-reference the user, so they must go first (same transaction)
+        await knex.transaction(async (trx) => {
+            await trx('list').where({user_id: user.user_id}).del();
+            await trx('users').where({user_id: user.user_id}).del();
+        });
 
         logWithRequest(req, { message: 'Completed account delete', username: user.username });
 
         return res.status(200).json({ message: 'success' });
     } catch (err) {
-        logWithRequest(req, { message: 'Bad account deletion - invalid password', username: req.body.username, err });
-        res.status(400).json({ errors: [{ field: 'currentPassword', message: 'Your current password is incorrect.' }] });
+        logWithRequest(req, { message: 'Account delete failed', username: user.username, err });
+        res.status(500).json({ errors: [{ message: 'An error occurred, please try again later.' }] });
     }
 }
+
+router.post('/signout', async (req, res) => {
+    if (req.cookies.lp) {
+        try {
+            await knex('users').where({token: String(req.cookies.lp)}).update({token: ''});
+        } catch (err) {
+            logWithRequest(req, { message: 'Error invalidating token on signout', err });
+        }
+    }
+    const opts = sessionCookieOptions();
+    res.clearCookie('lp', opts);
+    res.clearCookie('lp_loggedin', { ...opts, httpOnly: false });
+    return res.status(200).json({ message: 'success' });
+});
 
 router.post('/imageUpload', (req, res) => {
     imageUpload(req, res, {});
 });
 
+const maxImageUploadBytes = 5 * 1024 * 1024;
+
 async function imageUpload(req, res, _user) {
     let files;
     try {
-        [, files] = await formidable().parse(req);
+        [, files] = await formidable({ maxFileSize: maxImageUploadBytes }).parse(req);
     } catch (err) {
         logWithRequest(req, { message: 'form parse error', err });
+        if (err.httpCode === 413) { // formidable flags an over-size upload with httpCode 413
+            return res.status(413).json({ message: 'Image is too large (5MB max).' });
+        }
         return res.status(500).json({ message: 'An error occurred' });
     }
 

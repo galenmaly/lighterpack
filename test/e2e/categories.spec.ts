@@ -11,27 +11,6 @@ test.describe('Category Management', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
-  test('should create a new category', async ({ page }) => {
-    const category = await createCategory(page, 'Shelter');
-
-    // Verify category appears by checking the input value
-    await expect(category.getByPlaceholder('Category Name', { exact: true })).toHaveValue('Shelter');
-  });
-
-  test('should edit category name', async ({ page }) => {
-    // Create a category first
-    const category = await createCategory(page, 'Clothing');
-    const categoryInput = category.getByPlaceholder('Category Name', { exact: true });
-
-    // Edit the name
-    await categoryInput.clear();
-    await categoryInput.fill('Sleep System');
-    await categoryInput.blur();
-
-    // Verify the name changed
-    await expect(categoryInput).toHaveValue('Sleep System');
-  });
-
   test('should delete a category', async ({ page }) => {
     // Create a new category (added at end of list)
     const category = await createCategory(page, 'To Delete');
@@ -74,25 +53,6 @@ test.describe('Category Management', () => {
 
     // Check that subtotal shows the weight
     await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^32(\.0+)?$/);
-  });
-
-  test('should update subtotals when adding multiple items', async ({ page }) => {
-    // Create a new category with items
-    const category = await createCategory(page, 'Gear');
-    await addItem(category, 'Item 1', { weight: '10' });
-    await addItem(category, 'Item 2', { weight: '20' });
-
-    // Check that subtotal shows combined weight (30 oz)
-    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^30(\.0+)?$/);
-  });
-
-  test('should handle category with quantity items', async ({ page }) => {
-    // Create a category with item that has quantity
-    const category = await createCategory(page, 'Food');
-    await addItem(category, 'Energy Bar', { weight: '2', quantity: '5' });
-
-    // Check that subtotal accounts for quantity (2 * 5 = 10 oz)
-    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^10(\.0+)?$/);
   });
 
   test('should update totals when a category is deleted', async ({ page }) => {

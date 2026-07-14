@@ -14,9 +14,12 @@ test.describe('Settings Persistence After Reload', () => {
     const category = await createCategory(page, 'Gear');
     await addItem(category, 'Test Item', { weight: '10' });
 
-    // Enable prices
+    // Enable prices and set a price value
     await enableSetting(page, 'Item prices');
-    await expect(page.getByTestId('item-price').first()).toBeVisible();
+    const priceInput = page.getByTestId('item-price').first();
+    await expect(priceInput).toBeVisible();
+    await priceInput.fill('49.99');
+    await priceInput.blur();
 
     // Wait for auto-save
     await page.waitForResponse(
@@ -24,11 +27,12 @@ test.describe('Settings Persistence After Reload', () => {
       { timeout: 15000 },
     );
 
-    // Reload and verify
+    // Reload and verify both the setting and the price value survived
     await page.reload();
     await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
 
     await expect(page.getByTestId('item-price').first()).toBeVisible();
+    await expect(page.getByTestId('item-price').first()).toHaveValue('49.99');
   });
 
   test('should persist list description setting after reload', async ({ page }) => {

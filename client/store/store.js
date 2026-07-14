@@ -36,7 +36,6 @@ const store = createStore({
             state.isSaving = isSaving;
         },
         signout(state) {
-            createCookie('lp', '', -1);
             state.library = false;
             state.loggedIn = false;
         },
@@ -235,10 +234,15 @@ const store = createStore({
         },
     },
     actions: {
+        async signout(context) {
+            await fetch('/signout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+            context.commit('signout');
+        },
         init(context) {
-            if (readCookie('lp')) {
+            if (readCookie('lp_loggedin')) {
                 return context.dispatch('loadRemote');
-            } if (localStorage.library) {
+            }
+            if (localStorage.library) {
                 return context.dispatch('loadLocal');
             }
             return new Promise((resolve) => {

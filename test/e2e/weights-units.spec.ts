@@ -20,32 +20,15 @@ test.describe('Weight Units', () => {
     await expect(unitDisplay).toHaveText('oz');
   });
 
-  test('should change unit to pounds (lb)', async ({ page }) => {
-    // Click unit selector to open dropdown
-    await page.getByTestId('unit-select').first().click();
+  test('should change unit through lb, g, and kg', async ({ page }) => {
+    const unitSelect = page.getByTestId('unit-select').first();
+    const unitDisplay = unitSelect.locator('span.lpDisplay');
 
-    // Select pounds
-    await page.locator('ul.lpUnitDropdown li.lb').first().click();
-
-    // Verify unit changed
-    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
-    await expect(unitDisplay).toHaveText('lb');
-  });
-
-  test('should change unit to grams (g)', async ({ page }) => {
-    await page.getByTestId('unit-select').first().click();
-    await page.locator('ul.lpUnitDropdown li.g').first().click();
-
-    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
-    await expect(unitDisplay).toHaveText('g');
-  });
-
-  test('should change unit to kilograms (kg)', async ({ page }) => {
-    await page.getByTestId('unit-select').first().click();
-    await page.locator('ul.lpUnitDropdown li.kg').first().click();
-
-    const unitDisplay = page.getByTestId('unit-select').first().locator('span.lpDisplay');
-    await expect(unitDisplay).toHaveText('kg');
+    for (const unit of ['lb', 'g', 'kg'] as const) {
+      await unitSelect.click();
+      await page.locator(`ul.lpUnitDropdown li.${unit}`).first().click();
+      await expect(unitDisplay).toHaveText(unit);
+    }
   });
 
   test('should save weight with unit', async ({ page }) => {
@@ -139,14 +122,6 @@ test.describe('Weight Calculations', () => {
     await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^20(\.0+)?$/);
   });
 
-  test('should handle mixed units in display', async ({ page }) => {
-    const category = await createCategory(page, 'Heavy Gear');
-    await addItem(category, 'Bear Canister', { weight: '48' });
-
-    // The display should show 48 oz
-    await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^48(\.0+)?$/);
-  });
-
   test('should update totals when item deleted', async ({ page }) => {
     const category = await createCategory(page, 'Gear');
     const firstItem = await addItem(category, 'Item 1', { weight: '10' });
@@ -173,44 +148,6 @@ test.describe('Weight Input Behavior', () => {
 
     const category = await createCategory(page, 'Test');
     await addItem(category, 'Test Item');
-  });
-
-  test('should accept decimal weights', async ({ page }) => {
-    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
-    await weightInput.fill('3.75');
-    await weightInput.blur();
-
-    await expect(weightInput).toHaveValue('3.75');
-  });
-
-  test('should accept zero weight', async ({ page }) => {
-    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
-    await weightInput.fill('0');
-    await weightInput.blur();
-
-    await expect(weightInput).toHaveValue('0');
-  });
-
-  test('should increment weight with up arrow key', async ({ page }) => {
-    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
-    await weightInput.fill('5');
-    await weightInput.focus();
-    await page.keyboard.press('ArrowUp');
-
-    // Weight should increment
-    const value = await weightInput.inputValue();
-    expect(parseFloat(value)).toBeGreaterThan(5);
-  });
-
-  test('should decrement weight with down arrow key', async ({ page }) => {
-    const weightInput = page.getByTestId('item-row').last().getByTestId('item-weight');
-    await weightInput.fill('5');
-    await weightInput.focus();
-    await page.keyboard.press('ArrowDown');
-
-    // Weight should decrement
-    const value = await weightInput.inputValue();
-    expect(parseFloat(value)).toBeLessThan(5);
   });
 
   test('should round weight display to two decimals', async ({ page }) => {

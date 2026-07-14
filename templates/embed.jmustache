@@ -80,7 +80,7 @@ listReport_{{externalId}} = function() {
             $(".lpDisplay", $(this).parents(".lpUnitSelect")).text(unit)
             $(".lpUnit", $(this).parents(".lpUnitSelect")).val(unit);
             if ($(this).parents(".lpTotalUnit").length) {
-                $(".lpTotalValue", $(this).parents(".lpTotal")).text(MgToWeight(parseFloat($(".lpMG", $item).val()), unit));
+                $(".lpTotalValue", $(this).parents(".lpTotal")).text(MgToWeight(parseFloat($(".lpMG", $(this).parents(".lpTotalUnit")).val()), unit));
                 updateSubtotalsUnit(unit);
             } else {
                 var $item = $(this).parents(".lpItem");

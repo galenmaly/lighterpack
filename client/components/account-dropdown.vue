@@ -37,8 +37,8 @@ export default {
         showHelp() {
             this.openHelp();
         },
-        signout() {
-            this.$store.commit('signout');
+        async signout() {
+            await this.$store.dispatch('signout');
             this.$router.push('/signin');
         },
     },

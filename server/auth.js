@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import { promisify } from 'util';
@@ -15,11 +13,18 @@ const knex = Knex({
 
 const moderatorList = config.get('moderators');
 
+const sessionCookieOptions = () => ({
+    path: '/',
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: config.get('environment') === 'production',
+    sameSite: 'lax',
+});
+
 const randomBytesAsync = promisify(crypto.randomBytes);
 
 // one day in many years this can go away.
-/* global CryptoJS */
-eval(`${fs.readFileSync(path.join(import.meta.dirname, './sha3.js'))}`);
+import CryptoJS from './sha3.js';
 
 const authenticateModerator = async function (req, res, callback) {
     authenticateUser(req, res, (req, res, user) => {
@@ -31,6 +36,7 @@ const authenticateModerator = async function (req, res, callback) {
 };
 
 const authenticateUser = async function (req, res, callback) {
+    if (!req.body) req.body = {}; // GETs and multipart requests arrive with no parsed body
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
         return res.status(401).json({ message: 'Please log in.' });
     }
@@ -42,10 +48,11 @@ const authenticateUser = async function (req, res, callback) {
         try {
             const user = await verifyPassword(username, password);
 
-            generateSession(req, res, user, callback);
+            await generateSession(req, res, user, callback);
         } catch (err) {
+            if (res.headersSent) return;
             logWithRequest(req, err);
-            if (err.code && err.message) {
+            if (err instanceof AuthError) {
                 logWithRequest(req, { message: `error on verifyPassword for: ${username}`, error: err.message });
                 res.status(err.code).json({ message: err.message });
             } else {
@@ -66,20 +73,28 @@ const authenticateUser = async function (req, res, callback) {
             const user = users[0];
 
             req.lighterpackusername = user.username || 'UNKNOWN';
-            callback(req, res, user);
+            await callback(req, res, user);
         } catch (err) {
+            if (res.headersSent) return;
             logWithRequest(req, { message: 'Error on authenticateUser else', error: err });
             return res.status(500).json({ message: 'An error occurred, please try again later.' });
         }
     }
 };
 
+class AuthError extends Error {
+    constructor(code, message) {
+        super(message);
+        this.code = code;
+    }
+}
+
 const verifyPassword = async function (username, password) {
     try {
         const users = await knex('users').select().where({username});
 
         if (!users.length) {
-            throw new Error({ code: 404, message: 'Invalid username and/or password.' });
+            throw new AuthError(404, 'Invalid username and/or password.');
         }
 
         const user = users[0];
@@ -115,10 +130,13 @@ const verifyPassword = async function (username, password) {
             return user;
         }
 
-        throw new Error({ code: 404, message: 'Invalid username and/or password.' });
+        throw new AuthError(404, 'Invalid username and/or password.');
     } catch (err) {
+        if (err instanceof AuthError) {
+            throw err;
+        }
         logWithRequest(null, { message: 'verifyPassword DB error', err });
-        throw new Error({ code: 500, message: 'An error occurred, please try again later.' });
+        throw new AuthError(500, 'An error occurred, please try again later.');
     }
 };
 
@@ -130,12 +148,14 @@ const generateSession = async function (req, res, user, callback) {
         token
     });
 
-    res.cookie('lp', token, { path: '/', maxAge: 365 * 24 * 60 * 1000 });
-    callback(req, res, user);
+    const opts = sessionCookieOptions();
+    res.cookie('lp', token, opts);
+    res.cookie('lp_loggedin', '1', { ...opts, httpOnly: false });
+    await callback(req, res, user);
 };
 
 function isModerator(username) {
     return moderatorList.indexOf(username) > -1;
 }
 
-export { authenticateModerator, authenticateUser, verifyPassword, generateSession, isModerator };
+export { authenticateModerator, authenticateUser, verifyPassword, generateSession, isModerator, sessionCookieOptions };
