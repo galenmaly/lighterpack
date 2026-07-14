@@ -12,7 +12,11 @@
     "lint": "./node_modules/.bin/eslint ./ --fix",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:unit": "node --test \"test/unit/**/*.test.js\""
+    "test:unit": "node --test \"test/unit/**/*.test.js\"",
+    "test:visual": "VISUAL=1 playwright test visual --project=chromium",
+    "test:visual:update": "VISUAL=1 playwright test visual --project=chromium --update-snapshots",
+    "css:baseline": "node scripts/css-baseline.mjs save",
+    "css:diff": "node scripts/css-baseline.mjs diff"
   },
   "repository": {
     "type": "git",

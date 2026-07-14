@@ -275,6 +275,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/components/item";
+
 // Vue-specific item interaction styles (hover reveal, arrows, input padding)
 
 .lpItem {
@@ -326,4 +328,4 @@ export default {
     }
 }
 
-</style>,
+</style>

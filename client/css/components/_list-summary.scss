@@ -58,3 +58,21 @@
         padding-right: 0;
     }
 }
+
+@media only screen and (width <= 720px) {
+    .lpChart {
+        max-width: 100%;
+    }
+}
+
+// Stack the chart above the totals table on narrow screens.
+@media only screen and (width <= 480px) {
+    .lpListSummary {
+        flex-direction: column;
+        margin-bottom: 30px;
+    }
+
+    .lpChartContainer {
+        max-width: 200px;
+    }
+}

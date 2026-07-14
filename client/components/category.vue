@@ -75,7 +75,6 @@ export default {
 
 <style lang="scss">
 @import "../css/components/category";
-@import "../css/components/item";
 
 // Hover-show rules for category drag handle and remove button
 .lpCategory .lpHeader:hover .lpRemove,

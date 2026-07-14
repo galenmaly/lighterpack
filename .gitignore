@@ -13,3 +13,8 @@ app.sublime-workspace
 /playwright/.cache/
 *.pyc
 *__pycache__*
+/logs/
+
+# CSS refactor baseline (machine-local, see scripts/css-baseline.mjs)
+/.css-baseline/
+*snapshots/

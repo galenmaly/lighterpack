@@ -237,6 +237,18 @@
     }
 }
 
+@media only screen and (width <= 720px) {
+    #lpImageDialog {
+        padding: 5px;
+        width: 90%;
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+    }
+}
+
 // Silent / subtle inline inputs
 .lpSilent {
     background: transparent;
