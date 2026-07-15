@@ -228,8 +228,18 @@ test.describe('/moderation contract', () => {
 });
 
 test.describe('/imageUpload contract', () => {
+    test('an unauthenticated upload returns 401', async ({ playwright }) => {
+        const request = await playwright.request.newContext();
+        const response = await request.post(url('/imageUpload'), {
+            multipart: { notimage: 'value' },
+        });
+        expect(response.status()).toBe(401);
+        await request.dispose();
+    });
+
     test('upload without an image returns 400', async ({ playwright }) => {
         const request = await playwright.request.newContext();
+        await registerViaApi(request);
         const response = await request.post(url('/imageUpload'), {
             multipart: { notimage: 'value' },
         });
@@ -238,8 +248,20 @@ test.describe('/imageUpload contract', () => {
         await request.dispose();
     });
 
+    test('a file that is not an image is rejected with 400', async ({ playwright }) => {
+        const request = await playwright.request.newContext();
+        await registerViaApi(request);
+        const response = await request.post(url('/imageUpload'), {
+            multipart: { image: { name: 'fake.png', mimeType: 'image/png', buffer: Buffer.from('not actually a png, just some text padding') } },
+        });
+        expect(response.status()).toBe(400);
+        expect((await response.json()).message).toContain('JPEG, PNG, or WebP');
+        await request.dispose();
+    });
+
     test('an image larger than 5MB is rejected with 413', async ({ playwright }) => {
         const request = await playwright.request.newContext();
+        await registerViaApi(request);
         const oversized = Buffer.alloc(6 * 1024 * 1024, 0);
         const response = await request.post(url('/imageUpload'), {
             multipart: { image: { name: 'big.png', mimeType: 'image/png', buffer: oversized } },

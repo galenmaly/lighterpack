@@ -10,6 +10,7 @@ import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
 import { authenticateUser, verifyPassword, sessionCookieOptions } from './auth.js';
+import { sniffImage, storeImage } from './images.js';
 import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
@@ -496,12 +497,12 @@ router.post('/signout', async (req, res) => {
 });
 
 router.post('/imageUpload', (req, res) => {
-    imageUpload(req, res, {});
+    authenticateUser(req, res, imageUpload);
 });
 
 const maxImageUploadBytes = 5 * 1024 * 1024;
 
-async function imageUpload(req, res, _user) {
+async function imageUpload(req, res, user) {
     let files;
     try {
         [, files] = await formidable({ maxFileSize: maxImageUploadBytes }).parse(req);
@@ -513,31 +514,31 @@ async function imageUpload(req, res, _user) {
         return res.status(500).json({ message: 'An error occurred' });
     }
 
-    if (!files?.image?.[0]) {
+    const upload = files?.image?.[0];
+    if (!upload) {
         logWithRequest(req, { message: 'No image in upload' });
         return res.status(400).json({ message: 'No image provided.' });
     }
 
-    const fd = new FormData();
-    fd.append('image', new Blob([fs.readFileSync(files.image[0].filepath)]));
-    fd.append('type', 'file');
-
     try {
-        const r = await fetch('https://api.imgur.com/3/image', {
-            method: 'POST',
-            headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` },
-            body: fd,
-        });
-        const body = await r.text();
-        if (!r.ok) {
-            logWithRequest(req, { message: 'imgur post fail', status: r.status, body });
-            return res.status(500).json({ message: 'An error occurred.' });
+        const buf = fs.readFileSync(upload.filepath);
+        const sniffed = sniffImage(buf);
+        if (!sniffed) {
+            logWithRequest(req, { message: 'unsupported image upload', username: user.username, name: upload.originalFilename });
+            return res.status(400).json({ message: 'Please upload a JPEG, PNG, or WebP image.' });
         }
-        logWithRequest(req, { message: 'imgur post success', body });
-        return res.send(body);
+
+        const { imageUrl } = await storeImage(upload.filepath, buf, sniffed.width);
+        logWithRequest(req, {
+            message: 'image stored', username: user.username, imageUrl, type: sniffed.type, width: sniffed.width, height: sniffed.height,
+        });
+        return res.json({ imageUrl });
     } catch (err) {
-        logWithRequest(req, { message: 'imgur post fail', err });
-        return res.status(500).json({ message: 'An error occurred.' });
+        const hint = err.code === 'ENOENT' ? ' (is cwebp installed? apt install webp)' : '';
+        logWithRequest(req, { message: `image conversion failed${hint}`, username: user.username, err: { message: err.message } });
+        return res.status(500).json({ message: 'An error occurred while processing the image.' });
+    } finally {
+        fs.rmSync(upload.filepath, { force: true });
     }
 }
 

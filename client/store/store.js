@@ -183,6 +183,7 @@ const store = createStore({
         removeItemImage(state, updateItem) {
             const item = state.library.getItemById(updateItem.id);
             item.image = '';
+            item.imageUrl = '';
         },
         updateCategoryItem(state, args) {
             args.category.updateCategoryItem(args.categoryItem);

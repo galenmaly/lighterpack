@@ -18,3 +18,6 @@ app.sublime-workspace
 # CSS refactor baseline (machine-local, see scripts/css-baseline.mjs)
 /.css-baseline/
 *snapshots/
+
+# User-uploaded images (content-hashed webp files)
+/public/userimages/

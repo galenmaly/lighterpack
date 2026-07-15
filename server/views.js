@@ -3,6 +3,7 @@ import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
 import { marked } from 'marked';
+import { thumbnailUrl } from './images.js';
 
 const escapeAttribute = (str) => String(str)
     .replace(/&/g, '&amp;')
@@ -398,6 +399,7 @@ const renderItem = function (item, args) {
         classes, unit, displayWeight, unitSelect, showImages: args.showImages, showPrices: args.showPrices, starClass, displayPrice, currencySymbol: args.currencySymbol,
     };
     Object.assign(out, item);
+    out.imageThumbUrl = thumbnailUrl(item.imageUrl);
 
     // Mustache escapes HTML but not URL schemes, so drop unsafe hrefs
     // (javascript:, data:, ...) before the item name is rendered as a link.

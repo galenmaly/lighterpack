@@ -72,6 +72,11 @@ export default {
             if (this.item.image) {
                 return `https://i.imgur.com/${this.item.image}s.jpg`;
             } if (this.item.imageUrl) {
+                // Locally hosted uploads have a _t thumbnail variant;
+                // external URLs don't. (Mirrored in server/images.js.)
+                if (this.item.imageUrl.indexOf('/userimages/') === 0) {
+                    return this.item.imageUrl.replace(/\.webp$/, '_t.webp');
+                }
                 return this.item.imageUrl;
             }
             return '';

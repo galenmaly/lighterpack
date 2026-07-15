@@ -12,10 +12,7 @@
                 </div>
                 <div class="lpHalf">
                     <h2>Upload image from disk</h2>
-                    <template v-if="item && !item.image">
-                        <p class="imageUploadDescription">
-                            Your image will be hosted on imgur.
-                        </p>
+                    <template v-if="item && !hasImage">
                         <button id="itemImageUpload" class="lpButton" @click="triggerImageUpload">
                             Upload Image
                         </button>
@@ -24,7 +21,7 @@
                             Uploading image...
                         </p>
                     </template>
-                    <template v-if="item && item.image">
+                    <template v-if="item && hasImage">
                         <button id="itemImageUpload" class="lpButton" @click="removeItemImage">
                             Remove Image
                         </button>
@@ -64,6 +61,11 @@ export default {
             uploading: false,
         };
     },
+    computed: {
+        hasImage() {
+            return Boolean(this.item && (this.item.image || this.item.imageUrl));
+        },
+    },
     watch: {
         item(newItem) {
             this.imageUrl = newItem ? newItem.imageUrl : null;
@@ -88,12 +90,12 @@ export default {
             const type = file.type;
 
             if (name.length < 1) return;
-            if (size > 2500000) {
-                alert('Please upload a file less than 2.5mb');
+            if (size > 5 * 1024 * 1024) {
+                alert('Please upload a file less than 5mb');
                 return;
             }
-            if (type != 'image/png' && type != 'image/jpg' && !type != 'image/gif' && type != 'image/jpeg') {
-                alert('File doesnt match png, jpg or gif.');
+            if (type !== 'image/png' && type !== 'image/jpeg' && type !== 'image/webp') {
+                alert('Please upload a JPEG, PNG, or WebP image.');
                 return;
             }
             const formData = new FormData(this.$refs.imageUploadForm);
@@ -106,7 +108,7 @@ export default {
             })
                 .then((response) => {
                     this.uploading = false;
-                    this.$store.commit('updateItemImage', { image: response.data.id, item: this.item });
+                    this.$store.commit('updateItemImageUrl', { imageUrl: response.imageUrl, item: this.item });
                     this.$emit('hide');
                 }).catch(() => {
                     this.uploading = false;
