@@ -1,14 +1,26 @@
 <template>
     <li :id="category.id" class="lpCategory" data-testid="category">
-        <ul class="lpItems lpDataTable">
+        <ul class="lpItems lpDataTable" :class="{lpHasPrice: library.optionalFields['price'], lpHasImages: library.optionalFields['images']}">
             <li class="lpHeader lpItemsHeader">
                 <span class="lpHandleCell">
                     <div class="lpHandle lpCategoryHandle" title="Reorder this category" />
                 </span>
-                <input v-focus-on-create="category._isNew" type="text" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent" @input="updateCategoryName">
-                <span v-if="library.optionalFields['price']" class="lpPriceCell">Price</span>
-                <span class="lpWeightCell">Weight</span>
-                <span class="lpQtyCell">qty</span>
+                <span class="lpCategoryHead">
+                    <span v-if="swatchColor" class="lpCategorySwatch" :style="{background: swatchColor}" />
+                    <input v-focus-on-create="!!category._isNew" type="text" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent" @input="updateCategoryName">
+                </span>
+                <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
+                    {{ displayPrice(category.subtotalPrice, library.currencySymbol) }}
+                </span>
+                <span class="lpWeightCell lpNumber lpSubtotal">
+                    <span class="lpDisplaySubtotal" data-testid="category-subtotal-weight">{{ displayWeight(category.subtotalWeight, library.totalUnit) }}</span>
+                    <!-- Ghost caret mirrors the item rows' unit-picker metrics so the
+                         subtotal number aligns with the item weights below it. -->
+                    <span class="lpSubtotalUnit">{{ library.totalUnit }} <i class="lpSprite lpExpand lpGhostCaret" /></span>
+                </span>
+                <span class="lpQtyCell lpSubtotal">
+                    <span class="lpQtySubtotal">{{ category.subtotalQty }}</span>
+                </span>
                 <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory" title="Remove this category" @click="removeCategory(category)"><i class="lpSprite lpSpriteRemove" /></a></span>
             </li>
             <item v-for="itemContainer in itemContainers" :key="itemContainer.item.id" :item-container="itemContainer" :category="category" />
@@ -16,17 +28,6 @@
                 <span class="lpAddItemCell">
                     <a class="lpAdd lpAddItem" @click="newItem"><i class="lpSprite lpSpriteAdd" />Add new item</a>
                 </span>
-                <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
-                    {{ displayPrice(category.subtotalPrice, library.currencySymbol) }}
-                </span>
-                <span class="lpWeightCell lpNumber lpSubtotal">
-                    <span class="lpDisplaySubtotal" data-testid="category-subtotal-weight">{{ displayWeight(category.subtotalWeight, library.totalUnit) }}</span>
-                    <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
-                </span>
-                <span class="lpQtyCell lpSubtotal">
-                    <span class="lpQtySubtotal">{{ category.subtotalQty }}</span>
-                </span>
-                <span class="lpRemoveCell" />
             </li>
         </ul>
     </li>
@@ -52,6 +53,16 @@ export default {
         itemContainers() {
             return this.category.categoryItems.map(categoryItem => ({ categoryItem, item: this.library.getItemById(categoryItem.itemId) }));
         },
+        swatchColor() {
+            return this.category.displayColor || '';
+        },
+    },
+    mounted() {
+        // Same as item rows: _isNew only drives the one-time focus on create;
+        // clear it so remounts don't refocus the category name.
+        if (this.category._isNew) {
+            this.$store.commit('clearCategoryIsNew', this.category.id);
+        }
     },
     methods: {
         newItem() {
@@ -74,7 +85,213 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../css/components/category";
+@import "../css/_globals";
+
+.lpCategory {
+    border: 2px solid transparent;
+    list-style: none;
+    margin: 0 0 26px;
+
+    &.dropAccept {
+        background: var(--lp-hover-bg);
+    }
+
+    &.dropHover {
+        background: $green2;
+    }
+
+    &.gu-mirror {
+        background: var(--lpd-content-bg);
+        border: 1px solid var(--lpd-hairline-strong);
+    }
+}
+
+// Spreadsheet table: hairline dividers, fixed numeric columns, tabular
+// numerals. Every row is a grid over one shared column template so the
+// header subtotals, item cells, and footer can never drift out of sync:
+// name | description | flags | (price) | weight | qty. The header merges
+// the leading tracks; its tail matches the rows' fixed tracks exactly.
+.lpItems {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+
+    .lpItem,
+    .lpItemsHeader,
+    .lpItemsFooter {
+        align-items: center;
+        column-gap: 12px;
+        display: grid;
+        position: relative;
+
+        &.gu-mirror {
+            background: var(--lpd-content-bg);
+            border: 1px solid var(--lpd-hairline-strong);
+        }
+    }
+
+    .lpItem {
+        grid-template-columns: 180px minmax(0, 1fr) auto 72px 30px;
+    }
+
+    .lpItemsHeader {
+        grid-template-columns: minmax(0, 1fr) 72px 30px;
+    }
+
+    .lpItemsFooter {
+        grid-template-columns: 1fr;
+    }
+
+    &.lpHasPrice {
+        .lpItem {
+            grid-template-columns: 180px minmax(0, 1fr) auto 52px 72px 30px;
+        }
+
+        .lpItemsHeader {
+            grid-template-columns: minmax(0, 1fr) 52px 72px 30px;
+        }
+    }
+
+    &.lpHasImages .lpItem {
+        grid-template-columns: 90px 180px minmax(0, 1fr) auto 72px 30px;
+    }
+
+    &.lpHasImages.lpHasPrice .lpItem {
+        grid-template-columns: 90px 180px minmax(0, 1fr) auto 52px 72px 30px;
+    }
+
+    // Gutter controls live in the side margins so columns never shift.
+    .lpHandleCell {
+        left: -25px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+    }
+
+    .lpRemoveCell {
+        position: absolute;
+        right: -34px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .lpPriceCell {
+        color: var(--lpd-text-muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        min-width: 0;
+        text-align: right;
+    }
+
+    .lpWeightCell {
+        font-variant-numeric: tabular-nums;
+        min-width: 0;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .lpQtyCell {
+        font-size: 12px;
+        min-width: 0;
+        text-align: right;
+    }
+}
+
+.lpItemsHeader {
+    border-bottom: 1px solid var(--lpd-hairline-strong);
+    padding: 0 0 5px;
+
+    .lpCategoryHead {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .lpCategorySwatch {
+        flex: 0 0 11px;
+        height: 11px;
+    }
+
+    // Plain text until focused, then a quiet underline (same treatment as the
+    // list title and item fields).
+    input.lpCategoryName {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid transparent;
+        box-shadow: none;
+        color: var(--lpd-text);
+        flex: 1 1 auto;
+        font-size: 14.5px;
+        font-weight: 700;
+        min-width: 0;
+        outline: none;
+        padding: 0 2px 1px;
+
+        &:hover {
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid var(--lpd-hairline);
+            box-shadow: none;
+        }
+
+        &:focus {
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid var(--lpd-accent-green-deep);
+            box-shadow: none;
+        }
+
+        &::placeholder {
+            color: var(--lpd-text-muted);
+            opacity: 1;
+        }
+    }
+
+    // padding-right mirrors the rows' unit-picker right padding; the unit's
+    // padding-left mirrors their input-to-unit gap, so numbers and unit
+    // labels line up column-exact with the item rows.
+    .lpWeightCell {
+        color: var(--lpd-text);
+        font-size: 13px;
+        font-weight: 700;
+        padding-right: 2px;
+
+        .lpSubtotalUnit {
+            color: var(--lpd-text-faint);
+            font-size: 10.5px;
+            font-weight: 400;
+            padding-left: 6px;
+        }
+
+        .lpGhostCaret {
+            visibility: hidden;
+        }
+    }
+
+    // Item-row inputs inset their text 2px from the cell edge; match it.
+    .lpPriceCell,
+    .lpQtyCell {
+        font-weight: 400;
+        padding-right: 2px;
+    }
+}
+
+.lpItemsFooter {
+    padding: 7px 0;
+
+    .lpAddItemCell {
+        flex: 1 1 auto;
+    }
+
+    .lpAdd {
+        color: var(--lpd-accent-green);
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+    }
+}
 
 // Hover-show rules for category drag handle and remove button
 .lpCategory .lpHeader:hover .lpRemove,

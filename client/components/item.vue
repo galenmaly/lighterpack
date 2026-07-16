@@ -1,12 +1,14 @@
 <template>
-    <li :id="item.id" :class="'lpItem '+ item.classes" data-testid="item-row">
+    <li :id="item.id" :class="'lpItem '+ item.classes" data-testid="item-row" @focusin="onRowFocusin" @focusout="onRowFocusout">
         <span class="lpHandleCell">
             <div class="lpItemHandle lpHandle" title="Reorder this item" />
         </span>
         <span v-if="library.optionalFields['images']" class="lpImageCell">
             <img v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" @click="viewItemImage()">
         </span>
-        <input v-model="item.name" v-focus-on-create="categoryItem._isNew" type="text" class="lpName lpSilent" placeholder="Name" @input="saveItem">
+        <!-- !! matters: the directive treats undefined as "focus", and _isNew
+             is undefined on rows loaded from a save. -->
+        <input v-model="item.name" v-focus-on-create="!!categoryItem._isNew" type="text" class="lpName lpSilent" placeholder="Name" @input="saveItem">
         <input v-model="item.description" type="text" class="lpDescription lpSilent" placeholder="Description" @input="saveItem">
         <span class="lpActionsCell">
             <i class="lpSprite lpCamera" title="Upload a photo or use a photo from the web" @click="updateItemImage" />
@@ -23,7 +25,7 @@
             <unitSelect :unit="item.authorUnit" :on-change="setUnit" />
         </span>
         <span class="lpQtyCell">
-            <input v-model="displayQty" data-testid="item-qty" type="text" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError}" @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)">
+            <input v-model="displayQty" data-testid="item-qty" type="text" :class="{lpQty: true, lpNumber: true, lpSilent: true, lpSilentError: qtyError, lpQtyMany: categoryItem.qty > 1}" @input="saveQty" @keydown.up="incrementQty($event)" @keydown.down="decrementQty($event)">
             <span class="lpArrows">
                 <span class="lpSprite lpUp" @click="incrementQty($event)" />
                 <span class="lpSprite lpDown" @click="decrementQty($event)" />
@@ -32,6 +34,19 @@
         <span class="lpRemoveCell">
             <a class="lpRemove lpRemoveItem" title="Remove this item" @click="removeItem"><i class="lpSprite lpSpriteRemove" /></a>
         </span>
+        <div v-if="showSharedBubble" class="lpSharedBubble" data-testid="shared-item-bubble">
+            <span class="lpSharedBubbleNotch" />
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1.5 1.5" /><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1.5-1.5" /></svg>
+            <span class="lpSharedBubbleText">
+                Also in
+                <template v-for="(name, index) in sharedListNames" :key="index">
+                    <b>{{ name }}</b><template v-if="index < sharedListNames.length - 2">, </template><template v-else-if="index === sharedListNames.length - 2"> and </template>
+                </template>
+                <template v-if="sharedListMoreCount"> and {{ sharedListMoreCount }} more</template>
+                — edits update it everywhere.
+            </span>
+            <a class="lpSharedBubbleFork" data-testid="fork-item" @mousedown.prevent @click="forkItem">Edit a copy instead</a>
+        </div>
     </li>
 </template>
 
@@ -39,6 +54,8 @@
 import unitSelect from './unit-select.vue';
 
 import weightUtils from '../utils/weight.js';
+
+const maxSharedListNames = 2;
 
 export default {
     name: 'Item',
@@ -56,6 +73,7 @@ export default {
             priceError: false,
             qtyError: false,
             numStars: 4,
+            rowFocused: false,
         };
     },
     computed: {
@@ -89,6 +107,21 @@ export default {
             }
             return '';
         },
+        otherListsWithItem() {
+            return this.library.getListsContainingItem(this.item.id)
+                .filter((list) => list.id !== this.library.defaultListId);
+        },
+        sharedListNames() {
+            return this.otherListsWithItem
+                .slice(0, maxSharedListNames)
+                .map((list) => list.name || 'New list');
+        },
+        sharedListMoreCount() {
+            return Math.max(0, this.otherListsWithItem.length - maxSharedListNames);
+        },
+        showSharedBubble() {
+            return this.rowFocused && this.otherListsWithItem.length > 0;
+        },
     },
     watch: {
         item() {
@@ -103,12 +136,47 @@ export default {
         this.setDisplayPrice();
         this.setDisplayQty();
     },
+    mounted() {
+        // _isNew exists only so v-focus-on-create focuses a freshly added row.
+        // Clear it after that first mount, or every remount (e.g. switching
+        // lists) steals focus back to this row.
+        if (this.itemContainer.categoryItem._isNew) {
+            this.$store.commit('updateCategoryItem', {
+                category: this.category,
+                categoryItem: Object.assign({}, this.itemContainer.categoryItem, { _isNew: false }),
+            });
+        }
+    },
     methods: {
         saveItem() {
             this.$store.commit('updateItem', this.item);
         },
         saveCategoryItem() {
             this.$store.commit('updateCategoryItem', { category: this.category, categoryItem: this.categoryItem });
+        },
+        onRowFocusin() {
+            this.rowFocused = true;
+        },
+        onRowFocusout(evt) {
+            if (!evt.currentTarget.contains(evt.relatedTarget)) {
+                this.rowFocused = false;
+            }
+        },
+        forkItem() {
+            // Remember which field is being edited so focus can survive the
+            // row remounting under the forked item's id.
+            const active = document.activeElement;
+            const fieldClasses = ['lpName', 'lpDescription', 'lpPrice', 'lpWeight', 'lpQty'];
+            const focusedField = (active && fieldClasses.find((cls) => active.classList.contains(cls))) || 'lpName';
+
+            this.$store.commit('forkItem', { itemId: this.item.id, listId: this.library.defaultListId });
+
+            const newItemId = this.itemContainer.categoryItem.itemId;
+            this.$nextTick(() => {
+                const row = document.getElementById(String(newItemId));
+                const input = row && row.querySelector(`input.${focusedField}`);
+                if (input) input.focus();
+            });
         },
         setUnit(unit) {
             this.item.authorUnit = unit;
@@ -280,37 +348,252 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../css/components/item";
-
-// Vue-specific item interaction styles (hover reveal, arrows, input padding)
+@import "../css/_globals";
 
 .lpItem {
-    &:hover,
-    &.ui-sortable-helper {
-        background: var(--lp-surface);
+    border-bottom: 1px solid var(--lpd-hairline-faint);
+    padding: 6px 0;
 
+    input {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid transparent;
+        border-radius: 0;
+        box-shadow: none;
+        outline: none;
+        padding: 0 2px 2px;
+
+        &:hover,
+        &:focus {
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid transparent;
+            box-shadow: none;
+        }
+
+        &.lpSilentError,
+        &.lpSilentError:focus {
+            background: transparent;
+            border-bottom: 1.5px solid $red1;
+        }
+
+        &::placeholder {
+            color: var(--lpd-text-muted);
+            opacity: 1;
+        }
+    }
+
+    .lpName {
+        color: var(--lpd-text);
+        font-size: 13px;
+        min-width: 0;
+    }
+
+    .lpDescription {
+        color: var(--lpd-text-faint);
+        font-size: 12px;
+        min-width: 0;
+    }
+
+    .lpImageCell {
+        .lpItemImage {
+            cursor: pointer;
+            display: block;
+            max-width: 90px;
+        }
+    }
+
+    .lpPriceCell input {
+        color: var(--lpd-text-muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        width: 100%;
+    }
+
+    .lpWeightCell {
+        align-items: baseline;
+        display: flex;
+        gap: 2px;
+        justify-content: flex-end;
+
+        .lpWeight {
+            color: var(--lpd-text);
+            flex: 1 1 0;
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+            min-width: 0;
+            text-align: right;
+        }
+    }
+
+    // Unit reads as a faint label at rest; the picker affordance (caret,
+    // dotted underline) appears with the row's other chrome.
+    .lpUnitSelect {
+        padding: 0 2px;
+        white-space: nowrap;
+
+        .lpDisplay {
+            color: var(--lpd-text-faint);
+            font-size: 10.5px;
+            width: auto;
+        }
+
+        i.lpExpand {
+            visibility: hidden;
+        }
+
+        &:hover,
+        &.lpHover {
+            background: transparent;
+            border-color: transparent;
+        }
+    }
+
+    &:hover .lpUnitSelect i.lpExpand,
+    &:focus-within .lpUnitSelect i.lpExpand {
+        visibility: visible;
+    }
+
+    &:focus-within .lpUnitSelect {
+        border-bottom: 1px dotted var(--lpd-icon-rest);
+    }
+
+    .lpQtyCell {
+        position: relative;
+
+        .lpQty {
+            color: var(--lpd-text-muted);
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            width: 100%;
+
+            &.lpQtyMany {
+                color: var(--lpd-text);
+                font-weight: 600;
+            }
+        }
+    }
+
+    // Flag columns: fixed slots so icons align down the table. Rest state is
+    // empty; icons appear grey on row hover and colored when set.
+    .lpActionsCell {
+        align-items: center;
+        display: flex;
+        gap: 4px;
+
+        i {
+            cursor: pointer;
+            flex: 0 0 18px;
+            margin: 0;
+            opacity: 0.4;
+            visibility: hidden;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &.lpActive,
+            &.lpStar1,
+            &.lpStar2,
+            &.lpStar3 {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+
+    &:hover,
+    &:focus-within {
         .lpRemove,
-        .lpWorn,
-        .lpConsumable,
-        .lpCamera,
-        .lpLink,
         .lpHandle,
         .lpArrows,
-        .lpStar {
+        .lpActionsCell i {
             visibility: visible;
         }
     }
 
-    input,
-    select {
-        padding: 3px;
+    // The lifted row: pure visual state, zero layout shift. Negative margins
+    // are compensated by padding, so columns and neighbors never move — and
+    // the absolutely-positioned gutter controls stay put too, because their
+    // offsets are relative to the padding box, which doesn't shift.
+    &:focus-within {
+        background: var(--lpd-lift-bg);
+        border-bottom-color: transparent;
+        border-radius: 7px;
+        box-shadow: var(--lpd-lift-shadow);
+        margin: -2px -12px;
+        padding: 8px 12px;
+        z-index: 2;
+
+        input {
+            border-bottom-color: var(--lpd-hairline);
+
+            &:focus {
+                border-bottom-color: var(--lpd-accent-green-deep);
+            }
+
+            &.lpSilentError {
+                border-bottom-color: $red1;
+            }
+        }
     }
 }
 
+// Shared-item bubble: floats below the lifted row and overlaps the next row.
+.lpSharedBubble {
+    align-items: center;
+    background: var(--lpd-bubble-bg);
+    border: 1px solid var(--lpd-bubble-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    color: var(--lpd-bubble-text);
+    display: flex;
+    font-size: 11.5px;
+    gap: 7px;
+    left: 10px;
+    padding: 6px 11px;
+    position: absolute;
+    top: calc(100% + 5px);
+    white-space: nowrap;
+    z-index: 3;
+
+    svg {
+        color: var(--lpd-accent-green-deep);
+        flex: 0 0 auto;
+    }
+}
+
+.lpSharedBubbleNotch {
+    background: var(--lpd-bubble-bg);
+    border-left: 1px solid var(--lpd-bubble-border);
+    border-top: 1px solid var(--lpd-bubble-border);
+    height: 8px;
+    left: 26px;
+    position: absolute;
+    top: -4.5px;
+    transform: rotate(45deg);
+    width: 8px;
+}
+
+.lpSharedBubbleFork {
+    color: var(--lpd-bubble-text);
+    cursor: pointer;
+    font-weight: 700;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// Qty stepper bleeds just past the table edge on hover, clear of the ✕ gutter.
 .lpArrows {
-    display: inline-block;
-    height: 14px;
-    position: relative;
+    height: 24px;
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
     visibility: hidden;
     width: 10px;
 
@@ -332,5 +615,4 @@ export default {
         top: 11px;
     }
 }
-
 </style>

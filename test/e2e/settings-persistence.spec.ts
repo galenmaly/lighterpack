@@ -261,7 +261,7 @@ test.describe('Data Persistence Across Sessions', () => {
     await expect(page.getByRole('heading').filter({ hasText: 'Sign in' })).toBeVisible();
 
     await loginUser(page, username, password);
-    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+    await expect(page.getByTestId('account-menu')).toContainText(username);
 
     await expect(listNameInput).toHaveValue('Session Persist List');
 

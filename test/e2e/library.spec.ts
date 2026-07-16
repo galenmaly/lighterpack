@@ -138,7 +138,7 @@ test.describe('Library Item Management', () => {
 
     await openSidebar(page);
 
-    const libraryItem = page.locator('#library').getByText('Delete Me Item', { exact: true }).locator('..');
+    const libraryItem = page.locator('#library .lpLibraryItem').filter({ hasText: 'Delete Me Item' });
     await libraryItem.hover();
     await libraryItem.getByTitle('Delete this item permanently').click();
 
@@ -156,7 +156,7 @@ test.describe('Library Item Management', () => {
 
     await openSidebar(page);
 
-    const libraryItem = page.locator('#library').getByText('Keep This Item', { exact: true }).locator('..');
+    const libraryItem = page.locator('#library .lpLibraryItem').filter({ hasText: 'Keep This Item' });
     await libraryItem.hover();
     await libraryItem.getByTitle('Delete this item permanently').click();
 

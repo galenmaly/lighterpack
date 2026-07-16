@@ -1,10 +1,10 @@
 <template>
     <section id="listContainer">
-        <div class="listContainerHeader">
-            <h2>Lists</h2>
+        <div class="lpSidebarSectionHeader listContainerHeader">
+            <span class="lpSectionLabel">Lists · {{ library.lists.length }}</span>
             <PopoverHover id="addListFlyout">
                 <template #target>
-                    <span><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
+                    <span><a class="lpSidebarNew" data-testid="new-list" @click="newList">+ New</a></span>
                 </template>
                 <template #content>
                     <div>
@@ -15,15 +15,17 @@
                 </template>
             </PopoverHover>
         </div>
-        <ul id="lists">
-            <li v-for="list in library.lists" :key="list.id" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}">
-                <div class="lpHandle" title="Reorder this item" />
-                <span class="lpLibraryListSwitch lpListName" @click="setDefaultList(list)">
-                    {{ listName(list) }}
-                </span>
-                <a class="lpRemove" title="Remove this list" @click="removeList(list)"><i class="lpSprite lpSpriteRemove" /></a>
-            </li>
-        </ul>
+        <div class="lpSidebarListsRegion">
+            <ul id="lists" class="lpSidebarScroll">
+                <li v-for="list in library.lists" :key="list.id" class="lpLibraryList" :class="{lpActive: (library.defaultListId == list.id)}" @click="setDefaultList(list)">
+                    <div class="lpHandle" title="Reorder this list" />
+                    <span class="lpLibraryListSwitch lpListName">
+                        {{ listName(list) }}
+                    </span>
+                    <a class="lpRemove" title="Remove this list" @click.stop="removeList(list)"><i class="lpSprite lpSpriteRemove" /></a>
+                </li>
+            </ul>
+        </div>
     </section>
 </template>
 
@@ -57,6 +59,11 @@ export default {
         },
         newList() {
             this.$store.commit('newList');
+            // Frictionless naming: drop the cursor straight into the title.
+            this.$nextTick(() => {
+                const title = document.getElementById('lpListName');
+                if (title) title.focus();
+            });
         },
         copyList() {
             this.openCopyList();
@@ -97,33 +104,38 @@ export default {
 
 #listContainer {
     flex: 0 0 auto;
+}
+
+// Capped at ~7 rows with its own thin scrollbar.
+.lpSidebarListsRegion {
+    position: relative;
 
     #lists {
-        max-height: 25vh;
+        margin: 0;
+        max-height: 178px;
+        padding: 0;
     }
 }
 
+// The whole row is the switch target — identical to the hover surface.
 .lpLibraryList {
-    border-top: 1px dotted var(--lp-sidebar-item-border);
+    align-items: center;
+    cursor: pointer;
     display: flex;
+    font-size: 13px;
     list-style: none;
-    margin: 0 10px;
-    overflow-y: auto;
-    padding: 6px 0;
+    padding: 5px 8px 5px 18px;
     position: relative;
 
-    &:first-child {
-        border-top: none;
-        padding-top: 10px;
-    }
-
-    &:last-child {
-        border-bottom: none;
+    &:hover {
+        background: var(--lpd-sidebar-inset);
     }
 
     &.lpActive {
-        color: $yellow1;
-        font-weight: bold;
+        background: var(--lpd-sidebar-inset);
+        box-shadow: inset 3px 0 0 var(--lpd-active-yellow);
+        color: var(--lpd-active-yellow);
+        font-weight: 600;
 
         .lpRemove {
             display: none;
@@ -131,15 +143,16 @@ export default {
     }
 
     &.gu-mirror {
-        background: var(--lp-sidebar-list-bg);
-        border: 1px solid var(--lp-sidebar-item-border);
-        color: var(--lp-sidebar-text);
+        background: var(--lpd-sidebar-inset);
+        border: 1px solid var(--lpd-sidebar-border);
+        color: var(--lpd-sidebar-text);
     }
 
     .lpHandle {
-        flex: 0 0 12px;
-        height: 18px;
-        margin-right: 5px;
+        left: 2px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     &:hover .lpHandle {
@@ -154,28 +167,43 @@ export default {
 
         &:hover {
             cursor: pointer;
-            text-decoration: underline;
         }
     }
 
     .lpRemove {
-        flex: 0 0 8px;
+        flex: 0 0 auto;
         margin-bottom: 0;
     }
 }
 
-.listContainerHeader {
-    display: flex;
-    justify-content: space-between;
+.listContainerHeader .lpPopover .lpTarget {
+    padding-bottom: 4px;
 }
 
+// The + New flyout opens to the right of the rail so it never covers the
+// list rows beneath it (an open popover would swallow their clicks).
 #addListFlyout {
-    .lpContent a {
-        display: block;
-        margin-bottom: 5px;
+    .lpContent {
+        left: 100%;
+        margin-top: 0;
+        top: -8px;
+        transform: none;
 
-        &:last-child {
-            margin-bottom: 0;
+        &::before {
+            display: none;
+        }
+
+        &::after {
+            display: none;
+        }
+
+        a {
+            display: block;
+            margin-bottom: 5px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
 }

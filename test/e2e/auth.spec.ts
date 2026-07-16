@@ -13,7 +13,7 @@ test.describe('Cookie security', () => {
     username = user.username;
     password = user.password;
     await registerUser(page, username, password, user.email);
-    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+    await expect(page.getByTestId('account-menu')).toContainText(username);
   });
 
   test('lp cookie is httpOnly', async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe('Cookie security', () => {
 
   test('session persists across page reload', async ({ page }) => {
     await page.reload();
-    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+    await expect(page.getByTestId('account-menu')).toContainText(username);
   });
 
   test('signout clears cookies and invalidates the session token server-side', async ({ page }) => {
@@ -90,7 +90,7 @@ test.describe('User Authentication Tests', () => {
     const { username, password, email } = generateTestUser('test');
 
     await registerUser(page, username, password, email);
-    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+    await expect(page.getByTestId('account-menu')).toContainText(username);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
@@ -104,7 +104,7 @@ test.describe('User Authentication Tests', () => {
     await logoutUser(page);
 
     await loginUser(page, username, password);
-    await expect(page.getByText(`Signed in as ${username}`)).toBeVisible();
+    await expect(page.getByTestId('account-menu')).toContainText(username);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
   });
 
@@ -115,7 +115,7 @@ test.describe('User Authentication Tests', () => {
     const newPassword = 'testtest2';
 
     await registerUser(page, username, password, email);
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     await page.getByPlaceholder('New Password', { exact: true }).fill(newPassword);
@@ -146,7 +146,7 @@ test.describe('User Authentication Tests', () => {
     const { username, password, email } = generateTestUser('del');
 
     await registerUser(page, username, password, email);
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
     await page.getByText('Delete Account').click();
     await page.getByText('Permanently delete account').click();
@@ -165,7 +165,7 @@ test.describe('User Authentication Tests', () => {
     // The account must actually be gone: logging in with the same credentials fails
     await loginUser(page, username, password);
     await expect(page.getByTestId('signin-form').locator('.lpError')).toBeVisible();
-    await expect(page.getByText(`Signed in as ${username}`)).not.toBeVisible();
+    await expect(page.getByTestId('account-menu')).not.toBeVisible();
   });
 
   test('should show validation errors when registering with missing fields', async ({ page }) => {

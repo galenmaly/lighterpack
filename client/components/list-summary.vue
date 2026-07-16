@@ -5,83 +5,72 @@
         </div>
         <div class="lpTotalsContainer">
             <ul class="lpTotals lpTable lpDataTable">
-                <li class="lpRow lpHeader">
-                    <span class="lpCell">&nbsp;</span>
-                    <span class="lpCell">
-                        Category
-                    </span>
-                    <span v-if="library.optionalFields['price']" class="lpCell">
-                        Price
-                    </span>
-                    <span class="lpCell">
-                        Weight
-                    </span>
-                </li>
                 <li v-for="category in categories" :key="category.id" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
                         <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @color-change="updateColor(category, $event)" />
                     </span>
-                    <span class="lpCell">
+                    <span class="lpCell lpCategoryCell">
                         {{ category.name }}
                     </span>
                     <span v-if="library.optionalFields['price']" class="lpCell lpNumber">
                         {{ displayPrice(category.subtotalPrice, library.currencySymbol) }}
                     </span>
-                    <span class="lpCell lpNumber">
-                        <span class="lpDisplaySubtotal" :mg="category.subtotalWeight">{{ displayWeight(category.subtotalWeight, library.totalUnit) }}</span> <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
+                    <span class="lpCell lpNumber lpWeightVal">
+                        <span class="lpDisplaySubtotal" :mg="category.subtotalWeight">{{ displayWeight(category.subtotalWeight, library.totalUnit) }}</span>
                     </span>
+                    <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </li>
                 <li class="lpRow lpFooter lpTotal">
-                    <span class="lpCell" />
-                    <span class="lpCell lpSubtotal" :title="list.totalQty +' items'">
+                    <span class="lpCell lpLegendCell" />
+                    <span class="lpCell lpCategoryCell lpSubtotal" :title="list.totalQty +' items'">
                         Total
                     </span>
                     <span v-if="library.optionalFields['price']" class="lpCell lpNumber lpSubtotal" :title="list.totalQty +' items'">
                         {{ displayPrice(list.totalPrice, library.currencySymbol) }}
                     </span>
-                    <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpCell lpNumber lpWeightVal lpSubtotal">
                         <span class="lpTotalValue" data-testid="total-weight" :title="list.totalQty + ' items'">
                             {{ displayWeight(list.totalWeight, library.totalUnit) }}
                         </span>
-                        <span class="lpTotalUnit"><unitSelect :unit="library.totalUnit" :on-change="setTotalUnit" /></span>
                     </span>
+                    <span class="lpCell lpUnitCell lpTotalUnit"><unitSelect :unit="library.totalUnit" :on-change="setTotalUnit" /></span>
                 </li>
                 <li v-if="list.totalConsumableWeight" data-weight-type="consumable" class="lpRow lpFooter lpBreakdown lpConsumableWeight">
-                    <span class="lpCell" />
-                    <span class="lpCell lpSubtotal">
+                    <span class="lpCell lpLegendCell" />
+                    <span class="lpCell lpCategoryCell">
                         Consumable
                     </span>
-                    <span v-if="library.optionalFields['price']" class="lpCell lpNumber lpSubtotal">
+                    <span v-if="library.optionalFields['price']" class="lpCell lpNumber">
                         {{ displayPrice(list.totalConsumablePrice, library.currencySymbol) }}
                     </span>
-                    <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpCell lpNumber lpWeightVal">
                         <span class="lpDisplaySubtotal" data-testid="consumable-weight" :mg="list.totalConsumableWeight">{{ displayWeight(list.totalConsumableWeight, library.totalUnit) }}</span>
-                        <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
                     </span>
+                    <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </li>
                 <li v-if="list.totalWornWeight" data-weight-type="worn" class="lpRow lpFooter lpBreakdown lpWornWeight">
-                    <span class="lpCell" />
-                    <span class="lpCell lpSubtotal">
+                    <span class="lpCell lpLegendCell" />
+                    <span class="lpCell lpCategoryCell">
                         Worn
                     </span>
                     <span v-if="library.optionalFields['price']" class="lpCell lpNumber" />
-                    <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpCell lpNumber lpWeightVal">
                         <span class="lpDisplaySubtotal" data-testid="worn-weight" :mg="list.totalWornWeight">{{ displayWeight(list.totalWornWeight, library.totalUnit) }}</span>
-                        <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
                     </span>
+                    <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </li>
                 <li v-if="list.totalWornWeight || list.totalConsumableWeight" data-weight-type="base" class="lpRow lpFooter lpBreakdown lpBaseWeight">
-                    <span class="lpCell" />
-                    <span class="lpCell lpSubtotal" :title="displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
+                    <span class="lpCell lpLegendCell" />
+                    <span class="lpCell lpCategoryCell" :title="displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
                         Base Weight
                     </span>
                     <span v-if="library.optionalFields['price']" class="lpCell lpNumber" />
-                    <span class="lpCell lpNumber lpSubtotal">
+                    <span class="lpCell lpNumber lpWeightVal">
                         <span class="lpDisplaySubtotal" data-testid="base-weight" :mg="list.totalBaseWeight" :title="displayWeight(list.totalPackWeight, library.totalUnit) + ' ' + library.totalUnit + ' pack weight (consumable + base weight)'">
                             {{ displayWeight(list.totalBaseWeight, library.totalUnit) }}
                         </span>
-                        <span class="lpSubtotalUnit">{{ library.totalUnit }}</span>
                     </span>
+                    <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </li>
             </ul>
         </div>
@@ -168,12 +157,141 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../css/components/list-summary";
+@import "../css/_globals";
+
+// Chart + category totals, centered as a pair over the list.
+.lpListSummary {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 48px;
+    justify-content: center;
+    padding: 22px 0 20px;
+}
+
+.lpChartContainer {
+    flex: 0 0 auto;
+
+    .lpChart {
+        display: block;
+        height: 260px;
+        width: 260px;
+    }
+}
+
+.lpTotalsContainer {
+    flex: 0 0 330px;
+}
+
+.lpTotals {
+    color: var(--lpd-text);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+    padding: 0;
+
+    .lpRow {
+        align-items: center;
+        display: flex;
+        gap: 9px;
+        list-style: none;
+        padding: 3px 0;
+
+        &.hover {
+            background: var(--lpd-hairline-faint);
+        }
+    }
+
+    .lpTotalCategory {
+        border-bottom: 1px solid var(--lpd-hairline-faint);
+    }
+
+    .lpTotal {
+        font-weight: 700;
+        margin-top: 3px;
+        padding: 5px 0 2px;
+
+        .lpNumber:not(.lpWeightVal) {
+            font-weight: 400;
+        }
+    }
+
+    .lpBreakdown {
+        color: var(--lpd-text-muted);
+        padding: 2px 0;
+
+        .lpCategoryCell,
+        .lpNumber {
+            color: var(--lpd-text-muted);
+        }
+    }
+
+    .lpCell {
+        padding: 0;
+    }
+
+    .lpLegendCell {
+        flex: 0 0 11px;
+        line-height: 0;
+    }
+
+    .lpCategoryCell {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lpNumber {
+        color: var(--lpd-text-muted);
+        flex: 0 0 auto;
+    }
+
+    .lpWeightVal {
+        color: var(--lpd-text);
+        flex: 0 0 52px;
+        text-align: right;
+    }
+
+    .lpUnitCell {
+        color: var(--lpd-text-faint);
+        flex: 0 0 30px;
+        font-size: 10.5px;
+        padding-left: 5px;
+    }
+}
+
+// The Total row's unit label is the global unit picker.
+.lpTotalUnit .lpUnitSelect {
+    border: none;
+    border-bottom: 1px dotted var(--lpd-icon-rest);
+    cursor: pointer;
+    font-weight: 400;
+    padding: 0 1px;
+    white-space: nowrap;
+
+    .lpDisplay {
+        font-size: 10.5px;
+        width: auto;
+    }
+
+    &:hover,
+    &.lpHover {
+        background: transparent;
+        border-color: transparent;
+        border-bottom: 1px dotted var(--lpd-text-muted);
+    }
+}
 
 .lpLegend {
+    border: none;
+    display: block;
+    height: 11px;
+    width: 11px;
+
     &:hover {
-        border-color: var(--lp-text-muted);
         cursor: pointer;
+        outline: 1px solid var(--lpd-text-muted);
     }
 }
 </style>

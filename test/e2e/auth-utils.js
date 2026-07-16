@@ -36,7 +36,7 @@ export async function loginUser(page, username, password) {
 }
 
 export async function logoutUser(page) {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await Promise.all([
         page.waitForURL('**/signin'),
         page.getByText('Sign out').click(),

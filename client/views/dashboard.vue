@@ -1,8 +1,9 @@
 <template>
     <div v-if="isLoaded" id="main" :class="{lpHasSidebar: library.showSidebar}">
+        <div class="lpFrameFill lpFrameFillLeft" />
         <sidebar />
-        <div class="lpList lpTransition">
-            <div id="header" class="clearfix">
+        <div class="lpContentCol">
+            <div id="header">
                 <span class="headerItem">
                     <a id="hamburger" class="lpTransition" data-testid="toggle-sidebar" @click="toggleSidebar"><i class="lpSprite lpHamburger" /></a>
                 </span>
@@ -10,13 +11,6 @@
                 <share />
                 <listSettings />
                 <themeToggle />
-                <accountDropdown v-if="isSignedIn" />
-                <span v-else class="headerItem signInRegisterButtons">
-                    <router-link to="/register" class="lpButton lpSmall">Register</router-link>
-                    or
-                    <router-link to="/signin" class="lpButton lpSmall">Sign In</router-link>
-                </span>
-                <span class="clearfix" />
             </div>
 
             <list />
@@ -32,6 +26,9 @@
                     <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a>
                 </div>
             </div>
+        </div>
+        <div class="lpFrameFill lpFrameFillRight">
+            <div class="lpFrameHairlineCap" />
         </div>
 
         <globalAlerts />
@@ -57,7 +54,6 @@ import globalAlerts from '../components/global-alerts.vue';
 import sidebar from '../components/sidebar.vue';
 import share from '../components/share.vue';
 import listSettings from '../components/list-settings.vue';
-import accountDropdown from '../components/account-dropdown.vue';
 import account from '../components/account.vue';
 import accountDelete from '../components/account-delete.vue';
 import help from '../components/help.vue';
@@ -77,7 +73,6 @@ export default {
         sidebar,
         share,
         listSettings,
-        accountDropdown,
         account,
         accountDelete,
         help,
@@ -158,18 +153,77 @@ export default {
 <style lang="scss">
 @import "../css/_globals";
 
-#header {
-    align-items: baseline;
+// Redesigned frame: dark filler | 220px sidebar | 1060px content | light filler.
+// The sidebar + content cluster centers as a unit; the fillers bleed the two
+// surfaces to the viewport edges so nothing looks boxed. Overrides the legacy
+// #main rules in _base.scss (shared with the share bundle, so not edited there).
+#main {
     display: flex;
-    height: 60px;
-    margin: 0 -20px 20px; /* lpList padding */
-    position: relative;
+    margin: 0;
+    max-width: none;
+    min-height: 100vh;
+
+    &.lpHasSidebar {
+        max-width: none;
+    }
+}
+
+.lpFrameFill {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.lpFrameFillLeft {
+    background: var(--lpd-content-bg);
+
+    .lpHasSidebar & {
+        background: var(--lpd-sidebar-bg);
+    }
+}
+
+.lpFrameFillRight {
+    background: var(--lpd-content-bg);
+}
+
+// Continues the content header's bottom hairline across the right filler.
+.lpFrameHairlineCap {
+    border-bottom: 1px solid var(--lpd-hairline);
+    height: 52px;
+}
+
+.lpContentCol {
+    background: var(--lpd-content-bg);
+    color: var(--lpd-text);
+    display: flex;
+    flex: 0 1 1060px;
+    flex-direction: column;
+    min-width: 0;
+    width: 1060px;
+}
+
+@media only screen and (width <= 1300px) {
+    .lpFrameFill {
+        display: none;
+    }
+
+    .lpContentCol {
+        flex: 1 1 auto;
+    }
+}
+
+#header {
+    align-items: center;
+    border-bottom: 1px solid var(--lpd-hairline);
+    display: flex;
+    flex: 0 0 auto;
+    gap: 18px;
+    padding: 13px 32px;
 }
 
 #hamburger {
     cursor: pointer;
     display: inline-block;
-    opacity: 0.6;
+    opacity: 0.5;
     transition: transform $transitionDurationSlow;
 
     &:hover {
@@ -181,44 +235,71 @@ export default {
     }
 }
 
+// Plain text that happens to be an input: rename affordance is a quiet
+// underline, never a boxed field.
 #lpListName {
-    font-size: 24px;
-    font-weight: 600;
-    padding: 12px 15px;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid transparent;
+    box-shadow: none;
+    color: var(--lpd-text);
+    flex: 1 1 auto;
+    font-size: 19px;
+    font-weight: 700;
+    height: 27px;
+    min-width: 0;
+    outline: none;
+    padding: 0 4px 1px;
+
+    &:hover {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid var(--lpd-hairline);
+        box-shadow: none;
+    }
+
+    &:focus {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid var(--lpd-accent-green-deep);
+        box-shadow: none;
+    }
 }
 
 .headerItem {
     flex: 0 0 auto;
-    height: 100%;
-    padding: 17px 16px;
     position: relative;
 
-    &:first-child {
-        padding-left: 20px;
-    }
+    .lpTarget {
+        color: var(--lpd-text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 0;
 
-    .lpPopover {
-        &:hover .lpTarget {
+        &:hover {
             color: $blue1;
         }
     }
+}
 
-    .lpTarget {
-        font-weight: 600;
-        padding: 17px 16px 15px;
-    }
+.lpThemeToggle {
+    background: none;
+    border: none;
+    color: var(--lpd-text-secondary);
+    cursor: pointer;
+    padding: 0;
 
-    &#lpListName {
-        flex: 1 0 auto;
+    &:hover {
+        color: $blue1;
     }
+}
 
-    &.hasPopover {
-        padding: 0;
-    }
-
-    &.signInRegisterButtons {
-        height: auto;
-        padding: 0 16px;
-    }
+#lpFooter {
+    color: var(--lpd-text-faint);
+    display: flex;
+    font-size: 12px;
+    justify-content: space-between;
+    margin-top: auto;
+    padding: 80px 56px 20px;
 }
 </style>

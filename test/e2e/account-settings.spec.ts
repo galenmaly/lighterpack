@@ -10,7 +10,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should open account settings modal from dropdown', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -19,7 +19,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should display username as disabled in settings', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const usernameInput = page.locator('#accountSettings input.username');
@@ -28,7 +28,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should require current password for changes', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -39,7 +39,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should validate password match', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -52,7 +52,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should validate password length', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -65,7 +65,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should close modal on cancel', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -86,7 +86,7 @@ test.describe('Account Settings', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Change password
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -105,7 +105,7 @@ test.describe('Account Settings', () => {
   });
 
   test('should reject incorrect current password', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -134,14 +134,14 @@ test.describe('Account Dropdown', () => {
   });
 
   test('should display username in dropdown', async ({ page }) => {
-    const usernameSpan = page.locator('.headerItem .username');
+    const usernameSpan = page.getByTestId('account-menu').locator('.username');
     await expect(usernameSpan).toBeVisible();
     const username = await usernameSpan.textContent();
     expect(username).toMatch(/^dropdown/);
   });
 
   test('should show dropdown menu on hover', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
 
     await expect(page.getByText('Account Settings')).toBeVisible();
     await expect(page.getByText('Help')).toBeVisible();
@@ -149,7 +149,7 @@ test.describe('Account Dropdown', () => {
   });
 
   test('should sign out from dropdown', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Sign Out').click();
 
     // Should redirect to sign in page

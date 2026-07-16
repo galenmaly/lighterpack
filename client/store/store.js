@@ -159,6 +159,12 @@ const store = createStore({
             const category = state.library.getCategoryById(updatedCategory.id);
             category.color = updatedCategory.color;
         },
+        clearCategoryIsNew(state, categoryId) {
+            const category = state.library.getCategoryById(categoryId);
+            if (category) {
+                category._isNew = false;
+            }
+        },
         updateItem(state, item) {
             state.library.updateItem(item);
             state.library.getListById(state.library.defaultListId).calculateTotals();
@@ -191,6 +197,10 @@ const store = createStore({
         },
         removeItemFromCategory(state, args) {
             args.category.removeItem(args.itemId);
+            state.library.getListById(state.library.defaultListId).calculateTotals();
+        },
+        forkItem(state, args) {
+            state.library.forkItem(args.itemId, args.listId);
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         copyList(state, listId) {

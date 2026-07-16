@@ -28,8 +28,6 @@
             <category v-for="category in categories" :key="category.id" :category="category" />
         </ul>
 
-        <hr>
-
         <a class="lpAdd addCategory" @click="newCategory"><i class="lpSprite lpSpriteAdd" />Add new category</a>
     </div>
 </template>
@@ -137,8 +135,25 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../css/components/list";
 @import "../css/_globals";
+
+// The 56px side padding forms the gutters that row controls bleed into.
+.lpListBody {
+    flex: 0 0 auto;
+    padding: 0 56px;
+}
+
+.lpCategories {
+    margin: 0;
+    padding: 0;
+}
+
+.lpListBody .addCategory {
+    color: var(--lpd-accent-green);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 20px;
+}
 
 #listDescriptionContainer {
     margin: 25px 0;
@@ -154,6 +169,9 @@ export default {
     }
 
     textarea {
+        background: var(--lpd-content-bg);
+        border: 1px solid var(--lpd-hairline);
+        color: var(--lpd-text);
         height: 65px;
         width: 100%;
     }
@@ -166,6 +184,7 @@ export default {
     height: 220px;
     justify-content: center;
     line-height: 1.6;
+    margin-top: 22px;
     padding: $spacingLarge;
 
     h2 {

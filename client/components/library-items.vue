@@ -1,20 +1,28 @@
 <template>
     <section id="libraryContainer">
-        <h2>Gear</h2>
-        <input id="librarySearch" v-model="searchText" type="text" placeholder="search items">
-        <ul id="library">
+        <div class="lpSidebarSectionHeader">
+            <span class="lpSectionLabel">Gear · {{ library.items.length }}</span>
+        </div>
+        <div class="lpSidebarSearch">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+            <input id="librarySearch" v-model="searchText" type="text" placeholder="Search gear">
+        </div>
+        <ul id="library" class="lpSidebarScroll">
             <li v-for="item in filteredItems" :key="item.id" class="lpLibraryItem" :data-item-id="item.id">
-                <a v-if="item.url" :href="item.url" target="_blank" class="lpName lpHref">{{ item.name }}</a>
-                <span v-if="!item.url" class="lpName">{{ item.name }}</span>
-                <span class="lpWeight">
-                    {{ displayWeight(item.weight, item.authorUnit) }}
-                    {{ item.authorUnit }}
-                </span>
-                <span class="lpDescription">
-                    {{ item.description }}
+                <div v-if="!item.inCurrentList" class="lpHandle lpLibraryItemHandle" title="Drag this item into your list" />
+                <span v-else class="lpLibraryItemNoHandle" />
+                <span class="lpLibraryItemBody">
+                    <span class="lpLibraryItemTopline">
+                        <a v-if="item.url" :href="item.url" target="_blank" class="lpName lpHref">{{ item.name }}</a>
+                        <span v-if="!item.url" class="lpName">{{ item.name }}</span>
+                        <span class="lpWeight">
+                            {{ displayWeight(item.weight, item.authorUnit) }}
+                            {{ item.authorUnit }}
+                        </span>
+                    </span>
+                    <span class="lpDescription">{{ item.description }}</span>
                 </span>
                 <a class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently" @click="removeItem(item)"><i class="lpSprite lpSpriteRemove" /></a>
-                <div v-if="!item.inCurrentList" class="lpHandle lpLibraryItemHandle" title="Reorder this item" />
             </li>
         </ul>
     </section>
@@ -138,98 +146,134 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/_globals";
 
 #libraryContainer {
     display: flex;
-    flex: 2 0 30vh;
+    flex: 1 1 0;
     flex-direction: column;
+    min-height: 0;
+    padding-top: 3px;
 }
 
 #library {
-    flex: 1 0 25vh;
-    overflow-y: scroll;
+    flex: 1 1 0;
+    margin: 0;
+    min-height: 0;
+    padding: 0;
 }
 
-#librarySearch {
-    background: var(--lp-sidebar-item-bg);
-    border: 1px solid var(--lp-sidebar-item-border);
-    color: var(--lp-sidebar-text);
-    margin-bottom: 15px;
-    padding: 3px 6px;
+.lpSidebarSearch {
+    align-items: center;
+    background: var(--lpd-sidebar-inset);
+    border: 1px solid var(--lpd-sidebar-border);
+    border-radius: 6px;
+    color: var(--lpd-sidebar-muted);
+    display: flex;
+    flex: 0 0 auto;
+    gap: 7px;
+    margin: 0 14px 8px;
+    padding: 6px 10px;
+
+    svg {
+        flex: 0 0 auto;
+    }
+
+    #librarySearch {
+        background: transparent;
+        border: none;
+        color: var(--lpd-sidebar-text);
+        flex: 1 1 auto;
+        font-size: 12px;
+        min-width: 0;
+        outline: none;
+        padding: 0;
+
+        &::placeholder {
+            color: var(--lpd-sidebar-muted);
+        }
+    }
 }
 
 .lpLibraryItem {
-    border-top: 1px dotted var(--lp-sidebar-item-border);
+    display: flex;
+    font-size: 13px;
+    gap: 8px;
     list-style: none;
-    margin: 0 10px 5px;
-    min-height: 43px;
-    overflow: hidden;
-    padding: 5px 5px 0 15px;
+    margin: 0;
+    padding: 4px 18px;
     position: relative;
 
-    &:first-child {
-        border-top: none;
-        padding-top: 10px;
-    }
-
-    &:last-child {
-        border-bottom: none;
-    }
-
     &.gu-mirror {
-        background: var(--lp-sidebar-list-bg);
-        border: 1px solid var(--lp-sidebar-item-border);
-        color: var(--lp-sidebar-text);
+        background: var(--lpd-sidebar-inset);
+        border: 1px solid var(--lpd-sidebar-border);
+        color: var(--lpd-sidebar-text);
+    }
+
+    // Handle style comes from the shared _handle.scss glyph.
+    .lpHandle {
+        align-self: flex-start;
+        flex: 0 0 16px;
+        margin-top: -4px;
+    }
+
+    .lpLibraryItemNoHandle {
+        flex: 0 0 16px;
+    }
+
+    .lpLibraryItemBody {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .lpLibraryItemTopline {
+        align-items: baseline;
+        display: flex;
+        gap: 8px;
     }
 
     .lpName {
-        float: left;
+        color: var(--lpd-sidebar-text);
+        flex: 1 1 auto;
+        float: none;
         margin: 0;
-        max-width: 190px;
+        max-width: none;
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .lpWeight {
-        float: right;
+        color: var(--lpd-sidebar-muted);
+        flex: 0 0 auto;
+        float: none;
+        font-size: 11px;
         width: auto;
     }
 
     .lpDescription {
-        clear: both;
-        color: var(--lp-sidebar-text-muted);
+        color: var(--lpd-sidebar-muted);
         display: block;
+        font-size: 11px;
         overflow: hidden;
         text-overflow: ellipsis;
-        width: 235px;
-    }
-
-    .lpHandle {
-        height: 80px;
-        left: 0;
-        position: absolute;
-        top: 5px;
+        white-space: nowrap;
+        width: auto;
     }
 
     .lpRemove {
-        bottom: 0;
         position: absolute;
-        right: 14px;
-    }
-
-    #library.lpSearching & {
-        display: none;
-    }
-
-    #library.lpSearching &.lpHit {
-        display: block;
+        right: 6px;
+        top: 4px;
     }
 
     #main > & {
-        background: var(--lp-sidebar-item-bg);
-        color: var(--lp-sidebar-text);
+        background: var(--lpd-sidebar-inset);
+        color: var(--lpd-sidebar-text);
         padding: 10px;
-        width: 235px;
+        width: 220px;
     }
 }
 </style>

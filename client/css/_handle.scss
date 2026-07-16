@@ -1,0 +1,39 @@
+@import "_globals";
+
+// Unified drag-handle glyph. App bundle only — one definition for every
+// draggable surface (gear rail, lists rail, category headers, item rows),
+// so iterating on the handle style here takes effect everywhere.
+// Components only position their handle; color adapts to the dark rail.
+// Reveal-on-hover behavior stays with each surface's existing rules.
+.lp .lpHandle {
+    background: none;
+    color: var(--lpd-icon-rest);
+    cursor: grab;
+    float: none;
+    font-size: 19px;
+    height: auto;
+    line-height: 1;
+    // Padding + matching negative margin grow the grab target to roughly the
+    // full row height without shifting the glyph's visual position.
+    margin: -6px -5px;
+    padding: 6px 5px;
+    text-align: center;
+    user-select: none;
+    width: 16px;
+
+    &::before {
+        content: "≡";
+    }
+
+    &:hover {
+        color: var(--lpd-text-muted);
+    }
+}
+
+.lp #sidebar .lpHandle {
+    color: var(--lpd-sidebar-handle);
+
+    &:hover {
+        color: var(--lpd-sidebar-text);
+    }
+}

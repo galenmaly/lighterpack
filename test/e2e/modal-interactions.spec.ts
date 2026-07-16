@@ -11,7 +11,7 @@ test.describe('Modal Escape Key Behavior', () => {
   });
 
   test('should close account settings modal with escape key', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -31,7 +31,7 @@ test.describe('Modal Backdrop Click Behavior', () => {
   });
 
   test('should close account settings modal on backdrop click', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');
@@ -43,7 +43,7 @@ test.describe('Modal Backdrop Click Behavior', () => {
   });
 
   test('should not close modal when clicking inside modal content', async ({ page }) => {
-    await page.getByText('Signed in as').hover();
+    await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
 
     const modal = page.locator('#accountSettings');

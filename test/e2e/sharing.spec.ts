@@ -154,7 +154,7 @@ test.describe('CSV Import', () => {
       await dialog.accept();
       return message;
     });
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
 
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
@@ -177,7 +177,7 @@ test.describe('CSV Import', () => {
       await dialog.accept();
       return message;
     });
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
 
     const invalidCsv = [
       'Item Name,Category,Description,Qty,Weight,Unit',
@@ -200,7 +200,7 @@ test.describe('CSV Import', () => {
   });
 
   test('should import a valid CSV and create categories/items', async ({ page }) => {
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
 
     const validCsv = [
       'Item Name,Category,Description,Qty,Weight,Unit',
@@ -239,7 +239,7 @@ test.describe('CSV Import', () => {
   });
 
   test('should import quantities and units correctly', async ({ page }) => {
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
 
     const validCsv = [
       'Item Name,Category,Description,Qty,Weight,Unit',

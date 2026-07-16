@@ -1,7 +1,12 @@
 <template>
-    <span class="headerItem hasPopover">
-        <PopoverHover id="headerPopover">
-            <template #target><span>Signed in as <span class="username">{{ username }}</span> <i class="lpSprite lpExpand" /></span></template>
+    <div id="sidebarAccount">
+        <PopoverHover v-if="isSignedIn" id="accountPopover">
+            <template #target>
+                <span class="lpAccountRow" data-testid="account-menu">
+                    <span class="lpUsername username">{{ username }}</span>
+                    <i class="lpSprite lpExpand" />
+                </span>
+            </template>
             <template #content>
                 <div>
                     <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
@@ -10,7 +15,16 @@
                 </div>
             </template>
         </PopoverHover>
-    </span>
+        <div v-else class="lpAccountRow signInRegisterButtons">
+            <router-link to="/signin" class="lpHref">
+                Sign In
+            </router-link>
+            <span class="lpAccountSep">·</span>
+            <router-link to="/register" class="lpHref">
+                Register
+            </router-link>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -25,6 +39,9 @@ export default {
     computed: {
         library() {
             return this.$store.state.library;
+        },
+        isSignedIn() {
+            return this.$store.state.loggedIn;
         },
         username() {
             return this.$store.state.loggedIn;
@@ -46,7 +63,73 @@ export default {
 </script>
 
 <style lang="scss">
-#headerPopover .lpContent {
-    min-width: 9em;
+@import "../css/_globals";
+
+// Hairline-topped account footer pinned to the bottom of the sidebar.
+#sidebarAccount {
+    border-top: 1px solid var(--lpd-sidebar-border);
+    flex: 0 0 auto;
+
+    .lpAccountRow {
+        align-items: center;
+        cursor: default;
+        display: flex;
+        gap: 9px;
+        padding: 11px 18px;
+    }
+
+    .lpUsername {
+        color: var(--lpd-sidebar-text);
+        flex: 1 1 auto;
+        font-size: 12px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lpExpand {
+        opacity: 0.6;
+    }
+
+    .signInRegisterButtons {
+        font-size: 12px;
+
+        .lpAccountSep {
+            color: var(--lpd-sidebar-muted);
+        }
+
+        .lpHref {
+            color: $blue2;
+        }
+    }
+
+    // The popover opens upward from the bottom of the viewport.
+    .lpPopover {
+        .lpTarget {
+            display: block;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .lpContent {
+            bottom: calc(100% + 8px);
+            left: 10px;
+            margin-top: 0;
+            top: auto;
+            transform: none;
+
+            &::before {
+                bottom: -10px;
+                left: 30px;
+                top: auto;
+            }
+
+            &::after {
+                bottom: 0;
+                top: auto;
+            }
+        }
+    }
 }
 </style>

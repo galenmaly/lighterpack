@@ -4,8 +4,8 @@ import { registerUser, generateTestUser } from './auth-utils';
 
 // Helper to open help modal - uses specific link selector to avoid matching username
 const openHelpModal = async (page) => {
-  await page.getByText('Signed in as').hover();
-  await page.locator('#headerPopover a.lpHref').filter({ hasText: 'Help' }).click();
+  await page.getByTestId('account-menu').hover();
+  await page.locator('#accountPopover a.lpHref').filter({ hasText: 'Help' }).click();
 };
 
 test.describe('Help Modal', () => {

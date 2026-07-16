@@ -14,7 +14,7 @@ test.describe('List Management', () => {
     await listNameInput.fill('Base List');
     await listNameInput.blur();
 
-    await page.getByText('Add new list', { exact: true }).first().click();
+    await page.getByTestId('new-list').click();
     await listNameInput.fill('Trip List');
     await listNameInput.blur();
 
@@ -39,7 +39,7 @@ test.describe('List Management', () => {
     await listNameInput.fill('List One');
     await listNameInput.blur();
 
-    await page.getByText('Add new list', { exact: true }).first().click();
+    await page.getByTestId('new-list').click();
     await listNameInput.fill('List Two');
     await listNameInput.blur();
 
@@ -65,7 +65,7 @@ test.describe('List Management', () => {
     await listNameInput.fill('Original List');
     await listNameInput.blur();
 
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
     await page.getByText('Copy a list', { exact: true }).click();
 
     const listToCopy = page.locator('#listToCopy');
@@ -90,7 +90,7 @@ test.describe('List Management', () => {
 
     await createCategoryWithItem(page, 'Shelter', 'Old Tent');
 
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
     await page.getByText('Copy a list', { exact: true }).click();
 
     const listToCopy = page.locator('#listToCopy');
@@ -126,7 +126,7 @@ test.describe('List Management', () => {
 
     await createCategoryWithItem(page, 'Shared Category', 'Shared Item');
 
-    await page.getByText('Add new list', { exact: true }).first().hover();
+    await page.getByTestId('new-list').hover();
     await page.getByText('Copy a list', { exact: true }).click();
 
     const listToCopy = page.locator('#listToCopy');
@@ -189,7 +189,7 @@ test.describe('List Management', () => {
     await listNameInput.fill('Keep List');
     await listNameInput.blur();
 
-    await page.getByText('Add new list', { exact: true }).first().click();
+    await page.getByTestId('new-list').click();
     await listNameInput.fill('Delete Me');
     await listNameInput.blur();
 

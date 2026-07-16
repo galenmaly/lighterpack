@@ -89,7 +89,7 @@ export const dragListItem = async (
   targetItem: Locator,
 ): Promise<void> => {
   await sourceItem.hover();
-  const handle = sourceItem.getByTitle('Reorder this item');
+  const handle = sourceItem.getByTitle('Reorder this list');
   const handleBox = await handle.boundingBox();
   const targetBox = await targetItem.boundingBox();
   if (!handleBox || !targetBox) {

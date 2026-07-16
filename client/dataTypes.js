@@ -514,6 +514,36 @@ Library.prototype.findCategoryWithItemById = function (itemId, listId) {
     }
 };
 
+Library.prototype.getListsContainingItem = function (itemId) {
+    const out = [];
+    for (const i in this.lists) {
+        const list = this.lists[i];
+        if (this.findCategoryWithItemById(itemId, list.id)) {
+            out.push(list);
+        }
+    }
+    return out;
+};
+
+// Detaches one list's use of a shared item into an independent copy: the
+// item's fields are cloned onto a new item and the list's categoryItem is
+// repointed at it. Other lists keep referencing the original.
+Library.prototype.forkItem = function (itemId, listId) {
+    const item = this.getItemById(itemId);
+    const category = this.findCategoryWithItemById(itemId, listId);
+    if (!item || !category) return null;
+
+    const newItem = this.newItem({});
+    const newId = newItem.id;
+    assignIn(newItem, item);
+    newItem.id = newId;
+
+    const categoryItem = category.getCategoryItemById(itemId);
+    categoryItem.itemId = newId;
+
+    return newItem;
+};
+
 Library.prototype.findListWithCategoryById = function (id) {
     for (const i in this.lists) {
         const list = this.lists[i];

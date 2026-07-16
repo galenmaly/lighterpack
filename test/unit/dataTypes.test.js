@@ -181,3 +181,77 @@ describe('Item.load', () => {
         assert.equal(item.price, 12.5);
     });
 });
+
+describe('Library.getListsContainingItem', () => {
+    test('returns every list whose categories reference the item', () => {
+        const library = new Library();
+        const firstList = library.lists[0];
+        const sharedItem = library.items[0];
+
+        const secondList = library.newList();
+        const secondCategory = library.newCategory({ list: secondList });
+        secondCategory.addItem({ itemId: sharedItem.id });
+
+        const thirdList = library.newList();
+        library.newCategory({ list: thirdList });
+
+        const lists = library.getListsContainingItem(sharedItem.id);
+        assert.deepEqual(lists.map((list) => list.id), [firstList.id, secondList.id]);
+    });
+
+    test('returns an empty array for an item in no list', () => {
+        const library = new Library();
+        const orphan = library.newItem({});
+        assert.deepEqual(library.getListsContainingItem(orphan.id), []);
+    });
+});
+
+describe('Library.forkItem', () => {
+    test('clones the item for one list and leaves other lists on the original', () => {
+        const library = new Library();
+        const firstList = library.lists[0];
+        const firstCategory = library.categories[0];
+        const sharedItem = library.items[0];
+        sharedItem.name = 'Tent';
+        sharedItem.description = 'Copper Spur';
+        sharedItem.weight = 1000;
+        sharedItem.price = 450;
+        sharedItem.url = 'https://example.com';
+
+        const secondList = library.newList();
+        const secondCategory = library.newCategory({ list: secondList });
+        secondCategory.addItem({ itemId: sharedItem.id, qty: 2 });
+
+        const itemCount = library.items.length;
+        const forked = library.forkItem(sharedItem.id, secondList.id);
+
+        assert.ok(forked);
+        assert.notEqual(forked.id, sharedItem.id);
+        assert.equal(forked.name, 'Tent');
+        assert.equal(forked.description, 'Copper Spur');
+        assert.equal(forked.weight, 1000);
+        assert.equal(forked.price, 450);
+        assert.equal(forked.url, 'https://example.com');
+        assert.equal(library.items.length, itemCount + 1);
+        assert.equal(library.getItemById(forked.id), forked);
+
+        // The forked list points at the copy; per-list fields are untouched.
+        const secondCategoryItem = secondCategory.categoryItems[0];
+        assert.equal(secondCategoryItem.itemId, forked.id);
+        assert.equal(secondCategoryItem.qty, 2);
+
+        // The original list still references the original item.
+        assert.equal(firstCategory.categoryItems[0].itemId, sharedItem.id);
+        assert.deepEqual(library.getListsContainingItem(sharedItem.id).map((list) => list.id), [firstList.id]);
+        assert.deepEqual(library.getListsContainingItem(forked.id).map((list) => list.id), [secondList.id]);
+    });
+
+    test('returns null when the item is not in the given list', () => {
+        const library = new Library();
+        const item = library.items[0];
+        const emptyList = library.newList();
+
+        assert.equal(library.forkItem(item.id, emptyList.id), null);
+        assert.equal(library.forkItem(9999, library.lists[0].id), null);
+    });
+});

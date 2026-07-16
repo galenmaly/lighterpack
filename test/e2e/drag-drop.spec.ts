@@ -77,7 +77,7 @@ test.describe('Drag and Drop', () => {
     await listNameInput.fill('Base List');
     await listNameInput.blur();
 
-    await page.getByText('Add new list', { exact: true }).first().click();
+    await page.getByTestId('new-list').click();
     await listNameInput.fill('Library Source');
     await listNameInput.blur();
 
@@ -93,9 +93,9 @@ test.describe('Drag and Drop', () => {
     await targetCategory.getByPlaceholder('Category Name', { exact: true }).fill('Target');
     await targetCategory.getByPlaceholder('Category Name', { exact: true }).blur();
 
-    const libraryItem = page.locator('#library').getByText('Library Item', { exact: true }).locator('..');
+    const libraryItem = page.locator('#library .lpLibraryItem').filter({ hasText: 'Library Item' });
     await libraryItem.scrollIntoViewIfNeeded();
-    const libraryHandle = libraryItem.getByTitle('Reorder this item');
+    const libraryHandle = libraryItem.getByTitle('Drag this item into your list');
 
     const targetItem = targetCategory.getByTestId('item-row').first();
     await dragHandleToTarget(page, libraryHandle, targetItem, libraryItem, 'bottom');
