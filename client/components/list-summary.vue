@@ -184,7 +184,7 @@ export default {
 }
 
 .lpTotals {
-    color: var(--lpd-text);
+    color: var(--lp-text);
     font-size: 13px;
     font-variant-numeric: tabular-nums;
     margin: 0;
@@ -198,12 +198,12 @@ export default {
         padding: 3px 0;
 
         &.hover {
-            background: var(--lpd-hairline-faint);
+            background: var(--lp-hairline-faint);
         }
     }
 
     .lpTotalCategory {
-        border-bottom: 1px solid var(--lpd-hairline-faint);
+        border-bottom: 1px solid var(--lp-hairline-faint);
     }
 
     .lpTotal {
@@ -217,12 +217,12 @@ export default {
     }
 
     .lpBreakdown {
-        color: var(--lpd-text-muted);
+        color: var(--lp-text-muted);
         padding: 2px 0;
 
         .lpCategoryCell,
         .lpNumber {
-            color: var(--lpd-text-muted);
+            color: var(--lp-text-muted);
         }
     }
 
@@ -243,18 +243,18 @@ export default {
     }
 
     .lpNumber {
-        color: var(--lpd-text-muted);
+        color: var(--lp-text-muted);
         flex: 0 0 auto;
     }
 
     .lpWeightVal {
-        color: var(--lpd-text);
+        color: var(--lp-text);
         flex: 0 0 52px;
         text-align: right;
     }
 
     .lpUnitCell {
-        color: var(--lpd-text-faint);
+        color: var(--lp-text-faint);
         flex: 0 0 30px;
         font-size: 10.5px;
         padding-left: 5px;
@@ -264,7 +264,7 @@ export default {
 // The Total row's unit label is the global unit picker.
 .lpTotalUnit .lpUnitSelect {
     border: none;
-    border-bottom: 1px dotted var(--lpd-icon-rest);
+    border-bottom: 1px dotted var(--lp-icon-rest);
     cursor: pointer;
     font-weight: 400;
     padding: 0 1px;
@@ -279,7 +279,7 @@ export default {
     &.lpHover {
         background: transparent;
         border-color: transparent;
-        border-bottom: 1px dotted var(--lpd-text-muted);
+        border-bottom: 1px dotted var(--lp-text-muted);
     }
 }
 
@@ -291,7 +291,7 @@ export default {
 
     &:hover {
         cursor: pointer;
-        outline: 1px solid var(--lpd-text-muted);
+        outline: 1px solid var(--lp-text-muted);
     }
 }
 </style>

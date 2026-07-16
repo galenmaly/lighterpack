@@ -106,7 +106,7 @@ $welcomeVerticalSpacing: 80px;
 .lpWelcomeRegisterContainer,
 .lpWelcomeSigninContainer {
     background: var(--lp-welcome-panel-bg);
-    border-top: 2px solid $orange1;
+    border-top: 2px solid var(--lp-accent-orange);
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
     padding: $spacingLarge;
 

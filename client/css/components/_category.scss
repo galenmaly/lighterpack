@@ -4,27 +4,6 @@
     border: 2px solid transparent;
     list-style: none;
     margin: 0 0 20px;
-
-    &.dropAccept {
-        background: $yellow2;
-    }
-
-    &.dropHover {
-        background: $green2;
-    }
-
-    &.gu-mirror {
-        background: var(--lp-bg);
-        border: 1px solid var(--lp-border-subtle);
-    }
-}
-
-input.lpCategoryName {
-    border: 1px solid transparent;
-    flex: 1 0 300px;
-    font-size: 16px;
-    font-weight: 600;
-    padding-bottom: 0;
 }
 
 .lpSubtotalUnit {

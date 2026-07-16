@@ -15,16 +15,6 @@
     flex-direction: row;
     justify-content: stretch;
 
-    &.gu-mirror {
-        background: var(--lp-bg);
-        border: 1px solid var(--lp-border-subtle);
-    }
-
-    .lpHandleCell {
-        flex: 0 0 12px;
-        padding-right: 4px;
-    }
-
     .lpImageCell {
         flex: 0 0 90px;
 
@@ -64,30 +54,13 @@
     .lpPriceCell {
         flex: 0 0 66px;
         margin-right: 4px;
-
-        .lpPrice {
-            width: 66px;
-        }
     }
 
     .lpQtyCell {
         flex: 0 0 60px;
-
-        .lpQty {
-            width: 39px;
-        }
-    }
-
-    .lpRemoveCell {
-        align-self: center;
-        flex: 0 0 20px;
     }
 
     .lpCategoryName {
-        flex: 1 1 auto;
-    }
-
-    .lpAddItemCell {
         flex: 1 1 auto;
     }
 }
@@ -104,12 +77,10 @@
     justify-content: flex-end;
 }
 
-// Action icon visibility — hidden by default, shown on hover (Vue) or when active (both)
+// Action icons: hidden unless the item has the state (worn/consumable/star)
 .lpActionsCell {
     .lpWorn,
     .lpConsumable,
-    .lpCamera,
-    .lpLink,
     .lpStar {
         cursor: pointer;
         margin-right: 8px;

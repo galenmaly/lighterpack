@@ -19,7 +19,7 @@ $spinnerSize: 18px;
 
 .lpSpinner::before {
     animation: spinner 0.6s linear infinite;
-    border: 1px solid $orange1;
+    border: 1px solid var(--lp-accent-orange);
     border-radius: 50%;
     border-top-color: transparent;
     content: "";
@@ -35,7 +35,7 @@ $spinnerSize: 18px;
     transform: translateY(-50%);
 
     &::before {
-        border-color: $background1;
+        border-color: $grey-50;
         border-top-color: transparent;
     }
 }

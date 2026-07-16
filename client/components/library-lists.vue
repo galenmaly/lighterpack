@@ -128,13 +128,13 @@ export default {
     position: relative;
 
     &:hover {
-        background: var(--lpd-sidebar-inset);
+        background: var(--lp-sidebar-inset);
     }
 
     &.lpActive {
-        background: var(--lpd-sidebar-inset);
-        box-shadow: inset 3px 0 0 var(--lpd-active-yellow);
-        color: var(--lpd-active-yellow);
+        background: var(--lp-sidebar-inset);
+        box-shadow: inset 3px 0 0 var(--lp-active-yellow);
+        color: var(--lp-active-yellow);
         font-weight: 600;
 
         .lpRemove {
@@ -143,9 +143,9 @@ export default {
     }
 
     &.gu-mirror {
-        background: var(--lpd-sidebar-inset);
-        border: 1px solid var(--lpd-sidebar-border);
-        color: var(--lpd-sidebar-text);
+        background: var(--lp-sidebar-inset);
+        border: 1px solid var(--lp-sidebar-border);
+        color: var(--lp-sidebar-text);
     }
 
     .lpHandle {
@@ -206,5 +206,9 @@ export default {
             }
         }
     }
+}
+
+.lpLibraryList:hover .lpRemove {
+    visibility: visible;
 }
 </style>

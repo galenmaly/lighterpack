@@ -1,33 +1,10 @@
 @import "globals";
 
-// Light-theme defaults (all CSS custom properties live here so they're
-// declared exactly once per bundle — component @imports pull in _globals only).
+// Semantic tokens are declared exactly once per bundle, here. The values
+// live in _globals.scss (mixins emit nothing, so component @imports of
+// _globals stay free).
 .lp {
-    color-scheme: light;
-    --lp-bg: #{$background1};
-    --lp-surface: #ffffff;
-    --lp-text: #{$content};
-    --lp-text-muted: #{$content2};
-    --lp-text-footer: #777;
-    --lp-border: #{$border1};
-    --lp-border-subtle: #aaa;
-    --lp-tooltip-bg: #444;
-    --lp-tooltip-text: #ffffff;
-    --lp-silent-border: rgba(0, 0, 0, 0.15);
-    --lp-silent-shadow: rgba(0, 0, 0, 0.15);
-    --lp-sidebar-bg: #555;
-    --lp-sidebar-list-bg: #606060;
-    --lp-sidebar-item-bg: #666;
-    --lp-sidebar-item-border: #999;
-    --lp-sidebar-text: #ffffff;
-    --lp-sidebar-muted: #aaa;
-    --lp-sidebar-text-muted: #ccc;
-    --lp-welcome-footer-bg: rgba(255, 255, 255, 0.65);
-    --lp-get-started-bg: #dedede;
-    --lp-welcome-panel-bg: rgba(255, 255, 255, 0.9);
-    --lp-warning-bg: #{$yellow2};
-    --lp-warning-border: #{$darkYellow};
-    --lp-hover-bg: #{$yellow2};
+    @include lp-light-theme;
 }
 
 // Auto dark mode: follows OS when no explicit override is set by the JS toggle.
@@ -92,7 +69,7 @@
         display: none;
         padding: 3px;
         position: absolute;
-        z-index: 105;
+        z-index: $tooltip;
     }
 
     *,
@@ -121,7 +98,7 @@
 }
 
 #lpFooter {
-    color: var(--lp-text-footer);
+    color: var(--lp-text-muted);
     display: flex;
     justify-content: space-between;
     padding: 150px 0 20px;
@@ -136,9 +113,5 @@
     padding: $spacingSmall;
     position: fixed;
     right: 0;
-    z-index: 999999999;
-
-    .lpHasBlackout & {
-        display: block;
-    }
+    z-index: $blackoutFooter;
 }

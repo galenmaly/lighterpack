@@ -97,12 +97,12 @@ export default {
     }
 
     &.dropHover {
-        background: $green2;
+        background: var(--lp-accent-green);
     }
 
     &.gu-mirror {
-        background: var(--lpd-content-bg);
-        border: 1px solid var(--lpd-hairline-strong);
+        background: var(--lp-content-bg);
+        border: 1px solid var(--lp-hairline-strong);
     }
 }
 
@@ -125,8 +125,8 @@ export default {
         position: relative;
 
         &.gu-mirror {
-            background: var(--lpd-content-bg);
-            border: 1px solid var(--lpd-hairline-strong);
+            background: var(--lp-content-bg);
+            border: 1px solid var(--lp-hairline-strong);
         }
     }
 
@@ -177,7 +177,7 @@ export default {
     }
 
     .lpPriceCell {
-        color: var(--lpd-text-muted);
+        color: var(--lp-text-muted);
         font-size: 12px;
         font-variant-numeric: tabular-nums;
         min-width: 0;
@@ -199,7 +199,7 @@ export default {
 }
 
 .lpItemsHeader {
-    border-bottom: 1px solid var(--lpd-hairline-strong);
+    border-bottom: 1px solid var(--lp-hairline-strong);
     padding: 0 0 5px;
 
     .lpCategoryHead {
@@ -214,38 +214,21 @@ export default {
         height: 11px;
     }
 
-    // Plain text until focused, then a quiet underline (same treatment as the
-    // list title and item fields).
+    // Quiet input base comes from .lpSilent; the title underlines on its own
+    // hover/focus (same treatment as the list title).
     input.lpCategoryName {
-        background: transparent;
-        border: none;
-        border-bottom: 1.5px solid transparent;
-        box-shadow: none;
-        color: var(--lpd-text);
         flex: 1 1 auto;
         font-size: 14.5px;
         font-weight: 700;
         min-width: 0;
-        outline: none;
         padding: 0 2px 1px;
 
         &:hover {
-            background: transparent;
-            border: none;
-            border-bottom: 1.5px solid var(--lpd-hairline);
-            box-shadow: none;
+            border-bottom-color: var(--lp-hairline);
         }
 
         &:focus {
-            background: transparent;
-            border: none;
-            border-bottom: 1.5px solid var(--lpd-accent-green-deep);
-            box-shadow: none;
-        }
-
-        &::placeholder {
-            color: var(--lpd-text-muted);
-            opacity: 1;
+            border-bottom-color: var(--lp-accent-green-deep);
         }
     }
 
@@ -253,13 +236,13 @@ export default {
     // padding-left mirrors their input-to-unit gap, so numbers and unit
     // labels line up column-exact with the item rows.
     .lpWeightCell {
-        color: var(--lpd-text);
+        color: var(--lp-text);
         font-size: 13px;
         font-weight: 700;
         padding-right: 2px;
 
         .lpSubtotalUnit {
-            color: var(--lpd-text-faint);
+            color: var(--lp-text-faint);
             font-size: 10.5px;
             font-weight: 400;
             padding-left: 6px;
@@ -286,7 +269,6 @@ export default {
     }
 
     .lpAdd {
-        color: var(--lpd-accent-green);
         font-size: 13px;
         font-weight: 600;
         margin: 0;

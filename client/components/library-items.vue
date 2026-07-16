@@ -165,10 +165,10 @@ export default {
 
 .lpSidebarSearch {
     align-items: center;
-    background: var(--lpd-sidebar-inset);
-    border: 1px solid var(--lpd-sidebar-border);
+    background: var(--lp-sidebar-inset);
+    border: 1px solid var(--lp-sidebar-border);
     border-radius: 6px;
-    color: var(--lpd-sidebar-muted);
+    color: var(--lp-sidebar-muted);
     display: flex;
     flex: 0 0 auto;
     gap: 7px;
@@ -182,7 +182,7 @@ export default {
     #librarySearch {
         background: transparent;
         border: none;
-        color: var(--lpd-sidebar-text);
+        color: var(--lp-sidebar-text);
         flex: 1 1 auto;
         font-size: 12px;
         min-width: 0;
@@ -190,7 +190,7 @@ export default {
         padding: 0;
 
         &::placeholder {
-            color: var(--lpd-sidebar-muted);
+            color: var(--lp-sidebar-muted);
         }
     }
 }
@@ -205,9 +205,9 @@ export default {
     position: relative;
 
     &.gu-mirror {
-        background: var(--lpd-sidebar-inset);
-        border: 1px solid var(--lpd-sidebar-border);
-        color: var(--lpd-sidebar-text);
+        background: var(--lp-sidebar-inset);
+        border: 1px solid var(--lp-sidebar-border);
+        color: var(--lp-sidebar-text);
     }
 
     // Handle style comes from the shared _handle.scss glyph.
@@ -234,7 +234,7 @@ export default {
     }
 
     .lpName {
-        color: var(--lpd-sidebar-text);
+        color: var(--lp-sidebar-text);
         flex: 1 1 auto;
         float: none;
         margin: 0;
@@ -246,7 +246,7 @@ export default {
     }
 
     .lpWeight {
-        color: var(--lpd-sidebar-muted);
+        color: var(--lp-sidebar-muted);
         flex: 0 0 auto;
         float: none;
         font-size: 11px;
@@ -254,7 +254,7 @@ export default {
     }
 
     .lpDescription {
-        color: var(--lpd-sidebar-muted);
+        color: var(--lp-sidebar-muted);
         display: block;
         font-size: 11px;
         overflow: hidden;
@@ -270,10 +270,15 @@ export default {
     }
 
     #main > & {
-        background: var(--lpd-sidebar-inset);
-        color: var(--lpd-sidebar-text);
+        background: var(--lp-sidebar-inset);
+        color: var(--lp-sidebar-text);
         padding: 10px;
         width: 220px;
     }
+}
+
+.lpLibraryItem:hover .lpRemove,
+.lpLibraryItem:hover .lpHandle {
+    visibility: visible;
 }
 </style>

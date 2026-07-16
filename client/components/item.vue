@@ -351,46 +351,23 @@ export default {
 @import "../css/_globals";
 
 .lpItem {
-    border-bottom: 1px solid var(--lpd-hairline-faint);
+    border-bottom: 1px solid var(--lp-hairline-faint);
     padding: 6px 0;
 
+    // Base quiet-input look comes from .lpSilent; fields stay bare until the
+    // row's :focus-within reveals underlines (below).
     input {
-        background: transparent;
-        border: none;
-        border-bottom: 1.5px solid transparent;
-        border-radius: 0;
-        box-shadow: none;
-        outline: none;
         padding: 0 2px 2px;
-
-        &:hover,
-        &:focus {
-            background: transparent;
-            border: none;
-            border-bottom: 1.5px solid transparent;
-            box-shadow: none;
-        }
-
-        &.lpSilentError,
-        &.lpSilentError:focus {
-            background: transparent;
-            border-bottom: 1.5px solid $red1;
-        }
-
-        &::placeholder {
-            color: var(--lpd-text-muted);
-            opacity: 1;
-        }
     }
 
     .lpName {
-        color: var(--lpd-text);
+        color: var(--lp-text);
         font-size: 13px;
         min-width: 0;
     }
 
     .lpDescription {
-        color: var(--lpd-text-faint);
+        color: var(--lp-text-faint);
         font-size: 12px;
         min-width: 0;
     }
@@ -404,7 +381,7 @@ export default {
     }
 
     .lpPriceCell input {
-        color: var(--lpd-text-muted);
+        color: var(--lp-text-muted);
         font-size: 12px;
         font-variant-numeric: tabular-nums;
         text-align: right;
@@ -418,7 +395,7 @@ export default {
         justify-content: flex-end;
 
         .lpWeight {
-            color: var(--lpd-text);
+            color: var(--lp-text);
             flex: 1 1 0;
             font-size: 13px;
             font-variant-numeric: tabular-nums;
@@ -434,7 +411,7 @@ export default {
         white-space: nowrap;
 
         .lpDisplay {
-            color: var(--lpd-text-faint);
+            color: var(--lp-text-faint);
             font-size: 10.5px;
             width: auto;
         }
@@ -456,21 +433,21 @@ export default {
     }
 
     &:focus-within .lpUnitSelect {
-        border-bottom: 1px dotted var(--lpd-icon-rest);
+        border-bottom: 1px dotted var(--lp-icon-rest);
     }
 
     .lpQtyCell {
         position: relative;
 
         .lpQty {
-            color: var(--lpd-text-muted);
+            color: var(--lp-text-muted);
             font-size: 12px;
             font-variant-numeric: tabular-nums;
             text-align: right;
             width: 100%;
 
             &.lpQtyMany {
-                color: var(--lpd-text);
+                color: var(--lp-text);
                 font-weight: 600;
             }
         }
@@ -519,23 +496,23 @@ export default {
     // the absolutely-positioned gutter controls stay put too, because their
     // offsets are relative to the padding box, which doesn't shift.
     &:focus-within {
-        background: var(--lpd-lift-bg);
+        background: var(--lp-surface);
         border-bottom-color: transparent;
         border-radius: 7px;
-        box-shadow: var(--lpd-lift-shadow);
+        box-shadow: var(--lp-lift-shadow);
         margin: -2px -12px;
         padding: 8px 12px;
         z-index: 2;
 
         input {
-            border-bottom-color: var(--lpd-hairline);
+            border-bottom-color: var(--lp-hairline);
 
             &:focus {
-                border-bottom-color: var(--lpd-accent-green-deep);
+                border-bottom-color: var(--lp-accent-green-deep);
             }
 
             &.lpSilentError {
-                border-bottom-color: $red1;
+                border-bottom-color: var(--lp-danger);
             }
         }
     }
@@ -544,11 +521,11 @@ export default {
 // Shared-item bubble: floats below the lifted row and overlaps the next row.
 .lpSharedBubble {
     align-items: center;
-    background: var(--lpd-bubble-bg);
-    border: 1px solid var(--lpd-bubble-border);
+    background: var(--lp-bubble-bg);
+    border: 1px solid var(--lp-bubble-border);
     border-radius: 6px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-    color: var(--lpd-bubble-text);
+    color: var(--lp-bubble-text);
     display: flex;
     font-size: 11.5px;
     gap: 7px;
@@ -560,15 +537,15 @@ export default {
     z-index: 3;
 
     svg {
-        color: var(--lpd-accent-green-deep);
+        color: var(--lp-accent-green-deep);
         flex: 0 0 auto;
     }
 }
 
 .lpSharedBubbleNotch {
-    background: var(--lpd-bubble-bg);
-    border-left: 1px solid var(--lpd-bubble-border);
-    border-top: 1px solid var(--lpd-bubble-border);
+    background: var(--lp-bubble-bg);
+    border-left: 1px solid var(--lp-bubble-border);
+    border-top: 1px solid var(--lp-bubble-border);
     height: 8px;
     left: 26px;
     position: absolute;
@@ -578,7 +555,7 @@ export default {
 }
 
 .lpSharedBubbleFork {
-    color: var(--lpd-bubble-text);
+    color: var(--lp-bubble-text);
     cursor: pointer;
     font-weight: 700;
 

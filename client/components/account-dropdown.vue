@@ -67,7 +67,7 @@ export default {
 
 // Hairline-topped account footer pinned to the bottom of the sidebar.
 #sidebarAccount {
-    border-top: 1px solid var(--lpd-sidebar-border);
+    border-top: 1px solid var(--lp-sidebar-border);
     flex: 0 0 auto;
 
     .lpAccountRow {
@@ -79,7 +79,7 @@ export default {
     }
 
     .lpUsername {
-        color: var(--lpd-sidebar-text);
+        color: var(--lp-sidebar-text);
         flex: 1 1 auto;
         font-size: 12px;
         font-weight: 600;
@@ -96,11 +96,11 @@ export default {
         font-size: 12px;
 
         .lpAccountSep {
-            color: var(--lpd-sidebar-muted);
+            color: var(--lp-sidebar-muted);
         }
 
         .lpHref {
-            color: $blue2;
+            color: var(--lp-sidebar-link);
         }
     }
 

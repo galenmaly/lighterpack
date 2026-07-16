@@ -153,9 +153,9 @@ export default {
 <style lang="scss">
 @import "../css/_globals";
 
-// Redesigned frame: dark filler | 220px sidebar | 1060px content | light filler.
+// App frame: dark filler | 220px sidebar | 1060px content | light filler.
 // The sidebar + content cluster centers as a unit; the fillers bleed the two
-// surfaces to the viewport edges so nothing looks boxed. Overrides the legacy
+// surfaces to the viewport edges so nothing looks boxed. Overrides the base
 // #main rules in _base.scss (shared with the share bundle, so not edited there).
 #main {
     display: flex;
@@ -174,26 +174,26 @@ export default {
 }
 
 .lpFrameFillLeft {
-    background: var(--lpd-content-bg);
+    background: var(--lp-content-bg);
 
     .lpHasSidebar & {
-        background: var(--lpd-sidebar-bg);
+        background: var(--lp-sidebar-bg);
     }
 }
 
 .lpFrameFillRight {
-    background: var(--lpd-content-bg);
+    background: var(--lp-content-bg);
 }
 
 // Continues the content header's bottom hairline across the right filler.
 .lpFrameHairlineCap {
-    border-bottom: 1px solid var(--lpd-hairline);
+    border-bottom: 1px solid var(--lp-hairline);
     height: 52px;
 }
 
 .lpContentCol {
-    background: var(--lpd-content-bg);
-    color: var(--lpd-text);
+    background: var(--lp-content-bg);
+    color: var(--lp-text);
     display: flex;
     flex: 0 1 1060px;
     flex-direction: column;
@@ -213,7 +213,7 @@ export default {
 
 #header {
     align-items: center;
-    border-bottom: 1px solid var(--lpd-hairline);
+    border-bottom: 1px solid var(--lp-hairline);
     display: flex;
     flex: 0 0 auto;
     gap: 18px;
@@ -235,34 +235,22 @@ export default {
     }
 }
 
-// Plain text that happens to be an input: rename affordance is a quiet
-// underline, never a boxed field.
+// Plain text that happens to be an input: quiet base from .lpSilent, rename
+// affordance is an underline on hover/focus, never a boxed field.
 #lpListName {
-    background: transparent;
-    border: none;
-    border-bottom: 1.5px solid transparent;
-    box-shadow: none;
-    color: var(--lpd-text);
     flex: 1 1 auto;
     font-size: 19px;
     font-weight: 700;
     height: 27px;
     min-width: 0;
-    outline: none;
     padding: 0 4px 1px;
 
     &:hover {
-        background: transparent;
-        border: none;
-        border-bottom: 1.5px solid var(--lpd-hairline);
-        box-shadow: none;
+        border-bottom-color: var(--lp-hairline);
     }
 
     &:focus {
-        background: transparent;
-        border: none;
-        border-bottom: 1.5px solid var(--lpd-accent-green-deep);
-        box-shadow: none;
+        border-bottom-color: var(--lp-accent-green-deep);
     }
 }
 
@@ -271,13 +259,13 @@ export default {
     position: relative;
 
     .lpTarget {
-        color: var(--lpd-text-secondary);
+        color: var(--lp-text-secondary);
         font-size: 13px;
         font-weight: 600;
         padding: 4px 0;
 
         &:hover {
-            color: $blue1;
+            color: var(--lp-link-blue);
         }
     }
 }
@@ -285,17 +273,17 @@ export default {
 .lpThemeToggle {
     background: none;
     border: none;
-    color: var(--lpd-text-secondary);
+    color: var(--lp-text-secondary);
     cursor: pointer;
     padding: 0;
 
     &:hover {
-        color: $blue1;
+        color: var(--lp-link-blue);
     }
 }
 
 #lpFooter {
-    color: var(--lpd-text-faint);
+    color: var(--lp-text-faint);
     display: flex;
     font-size: 12px;
     justify-content: space-between;

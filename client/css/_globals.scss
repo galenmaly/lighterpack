@@ -1,41 +1,16 @@
-$background1: #f7f7f7;
-$content: #282828;
-$content2: #666;
-$border1: #ccc;
+@use 'sass:color';
 
-// Dark-theme CSS custom property values.
-// Used as a mixin so _base.scss can apply them in both the media query
-// and the [data-theme="dark"] selector without repeating the values.
-@mixin lp-dark-theme {
-    color-scheme: dark;
-    --lp-bg: #1e1e1e;
-    --lp-surface: #2d2d2d;
-    --lp-text: #e0e0e0;
-    --lp-text-muted: #9a9a9a;
-    --lp-text-footer: #888;
-    --lp-border: #3e3e3e;
-    --lp-border-subtle: #4a4a4a;
-    --lp-tooltip-bg: #111111;
-    --lp-tooltip-text: #e0e0e0;
-    --lp-silent-border: rgba(255, 255, 255, 0.12);
-    --lp-silent-shadow: rgba(0, 0, 0, 0.4);
-    --lp-sidebar-bg: #252525;
-    --lp-sidebar-list-bg: #2f2f2f;
-    --lp-sidebar-item-bg: #333333;
-    --lp-sidebar-item-border: #444444;
-    --lp-sidebar-text: #e0e0e0;
-    --lp-sidebar-muted: #666666;
-    --lp-sidebar-text-muted: #777777;
-    --lp-welcome-footer-bg: rgba(0, 0, 0, 0.65);
-    --lp-get-started-bg: #2a2a2a;
-    --lp-welcome-panel-bg: rgba(30, 30, 30, 0.92);
-    --lp-warning-bg: #2e2700;
-    --lp-warning-border: #786800;
-    --lp-hover-bg: #3a3500;
-}
+// ============================================================
+// Tier 1 · Primitives — the complete palette.
+// A color value exists only here (or as a color.mix of these).
+// Components should not reference tier 1 directly for theming;
+// use the semantic tokens (tier 2) so dark mode keeps working.
+// ============================================================
+
+/* Brand — the LighterPack palette. The authoritative source for accent
+   colors: semantic accent tokens below must reference these. */
 $blue1: #1b77d3;
 $blue2: #3db7ff;
-$darkBlue: #064989;
 $green1: #7ab317;
 $green2: #a8d46f;
 $orange1: #efa026;
@@ -48,49 +23,145 @@ $yellow1: #f2d000;
 $yellow2: #fcefa9;
 $darkYellow: #a58c00;
 
+/* Neutrals — one ramp, numbered by darkness. A new grey must land on an
+   existing step or earn a new one; never add a near-duplicate value. */
+$grey-0: #fff;
+$grey-50: #f7f7f7; // page background
+$grey-100: #e0e1e3; // hairline
+$grey-150: #d8d8da; // sidebar text
+$grey-200: #c6c9cd; // strong hairline, resting icons
+$grey-300: #aaa; // subtle border (share pages)
+$grey-400: #9a9da3; // faint text
+$grey-500: #82868c; // muted text
+$grey-600: #6c6c70; // sidebar handle
+$grey-650: #4a4a4a; // dark-theme subtle border
+$grey-700: #3a3d42; // secondary text, tooltip bg, sidebar border
+$grey-800: #2e2e30; // sidebar bg, dark-theme surface
+$grey-850: #26262a; // sidebar inset
+$grey-900: #24272b; // text
+$grey-950: #1e1e1e; // dark-theme page bg
+$grey-1000: #111;
+
 /* spacing */
-$spacingSmaller: 5px;
 $spacingSmall: 10px;
 $spacingMedium: 15px;
 $spacingLarge: 30px;
 
 /* z-index stack */
-$belowSidebar: 10;
 $sidebar: 20;
 $aboveSidebar: 30;
 $belowDialog: 90;
 $dialog: 100;
+$tooltip: 105; // above open dialogs
 $aboveDialog: 110;
-$transitionDurationFast: 0.1s;
+$blackoutFooter: 120; // welcome/register footer sits above the blackout modal
+$dragMirror: 9999; // dragula's floating copy tops everything while dragging
 $transitionDuration: 0.2s;
 $transitionDurationSlow: 0.4s;
 
-@mixin fullBleedLeft() {
-    &::before {
-        background: inherit;
-        border-bottom: inherit;
-        bottom: -1px;
-        content: "";
-        display: block;
-        position: absolute;
-        right: 100%;
-        top: 0;
-        width: 999px;
-        z-index: $belowSidebar;
-    }
+// ============================================================
+// Tier 2 · Semantic tokens — the only names components reference.
+// Declared exactly once per bundle by _base.scss: light on .lp,
+// dark via the OS media query and the [data-theme] toggle.
+// Values marked "placeholder" are provisional, not designed.
+// ============================================================
+
+@mixin lp-light-theme {
+    color-scheme: light;
+
+    // Surfaces
+    --lp-bg: #{$grey-50}; // page background
+    --lp-content-bg: #{$grey-0}; // content column
+    --lp-surface: #{$grey-0}; // panels, modals, lifted rows
+    --lp-get-started-bg: #{$grey-100};
+    --lp-welcome-footer-bg: rgba(255, 255, 255, 0.65);
+    --lp-welcome-panel-bg: rgba(255, 255, 255, 0.9);
+
+    // Text
+    --lp-text: #{$grey-900};
+    --lp-text-secondary: #{$grey-700};
+    --lp-text-muted: #{$grey-500};
+    --lp-text-faint: #{$grey-400};
+    --lp-icon-rest: #{$grey-200};
+
+    // Lines & shadows
+    --lp-hairline-strong: #{$grey-200};
+    --lp-hairline: #{$grey-100};
+    --lp-hairline-faint: rgba(0, 0, 0, 0.15);
+    --lp-border-subtle: #{$grey-300}; // share/embed divider; unused by the app
+    --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+
+    // Accents (brand)
+    --lp-link-blue: #{$blue1};
+    --lp-accent-green: #{$green2};
+    --lp-accent-green-deep: #{$green1};
+    --lp-accent-orange: #{$orange1};
+    --lp-active-yellow: #{$yellow1};
+
+    // Status / highlight
+    --lp-danger: #{$red1};
+    --lp-success: #{color.adjust($green1, $lightness: -10%)};
+    --lp-warning-bg: #{$yellow2};
+    --lp-warning-border: #{$darkYellow};
+    --lp-alert-bg: #{$yellow1};
+    --lp-alert-border: #{$darkYellow};
+    --lp-hover-bg: #{$yellow2};
+
+    // Tooltip
+    --lp-tooltip-bg: #{$grey-700};
+    --lp-tooltip-text: #{$grey-0};
+
+    // Shared-item bubble — tints of the brand greens
+    --lp-bubble-bg: #{color.mix($green2, $grey-0, 12%)};
+    --lp-bubble-border: #{color.mix($green2, $grey-0, 40%)};
+    --lp-bubble-text: #{color.mix($green1, $grey-1000, 75%)};
+
+    // Sidebar (dark surface in both themes, so no dark overrides)
+    --lp-sidebar-bg: #{$grey-800};
+    --lp-sidebar-inset: #{$grey-850};
+    --lp-sidebar-border: #{$grey-700};
+    --lp-sidebar-text: #{$grey-150};
+    --lp-sidebar-muted: #{$grey-500};
+    --lp-sidebar-handle: #{$grey-600};
+    --lp-sidebar-link: #{$blue2};
 }
 
-@mixin fullBleedRight() {
-    &::after {
-        background: inherit;
-        border-bottom: inherit;
-        bottom: -1px;
-        content: "";
-        display: block;
-        left: 100%;
-        position: absolute;
-        top: 0;
-        width: 999px;
-        z-index: $belowSidebar;
-    }
+@mixin lp-dark-theme {
+    color-scheme: dark;
+
+    // Surfaces
+    --lp-bg: #{$grey-950};
+    --lp-content-bg: #{$grey-950};
+    --lp-surface: #{$grey-800};
+    --lp-get-started-bg: #{$grey-800};
+    --lp-welcome-footer-bg: rgba(0, 0, 0, 0.65);
+    --lp-welcome-panel-bg: rgba(30, 30, 30, 0.92);
+
+    // Text
+    --lp-text: #{$grey-100};
+    --lp-text-secondary: #b8babd; // placeholder
+    --lp-text-muted: #{$grey-400};
+    --lp-text-faint: #{$grey-600};
+    --lp-icon-rest: #{$grey-650};
+
+    // Lines & shadows
+    --lp-hairline-strong: #{$grey-700};
+    --lp-hairline: #333336; // placeholder
+    --lp-hairline-faint: rgba(255, 255, 255, 0.12);
+    --lp-border-subtle: #{$grey-650};
+    --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+    // Status / highlight
+    --lp-warning-bg: #2e2700;
+    --lp-warning-border: #786800;
+    --lp-hover-bg: #3a3500;
+
+    // Tooltip
+    --lp-tooltip-bg: #{$grey-1000};
+    --lp-tooltip-text: #{$grey-100};
+
+    // Shared-item bubble
+    --lp-bubble-bg: #{color.mix($green1, $grey-950, 12%)};
+    --lp-bubble-border: #{color.mix($green1, $grey-950, 25%)};
+    --lp-bubble-text: #{$green2};
 }

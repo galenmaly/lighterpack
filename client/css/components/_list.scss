@@ -5,18 +5,7 @@
     min-height: 100%;
     padding: 0 20px;
     position: relative;
-    transition: margin-left $transitionDurationSlow;
     z-index: $aboveSidebar;
-
-    .lpHasSidebar & {
-        margin-left: 320px;
-    }
-}
-
-#totals {
-    margin: 0;
-    padding: 0 0 0 10px;
-    text-align: left;
 }
 
 #chart.activeHover {

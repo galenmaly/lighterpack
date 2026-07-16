@@ -22,8 +22,8 @@ export default {
 @import "../css/_globals";
 
 .lpGlobalAlerts {
-    background: $yellow1;
-    border: 1px solid $darkYellow;
+    background: var(--lp-alert-bg);
+    border: 1px solid var(--lp-alert-border);
     border-radius: 0 0 10px 10px;
     border-top: none;
     left: 50%;
@@ -38,7 +38,7 @@ export default {
 }
 
 .lpGlobalAlert {
-    border-bottom: 1px solid $darkYellow;
+    border-bottom: 1px solid var(--lp-alert-border);
     list-style-type: none;
     margin: 0;
     padding: $spacingMedium;

@@ -35,8 +35,8 @@ export default {
 // window scrollbar scrolls the content column only. Collapses to zero width
 // when the sidebar is toggled off.
 #sidebar {
-    background: var(--lpd-sidebar-bg);
-    color: var(--lpd-sidebar-text);
+    background: var(--lp-sidebar-bg);
+    color: var(--lp-sidebar-text);
     flex: 0 0 220px;
     transition: flex-basis $transitionDurationSlow;
     z-index: $sidebar;
@@ -73,7 +73,7 @@ export default {
 }
 
 .lpSidebarDivider {
-    border-top: 1px solid var(--lpd-sidebar-border);
+    border-top: 1px solid var(--lp-sidebar-border);
     flex: 0 0 auto;
     margin: 6px 18px 0;
 }
@@ -87,7 +87,7 @@ export default {
 }
 
 .lpSectionLabel {
-    color: var(--lpd-sidebar-muted);
+    color: var(--lp-sidebar-muted);
     flex: 1 1 auto;
     font-size: 10px;
     font-weight: 700;
@@ -96,7 +96,7 @@ export default {
 }
 
 .lpSidebarNew {
-    color: $green1;
+    color: var(--lp-accent-green-deep);
     cursor: pointer;
     font-size: 11.5px;
     font-weight: 600;

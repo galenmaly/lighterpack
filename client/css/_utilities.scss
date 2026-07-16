@@ -3,7 +3,7 @@
 
 // Links
 .lpHref {
-    color: $blue1;
+    color: var(--lp-link-blue);
     cursor: pointer;
     text-decoration: none;
 
@@ -25,14 +25,6 @@
     width: 1px;
 }
 
-.lpNotSupported {
-    background: $red1;
-    color: #fff;
-    font-size: 24px;
-    padding: 100px;
-    text-align: center;
-}
-
 .lpNumber {
     text-align: right;
 }
@@ -42,14 +34,10 @@
     width: 50%;
 }
 
-.lpAlignRight {
-    text-align: right;
-}
-
 // Add / copy links
 .lpAdd,
 .lpCopy {
-    color: $green1;
+    color: var(--lp-accent-green-deep);
     cursor: pointer;
     display: inline-block;
     text-decoration: none;
@@ -61,30 +49,40 @@
     &:hover {
         text-decoration: underline;
     }
+}
 
-    #sidebar & {
-        color: $green1;
+// Drag handle: one glyph definition for every draggable surface (gear rail,
+// lists rail, category headers, item rows). Components only position their
+// handle; reveal-on-hover behavior stays with each surface's rules.
+.lpHandle {
+    color: var(--lp-icon-rest);
+    cursor: grab;
+    font-size: 19px;
+    line-height: 1;
+    // Padding + matching negative margin grow the grab target to roughly the
+    // full row height without shifting the glyph's visual position.
+    margin: -6px -5px;
+    padding: 6px 5px;
+    text-align: center;
+    user-select: none;
+    visibility: hidden;
+    width: 16px;
+
+    &::before {
+        content: "≡";
+    }
+
+    &:hover {
+        color: var(--lp-text-muted);
     }
 }
 
-// Spacing helpers for add-item/category links
-.addCategory,
-.lpAddItem {
-    margin-left: 20px;
-    margin-top: 6px;
-}
+#sidebar .lpHandle {
+    color: var(--lp-sidebar-handle);
 
-// Drag handle
-.lpHandle {
-    background: url("/images/handle.png");
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: -moz-grab;
-    float: left;
-    height: 24px;
-    margin-top: 2px;
-    visibility: hidden;
-    width: 12px;
+    &:hover {
+        color: var(--lp-sidebar-text);
+    }
 }
 
 // Remove button
@@ -99,18 +97,10 @@
     visibility: hidden;
 
     &:hover {
-        background: $red1;
+        background: var(--lp-danger);
         box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25) inset;
         opacity: 1;
     }
-}
-
-// Hover-show rules for sidebar library items
-// TODO: move to library-items.vue / library-lists.vue when those get style blocks
-.lpLibraryList:hover .lpRemove,
-.lpLibraryItem:hover .lpRemove,
-.lpLibraryItem:hover .lpHandle {
-    visibility: visible;
 }
 
 // Shared header/subtotal weight
@@ -126,7 +116,7 @@
     input[type="password"],
     textarea {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-border);
+        border: 1px solid var(--lp-hairline-strong);
         display: block;
         margin: 0 0 $spacingMedium;
         padding: $spacingSmall;
@@ -214,11 +204,11 @@
 
 // Status messages
 .lpError {
-    color: $red1;
+    color: var(--lp-danger);
 }
 
 .lpSuccess {
-    color: color.adjust($green1, $lightness: -10%);
+    color: var(--lp-success);
 }
 
 .lpWarning {
@@ -228,7 +218,8 @@
     padding: 10px;
 }
 
-// Image dialog sizing (Vue version)
+// Image dialog sizing — #lpImageDialog is both the app's image modal
+// (item-view-image.vue) and the share/embed lightbox (share.mustache)
 #lpImageDialog {
     width: auto;
 
@@ -249,31 +240,25 @@
     }
 }
 
-// Silent / subtle inline inputs
+// Silent inline inputs: plain text that happens to be editable. This is the
+// state-independent base only — each context wires its own affordance
+// trigger (titles underline on their own :hover/:focus; item fields reveal
+// underlines through the row's :focus-within — see item.vue).
 .lpSilent {
     background: transparent;
-    border: 1px solid transparent;
+    border: none;
+    border-bottom: 1.5px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
 
-    &:hover {
-        background-color: var(--lp-surface);
-        border: 1px solid var(--lp-silent-border);
-    }
-
-    &:focus {
-        background-color: var(--lp-surface);
-        border: 1px solid var(--lp-silent-border);
-        box-shadow: 0 1px 3px var(--lp-silent-shadow) inset;
-        outline: none;
+    &::placeholder {
+        color: var(--lp-text-muted);
+        opacity: 1;
     }
 
     &.lpSilentError {
-        background-color: color.adjust($red1, $saturation: -10%, $lightness: 40%);
-        border: 1px solid $red1;
-        outline-color: $red1;
-
-        &:focus {
-            background-color: var(--lp-surface);
-        }
+        border-bottom-color: var(--lp-danger);
     }
 }
 
@@ -289,12 +274,10 @@
 
 // Dragula drag-and-drop
 .gu-mirror {
-    filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-    filter: alpha(opacity=80);
     margin: 0 !important;
     opacity: 0.8;
     position: fixed !important;
-    z-index: 9999 !important;
+    z-index: $dragMirror !important;
 }
 
 .gu-hide {
@@ -306,7 +289,5 @@
 }
 
 .gu-transit {
-    filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
-    filter: alpha(opacity=20);
     opacity: 0.2;
 }

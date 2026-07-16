@@ -149,7 +149,6 @@ export default {
 }
 
 .lpListBody .addCategory {
-    color: var(--lpd-accent-green);
     font-size: 13px;
     font-weight: 600;
     margin: 0 0 20px;
@@ -169,9 +168,9 @@ export default {
     }
 
     textarea {
-        background: var(--lpd-content-bg);
-        border: 1px solid var(--lpd-hairline);
-        color: var(--lpd-text);
+        background: var(--lp-content-bg);
+        border: 1px solid var(--lp-hairline);
+        color: var(--lp-text);
         height: 65px;
         width: 100%;
     }

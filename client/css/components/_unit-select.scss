@@ -7,10 +7,9 @@
     padding: 0 5px;
     position: relative;
 
-    &:hover,
-    &.lpHover {
+    &:hover {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-border);
+        border: 1px solid var(--lp-hairline-strong);
 
         i {
             opacity: 1;
@@ -36,7 +35,7 @@
 
     .lpUnitDropdown {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-border);
+        border: 1px solid var(--lp-hairline-strong);
         display: none;
         left: 0;
         padding: 0;
