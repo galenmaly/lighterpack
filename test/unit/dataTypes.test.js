@@ -255,3 +255,58 @@ describe('Library.forkItem', () => {
         assert.equal(library.forkItem(9999, library.lists[0].id), null);
     });
 });
+
+describe('serialization safety', () => {
+    // Data as an older client saved it: stray UI state (activeHover),
+    // long-dead fields (deleteIfEmpty, chart), junk on categoryItems, and a
+    // stale displayColor. All of it must round-trip stably: the dirty check
+    // compares serialized snapshots, so anything load() normalizes has to
+    // come out identically on every save afterwards.
+    const legacySerialized = () => ({
+        version: '0.3',
+        totalUnit: 'oz',
+        itemUnit: 'oz',
+        defaultListId: 1,
+        sequence: 9,
+        showSidebar: true,
+        optionalFields: {
+            images: false, price: false, worn: true, consumable: true, listDescription: false,
+        },
+        currencySymbol: '$',
+        items: [
+            { id: 4, name: 'Tent', description: '', weight: 1000, authorUnit: 'oz', price: 0, image: '', imageUrl: '', url: '', deleteIfEmpty: true },
+            { id: 5, name: 'Stove', description: '', weight: 500, authorUnit: 'oz', price: 0, image: '', imageUrl: '', url: '' },
+        ],
+        categories: [
+            {
+                id: 2,
+                name: 'Shelter',
+                categoryItems: [categoryItem(4, { obsoleteFlag: 7 })],
+                subtotalWeight: 1000, subtotalWornWeight: 0, subtotalConsumableWeight: 0, subtotalPrice: 0, subtotalConsumablePrice: 0, subtotalQty: 1,
+                activeHover: true,
+            },
+            {
+                id: 3,
+                name: 'Kitchen',
+                categoryItems: [categoryItem(5)],
+                subtotalWeight: 500, subtotalWornWeight: 0, subtotalConsumableWeight: 0, subtotalPrice: 0, subtotalConsumablePrice: 0, subtotalQty: 1,
+                color: { r: 1, g: 2, b: 3 },
+                displayColor: 'rgb(9,9,9)', // stale: no longer matches color
+            },
+        ],
+        lists: [
+            { id: 1, name: 'Trip', categoryIds: [2, 3], description: '', externalId: '', chart: null },
+        ],
+    });
+
+    test('a saved library reloads and serializes byte-identically', () => {
+        const library = new Library();
+        library.load(legacySerialized());
+        const first = JSON.stringify(library.save());
+
+        const reloaded = new Library();
+        reloaded.load(JSON.parse(first));
+
+        assert.equal(JSON.stringify(reloaded.save()), first);
+    });
+});

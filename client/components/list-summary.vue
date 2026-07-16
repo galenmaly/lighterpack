@@ -5,7 +5,7 @@
         </div>
         <div class="lpTotalsContainer">
             <ul class="lpTotals lpTable lpDataTable">
-                <li v-for="category in categories" :key="category.id" :class="{'hover': category.activeHover, 'lpTotalCategory lpRow': true}">
+                <li v-for="category in categories" :key="category.id" :class="{'hover': category.id === hoveredCategoryId, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
                         <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @color-change="updateColor(category, $event)" />
                     </span>
@@ -104,11 +104,7 @@ export default {
             return this.$store.state.library;
         },
         categories() {
-            return this.list.categoryIds.map((id) => {
-                const category = this.library.getCategoryById(id);
-                category.activeHover = (this.hoveredCategoryId === category.id);
-                return category;
-            });
+            return this.list.categoryIds.map(id => this.library.getCategoryById(id));
         },
     },
     watch: {
