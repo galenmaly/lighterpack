@@ -43,10 +43,12 @@ test.describe('Settings Persistence After Reload', () => {
 
     // Enable list descriptions
     await enableSetting(page, 'List descriptions');
-    await expect(page.locator('#listDescription')).toBeVisible();
+    await expect(page.getByTestId('list-description-empty')).toBeVisible();
 
     // Add a description
-    await page.locator('#listDescription').fill('My trip notes');
+    await page.getByTestId('list-description-empty').click();
+    await page.getByTestId('list-description-input').fill('My trip notes');
+    await page.getByTestId('list-description-input').blur();
 
     // Wait for auto-save
     await page.waitForResponse(
@@ -58,8 +60,7 @@ test.describe('Settings Persistence After Reload', () => {
     await page.reload();
     await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
 
-    await expect(page.locator('#listDescription')).toBeVisible();
-    await expect(page.locator('#listDescription')).toHaveValue('My trip notes');
+    await expect(page.getByTestId('list-description-rendered')).toContainText('My trip notes');
   });
 
   test('should persist currency symbol after reload', async ({ page }) => {
@@ -198,13 +199,11 @@ test.describe('Settings Toggle Interactions', () => {
   test('should show/hide list description when toggled', async ({ page }) => {
     // Enable descriptions
     await enableSetting(page, 'List descriptions');
-    await expect(page.locator('#listDescription')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'List Description' })).toBeVisible();
+    await expect(page.getByTestId('list-description-empty')).toBeVisible();
 
     // Disable descriptions
     await disableSetting(page, 'List descriptions');
-    await expect(page.locator('#listDescription')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'List Description' })).toHaveCount(0);
+    await expect(page.getByTestId('list-description-empty')).toHaveCount(0);
   });
 });
 

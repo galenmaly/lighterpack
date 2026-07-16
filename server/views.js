@@ -2,43 +2,13 @@ import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
-import { marked } from 'marked';
 import { thumbnailUrl } from './images.js';
-
-const escapeAttribute = (str) => String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-// Allow relative URLs and http/https/mailto; reject every other scheme
-// (javascript:, data:, vbscript:, ...). Control chars and whitespace are
-// stripped before matching because browsers ignore them inside URLs.
-const isSafeHref = (href) => {
-    // strip control chars and whitespace (charCode <= 0x20) before matching,
-    // because browsers ignore them inside URLs ("java\tscript:" runs)
-    const cleaned = Array.from(String(href || '')).filter((ch) => ch.charCodeAt(0) > 0x20).join('');
-    return !/^[a-z][a-z0-9+.-]*:/i.test(cleaned) || /^(https?|mailto):/i.test(cleaned);
-};
-
-marked.use({
-    renderer: {
-        // Inline HTML tags are dropped (their surrounding text survives as its
-        // own tokens). Block HTML swallows the whole line into one token, so
-        // escape it to visible text instead of silently losing user content.
-        html({ text, block }) { return block ? escapeAttribute(text) : ''; },
-        link({ href, title, text }) {
-            if (!isSafeHref(href)) return text;
-            const titleAttr = title ? ` title="${escapeAttribute(title)}"` : '';
-            return `<a href="${escapeAttribute(href)}"${titleAttr}>${text}</a>`;
-        },
-    },
-});
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest, logger } from './log.js';
 import weightUtils from '../client/utils/weight.js';
+import { marked, isSafeHref } from '../client/utils/markdown.js';
 import { Library } from '../client/dataTypes.js';
 import { listToCsv } from './csv.js';
 

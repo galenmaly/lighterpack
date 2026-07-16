@@ -215,12 +215,46 @@ test.describe('List Settings', () => {
     const listDescriptionToggle = settings.getByLabel('List descriptions', { exact: true });
 
     await listDescriptionToggle.check();
-    await expect(page.getByRole('heading', { name: 'List Description' })).toBeVisible();
-    await expect(page.locator('#listDescription')).toBeVisible();
+    await expect(page.getByTestId('list-description-empty')).toBeVisible();
 
     await settings.hover();
     await listDescriptionToggle.uncheck();
-    await expect(page.getByRole('heading', { name: 'List Description' })).toHaveCount(0);
+    await expect(page.getByTestId('list-description-empty')).toHaveCount(0);
+  });
+
+  test('should edit list description through empty, editing, and rendered states', async ({ page }) => {
+    const { username, password, email } = generateTestUser('desc-md');
+
+    await registerUser(page, username, password, email);
+
+    const settings = page.locator('#settings');
+    await settings.hover();
+    await settings.getByLabel('List descriptions', { exact: true }).check();
+
+    // Empty state: clicking the placeholder box opens the editor
+    const empty = page.getByTestId('list-description-empty');
+    await expect(empty).toBeVisible();
+    await empty.click();
+
+    const input = page.getByTestId('list-description-input');
+    await expect(input).toBeFocused();
+    await input.fill('# Trip Plan\n\nSome **bold** notes');
+    await input.blur();
+
+    // Editing resolves to rendered markdown
+    const rendered = page.getByTestId('list-description-rendered');
+    await expect(rendered.locator('h1')).toHaveText('Trip Plan');
+    await expect(rendered.locator('strong')).toHaveText('bold');
+
+    // Clicking rendered markdown reopens the editor with the raw markdown
+    await rendered.click();
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue('# Trip Plan\n\nSome **bold** notes');
+
+    // Clearing the text falls back to the empty state
+    await input.fill('');
+    await input.blur();
+    await expect(empty).toBeVisible();
   });
 
   test('should show item price fields when enabled', async ({ page }) => {
@@ -265,8 +299,7 @@ test.describe('List Settings', () => {
     await settings.getByLabel('Item prices', { exact: true }).check();
     await settings.getByLabel('List descriptions', { exact: true }).check();
 
-    const listDescription = page.locator('#listDescription');
-    await expect(listDescription).toBeVisible();
+    await expect(page.getByTestId('list-description-empty')).toBeVisible();
 
     const currencyInput = page.locator('#currencySymbol');
     await expect(currencyInput).toBeVisible();
@@ -283,7 +316,7 @@ test.describe('List Settings', () => {
 
     await page.locator('#settings').hover();
     await expect(page.locator('#currencySymbol')).toHaveValue('€');
-    await expect(page.locator('#listDescription')).toBeVisible();
+    await expect(page.getByTestId('list-description-empty')).toBeVisible();
     await expect(page.getByTestId('item-price').first()).toBeVisible();
   });
 

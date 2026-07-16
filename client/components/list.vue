@@ -19,10 +19,7 @@
 
         <div style="clear: both;" />
 
-        <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
-            <h3>List Description</h3> <p>(<a href="https://guides.github.com/features/mastering-markdown/" target="_blank" class="lpHref">Markdown</a> supported)</p>
-            <textarea id="listDescription" v-model="list.description" @input="updateListDescription" />
-        </div>
+        <list-description v-if="library.optionalFields['listDescription']" :list="list" />
 
         <ul class="lpCategories">
             <category v-for="category in categories" :key="category.id" :category="category" />
@@ -34,6 +31,7 @@
 
 <script>
 import category from './category.vue';
+import listDescription from './list-description.vue';
 import listSummary from './list-summary.vue';
 
 import dragula from 'dragula';
@@ -43,6 +41,7 @@ export default {
     name: 'List',
     components: {
         listSummary,
+        listDescription,
         category,
     },
     data() {
@@ -83,9 +82,6 @@ export default {
     methods: {
         newCategory() {
             this.$store.commit('newCategory', this.list);
-        },
-        updateListDescription() {
-            this.$store.commit('updateListDescription', this.list);
         },
         handleItemReorder() {
             if (this.itemDrake) {
@@ -152,28 +148,6 @@ export default {
     font-size: 13px;
     font-weight: 600;
     margin: 0 0 20px;
-}
-
-#listDescriptionContainer {
-    margin: 25px 0;
-
-    h3,
-    p {
-        display: inline-block;
-        margin: 0 0 5px;
-    }
-
-    h3 {
-        margin-right: 10px;
-    }
-
-    textarea {
-        background: var(--lp-content-bg);
-        border: 1px solid var(--lp-hairline);
-        color: var(--lp-text);
-        height: 65px;
-        width: 100%;
-    }
 }
 
 #getStarted {

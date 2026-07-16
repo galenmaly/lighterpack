@@ -25,17 +25,23 @@ test.describe('Share View — XSS', () => {
     await listNameInput.fill('XSS Test List');
     await listNameInput.blur();
 
-    const descriptionInput = page.locator('#listDescription');
-    await descriptionInput.waitFor({ state: 'visible' });
+    await page.getByTestId('list-description-empty').waitFor({ state: 'visible' });
 
     await page.evaluate(() => {
       const store = (window as any).LighterPack.$store;
       const list = store.state.library.getListById(store.state.library.defaultListId);
-      list.description = '<script>window.__xss=true</script> normal text [bad link](javascript:window.__xss=true)';
+      // The <script> line is block html, which marked escapes as one whole-line
+      // token — so the links live in their own paragraph to actually parse.
+      list.description = '<script>window.__xss=true</script> normal text\n\n[bad link](javascript:window.__xss=true) [gear](https://example.com)';
       store.commit('updateListDescription', list);
     });
 
-    await createCategory(page, 'Gear');
+    const gearCategory = await createCategory(page, 'Gear');
+    const evilRow = await addItem(gearCategory, 'Evil Gear', { weight: '5' });
+    await evilRow.hover();
+    await evilRow.getByTitle('Add a link for this item').click();
+    await page.getByPlaceholder('Item Link').fill('javascript:window.__xss=true');
+    await page.getByRole('button', { name: 'Save' }).click();
 
     await page.getByText('Share', { exact: true }).hover();
     const shareUrlInput = page.getByLabel('Share your list');
@@ -71,9 +77,25 @@ test.describe('Share View — XSS', () => {
     expect(jsLinks).toBe(0);
   });
 
+  test('should not render unsafe item URLs as links', async ({ page }) => {
+    await page.goto(shareUrl);
+    const evilItem = page.locator('li.lpItem').filter({ hasText: 'Evil Gear' });
+    await expect(evilItem.locator('.lpName')).toContainText('Evil Gear');
+    await expect(evilItem.locator('.lpName a')).toHaveCount(0);
+    expect(await page.locator('a[href^="javascript:"]').count()).toBe(0);
+  });
+
   test('should still render safe markdown text in list description', async ({ page }) => {
     await page.goto(shareUrl);
     await expect(page.locator('#lpListDescription')).toContainText('normal text');
+  });
+
+  test('should open list description links in a new tab as noopener nofollow ugc', async ({ page }) => {
+    await page.goto(shareUrl);
+    const link = page.locator('#lpListDescription a', { hasText: 'gear' });
+    await expect(link).toHaveAttribute('href', 'https://example.com');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener nofollow ugc');
   });
 });
 
@@ -104,7 +126,9 @@ test.describe('Share View', () => {
     const listNameInput = page.getByPlaceholder('List Name', { exact: true });
     await listNameInput.fill('Glacier Peak');
     await listNameInput.blur();
-    await page.locator('#listDescription').fill('A summer backpacking trip');
+    await page.getByTestId('list-description-empty').click();
+    await page.getByTestId('list-description-input').fill('A summer backpacking trip');
+    await page.getByTestId('list-description-input').blur();
 
     // Shelter: Tent — 32 oz, qty 1, description, price $150, URL
     const shelterCategory = await createCategory(page, 'Shelter');
@@ -191,6 +215,8 @@ test.describe('Share View', () => {
     const link = tentName.locator('a.lpHref');
     await expect(link).toBeVisible();
     await expect(link).toHaveAttribute('href', 'https://example.com/tent');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener nofollow ugc');
   });
 
   test('should display item price', async ({ page }) => {

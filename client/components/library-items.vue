@@ -13,8 +13,7 @@
                 <span v-else class="lpLibraryItemNoHandle" />
                 <span class="lpLibraryItemBody">
                     <span class="lpLibraryItemTopline">
-                        <a v-if="item.url" :href="item.url" target="_blank" class="lpName lpHref">{{ item.name }}</a>
-                        <span v-if="!item.url" class="lpName">{{ item.name }}</span>
+                        <span class="lpName">{{ item.name }}</span>
                         <span class="lpWeight">
                             {{ displayWeight(item.weight, item.authorUnit) }}
                             {{ item.authorUnit }}
