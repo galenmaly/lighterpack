@@ -1,118 +1,126 @@
+// Icons: monochrome SVGs applied as CSS masks over currentColor, so every
+// glyph inherits text color and re-themes (dark mode, hover, active) like
+// text does. Vite inlines each url() as a data URI at build time, so the
+// whole set ships inside the stylesheet with no extra requests.
 .lpSprite {
-    background-image: url("/images/sprite2x.png?v=2");
-    background-size: 400px;
+    background-color: currentColor;
     display: inline-block;
-    height: 14px;
-    overflow: hidden;
+    height: 16px;
+    -webkit-mask: var(--lp-icon) center / contain no-repeat;
+    mask: var(--lp-icon) center / contain no-repeat;
     position: relative;
     top: 2px;
-    width: 14px;
+    width: 16px;
 
     &.hidden {
         visibility: hidden;
     }
 }
 
+// Green: inherited from .lpAdd / .lpCopy link color.
 .lpSpriteAdd {
-    background-position: 0 0;
+    --lp-icon: url("./icons/plus.svg");
 }
 
 .lpSpriteUpload {
-    background-position: -250px 0;
+    --lp-icon: url("./icons/up.svg");
 }
 
+// Blue: inherited from the .lpHref link it sits in.
 .lpSpriteDownload {
-    background-position: -250px -25px;
+    --lp-icon: url("./icons/down.svg");
 }
 
 .lpSpriteCopy {
-    background-position: 0 -50px;
+    --lp-icon: url("./icons/copy.svg");
 }
 
+// The ✕ glyph fills only the middle half of its viewBox; oversizing the mask
+// crops that padding so the glyph stays legible in the small remove pill.
 .lpSpriteRemove {
-    background-position: -25px 0;
+    --lp-icon: url("./icons/x.svg");
     height: 8px;
+    -webkit-mask-size: 165%;
+    mask-size: 165%;
     top: 0;
     width: 8px;
 
     .lpRemove:hover & {
-        background-position: -25px -25px;
+        color: $grey-0; // stays white-on-red in both themes
     }
 }
 
 .lpWorn {
-    background-position: -50px 0;
-    width: 17px;
+    --lp-icon: url("./icons/worn.svg");
 
     &.lpActive {
-        background-position: -50px -25px;
+        color: var(--lp-link-blue);
     }
-
-    &.lpWornOne {
-        background-position: -50px -50px;
-    }
-}
-
-.lpLinkBig {
-    background-position: -75px 0;
-    height: 20px;
-    width: 18px;
 }
 
 .lpCamera {
-    background-position: -100px 0;
-    width: 18px;
+    --lp-icon: url("./icons/camera.svg");
 }
 
 .lpExpand {
-    background-position: -125px 0;
+    --lp-icon: url("./icons/triangle.svg");
+    height: 12px;
+    width: 12px;
 }
 
 .lpHamburger {
-    background-position: -150px 0;
-    height: 20px;
-    width: 20px;
+    --lp-icon: url("./icons/hamburger.svg");
+    height: 22px;
+    width: 22px;
 }
 
 .lpLink {
-    background-position: -175px 0;
-    width: 13px;
+    --lp-icon: url("./icons/link.svg");
 
     &.lpActive {
-        background-position: -175px -25px;
+        color: var(--lp-link-blue);
     }
 }
 
-.lpUp {
-    background-position: -200px 0;
+// Qty stepper carets reuse the dropdown triangle, flipped for "up"; the
+// oversized mask keeps the tiny boxes filled (item.vue positions them).
+.lpUp,
+.lpDown {
+    --lp-icon: url("./icons/triangle.svg");
     height: 7px;
+    -webkit-mask-size: 150%;
+    mask-size: 150%;
     width: 7px;
 }
 
-.lpDown {
-    background-position: -200px -25px;
-    height: 7px;
-    width: 7px;
+.lpUp {
+    transform: rotate(180deg);
 }
 
 .lpStar {
-    background-position: -225px 0;
-    height: 14px;
-    width: 14px;
-    &.lpStar1 { background-position: -225px -25px; }
-    &.lpStar2 { background-position: -225px -50px; }
-    &.lpStar3 { background-position: -225px -75px; }
+    --lp-icon: url("./icons/star.svg");
+
+    &.lpStar1 {
+        color: var(--lp-active-yellow);
+    }
+
+    &.lpStar2 {
+        color: var(--lp-danger);
+    }
+
+    &.lpStar3 {
+        color: var(--lp-accent-green-deep);
+    }
 }
 
 .lpConsumable {
-    background-position: -275px 0;
-    width: 17px;
+    --lp-icon: url("./icons/consumable.svg");
 
     &.lpActive {
-        background-position: -275px -25px;
+        color: var(--lp-link-blue);
     }
 }
 
 .lpSettings {
-    background-position: -300px 0;
+    --lp-icon: url("./icons/settings.svg");
 }
