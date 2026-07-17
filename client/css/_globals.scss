@@ -26,9 +26,7 @@ $darkYellow: #a58c00;
 /* Neutrals — one ramp, numbered by darkness. A new grey must land on an
    existing step or earn a new one; never add a near-duplicate value. */
 $grey-0: #fff;
-$grey-50: #f7f7f7; // page background
 $grey-100: #e0e1e3; // hairline
-$grey-150: #d8d8da; // sidebar text
 $grey-200: #c6c9cd; // strong hairline, resting icons
 $grey-300: #aaa; // subtle border (share pages)
 $grey-400: #9a9da3; // faint text
@@ -70,7 +68,7 @@ $transitionDurationSlow: 0.4s;
     color-scheme: light;
 
     // Surfaces
-    --lp-bg: #{$grey-50}; // page background
+    --lp-bg: #{$grey-0}; // page background
     --lp-content-bg: #{$grey-0}; // content column
     --lp-surface: #{$grey-0}; // panels, modals, lifted rows
     --lp-get-started-bg: #{$grey-100};
@@ -120,7 +118,7 @@ $transitionDurationSlow: 0.4s;
     --lp-sidebar-bg: #{$grey-800};
     --lp-sidebar-inset: #{$grey-850};
     --lp-sidebar-border: #{$grey-700};
-    --lp-sidebar-text: #{$grey-150};
+    --lp-sidebar-text: #{$grey-100};
     --lp-sidebar-muted: #{$grey-500};
     --lp-sidebar-handle: #{$grey-600};
     --lp-sidebar-link: #{$blue2};

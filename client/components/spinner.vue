@@ -35,7 +35,7 @@ $spinnerSize: 18px;
     transform: translateY(-50%);
 
     &::before {
-        border-color: $grey-50;
+        border-color: $grey-0;
         border-top-color: transparent;
     }
 }
