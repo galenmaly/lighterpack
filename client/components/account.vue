@@ -2,6 +2,14 @@
     <modal id="accountSettings" :shown="shown" @hide="$emit('hide')">
         <h2>Account Settings</h2>
 
+        <div class="lpAccountPreferences">
+            <label>
+                <input type="checkbox" :checked="sharedItemBubble" @change="toggleSharedItemBubble">
+                Warn when editing an item that's in multiple lists
+            </label>
+        </div>
+        <hr>
+
         <form id="accountForm" @submit.prevent="updateAccount()">
             <div class="lpFields">
                 <input type="text" name="username" class="username" disabled :value="username">
@@ -62,8 +70,15 @@ export default {
         username() {
             return this.$store.state.loggedIn;
         },
+        sharedItemBubble() {
+            const library = this.$store.state.library;
+            return !!(library && library.preferences.sharedItemBubble);
+        },
     },
     methods: {
+        toggleSharedItemBubble() {
+            this.$store.commit('togglePreference', 'sharedItemBubble');
+        },
         updateAccount() {
             this.errors = [];
 

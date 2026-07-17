@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { registerUser, loginUser, logoutUser, generateTestUser } from './auth-utils';
-import { createCategory, addItem, enableSetting, disableSetting, getCategoryNames } from './test-helpers';
+import { createCategory, addItem, enableSetting, disableSetting, getCategoryNames, openSidebar } from './test-helpers';
 
 test.describe('Settings Persistence After Reload', () => {
   test('should persist item prices setting after reload', async ({ page }) => {
@@ -274,5 +274,52 @@ test.describe('Data Persistence Across Sessions', () => {
       }),
     );
     expect(itemNames).toContain('Tent');
+  });
+});
+
+test.describe('Per-list settings', () => {
+  test('display settings are independent per list and new lists inherit them', async ({ page }) => {
+    const { username, password, email } = generateTestUser('perlist');
+
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
+
+    await openSidebar(page);
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('List A');
+    await listNameInput.blur();
+
+    const category = await createCategory(page, 'Gear');
+    await addItem(category, 'Tent', { weight: '10' });
+
+    await enableSetting(page, 'Item prices');
+    await expect(page.getByTestId('item-price').first()).toBeVisible();
+
+    // A new list inherits the active list's settings…
+    await page.getByTestId('new-list').click();
+    await listNameInput.fill('List B');
+    await listNameInput.blur();
+    const categoryB = await createCategory(page, 'Gear B');
+    await addItem(categoryB, 'Stove', { weight: '5' });
+    await expect(page.getByTestId('item-price').first()).toBeVisible();
+
+    // …but toggling it off there leaves other lists alone.
+    await disableSetting(page, 'Item prices');
+    await expect(page.getByTestId('item-price')).toHaveCount(0);
+
+    await page.locator('#lists').getByText('List A', { exact: true }).click();
+    await expect(page.getByTestId('item-price').first()).toBeVisible();
+
+    // Both lists' settings survive a reload.
+    await page.waitForResponse(
+      (response) => response.url().includes('saveLibrary') && response.status() === 200,
+      { timeout: 15000 },
+    );
+    await page.reload();
+    await expect(page.getByTestId('item-price').first()).toBeVisible();
+
+    await openSidebar(page);
+    await page.locator('#lists').getByText('List B', { exact: true }).click();
+    await expect(page.getByTestId('item-price')).toHaveCount(0);
   });
 });

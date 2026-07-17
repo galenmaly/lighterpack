@@ -21,6 +21,9 @@ const store = createStore({
         activeList(state) {
             return state.library.getListById(state.library.defaultListId);
         },
+        optionalFields(state) {
+            return state.library.getListById(state.library.defaultListId).optionalFields;
+        },
     },
     mutations: {
         setSaveType(state, saveType) {
@@ -48,8 +51,11 @@ const store = createStore({
                 libraryData = JSON.parse(libraryData);
                 library.load(libraryData);
                 state.library = library;
-            } catch (_err) {
-                state.globalAlerts.push({ message: 'An error occurred while loading your data.' });
+            } catch (err) {
+                const message = (err && err.code === 'VERSION_TOO_NEW')
+                    ? err.message
+                    : 'An error occurred while loading your data.';
+                state.globalAlerts.push({ message });
             }
             state.lastSaveData = JSON.stringify(library.save());
         },
@@ -67,8 +73,12 @@ const store = createStore({
             state.library.totalUnit = unit;
         },
         toggleOptionalField(state, optionalField) {
-            state.library.optionalFields[optionalField] = !state.library.optionalFields[optionalField];
-            state.library.getListById(state.library.defaultListId).calculateTotals();
+            const list = state.library.getListById(state.library.defaultListId);
+            list.optionalFields[optionalField] = !list.optionalFields[optionalField];
+            list.calculateTotals();
+        },
+        togglePreference(state, preference) {
+            state.library.preferences[preference] = !state.library.preferences[preference];
         },
         updateCurrencySymbol(state, currencySymbol) {
             state.library.currencySymbol = currencySymbol;
@@ -83,7 +93,11 @@ const store = createStore({
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
         newList(state) {
+            const previousList = state.library.getListById(state.library.defaultListId);
             const list = state.library.newList();
+            if (previousList) {
+                list.optionalFields = Object.assign({}, previousList.optionalFields);
+            }
             const category = state.library.newCategory({ list });
             state.library.newItem({ category });
             list.calculateTotals();
@@ -176,12 +190,12 @@ const store = createStore({
         updateItemImageUrl(state, args) {
             const item = state.library.getItemById(args.item.id);
             item.imageUrl = args.imageUrl;
-            state.library.optionalFields.images = true;
+            state.library.getListById(state.library.defaultListId).optionalFields.images = true;
         },
         updateItemImage(state, args) {
             const item = state.library.getItemById(args.item.id);
             item.image = args.image;
-            state.library.optionalFields.images = true;
+            state.library.getListById(state.library.defaultListId).optionalFields.images = true;
         },
         updateItemUnit(state, unit) {
             state.library.itemUnit = unit;
@@ -208,7 +222,11 @@ const store = createStore({
             state.library.defaultListId = copiedList.id;
         },
         importCSV(state, importData) {
+            const previousList = state.library.getListById(state.library.defaultListId);
             const list = state.library.newList({});
+            if (previousList) {
+                list.optionalFields = Object.assign({}, previousList.optionalFields);
+            }
             let category;
             const newCategories = {};
             let item;

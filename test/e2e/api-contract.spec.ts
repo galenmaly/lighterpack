@@ -94,6 +94,32 @@ test.describe('/saveLibrary contract', () => {
         await request.dispose();
     });
 
+    test('a stale sync_token is rejected and the write does not land', async ({ playwright }) => {
+        const request = await playwright.request.newContext();
+        const user = await registerViaApi(request);
+
+        // Advance the server's token, as another tab — or the migration
+        // import's +1 bump — would.
+        const first = await request.post(url('/saveLibrary'), {
+            data: { sync_token: user.sync_token, username: user.username, data: user.library },
+        });
+        expect(first.status()).toBe(200);
+
+        // A save still carrying the old token must be rejected untouched.
+        const tampered = JSON.parse(user.library);
+        tampered.totalUnit = 'kg';
+        const stale = await request.post(url('/saveLibrary'), {
+            data: { sync_token: user.sync_token, username: user.username, data: JSON.stringify(tampered) },
+        });
+        expect(stale.status()).toBe(400);
+        expect((await stale.json()).message).toContain('out of date');
+
+        const signin = await request.post(url('/signin'), { data: {} });
+        expect(signin.status()).toBe(200);
+        expect(JSON.parse((await signin.json()).library).totalUnit).not.toBe('kg');
+        await request.dispose();
+    });
+
     test('missing data returns 400', async ({ playwright }) => {
         const request = await playwright.request.newContext();
         const user = await registerViaApi(request);

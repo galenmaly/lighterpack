@@ -3,6 +3,7 @@
         <PopoverHover>
             <template #target><span><i class="lpSprite lpSettings" /> Settings</span></template>
             <template #content><div>
+                <div class="lpListSettingsScope">Display settings for this list</div>
                 <ul id="lpOptionalFields">
                     <li v-for="optionalField in optionalFieldsLookup" :key="optionalField.name" class="lpOptionalField">
                         <label>
@@ -11,7 +12,7 @@
                         </label>
                     </li>
                 </ul>
-                <div v-if="library.optionalFields['price']" id="lpPriceSettings">
+                <div v-if="optionalFields['price']" id="lpPriceSettings">
                     <hr>
                     <label>
                         Currency:
@@ -65,12 +66,17 @@ export default {
         library() {
             return this.$store.state.library;
         },
+        optionalFields() {
+            return this.$store.getters.optionalFields;
+        },
         isSignedIn() {
             return this.$store.state.loggedIn;
         },
     },
     watch: {
-        'library.optionalFields': {
+        // Deep-watching the getter tracks both toggles on the active list
+        // and switches to a different list (whose settings may differ).
+        optionalFields: {
             handler() { this.updateOptionalFieldValues(); },
             deep: true,
         },
@@ -91,7 +97,7 @@ export default {
 
             for (i = 0; i < this.optionalFieldsLookup.length; i++) {
                 fieldLookup = this.optionalFieldsLookup[i];
-                fieldLookup.value = this.library.optionalFields[fieldLookup.name];
+                fieldLookup.value = this.optionalFields[fieldLookup.name];
             }
         },
     },
@@ -108,6 +114,12 @@ export default {
 #lpOptionalFields {
     margin: 0;
     padding: 0;
+}
+
+.lpListSettingsScope {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 6px;
 }
 
 .lpOptionalField {

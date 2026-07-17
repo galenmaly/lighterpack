@@ -3,7 +3,7 @@
         <span class="lpHandleCell">
             <div class="lpItemHandle lpHandle" title="Reorder this item" />
         </span>
-        <span v-if="library.optionalFields['images']" class="lpImageCell">
+        <span v-if="optionalFields['images']" class="lpImageCell">
             <img v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" @click="viewItemImage()">
         </span>
         <!-- !! matters: the directive treats undefined as "focus", and _isNew
@@ -13,11 +13,11 @@
         <span class="lpActionsCell">
             <i class="lpSprite lpCamera" title="Upload a photo or use a photo from the web" @click="updateItemImage" />
             <i class="lpSprite lpLink" :class="{lpActive: item.url}" title="Add a link for this item" @click="updateItemLink" />
-            <i v-if="library.optionalFields['worn']" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn" @click="toggleWorn" />
-            <i v-if="library.optionalFields['consumable']" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable" @click="toggleConsumable" />
+            <i v-if="optionalFields['worn']" class="lpSprite lpWorn" :class="{lpActive: categoryItem.worn}" title="Mark this item as worn" @click="toggleWorn" />
+            <i v-if="optionalFields['consumable']" class="lpSprite lpConsumable" :class="{lpActive: categoryItem.consumable}" title="Mark this item as a consumable" @click="toggleConsumable" />
             <i :class="'lpSprite lpStar lpStar' + categoryItem.star" title="Star this item" @click="cycleStar" />
         </span>
-        <span v-if="library.optionalFields['price']" class="lpPriceCell">
+        <span v-if="optionalFields['price']" class="lpPriceCell">
             <input v-model="displayPrice" v-empty-if-zero data-testid="item-price" type="text" :class="{lpPrice: true, lpNumber: true, lpSilent: true, lpSilentError: priceError}" @input="savePrice" @keydown.up="incrementPrice($event)" @keydown.down="decrementPrice($event)" @blur="setDisplayPrice">
         </span>
         <span class="lpWeightCell lpNumber">
@@ -80,6 +80,9 @@ export default {
         library() {
             return this.$store.state.library;
         },
+        optionalFields() {
+            return this.$store.getters.optionalFields;
+        },
         item() {
             return Object.assign({}, this.itemContainer.item);
         },
@@ -120,7 +123,7 @@ export default {
             return Math.max(0, this.otherListsWithItem.length - maxSharedListNames);
         },
         showSharedBubble() {
-            return this.rowFocused && this.otherListsWithItem.length > 0;
+            return this.rowFocused && this.otherListsWithItem.length > 0 && this.library.preferences.sharedItemBubble;
         },
     },
     watch: {

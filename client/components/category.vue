@@ -1,6 +1,6 @@
 <template>
     <li :id="category.id" class="lpCategory" data-testid="category">
-        <ul class="lpItems lpDataTable" :class="{lpHasPrice: library.optionalFields['price'], lpHasImages: library.optionalFields['images']}">
+        <ul class="lpItems lpDataTable" :class="{lpHasPrice: optionalFields['price'], lpHasImages: optionalFields['images']}">
             <li class="lpHeader lpItemsHeader">
                 <span class="lpHandleCell">
                     <div class="lpHandle lpCategoryHandle" title="Reorder this category" />
@@ -9,7 +9,7 @@
                     <span v-if="swatchColor" class="lpCategorySwatch" :style="{background: swatchColor}" />
                     <input v-focus-on-create="!!category._isNew" type="text" :value="category.name" placeholder="Category Name" class="lpCategoryName lpSilent" @input="updateCategoryName">
                 </span>
-                <span v-if="library.optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
+                <span v-if="optionalFields['price']" class="lpPriceCell lpNumber lpSubtotal">
                     {{ displayPrice(category.subtotalPrice, library.currencySymbol) }}
                 </span>
                 <span class="lpWeightCell lpNumber lpSubtotal">
@@ -49,6 +49,9 @@ export default {
     computed: {
         library() {
             return this.$store.state.library;
+        },
+        optionalFields() {
+            return this.$store.getters.optionalFields;
         },
         itemContainers() {
             return this.category.categoryItems.map(categoryItem => ({ categoryItem, item: this.library.getItemById(categoryItem.itemId) }));

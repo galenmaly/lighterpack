@@ -8,7 +8,7 @@ const categoryItem = (itemId, extra = {}) => ({
 });
 
 describe('Library.load version upgrades', () => {
-    test('upgrades a v0.1 library (no version field) to v0.3', () => {
+    test('upgrades a v0.1 library (no version field) all the way to v0.4', () => {
         const serialized = {
             showImages: true,
             items: [{ id: 5, name: 'Tent', description: '', weight: 1000, authorUnit: 'g', price: 0, image: '', imageUrl: '', url: '' }],
@@ -20,8 +20,9 @@ describe('Library.load version upgrades', () => {
         const library = new Library();
         library.load(serialized);
 
-        assert.equal(library.version, '0.3');
-        assert.equal(library.optionalFields.images, true);
+        assert.equal(library.version, '0.4');
+        // showImages folds into optionalFields (0.2), which then move per-list (0.4)
+        assert.equal(library.lists[0].optionalFields.images, true);
         // sequence resumes above the highest existing id
         assert.equal(library.sequence, 7);
         // itemIds renamed to categoryItems
@@ -58,6 +59,133 @@ describe('Library.load version upgrades', () => {
         // the item reference inside the category is untouched
         assert.equal(category.categoryItems[0].itemId, 4);
         assert.equal(library.getCategoryById(category.id), category);
+    });
+});
+
+describe('Library.load upgrade03to04', () => {
+    const serialized03 = (overrides = {}) => ({
+        version: '0.3',
+        totalUnit: 'oz',
+        itemUnit: 'oz',
+        defaultListId: 1,
+        sequence: 9,
+        showSidebar: true,
+        optionalFields: {
+            images: true, price: true, worn: false, consumable: true, listDescription: false,
+        },
+        currencySymbol: '$',
+        items: [{ id: 4, name: 'Tent', description: '', weight: 1000, authorUnit: 'oz', price: 0, image: '', imageUrl: '', url: '' }],
+        categories: [{ id: 2, name: 'Shelter', categoryItems: [categoryItem(4)] }],
+        lists: [
+            { id: 1, name: 'Trip', categoryIds: [2], description: '', externalId: '' },
+            { id: 8, name: 'Other trip', categoryIds: [], description: '', externalId: '' },
+        ],
+        ...overrides,
+    });
+
+    test('copies library settings down to every list and drops the library-level copy', () => {
+        const library = new Library();
+        library.load(serialized03());
+
+        assert.equal(library.version, '0.4');
+        assert.equal(typeof library.optionalFields, 'undefined');
+        for (const list of library.lists) {
+            assert.deepEqual(list.optionalFields, {
+                images: true, price: true, worn: false, consumable: true, listDescription: false,
+            });
+        }
+        // each list owns its settings — no shared object between lists
+        assert.notEqual(library.lists[0].optionalFields, library.lists[1].optionalFields);
+    });
+
+    test('initializes preferences to defaults', () => {
+        const library = new Library();
+        library.load(serialized03());
+        assert.deepEqual(library.preferences, { sharedItemBubble: true });
+    });
+
+    test('keeps a valid sequence but repairs one behind the max id', () => {
+        const ok = new Library();
+        ok.load(serialized03({ sequence: 50 }));
+        assert.equal(ok.sequence, 50);
+
+        const behind = new Library();
+        behind.load(serialized03({ sequence: 3 }));
+        assert.equal(behind.sequence, 9); // max id is 8, so 8 + 1
+    });
+
+    test('repairs duplicate ids that survived at 0.3', () => {
+        const library = new Library();
+        library.load(serialized03({
+            categories: [{ id: 4, name: 'Shelter', categoryItems: [categoryItem(4)] }],
+            lists: [{ id: 1, name: 'Trip', categoryIds: [4], description: '', externalId: '' }],
+        }));
+
+        // the item keeps id 4; the category is renumbered and references follow
+        assert.equal(library.getItemById(4).name, 'Tent');
+        const category = library.categories[0];
+        assert.notEqual(category.id, 4);
+        assert.deepEqual(library.lists[0].categoryIds, [category.id]);
+        assert.equal(category.categoryItems[0].itemId, 4);
+    });
+});
+
+describe('forward version guard', () => {
+    test('refuses to load a library from a newer format', () => {
+        const library = new Library();
+        assert.throws(
+            () => library.load({
+                version: '0.5', items: [], categories: [], lists: [],
+            }),
+            (err) => err.code === 'VERSION_TOO_NEW',
+        );
+    });
+});
+
+describe('per-list settings', () => {
+    test('a list created by a pre-0.4 client gets default settings on load', () => {
+        const library = new Library();
+        const serialized = JSON.parse(JSON.stringify(library.save()));
+        delete serialized.lists[0].optionalFields;
+
+        const reloaded = new Library();
+        reloaded.load(serialized);
+
+        assert.deepEqual(reloaded.lists[0].optionalFields, {
+            images: false, price: false, worn: true, consumable: true, listDescription: false,
+        });
+    });
+
+    test("worn subtotals follow each list's own settings", () => {
+        const library = new Library();
+        const listA = library.lists[0];
+        const categoryA = library.categories[0];
+        const item = library.items[0];
+        item.weight = 100;
+        categoryA.categoryItems[0].worn = 1;
+
+        const listB = library.newList();
+        const categoryB = library.newCategory({ list: listB });
+        categoryB.addItem({ itemId: item.id, worn: 1 });
+        listB.optionalFields.worn = false;
+
+        listA.calculateTotals();
+        listB.calculateTotals();
+
+        assert.equal(listA.totalWornWeight, 100);
+        assert.equal(listB.totalWornWeight, 0);
+        assert.equal(listB.totalWeight, 100);
+    });
+
+    test("copyList copies the source list's settings", () => {
+        const library = new Library();
+        library.lists[0].optionalFields.price = true;
+        library.lists[0].optionalFields.worn = false;
+
+        const copy = library.copyList(library.lists[0].id);
+
+        assert.deepEqual(copy.optionalFields, library.lists[0].optionalFields);
+        assert.notEqual(copy.optionalFields, library.lists[0].optionalFields);
     });
 });
 
@@ -308,5 +436,36 @@ describe('serialization safety', () => {
         reloaded.load(JSON.parse(first));
 
         assert.equal(JSON.stringify(reloaded.save()), first);
+    });
+
+    test('upgrading the 0.3 fixture moves settings onto the list and stamps 0.4', () => {
+        const library = new Library();
+        library.load(legacySerialized());
+
+        assert.equal(library.version, '0.4');
+        assert.deepEqual(library.lists[0].optionalFields, {
+            images: false, price: false, worn: true, consumable: true, listDescription: false,
+        });
+    });
+
+    test('0.4 save output contains only known fields at every level', () => {
+        const library = new Library();
+        library.load(legacySerialized());
+        const out = library.save();
+
+        assert.deepEqual(Object.keys(out).sort(), ['categories', 'currencySymbol', 'defaultListId', 'itemUnit', 'items', 'lists', 'preferences', 'sequence', 'showSidebar', 'totalUnit', 'version']);
+        for (const item of out.items) {
+            assert.deepEqual(Object.keys(item).sort(), ['authorUnit', 'description', 'id', 'image', 'imageUrl', 'name', 'price', 'url', 'weight']);
+        }
+        for (const category of out.categories) {
+            const expected = 'color' in category ? ['categoryItems', 'color', 'id', 'name'] : ['categoryItems', 'id', 'name'];
+            assert.deepEqual(Object.keys(category).sort(), expected);
+            for (const ci of category.categoryItems) {
+                assert.deepEqual(Object.keys(ci).sort(), ['consumable', 'itemId', 'qty', 'star', 'worn']);
+            }
+        }
+        for (const list of out.lists) {
+            assert.deepEqual(Object.keys(list).sort(), ['categoryIds', 'description', 'externalId', 'id', 'name', 'optionalFields']);
+        }
     });
 });

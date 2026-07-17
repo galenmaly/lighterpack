@@ -139,7 +139,7 @@ async function renderListView(req, res) {
         const renderedCategories = renderLibrary(library, {
             itemTemplate: templates.t_itemShare,
             categoryTemplate: templates.t_categoryShare,
-            optionalFields: library.optionalFields,
+            optionalFields: list.optionalFields,
             unitSelectTemplate: templates.t_unitSelect,
             currencySymbol: library.currencySymbol,
         });
@@ -151,7 +151,7 @@ async function renderListView(req, res) {
             chartData,
             renderedCategories,
             renderedTotals,
-            optionalFields: library.optionalFields,
+            optionalFields: list.optionalFields,
             renderedDescription: marked(list.description),
             scripts: shareScriptsHtml,
             styles: shareStylesHtml,
@@ -217,7 +217,7 @@ async function renderEmberView(req, res) {
         const renderedCategories = renderLibrary(library, {
             itemTemplate: templates.t_itemShare,
             categoryTemplate: templates.t_categoryShare,
-            optionalFields: library.optionalFields,
+            optionalFields: list.optionalFields,
             unitSelectTemplate: templates.t_unitSelect,
             renderedDescription: marked(list.description),
             currencySymbol: library.currencySymbol,
@@ -231,7 +231,7 @@ async function renderEmberView(req, res) {
             chartData,
             renderedCategories,
             renderedTotals,
-            optionalFields: library.optionalFields,
+            optionalFields: list.optionalFields,
             renderedDescription: marked(list.description),
             baseUrl: config.get('deployUrl'),
             styles: shareStylesLinks,
@@ -388,7 +388,7 @@ const renderCategory = function (category, args) {
         items += renderItem(item, args);
     }
 
-    category.calculateSubtotal();
+    category.calculateSubtotal(args.listOptionalFields);
     category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
     category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
     let temp = Object.assign({}, category);
@@ -400,8 +400,9 @@ const renderCategory = function (category, args) {
 };
 
 const renderList = function (list, args) {
-    args.showPrices = list.library.optionalFields.price;
-    args.showImages = list.library.optionalFields.images;
+    args.showPrices = list.optionalFields.price;
+    args.showImages = list.optionalFields.images;
+    args.listOptionalFields = list.optionalFields;
     let out = '';
     for (const i in list.categoryIds) {
         const category = list.library.getCategoryById(list.categoryIds[i]);
@@ -429,7 +430,7 @@ const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, uni
         const category = list.library.getCategoryById(list.categoryIds[i]);
 
         if (category) {
-            category.calculateSubtotal();
+            category.calculateSubtotal(list.optionalFields);
             category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, unit);
             category.subtotalUnit = unit;
 
@@ -461,7 +462,7 @@ const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, uni
     out.totalPriceDisplay = totalPrice ? totalPrice.toFixed(2) : '';
     out.totalConsumablePrice = totalConsumablePrice;
     out.totalConsumablePriceDisplay = totalConsumablePrice ? totalConsumablePrice.toFixed(2) : '';
-    out.showPrices = list.library.optionalFields.price;
+    out.showPrices = list.optionalFields.price;
     out.currencySymbol = list.library.currencySymbol;
 
     return Mustache.render(totalsTemplate, out);

@@ -32,6 +32,7 @@ let unknownRegistrationCount = 0;
 
 const duplicateUsers = [];
 const duplicateLists = [];
+const reencodeFailures = [];
 
 async function processLineByLine(dumpPath, userDates) {
     const stream = fs.createReadStream(dumpPath, {flags: 'r', encoding: 'utf-8'});
@@ -59,27 +60,48 @@ async function processLineByLine(dumpPath, userDates) {
             dateUserLastSeen = "2024-11-01T00:00:00.000Z"
         }
 
+        // Re-encode the library to the current format (0.4): the upgrade
+        // chain runs once here instead of lazily in every client, and
+        // save() drops the dead fields older formats accumulated. On
+        // failure, store the raw library so the lazy client chain still
+        // gets a chance at it.
+        let libraryJson = user.library;
+        let loadedLibrary = null;
+        try {
+            const library = new Library();
+            library.load(user.library);
+            libraryJson = library.save();
+            loadedLibrary = library;
+        } catch (err) {
+            reencodeFailures.push(username);
+            console.log(`re-encode failed, storing raw library for: ${username} - ${err.message}`);
+        }
+
         const userBatch = {
             username: username,
             email: user.email,
             token: user.token,
             password: user.password,
-            library: user.library,
-            sync_token: user.syncToken,
+            library: libraryJson,
+            // One higher than the mongo value: sessions survive the cutover
+            // (token is copied), so this is what makes a tab from before the
+            // migration fail its next save with "please refresh" instead of
+            // writing a pre-0.4 library over the re-encoded one.
+            sync_token: (user.syncToken || 0) + 1,
             registered: dateUserRegistered,
             last_seen: dateUserLastSeen
         };
         if (!dryRun) {
             try {
                 await knex('users').insert(userBatch);
-                const library = new Library();
                 try {
-                    library.load(user.library);
-
                     const userResult = await knex('users').select('user_id').where({username: user.username});
                     const userId = userResult[0].user_id;
 
-                    for (const list of library.lists) {
+                    // No list rows for a re-encode failure: same as before,
+                    // an unloadable library never got share links either.
+                    const lists = loadedLibrary ? loadedLibrary.lists : [];
+                    for (const list of lists) {
                         if (list.externalId) {
                             const listInsert = {
                                 external_id: list.externalId,
@@ -101,7 +123,7 @@ async function processLineByLine(dumpPath, userDates) {
                 console.log("error inserting user:" + user.username)
                 duplicateUsers.push(user.username);
                 errcount++;
-            }    
+            }
         }
         
         i++;
@@ -117,5 +139,7 @@ processLineByLine(dumpPath, userDates).then(() => {
     console.log(unknownRegistrationCount);
     console.log(JSON.stringify(duplicateUsers));
     console.log(JSON.stringify(duplicateLists));
+    console.log(`re-encode failures (stored raw): ${reencodeFailures.length}`);
+    console.log(JSON.stringify(reencodeFailures));
     return knex.destroy();
 });

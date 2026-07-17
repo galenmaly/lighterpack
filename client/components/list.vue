@@ -19,7 +19,7 @@
 
         <div style="clear: both;" />
 
-        <list-description v-if="library.optionalFields['listDescription']" :list="list" />
+        <list-description v-if="list.optionalFields['listDescription']" :list="list" />
 
         <ul class="lpCategories">
             <category v-for="category in categories" :key="category.id" :category="category" />

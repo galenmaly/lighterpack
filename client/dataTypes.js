@@ -11,6 +11,10 @@ const defaultOptionalFields = {
     listDescription: false,
 };
 
+const defaultPreferences = {
+    sharedItemBubble: true,
+};
+
 const Item = function ({ id, unit }) {
     this.id = id;
     this.name = '';
@@ -28,8 +32,21 @@ const Item = function ({ id, unit }) {
     return this;
 };
 
+// save() methods enumerate their fields explicitly: anything unknown is
+// dropped at the next save, so junk from older formats can't accumulate.
+// Safe because load() refuses versions newer than this code knows.
 Item.prototype.save = function () {
-    return this;
+    return {
+        id: this.id,
+        name: this.name,
+        description: this.description,
+        weight: this.weight,
+        authorUnit: this.authorUnit,
+        price: this.price,
+        image: this.image,
+        imageUrl: this.imageUrl,
+        url: this.url,
+    };
 };
 
 Item.prototype.load = function (input) {
@@ -80,7 +97,9 @@ Category.prototype.removeItem = function (itemId) {
     this.categoryItems.splice(index, 1);
 };
 
-Category.prototype.calculateSubtotal = function () {
+Category.prototype.calculateSubtotal = function (optionalFields) {
+    const fields = optionalFields || defaultOptionalFields;
+
     this.subtotalWeight = 0;
     this.subtotalWornWeight = 0;
     this.subtotalConsumableWeight = 0;
@@ -97,10 +116,10 @@ Category.prototype.calculateSubtotal = function () {
         this.subtotalWeight += item.weight * categoryItem.qty;
         this.subtotalPrice += item.price * categoryItem.qty;
 
-        if (this.library.optionalFields.worn && categoryItem.worn) {
+        if (fields.worn && categoryItem.worn) {
             this.subtotalWornWeight += item.weight * ((categoryItem.qty > 0) ? 1 : 0);
         }
-        if (this.library.optionalFields.consumable && categoryItem.consumable) {
+        if (fields.consumable && categoryItem.consumable) {
             this.subtotalConsumableWeight += item.weight * categoryItem.qty;
             this.subtotalConsumablePrice += item.price * categoryItem.qty;
         }
@@ -125,12 +144,20 @@ Category.prototype.getExtendedItemByIndex = function (index) {
 };
 
 Category.prototype.save = function () {
-    const out = assignIn({}, this);
-
-    delete out.library;
-    delete out.template;
-    delete out._isNew;
-
+    const out = {
+        id: this.id,
+        name: this.name,
+        categoryItems: this.categoryItems.map((categoryItem) => ({
+            qty: categoryItem.qty,
+            worn: categoryItem.worn,
+            consumable: categoryItem.consumable,
+            star: categoryItem.star,
+            itemId: categoryItem.itemId,
+        })),
+    };
+    if (typeof this.color !== 'undefined') {
+        out.color = this.color;
+    }
     return out;
 };
 
@@ -159,6 +186,7 @@ const List = function ({ id, library }) {
     this.chart = null;
     this.description = '';
     this.externalId = '';
+    this.optionalFields = assignIn({}, defaultOptionalFields);
 
     this.totalWeight = 0;
     this.totalWornWeight = 0;
@@ -200,7 +228,7 @@ List.prototype.renderChart = function (type, linkParent) {
     for (const i in this.categoryIds) {
         const category = this.library.getCategoryById(this.categoryIds[i]);
         if (category) {
-            category.calculateSubtotal();
+            category.calculateSubtotal(this.optionalFields);
 
             if (type === 'consumable') {
                 total += category.subtotalConsumableWeight;
@@ -283,7 +311,7 @@ List.prototype.calculateTotals = function () {
         const category = this.library.getCategoryById(this.categoryIds[i]);
 
         if (category) {
-            category.calculateSubtotal();
+            category.calculateSubtotal(this.optionalFields);
 
             totalWeight += category.subtotalWeight;
             totalWornWeight += category.subtotalWornWeight;
@@ -315,19 +343,25 @@ List.prototype.calculateTotals = function () {
 };
 
 List.prototype.save = function () {
-    const out = assignIn({}, this);
-    delete out.library;
-    delete out.chart;
-    return out;
+    return {
+        id: this.id,
+        name: this.name,
+        categoryIds: this.categoryIds.slice(),
+        description: this.description,
+        externalId: this.externalId,
+        optionalFields: assignIn({}, this.optionalFields),
+    };
 };
 
 List.prototype.load = function (input) {
     assignIn(this, input);
+    // A list created by a pre-0.4 client may lack per-list settings.
+    this.optionalFields = assignIn({}, defaultOptionalFields, input.optionalFields);
     this.calculateTotals();
 };
 
 const Library = function () {
-    this.version = '0.3';
+    this.version = '0.4';
     this.idMap = {};
     this.items = [];
     this.categories = [];
@@ -337,8 +371,7 @@ const Library = function () {
     this.totalUnit = 'oz';
     this.itemUnit = 'oz';
     this.showSidebar = true;
-    this.showImages = false;
-    this.optionalFields = assignIn({}, defaultOptionalFields);
+    this.preferences = assignIn({}, defaultPreferences);
     this.currencySymbol = '$';
     this.firstRun();
     return this;
@@ -444,6 +477,7 @@ Library.prototype.copyList = function (id) {
     const copiedList = this.newList();
 
     copiedList.name = `Copy of ${oldList.name}`;
+    copiedList.optionalFields = assignIn({}, oldList.optionalFields);
     for (const i in oldList.categoryIds) {
         const oldCategory = this.getCategoryById(oldList.categoryIds[i]);
         const copiedCategory = this.newCategory({ list: copiedList });
@@ -566,7 +600,7 @@ Library.prototype.save = function () {
     out.defaultListId = this.defaultListId;
     out.sequence = this.sequence;
     out.showSidebar = this.showSidebar;
-    out.optionalFields = this.optionalFields;
+    out.preferences = assignIn({}, this.preferences);
     out.currencySymbol = this.currencySymbol;
 
     out.items = [];
@@ -595,10 +629,20 @@ Library.prototype.load = function (serializedLibrary) {
     if (serializedLibrary.version === '0.2') {
         this.upgrade02to03(serializedLibrary);
     }
+    if (serializedLibrary.version === '0.3') {
+        this.upgrade03to04(serializedLibrary);
+    }
+    if (serializedLibrary.version !== '0.4') {
+        // Forward guard: never load (and later save, mangled) data written
+        // by a newer format than this code knows.
+        const err = new Error(`This library was saved by a newer version of LighterPack (${serializedLibrary.version}). Please refresh your browser.`);
+        err.code = 'VERSION_TOO_NEW';
+        throw err;
+    }
 
     this.items = [];
 
-    assignIn(this.optionalFields, serializedLibrary.optionalFields);
+    this.preferences = assignIn({}, defaultPreferences, serializedLibrary.preferences);
 
     for (const i in serializedLibrary.items) {
         const temp = new Item({ id: serializedLibrary.items[i].id });
@@ -652,6 +696,39 @@ Library.prototype.upgrade02to03 = function (serializedLibrary) {
     this.renameCategoryIds(serializedLibrary);
     this.fixDuplicateIds(serializedLibrary);
     serializedLibrary.version = '0.3';
+};
+
+Library.prototype.upgrade03to04 = function (serializedLibrary) {
+    // 0.3 never re-ran the id repairs, so 0.3 libraries exist in the wild
+    // with duplicate ids and sequences behind their max id.
+    this.sequenceShouldNotRegress(serializedLibrary);
+    this.fixDuplicateIds(serializedLibrary);
+
+    // Display settings move from the library to each list.
+    const libraryFields = assignIn({}, defaultOptionalFields, serializedLibrary.optionalFields);
+    serializedLibrary.lists.forEach((list) => {
+        list.optionalFields = assignIn({}, libraryFields);
+    });
+    delete serializedLibrary.optionalFields;
+
+    serializedLibrary.preferences = assignIn({}, defaultPreferences);
+    serializedLibrary.version = '0.4';
+};
+
+// Unlike sequenceShouldBeCorrect, never lowers a valid sequence — only
+// repairs ones that could mint colliding ids.
+Library.prototype.sequenceShouldNotRegress = function (serializedLibrary) {
+    let maxId = 0;
+    const consider = (entity) => {
+        if (typeof entity.id === 'number' && entity.id > maxId) maxId = entity.id;
+    };
+    serializedLibrary.lists.forEach(consider);
+    serializedLibrary.categories.forEach(consider);
+    serializedLibrary.items.forEach(consider);
+
+    if (typeof serializedLibrary.sequence !== 'number' || !Number.isFinite(serializedLibrary.sequence) || serializedLibrary.sequence < maxId) {
+        serializedLibrary.sequence = maxId + 1;
+    }
 };
 
 Library.prototype.sequenceShouldBeCorrect = function (serializedLibrary) {

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { registerUser, generateTestUser, loginUser, logoutUser } from './auth-utils';
+import { openSidebar, createCategoryWithItem } from './test-helpers';
 
 test.describe('Account Settings', () => {
   test.beforeEach(async ({ page }) => {
@@ -154,5 +155,53 @@ test.describe('Account Dropdown', () => {
 
     // Should redirect to sign in page
     await expect(page).toHaveURL(/\/signin/);
+  });
+});
+
+test.describe('Shared item bubble preference', () => {
+  test('unchecking the preference suppresses the bubble and persists', async ({ page }) => {
+    const { username, password, email } = generateTestUser('acct-nag');
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
+
+    await openSidebar(page);
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('Original List');
+    await listNameInput.blur();
+    await createCategoryWithItem(page, 'Shelter', 'Shared Tent');
+
+    // Copying the list shares the item, which makes the bubble appear.
+    await page.getByTestId('new-list').hover();
+    await page.getByText('Copy a list', { exact: true }).click();
+    const listToCopy = page.locator('#listToCopy');
+    await expect(listToCopy).toBeVisible();
+    await listToCopy.selectOption({ label: 'Original List' });
+    await page.locator('#copyConfirm').click();
+    await expect(listNameInput).toHaveValue('Copy of Original List');
+
+    const itemRow = page.getByTestId('category').last().getByTestId('item-row').nth(1);
+    await itemRow.getByPlaceholder('Name', { exact: true }).click();
+    await expect(page.getByTestId('shared-item-bubble')).toBeVisible();
+
+    // Turn the warning off in account settings.
+    await page.getByTestId('account-menu').hover();
+    await page.getByText('Account Settings').click();
+    const checkbox = page.locator('#accountSettings input[type="checkbox"]');
+    await expect(checkbox).toBeChecked();
+    await checkbox.uncheck();
+    await page.locator('#accountSettings').getByText('Cancel').click();
+
+    await itemRow.getByPlaceholder('Name', { exact: true }).click();
+    await expect(page.getByTestId('shared-item-bubble')).toHaveCount(0);
+
+    // The preference survives a reload.
+    await page.waitForResponse(
+      (response) => response.url().includes('saveLibrary') && response.status() === 200,
+      { timeout: 15000 },
+    );
+    await page.reload();
+    const rowAfter = page.getByTestId('category').last().getByTestId('item-row').nth(1);
+    await rowAfter.getByPlaceholder('Name', { exact: true }).click();
+    await expect(page.getByTestId('shared-item-bubble')).toHaveCount(0);
   });
 });
