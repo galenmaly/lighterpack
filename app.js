@@ -78,8 +78,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 logger.info('Starting up Lighterpack...');
-
-config.get('bindings').map((bind) => {
-    app.listen(config.get('port'), bind);
-    logger.info(`Listening on [${bind}]:${config.get('port')}`);
-});
+app.listen(config.get('port'));
+logger.info(`Listening on ${config.get('port')}`);
