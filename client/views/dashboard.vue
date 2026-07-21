@@ -187,7 +187,7 @@ export default {
 
 // Continues the content header's bottom hairline across the right filler.
 .lpFrameHairlineCap {
-    border-bottom: 1px solid var(--lp-hairline);
+    border-bottom: 1px solid var(--lp-border);
     height: 52px;
 }
 
@@ -213,7 +213,7 @@ export default {
 
 #header {
     align-items: center;
-    border-bottom: 1px solid var(--lp-hairline);
+    border-bottom: 1px solid var(--lp-border);
     display: flex;
     flex: 0 0 auto;
     gap: 18px;
@@ -246,7 +246,7 @@ export default {
     padding: 0 4px 1px;
 
     &:hover {
-        border-bottom-color: var(--lp-hairline);
+        border-bottom-color: var(--lp-border);
     }
 
     &:focus {
@@ -259,7 +259,7 @@ export default {
     position: relative;
 
     .lpTarget {
-        color: var(--lp-text-secondary);
+        color: var(--lp-text);
         font-size: 13px;
         font-weight: 600;
         padding: 4px 0;
@@ -273,7 +273,7 @@ export default {
 .lpThemeToggle {
     background: none;
     border: none;
-    color: var(--lp-text-secondary);
+    color: var(--lp-text);
     cursor: pointer;
     padding: 0;
 
@@ -283,7 +283,7 @@ export default {
 }
 
 #lpFooter {
-    color: var(--lp-text-faint);
+    color: var(--lp-text-secondary);
     display: flex;
     font-size: 12px;
     justify-content: space-between;

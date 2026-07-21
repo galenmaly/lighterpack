@@ -10,7 +10,7 @@
 .lpItemsHeader,
 .lpItemsFooter {
     align-items: center;
-    border-top: 1px dotted var(--lp-border-subtle);
+    border-top: 1px dotted var(--lp-border-strong);
     display: flex;
     flex-direction: row;
     justify-content: stretch;
@@ -67,7 +67,7 @@
 
 .lpItemsHeader {
     align-items: flex-end;
-    border-bottom: 1px solid var(--lp-border-subtle);
+    border-bottom: 1px solid var(--lp-border-strong);
     border-top: none;
     height: 31px;
 }

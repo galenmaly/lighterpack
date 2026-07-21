@@ -29,7 +29,7 @@
 
     &.lpHeader {
         .lpCell {
-            border-bottom: 1px solid var(--lp-border-subtle);
+            border-bottom: 1px solid var(--lp-border-strong);
             vertical-align: bottom;
         }
 
@@ -41,12 +41,12 @@
 
 .lpFooter {
     .lpCell {
-        border-top: 1px solid var(--lp-border-subtle);
+        border-top: 1px solid var(--lp-border-strong);
     }
 }
 
 .lpCell {
-    border-top: 1px dotted var(--lp-border-subtle);
+    border-top: 1px dotted var(--lp-border-strong);
     display: table-cell;
     padding: 1px 8px;
 

@@ -100,8 +100,8 @@ export default {
 }
 
 .lpListDescriptionEmpty {
-    border-color: var(--lp-hairline);
-    color: var(--lp-text-faint);
+    border-color: var(--lp-border);
+    color: var(--lp-text-secondary);
     cursor: text;
 }
 
@@ -109,7 +109,7 @@ export default {
     cursor: text;
 
     &:hover {
-        border-color: var(--lp-hairline);
+        border-color: var(--lp-border);
     }
 
     > :first-child {
@@ -132,12 +132,12 @@ export default {
     resize: none;
 
     &::placeholder {
-        color: var(--lp-text-faint);
+        color: var(--lp-text-secondary);
     }
 }
 
 .lpListDescriptionHint {
-    color: var(--lp-text-faint);
+    color: var(--lp-text-secondary);
     font-size: 11.5px;
     margin: 6px 2px 0;
 }

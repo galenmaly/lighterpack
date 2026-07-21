@@ -73,7 +73,7 @@
     }
 
     &:hover {
-        color: var(--lp-text-muted);
+        color: var(--lp-text-secondary);
     }
 }
 
@@ -116,7 +116,7 @@
     input[type="password"],
     textarea {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-hairline-strong);
+        border: 1px solid var(--lp-border-strong);
         display: block;
         margin: 0 0 $spacingMedium;
         padding: $spacingSmall;
@@ -253,7 +253,7 @@
     outline: none;
 
     &::placeholder {
-        color: var(--lp-text-muted);
+        color: var(--lp-text-secondary);
         opacity: 1;
     }
 

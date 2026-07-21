@@ -124,7 +124,7 @@ export default {
         }
 
         hr {
-            border-color: var(--lp-hairline-strong);
+            border-color: var(--lp-border-strong);
             margin: 7px -0;
             padding: 0;
         }

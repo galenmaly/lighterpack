@@ -194,12 +194,12 @@ export default {
         padding: 3px 0;
 
         &.hover {
-            background: var(--lp-hairline-faint);
+            background: var(--lp-border);
         }
     }
 
     .lpTotalCategory {
-        border-bottom: 1px solid var(--lp-hairline-faint);
+        border-bottom: 1px solid var(--lp-border);
     }
 
     .lpTotal {
@@ -213,12 +213,12 @@ export default {
     }
 
     .lpBreakdown {
-        color: var(--lp-text-muted);
+        color: var(--lp-text-secondary);
         padding: 2px 0;
 
         .lpCategoryCell,
         .lpNumber {
-            color: var(--lp-text-muted);
+            color: var(--lp-text-secondary);
         }
     }
 
@@ -239,7 +239,7 @@ export default {
     }
 
     .lpNumber {
-        color: var(--lp-text-muted);
+        color: var(--lp-text-secondary);
         flex: 0 0 auto;
     }
 
@@ -250,9 +250,9 @@ export default {
     }
 
     .lpUnitCell {
-        color: var(--lp-text-faint);
+        color: var(--lp-text-secondary);
         flex: 0 0 30px;
-        font-size: 10.5px;
+        font-size: 12px;
         padding-left: 5px;
     }
 }
@@ -267,7 +267,7 @@ export default {
     white-space: nowrap;
 
     .lpDisplay {
-        font-size: 10.5px;
+        font-size: 12px;
         width: auto;
     }
 
@@ -275,7 +275,7 @@ export default {
     &.lpHover {
         background: transparent;
         border-color: transparent;
-        border-bottom: 1px dotted var(--lp-text-muted);
+        border-bottom: 1px dotted var(--lp-text-secondary);
     }
 }
 
@@ -287,7 +287,7 @@ export default {
 
     &:hover {
         cursor: pointer;
-        outline: 1px solid var(--lp-text-muted);
+        outline: 1px solid var(--lp-text-secondary);
     }
 }
 </style>

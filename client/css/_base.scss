@@ -36,7 +36,7 @@
 
     hr {
         border: none;
-        border-top: 1px solid var(--lp-border-subtle);
+        border-top: 1px solid var(--lp-border-strong);
         margin: 25px 0;
     }
 
@@ -98,7 +98,7 @@
 }
 
 #lpFooter {
-    color: var(--lp-text-muted);
+    color: var(--lp-text-secondary);
     display: flex;
     justify-content: space-between;
     padding: 150px 0 20px;

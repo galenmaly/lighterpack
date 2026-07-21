@@ -24,21 +24,23 @@ $yellow2: #fcefa9;
 $darkYellow: #a58c00;
 
 /* Neutrals — one ramp, numbered by darkness. A new grey must land on an
-   existing step or earn a new one; never add a near-duplicate value. */
-$grey-0: #fff;
-$grey-100: #e0e1e3; // hairline
-$grey-200: #c6c9cd; // strong hairline, resting icons
-$grey-300: #aaa; // subtle border (share pages)
-$grey-400: #9a9da3; // faint text
-$grey-500: #82868c; // muted text
-$grey-600: #6c6c70; // sidebar handle
-$grey-650: #4a4a4a; // dark-theme subtle border
-$grey-700: #3a3d42; // secondary text, tooltip bg, sidebar border
-$grey-800: #2e2e30; // sidebar bg, dark-theme surface
-$grey-850: #26262a; // sidebar inset
-$grey-900: #24272b; // text
-$grey-950: #1e1e1e; // dark-theme page bg
-$grey-1000: #111;
+   existing step or earn a new one; never add a near-duplicate value.
+   Tags list each step's consumers by theme: [L] light only, [D] dark
+   only, [both] both themes (mostly the always-dark sidebar chrome). */
+$grey-0: #fff;      // [L] page/surface bg, tooltip text · [both] white ink on fills
+$grey-100: #e0e1e3; // [L] hairline, get-started bg · [D] body text · [both] sidebar text
+$grey-200: #BBB; // [L] strong hairline, resting icons
+$grey-400: #9a9da3; // [D] secondary text
+$grey-500: #82868c; // [both] sidebar muted text
+$grey-600: #6c6c70; // [L] secondary text · [both] sidebar handle
+$grey-650: #4a4a4a; // [D] subtle border, resting icons
+$grey-700: #3a3d42; // [L] tooltip bg · [D] strong hairline · [both] sidebar border
+$grey-750: #333336; // [D] faint hairline (kept distinct from surface)
+$grey-800: #2e2e30; // [D] surface, get-started bg · [both] sidebar bg
+$grey-850: #26262a; // [both] sidebar inset
+$grey-900: #24272b; // [L] body text
+$grey-950: #1e1e1e; // [D] page bg
+$grey-1000: #111;   // [D] tooltip bg · [L] bubble-text mix
 
 /* spacing */
 $spacingSmall: 10px;
@@ -77,16 +79,12 @@ $transitionDurationSlow: 0.4s;
 
     // Text
     --lp-text: #{$grey-900};
-    --lp-text-secondary: #{$grey-700};
-    --lp-text-muted: #{$grey-500};
-    --lp-text-faint: #{$grey-400};
+    --lp-text-secondary: #{$grey-600};
     --lp-icon-rest: #{$grey-200};
 
     // Lines & shadows
-    --lp-hairline-strong: #{$grey-200};
-    --lp-hairline: #{$grey-100};
-    --lp-hairline-faint: rgba(0, 0, 0, 0.15);
-    --lp-border-subtle: #{$grey-300}; // share/embed divider; unused by the app
+    --lp-border-strong: #{$grey-200};
+    --lp-border: #{$grey-100};
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
 
     // Accents (brand)
@@ -95,6 +93,7 @@ $transitionDurationSlow: 0.4s;
     --lp-accent-green-deep: #{$green1};
     --lp-accent-orange: #{$orange1};
     --lp-active-yellow: #{$yellow1};
+    --lp-selected-bg: #{$blue1}; // selection fill; white text sits on it, so it holds in both themes
 
     // Status / highlight
     --lp-danger: #{$red1};
@@ -137,21 +136,26 @@ $transitionDurationSlow: 0.4s;
 
     // Text
     --lp-text: #{$grey-100};
-    --lp-text-secondary: #b8babd; // placeholder
-    --lp-text-muted: #{$grey-400};
-    --lp-text-faint: #{$grey-600};
+    --lp-text-secondary: #{$grey-400}; // ramp-mirror of light's grey-600 (both 3 steps off their theme's text); AA-legible on dark
     --lp-icon-rest: #{$grey-650};
 
     // Lines & shadows
-    --lp-hairline-strong: #{$grey-700};
-    --lp-hairline: #333336; // placeholder
-    --lp-hairline-faint: rgba(255, 255, 255, 0.12);
-    --lp-border-subtle: #{$grey-650};
+    --lp-border-strong: #{$grey-700};
+    --lp-border: #{$grey-750};
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+    // Accents — only the hues too dim on the dark surface are re-tuned.
+    // accent-green, accent-green-deep, accent-orange, active-yellow and
+    // selected-bg are luminous enough to inherit the brand values as-is.
+    --lp-link-blue: #{$blue2}; // $blue1 falls below AA on the dark bg; brighten to the sidebar's blue
+    --lp-danger: #{color.adjust($red1, $lightness: 12%)}; // lift the deep brand red into legible range
+    --lp-success: #{color.adjust($green1, $lightness: 12%)}; // light darkens it; dark brightens it
 
     // Status / highlight
     --lp-warning-bg: #2e2700;
     --lp-warning-border: #786800;
+    --lp-alert-bg: #3a3200; // louder than warning, mirroring light; inherited text stays legible on it
+    --lp-alert-border: #{$darkYellow};
     --lp-hover-bg: #3a3500;
 
     // Tooltip

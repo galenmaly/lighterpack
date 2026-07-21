@@ -9,7 +9,7 @@
 
     &:hover {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-hairline-strong);
+        border: 1px solid var(--lp-border-strong);
 
         i {
             opacity: 1;
@@ -35,7 +35,7 @@
 
     .lpUnitDropdown {
         background: var(--lp-surface);
-        border: 1px solid var(--lp-hairline-strong);
+        border: 1px solid var(--lp-border-strong);
         display: none;
         left: 0;
         padding: 0;
@@ -60,8 +60,8 @@
             padding: 2px 14px;
 
             &:hover {
-                background: $blue1;
-                color: #fff;
+                background: var(--lp-selected-bg);
+                color: $grey-0;
             }
         }
     }

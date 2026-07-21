@@ -105,7 +105,7 @@ export default {
 
     &.gu-mirror {
         background: var(--lp-content-bg);
-        border: 1px solid var(--lp-hairline-strong);
+        border: 1px solid var(--lp-border-strong);
     }
 }
 
@@ -129,7 +129,7 @@ export default {
 
         &.gu-mirror {
             background: var(--lp-content-bg);
-            border: 1px solid var(--lp-hairline-strong);
+            border: 1px solid var(--lp-border-strong);
         }
     }
 
@@ -180,8 +180,8 @@ export default {
     }
 
     .lpPriceCell {
-        color: var(--lp-text-muted);
-        font-size: 12px;
+        color: var(--lp-text-secondary);
+        font-size: 13px;
         font-variant-numeric: tabular-nums;
         min-width: 0;
         text-align: right;
@@ -202,7 +202,7 @@ export default {
 }
 
 .lpItemsHeader {
-    border-bottom: 1px solid var(--lp-hairline-strong);
+    border-bottom: 1px solid var(--lp-border-strong);
     padding: 0 0 5px;
 
     .lpCategoryHead {
@@ -227,7 +227,7 @@ export default {
         padding: 0 2px 1px;
 
         &:hover {
-            border-bottom-color: var(--lp-hairline);
+            border-bottom-color: var(--lp-border);
         }
 
         &:focus {
@@ -245,8 +245,8 @@ export default {
         padding-right: 2px;
 
         .lpSubtotalUnit {
-            color: var(--lp-text-faint);
-            font-size: 10.5px;
+            color: var(--lp-text-secondary);
+            font-size: 12px;
             font-weight: 400;
             padding-left: 6px;
         }

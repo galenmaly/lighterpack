@@ -354,8 +354,8 @@ export default {
 @import "../css/_globals";
 
 .lpItem {
-    border-bottom: 1px solid var(--lp-hairline-faint);
-    padding: 6px 0;
+    border-bottom: 1px solid var(--lp-border);
+    padding: 5px 0 2px;
 
     // Base quiet-input look comes from .lpSilent; fields stay bare until the
     // row's :focus-within reveals underlines (below).
@@ -370,8 +370,8 @@ export default {
     }
 
     .lpDescription {
-        color: var(--lp-text-faint);
-        font-size: 12px;
+        color: var(--lp-text-secondary);
+        font-size: 13px;
         min-width: 0;
     }
 
@@ -384,8 +384,8 @@ export default {
     }
 
     .lpPriceCell input {
-        color: var(--lp-text-muted);
-        font-size: 12px;
+        color: var(--lp-text-secondary);
+        font-size: 13px;
         font-variant-numeric: tabular-nums;
         text-align: right;
         width: 100%;
@@ -414,8 +414,8 @@ export default {
         white-space: nowrap;
 
         .lpDisplay {
-            color: var(--lp-text-faint);
-            font-size: 10.5px;
+            color: var(--lp-text-secondary);
+            font-size: 12px;
             width: auto;
         }
 
@@ -443,8 +443,8 @@ export default {
         position: relative;
 
         .lpQty {
-            color: var(--lp-text-muted);
-            font-size: 12px;
+            color: var(--lp-text-secondary);
+            font-size: 13px;
             font-variant-numeric: tabular-nums;
             text-align: right;
             width: 100%;
@@ -508,7 +508,7 @@ export default {
         z-index: 2;
 
         input {
-            border-bottom-color: var(--lp-hairline);
+            border-bottom-color: var(--lp-border);
 
             &:focus {
                 border-bottom-color: var(--lp-accent-green-deep);
