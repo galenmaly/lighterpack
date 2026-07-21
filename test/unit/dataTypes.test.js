@@ -101,7 +101,7 @@ describe('Library.load upgrade03to04', () => {
     test('initializes preferences to defaults', () => {
         const library = new Library();
         library.load(serialized03());
-        assert.deepEqual(library.preferences, { sharedItemBubble: true });
+        assert.deepEqual(library.preferences, { sharedItemBubble: true, wornQtyHint: true });
     });
 
     test('keeps a valid sequence but repairs one behind the max id', () => {

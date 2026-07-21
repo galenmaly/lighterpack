@@ -34,18 +34,29 @@
         <span class="lpRemoveCell">
             <a class="lpRemove lpRemoveItem" title="Remove this item" @click="removeItem"><i class="lpSprite lpSpriteRemove" /></a>
         </span>
-        <div v-if="showSharedBubble" class="lpSharedBubble" data-testid="shared-item-bubble">
-            <span class="lpSharedBubbleNotch" />
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1.5 1.5" /><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1.5-1.5" /></svg>
-            <span class="lpSharedBubbleText">
-                Also in
-                <template v-for="(name, index) in sharedListNames" :key="index">
-                    <b>{{ name }}</b><template v-if="index < sharedListNames.length - 2">, </template><template v-else-if="index === sharedListNames.length - 2"> and </template>
-                </template>
-                <template v-if="sharedListMoreCount"> and {{ sharedListMoreCount }} more</template>
-                — edits update it everywhere.
-            </span>
-            <a class="lpSharedBubbleFork" data-testid="fork-item" @mousedown.prevent @click="forkItem">Edit a copy instead</a>
+        <div v-if="showSharedBubble" class="lpItemHints lpItemHintsLeft">
+            <div class="lpHintBubble lpSharedBubble" data-testid="shared-item-bubble">
+                <span class="lpHintNotch" />
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1.5 1.5" /><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1.5-1.5" /></svg>
+                <span class="lpHintText">
+                    Also in
+                    <template v-for="(name, index) in sharedListNames" :key="index">
+                        <b>{{ name }}</b><template v-if="index < sharedListNames.length - 2">, </template><template v-else-if="index === sharedListNames.length - 2"> and </template>
+                    </template>
+                    <template v-if="sharedListMoreCount"> and {{ sharedListMoreCount }} more</template>
+                    — edits update it everywhere.
+                </span>
+                <a class="lpSharedBubbleFork" data-testid="fork-item" @mousedown.prevent @click="forkItem">Edit a copy instead</a>
+                <a class="lpHintDismiss" data-testid="shared-item-bubble-dismiss" title="Turn off this hint" aria-label="Turn off this hint" @mousedown.prevent @click="dismissSharedBubble"><i class="lpSprite lpSpriteRemove" /></a>
+            </div>
+        </div>
+        <div v-if="showWornQtyHint" class="lpItemHints lpItemHintsRight">
+            <div class="lpHintBubble lpWornQtyHint" data-testid="worn-qty-hint">
+                <span class="lpHintNotch" />
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11.5v4.5" /><path d="M12 7.75v.5" /></svg>
+                <span class="lpHintText">Only 1 of {{ categoryItem.qty }} counts as worn — the rest add to your pack weight.</span>
+                <a class="lpHintDismiss" data-testid="worn-qty-hint-dismiss" title="Turn off this hint" aria-label="Turn off this hint" @mousedown.prevent @click="dismissWornQtyHint"><i class="lpSprite lpSpriteRemove" /></a>
+            </div>
         </div>
     </li>
 </template>
@@ -125,6 +136,16 @@ export default {
         showSharedBubble() {
             return this.rowFocused && this.otherListsWithItem.length > 0 && this.library.preferences.sharedItemBubble;
         },
+        showWornQtyHint() {
+            // Worn weight only counts one unit (see Category.calculateSubtotal),
+            // so flag the surprise when a worn item has qty > 1. Gated on the
+            // worn field being shown, since otherwise worn weight isn't computed.
+            return this.rowFocused
+                && this.optionalFields.worn
+                && this.categoryItem.worn
+                && this.categoryItem.qty > 1
+                && this.library.preferences.wornQtyHint;
+        },
     },
     watch: {
         item() {
@@ -180,6 +201,15 @@ export default {
                 const input = row && row.querySelector(`input.${focusedField}`);
                 if (input) input.focus();
             });
+        },
+        dismissSharedBubble() {
+            // The ✕ turns the hint off for good, not just for this row. A bubble
+            // only renders while its preference is on, so a toggle reliably flips
+            // it off — and the Account Settings checkbox can turn it back on.
+            this.$store.commit('togglePreference', 'sharedItemBubble');
+        },
+        dismissWornQtyHint() {
+            this.$store.commit('togglePreference', 'wornQtyHint');
         },
         setUnit(unit) {
             this.item.authorUnit = unit;
@@ -521,8 +551,26 @@ export default {
     }
 }
 
-// Shared-item bubble: floats below the lifted row and overlaps the next row.
-.lpSharedBubble {
+// Item hint bubbles: float below the lifted row and overlap the next row.
+// The shared-item hint anchors left, by the name being edited; the worn-qty
+// hint anchors right, under the qty input it describes. Each is its own
+// absolutely-positioned box, so both can show at once without colliding.
+.lpItemHints {
+    display: flex;
+    position: absolute;
+    top: calc(100% + 5px);
+    z-index: 3;
+
+    &.lpItemHintsLeft {
+        left: 10px;
+    }
+
+    &.lpItemHintsRight {
+        right: 0;
+    }
+}
+
+.lpHintBubble {
     align-items: center;
     background: var(--lp-bubble-bg);
     border: 1px solid var(--lp-bubble-border);
@@ -532,12 +580,9 @@ export default {
     display: flex;
     font-size: 11.5px;
     gap: 7px;
-    left: 10px;
     padding: 6px 11px;
-    position: absolute;
-    top: calc(100% + 5px);
+    position: relative;
     white-space: nowrap;
-    z-index: 3;
 
     svg {
         color: var(--lp-accent-green-deep);
@@ -545,7 +590,7 @@ export default {
     }
 }
 
-.lpSharedBubbleNotch {
+.lpHintNotch {
     background: var(--lp-bubble-bg);
     border-left: 1px solid var(--lp-bubble-border);
     border-top: 1px solid var(--lp-bubble-border);
@@ -557,6 +602,13 @@ export default {
     width: 8px;
 }
 
+// Right-anchored worn-qty bubble points its notch up at the qty input, which
+// sits at the row's right edge (its column is the last one before the gutter).
+.lpItemHintsRight .lpHintNotch {
+    left: auto;
+    right: 10px;
+}
+
 .lpSharedBubbleFork {
     color: var(--lp-bubble-text);
     cursor: pointer;
@@ -564,6 +616,27 @@ export default {
 
     &:hover {
         text-decoration: underline;
+    }
+}
+
+// Dismiss ✕: reuses the shared x.svg mask glyph (via .lpSpriteRemove), muted at
+// rest so it reads as secondary to the bubble's message and darkening on hover.
+// The .lpSprite mask fills currentColor, so color here drives the glyph.
+.lpHintDismiss {
+    align-items: center;
+    color: var(--lp-icon-rest);
+    cursor: pointer;
+    display: flex;
+    flex: 0 0 auto;
+    margin-left: 1px;
+
+    &:hover {
+        color: var(--lp-bubble-text);
+    }
+
+    .lpSprite {
+        height: 11px;
+        width: 11px;
     }
 }
 

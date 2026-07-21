@@ -13,6 +13,7 @@ const defaultOptionalFields = {
 
 const defaultPreferences = {
     sharedItemBubble: true,
+    wornQtyHint: true,
 };
 
 const Item = function ({ id, unit }) {

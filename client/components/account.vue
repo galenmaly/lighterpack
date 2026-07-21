@@ -4,8 +4,12 @@
 
         <div class="lpAccountPreferences">
             <label>
-                <input type="checkbox" :checked="sharedItemBubble" @change="toggleSharedItemBubble">
+                <input type="checkbox" data-testid="shared-item-bubble-toggle" :checked="sharedItemBubble" @change="toggleSharedItemBubble">
                 Warn when editing an item that's in multiple lists
+            </label>
+            <label>
+                <input type="checkbox" data-testid="worn-qty-hint-toggle" :checked="wornQtyHint" @change="toggleWornQtyHint">
+                Note when a worn item has quantity over 1
             </label>
         </div>
         <hr>
@@ -74,10 +78,17 @@ export default {
             const library = this.$store.state.library;
             return !!(library && library.preferences.sharedItemBubble);
         },
+        wornQtyHint() {
+            const library = this.$store.state.library;
+            return !!(library && library.preferences.wornQtyHint);
+        },
     },
     methods: {
         toggleSharedItemBubble() {
             this.$store.commit('togglePreference', 'sharedItemBubble');
+        },
+        toggleWornQtyHint() {
+            this.$store.commit('togglePreference', 'wornQtyHint');
         },
         updateAccount() {
             this.errors = [];
@@ -131,5 +142,13 @@ export default {
 </script>
 
 <style lang="scss">
+
+.lpAccountPreferences label {
+    display: block;
+
+    & + label {
+        margin-top: 6px;
+    }
+}
 
 </style>

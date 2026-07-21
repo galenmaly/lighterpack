@@ -130,4 +130,40 @@ test.describe('Shared item bubble', () => {
     const originalRow = page.getByTestId('category').last().getByTestId('item-row').nth(1);
     await expect(originalRow.getByPlaceholder('Name', { exact: true })).toHaveValue('Stove XL');
   });
+
+  test('the bubble dismiss ✕ turns the shared-item warning off for good', async ({ page }) => {
+    const { username, password, email } = generateTestUser('sharedismiss');
+
+    await registerUser(page, username, password, email);
+    await openSidebar(page);
+
+    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    await listNameInput.fill('Base List');
+    await listNameInput.blur();
+
+    await createCategoryWithItem(page, 'Shelter', 'Shared Tarp');
+
+    await page.getByTestId('new-list').hover();
+    await page.getByText('Copy a list', { exact: true }).click();
+    const listToCopy = page.locator('#listToCopy');
+    await expect(listToCopy).toBeVisible();
+    await listToCopy.selectOption({ label: 'Base List' });
+    await page.locator('#copyConfirm').click();
+    await expect(listNameInput).toHaveValue('Copy of Base List');
+
+    const itemRow = page.getByTestId('category').last().getByTestId('item-row').nth(1);
+    await itemRow.getByPlaceholder('Name', { exact: true }).click();
+    await expect(page.getByTestId('shared-item-bubble')).toBeVisible();
+
+    // The ✕ turns the preference off, so the bubble stays gone even on refocus …
+    await page.getByTestId('shared-item-bubble-dismiss').click();
+    await expect(page.getByTestId('shared-item-bubble')).toHaveCount(0);
+    await itemRow.getByPlaceholder('Name', { exact: true }).click();
+    await expect(page.getByTestId('shared-item-bubble')).toHaveCount(0);
+
+    // … and Account Settings shows the preference itself is now off.
+    await page.getByTestId('account-menu').hover();
+    await page.getByText('Account Settings').click();
+    await expect(page.getByTestId('shared-item-bubble-toggle')).not.toBeChecked();
+  });
 });

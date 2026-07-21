@@ -186,7 +186,7 @@ test.describe('Shared item bubble preference', () => {
     // Turn the warning off in account settings.
     await page.getByTestId('account-menu').hover();
     await page.getByText('Account Settings').click();
-    const checkbox = page.locator('#accountSettings input[type="checkbox"]');
+    const checkbox = page.getByTestId('shared-item-bubble-toggle');
     await expect(checkbox).toBeChecked();
     await checkbox.uncheck();
     await page.locator('#accountSettings').getByText('Cancel').click();
