@@ -385,6 +385,10 @@ export default {
 
 .lpItem {
     border-bottom: 1px solid var(--lp-border);
+    // Isolate so the row-wide hover catcher (&::before) resolves its negative
+    // z-index against this row — landing above the list background but below
+    // the row's own content — instead of escaping behind the whole list.
+    isolation: isolate;
     padding: 5px 0 2px;
 
     // Base quiet-input look comes from .lpSilent; fields stay bare until the
@@ -514,6 +518,22 @@ export default {
         }
     }
 
+    // One hover target covering the row and both gutters — the drag handle, qty
+    // stepper, remove ✕, and all the whitespace between them and the columns.
+    // Invisible, and sits behind the inputs and controls (z-index below them, so
+    // it intercepts nothing) but in front of the list background, so hovering
+    // anywhere in the band keeps the row :hover. Without it the gutter controls
+    // blink off the moment the cursor crosses the empty space to reach them.
+    &::before {
+        bottom: 0;
+        content: "";
+        left: -30px;
+        position: absolute;
+        right: -42px;
+        top: 0;
+        z-index: -1;
+    }
+
     &:hover,
     &:focus-within {
         .lpRemove,
@@ -640,32 +660,36 @@ export default {
     }
 }
 
-// Qty stepper bleeds just past the table edge on hover, clear of the ✕ gutter.
+// Qty stepper: sits just right of the number, in the gutter, clear of the ✕
+// beyond. It stays hovered and clickable via .lpItem's row-wide hover catcher
+// (see &::before) rather than having to reach back into the columns itself.
 .lpArrows {
     height: 24px;
     position: absolute;
-    right: -14px;
+    right: -10px;
     top: 50%;
     transform: translateY(-50%);
     visibility: hidden;
-    width: 10px;
+    width: 9px;
 
     .lpUp,
     .lpDown {
         cursor: pointer;
-        left: 0;
-        margin: 2px;
+        left: 1px;
         opacity: 0.5;
         position: absolute;
-        top: 0;
 
         &:hover {
             opacity: 1;
         }
     }
 
+    .lpUp {
+        top: 2px;
+    }
+
     .lpDown {
-        top: 11px;
+        top: 13px;
     }
 }
 </style>

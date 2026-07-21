@@ -172,9 +172,11 @@ export default {
         width: 16px;
     }
 
+    // Sits further out in the gutter to leave clear space between the qty
+    // stepper (which bleeds just past the table edge) and the remove ✕.
     .lpRemoveCell {
         position: absolute;
-        right: -34px;
+        right: -38px;
         top: 50%;
         transform: translateY(-50%);
     }
