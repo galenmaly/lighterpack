@@ -3,14 +3,20 @@
         <h2>Account Settings</h2>
 
         <div class="lpAccountPreferences">
-            <label>
-                <input type="checkbox" data-testid="shared-item-bubble-toggle" :checked="sharedItemBubble" @change="toggleSharedItemBubble">
+            <toggle
+                data-testid="shared-item-bubble-toggle"
+                :model-value="sharedItemBubble"
+                @update:model-value="toggleSharedItemBubble"
+            >
                 Warn when editing an item that's in multiple lists
-            </label>
-            <label>
-                <input type="checkbox" data-testid="worn-qty-hint-toggle" :checked="wornQtyHint" @change="toggleWornQtyHint">
+            </toggle>
+            <toggle
+                data-testid="worn-qty-hint-toggle"
+                :model-value="wornQtyHint"
+                @update:model-value="toggleWornQtyHint"
+            >
                 Note when a worn item has quantity over 1
-            </label>
+            </toggle>
         </div>
         <hr>
 
@@ -43,6 +49,7 @@
 import errors from './errors.vue';
 import modal from './modal.vue';
 import spinner from './spinner.vue';
+import toggle from './toggle.vue';
 import { fetchJson } from '../utils/utils.js';
 
 export default {
@@ -51,6 +58,7 @@ export default {
         errors,
         modal,
         spinner,
+        toggle,
     },
     inject: ['openDeleteAccount'],
     props: {
@@ -143,12 +151,10 @@ export default {
 
 <style lang="scss">
 
-.lpAccountPreferences label {
-    display: block;
-
-    & + label {
-        margin-top: 6px;
-    }
+.lpAccountPreferences {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 </style>

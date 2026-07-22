@@ -6,10 +6,9 @@
                 <div class="lpListSettingsScope">Display settings for this list</div>
                 <ul id="lpOptionalFields">
                     <li v-for="optionalField in optionalFieldsLookup" :key="optionalField.name" class="lpOptionalField">
-                        <label>
-                            <input v-model="optionalField.value" type="checkbox" @change="toggleOptionalField($event, optionalField.name)">
+                        <toggle v-model="optionalField.value" @update:model-value="toggleOptionalField(optionalField.name)">
                             {{ optionalField.displayName }}
-                        </label>
+                        </toggle>
                     </li>
                 </ul>
                 <div v-if="optionalFields['price']" id="lpPriceSettings">
@@ -26,11 +25,13 @@
 
 <script>
 import PopoverHover from './popover-hover.vue';
+import toggle from './toggle.vue';
 
 export default {
     name: 'ListSettings',
     components: {
         PopoverHover,
+        toggle,
     },
     data() {
         return {
@@ -85,7 +86,7 @@ export default {
         this.updateOptionalFieldValues();
     },
     methods: {
-        toggleOptionalField(evt, optionalField) {
+        toggleOptionalField(optionalField) {
             this.$store.commit('toggleOptionalField', optionalField);
         },
         updateCurrencySymbol(evt) {
@@ -112,6 +113,9 @@ export default {
 }
 
 #lpOptionalFields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin: 0;
     padding: 0;
 }
