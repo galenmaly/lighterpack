@@ -441,8 +441,8 @@ export default {
         }
     }
 
-    // Unit reads as a faint label at rest; the picker affordance (caret,
-    // dotted underline) appears with the row's other chrome.
+    // Unit reads as a faint label at rest; the caret is its only picker
+    // affordance, revealed with the row's other chrome.
     .lpUnitSelect {
         padding: 0 2px;
         white-space: nowrap;
@@ -467,10 +467,6 @@ export default {
     &:hover .lpUnitSelect i.lpExpand,
     &:focus-within .lpUnitSelect i.lpExpand {
         visibility: visible;
-    }
-
-    &:focus-within .lpUnitSelect {
-        border-bottom: 1px dotted var(--lp-icon-rest);
     }
 
     .lpQtyCell {
@@ -544,22 +540,37 @@ export default {
         }
     }
 
-    // The lifted row: pure visual state, zero layout shift. Negative margins
-    // are compensated by padding, so columns and neighbors never move — and
-    // the absolutely-positioned gutter controls stay put too, because their
-    // offsets are relative to the padding box, which doesn't shift.
-    &:focus-within {
+    // The lifted card. Drawn as an out-of-flow layer (::after) inset a constant
+    // halo around the row's padding box rather than by growing the row itself,
+    // so the row's box is byte-identical lifted or not: neighbors never bump,
+    // columns never jump, and the absolutely-positioned gutter controls stay
+    // put. The inset is a constant halo around the row box, so retuning the
+    // row padding above moves the card with it. Sits below the row's content but
+    // above its background and border (negative z-index inside the row's own
+    // stacking context), so it covers the hairline divider for free.
+    // Shared with dragula's mirror so a dragged row keeps the same card.
+    // The horizontal insets sit 3px right of even (-9 left, -15 right): the qty
+    // stepper bleeds into the right gutter, so a symmetric inset crowds it on
+    // the right while leaving slack on the left.
+    &:focus-within::after,
+    &.gu-mirror::after {
         background: var(--lp-surface);
-        border-bottom-color: transparent;
         border-radius: 7px;
         box-shadow: var(--lp-lift-shadow);
-        margin: -2px -12px;
-        padding: 8px 12px;
+        content: "";
+        inset: -3px -15px -6px -9px;
+        position: absolute;
+        z-index: -1;
+    }
+
+    &:focus-within {
         z-index: 2;
 
+        // Fields stay borderless on the lifted card: underlining all of them
+        // reads as five competing inputs when only one is being edited. The
+        // card itself is the "this row is live" signal; the underline marks
+        // the single field you're in.
         input {
-            border-bottom-color: var(--lp-border);
-
             &:focus {
                 border-bottom-color: var(--lp-accent-green-deep);
             }
@@ -567,6 +578,23 @@ export default {
             &.lpSilentError {
                 border-bottom-color: var(--lp-danger);
             }
+        }
+    }
+
+    // dragula's mirror — the clone that follows the cursor. It's parked inside
+    // the source .lpItems (list.vue's mirrorContainer) rather than on <body>,
+    // so the list-scoped rules that make a row a row — grid template, gutter
+    // cells, column alignment — still match it. Only the drag-specific bits
+    // live here; the card comes from the shared ::after above.
+    &.gu-mirror {
+        cursor: grabbing;
+        // The card's own shadow reads as "lifted"; the 0.8 ghosting .gu-mirror
+        // applies by default just makes it look washed out.
+        opacity: 1;
+
+        // You're holding it, so it stays lit even though nothing is hovered.
+        .lpHandle {
+            visibility: visible;
         }
     }
 }

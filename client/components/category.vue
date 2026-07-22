@@ -126,11 +126,6 @@ export default {
         column-gap: 12px;
         display: grid;
         position: relative;
-
-        &.gu-mirror {
-            background: var(--lp-content-bg);
-            border: 1px solid var(--lp-border-strong);
-        }
     }
 
     .lpItem {

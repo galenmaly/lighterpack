@@ -89,6 +89,13 @@ export default {
             }
             const $categoryItems = Array.prototype.slice.call(document.getElementsByClassName('lpItems'));
             const drake = dragula($categoryItems, {
+                // Park the drag mirror inside a list instead of dragula's
+                // default <body>, so the .lpItems-scoped row styles (grid
+                // template, gutter cells) still match the clone — on <body> it
+                // falls back to bare .lpItem and collapses. Any list will do:
+                // the grid template varies with the list's optional fields,
+                // which are shared by every category in the list.
+                mirrorContainer: $categoryItems[0],
                 moves($el, $source, $handle, _$sibling) {
                     return $handle.classList.contains('lpItemHandle');
                 },
