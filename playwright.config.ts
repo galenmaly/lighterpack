@@ -70,10 +70,18 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /* Run your local dev server before starting the tests. LP_PORT moves it off
+     the default so a worktree doesn't reuse the server of another checkout —
+     which would silently test that checkout's code instead of this one's. */
   webServer: {
     command: 'npm run start',
-    url: 'http://127.0.0.1:3000',
+    url: `http://127.0.0.1:${process.env.LP_PORT || '3000'}`,
     reuseExistingServer: !process.env.CI,
+    env: {
+      NODE_CONFIG: JSON.stringify({
+        port: Number(process.env.LP_PORT || 3000),
+        deployUrl: `http://localhost:${process.env.LP_PORT || '3000'}`,
+      }),
+    },
   },
 });
