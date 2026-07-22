@@ -130,4 +130,25 @@ test.describe('Unsaved changes tracking', () => {
     await page.close({ runBeforeUnload: true });
     expect(sawUnloadDialog).toBe(false);
   });
+
+  // Local mode saves to localStorage lazily, on the first edit. "Skip
+  // registration" builds a fresh Library in memory and writes nothing, so a
+  // dirty check that compares against localStorage.library sees a string
+  // against undefined and warns before the user has touched anything.
+  test('skipping registration has no unsaved changes', async ({ page }) => {
+    await page.goto(testRoot);
+    await page.getByText('Skip registration').click();
+    await expect(page.locator('#lpListName')).toBeVisible();
+    await page.waitForTimeout(500); // let first-render side effects settle
+
+    // Ask the real beforeunload handler directly. Closing the page and
+    // watching for the dialog races: page.close() can resolve before the
+    // dialog event is delivered, so a missing dialog proves nothing.
+    const warnsOnUnload = await page.evaluate(() => {
+      const event = new Event('beforeunload', { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    });
+    expect(warnsOnUnload, 'closing an untouched local library must not warn').toBe(false);
+  });
 });
