@@ -10,7 +10,6 @@
         <ul id="library" class="lpSidebarScroll">
             <li v-for="item in filteredItems" :key="item.id" class="lpLibraryItem" :data-item-id="item.id">
                 <div v-if="!item.inCurrentList" class="lpHandle lpLibraryItemHandle" title="Drag this item into your list" />
-                <span v-else class="lpLibraryItemNoHandle" />
                 <span class="lpLibraryItemBody">
                     <span class="lpLibraryItemTopline">
                         <span class="lpName">{{ item.name }}</span>
@@ -200,7 +199,7 @@ export default {
     gap: 8px;
     list-style: none;
     margin: 0;
-    padding: 4px 18px;
+    padding: 4px 6px 4px 18px;
     position: relative;
 
     &.gu-mirror {
@@ -209,15 +208,17 @@ export default {
         color: var(--lp-sidebar-text);
     }
 
-    // Handle style comes from the shared _handle.scss glyph.
+    // The handle lives in the row's left padding rather than in flow, so rows
+    // line up identically whether or not the item is already in the list.
+    // Lopsided padding slides the glyph to the left of its box, opening up the
+    // gap to the item name while the 16px grab target keeps its full width.
+    // (The rail scrolls, so a negative offset would be clipped instead.)
     .lpHandle {
-        align-self: flex-start;
-        flex: 0 0 16px;
-        margin-top: -4px;
-    }
-
-    .lpLibraryItemNoHandle {
-        flex: 0 0 16px;
+        left: 2px;
+        margin: 0;
+        padding: 4px 9px 4px 1px;
+        position: absolute;
+        top: 2px;
     }
 
     .lpLibraryItemBody {
@@ -262,16 +263,19 @@ export default {
         width: auto;
     }
 
+    // In flow rather than absolute, so the row's gap reserves a real gutter
+    // between the name and the ✕ instead of letting them overlap.
     .lpRemove {
-        position: absolute;
-        right: 6px;
-        top: 4px;
+        align-self: flex-start;
+        flex: 0 0 auto;
+        margin-bottom: 0;
+        margin-top: 1px;
     }
 
     #main > & {
         background: var(--lp-sidebar-inset);
         color: var(--lp-sidebar-text);
-        padding: 10px;
+        padding: 10px 10px 10px 22px;
         width: 220px;
     }
 }
