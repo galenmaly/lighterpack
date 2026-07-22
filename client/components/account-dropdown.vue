@@ -1,21 +1,32 @@
 <template>
-    <div id="sidebarAccount">
-        <PopoverHover v-if="isSignedIn" id="accountPopover">
+    <div class="lpAccount headerItem">
+        <PopoverHover v-if="isSignedIn" id="accountPopover" data-testid="account-menu">
             <template #target>
-                <span class="lpAccountRow" data-testid="account-menu">
-                    <span class="lpUsername username">{{ username }}</span>
-                    <i class="lpSprite lpExpand" />
-                </span>
+                <span class="lpAvatar" :title="username">{{ initial }}</span>
             </template>
             <template #content>
-                <div>
+                <div class="lpAccountMenu">
+                    <div class="lpAccountMenuUser">
+                        Signed in as <span class="username">{{ username }}</span>
+                    </div>
+                    <hr>
                     <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
-                    <a class="lpHref" @click="showHelp">Help</a><br>
+                    <a class="lpHref" @click="showHelp">Help</a>
+                    <hr>
+                    <toggle
+                        class="lpAccountMenuTheme"
+                        :model-value="isDark"
+                        data-testid="dark-mode-toggle"
+                        @update:model-value="toggleDarkMode"
+                    >
+                        Dark mode
+                    </toggle>
+                    <hr>
                     <a class="lpHref signout" @click="signout">Sign Out</a>
                 </div>
             </template>
         </PopoverHover>
-        <div v-else class="lpAccountRow signInRegisterButtons">
+        <div v-else class="signInRegisterButtons">
             <router-link to="/signin" class="lpHref">
                 Sign In
             </router-link>
@@ -29,13 +40,21 @@
 
 <script>
 import PopoverHover from './popover-hover.vue';
+import toggle from './toggle.vue';
+import { toggleTheme } from '../utils/theme.js';
 
 export default {
     name: 'AccountDropdown',
     components: {
         PopoverHover,
+        toggle,
     },
     inject: ['openAccount', 'openHelp'],
+    data() {
+        return {
+            isDark: document.documentElement.getAttribute('data-theme') === 'dark',
+        };
+    },
     computed: {
         library() {
             return this.$store.state.library;
@@ -46,6 +65,9 @@ export default {
         username() {
             return this.$store.state.loggedIn;
         },
+        initial() {
+            return (this.username || '?').trim().charAt(0);
+        },
     },
     methods: {
         showAccount() {
@@ -53,6 +75,9 @@ export default {
         },
         showHelp() {
             this.openHelp();
+        },
+        toggleDarkMode() {
+            this.isDark = toggleTheme() === 'dark';
         },
         async signout() {
             await this.$store.dispatch('signout');
@@ -65,71 +90,94 @@ export default {
 <style lang="scss">
 @import "../css/_globals";
 
-// Hairline-topped account footer pinned to the bottom of the sidebar.
-#sidebarAccount {
-    border-top: 1px solid var(--lp-sidebar-border);
+// Account menu at the far right of the content header. The target is an
+// initial-letter avatar; everything account-scoped (settings, help, theme,
+// sign out) hangs off its dropdown.
+.lpAccount {
+    align-items: center;
+    display: flex;
+}
+
+.lpAvatar {
+    align-items: center;
+    background: var(--lp-sidebar-bg);
+    border-radius: 50%;
+    color: $grey-0;
+    cursor: pointer;
+    display: flex;
     flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    height: 26px;
+    justify-content: center;
+    line-height: 1;
+    text-transform: uppercase;
+    user-select: none;
+    width: 26px;
+}
 
-    .lpAccountRow {
-        align-items: center;
-        cursor: default;
+#accountPopover {
+    .lpTarget {
         display: flex;
-        gap: 9px;
-        padding: 11px 18px;
+        padding: 4px 0;
     }
 
-    .lpUsername {
-        color: var(--lp-sidebar-text);
-        flex: 1 1 auto;
-        font-size: 12px;
+    // Header-anchored menu: hangs from the right edge instead of centering on
+    // the target, so it never overhangs the content column.
+    .lpContent {
+        left: auto;
+        right: 0;
+        transform: none;
+
+        &::before {
+            left: auto;
+            margin-left: 0;
+            right: 10px;
+        }
+    }
+}
+
+.lpAccountMenu {
+    font-size: 13px;
+    min-width: 160px;
+
+    a.lpHref {
+        display: inline-block;
+        line-height: 22px;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--lp-border-strong);
+        margin: 7px 0;
+    }
+}
+
+.lpAccountMenuUser {
+    color: var(--lp-text-secondary);
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .username {
+        color: var(--lp-text);
         font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
+}
 
-    .lpExpand {
-        opacity: 0.6;
-    }
+.lpAccountMenuTheme {
+    justify-content: space-between;
+}
 
-    .signInRegisterButtons {
-        font-size: 12px;
+.signInRegisterButtons {
+    align-items: center;
+    display: flex;
+    font-size: 13px;
+    gap: 6px;
 
-        .lpAccountSep {
-            color: var(--lp-sidebar-muted);
-        }
-
-        .lpHref {
-            color: var(--lp-sidebar-link);
-        }
-    }
-
-    // The popover opens upward from the bottom of the viewport.
-    .lpPopover {
-        .lpTarget {
-            display: block;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .lpContent {
-            bottom: calc(100% + 8px);
-            left: 10px;
-            margin-top: 0;
-            top: auto;
-            transform: none;
-
-            &::before {
-                bottom: -10px;
-                left: 30px;
-                top: auto;
-            }
-
-            &::after {
-                bottom: 0;
-                top: auto;
-            }
-        }
+    .lpAccountSep {
+        color: var(--lp-text-secondary);
     }
 }
 </style>

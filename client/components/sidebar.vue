@@ -8,7 +8,6 @@
             <libraryLists />
             <div class="lpSidebarDivider" />
             <libraryItems />
-            <accountDropdown />
         </div>
     </div>
 </template>
@@ -16,14 +15,12 @@
 <script>
 import libraryItems from './library-items.vue';
 import libraryLists from './library-lists.vue';
-import accountDropdown from './account-dropdown.vue';
 
 export default {
     name: 'Sidebar',
     components: {
         libraryItems,
         libraryLists,
-        accountDropdown,
     },
 };
 </script>

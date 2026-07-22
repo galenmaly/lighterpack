@@ -10,7 +10,7 @@
                 <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
                 <listSettings />
-                <themeToggle />
+                <accountDropdown />
             </div>
 
             <list />
@@ -65,7 +65,7 @@ import itemLink from '../components/item-link.vue';
 import importCSV from '../components/import-csv.vue';
 import copyList from '../components/copy-list.vue';
 import speedbump from '../components/speedbump.vue';
-import themeToggle from '../components/theme-toggle.vue';
+import accountDropdown from '../components/account-dropdown.vue';
 
 export default {
     name: 'Dashboard',
@@ -84,7 +84,7 @@ export default {
         itemViewImage,
         speedbump,
         globalAlerts,
-        themeToggle,
+        accountDropdown,
     },
     provide() {
         return {
@@ -267,18 +267,6 @@ export default {
         &:hover {
             color: var(--lp-link-blue);
         }
-    }
-}
-
-.lpThemeToggle {
-    background: none;
-    border: none;
-    color: var(--lp-text);
-    cursor: pointer;
-    padding: 0;
-
-    &:hover {
-        color: var(--lp-link-blue);
     }
 }
 
