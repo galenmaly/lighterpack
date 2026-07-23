@@ -198,21 +198,11 @@ export default {
     }
 }
 
-// The header's own rule *is* the category title's underline — there is no room
-// for a second one 5px above it. So the title stays bare and hands its
-// hover/focus state down to this border instead.
+// The header rule is structural — it separates the subtotals from the rows
+// below and stays put. The title carries its own rename affordance.
 .lpItemsHeader {
     border-bottom: 1px solid var(--lp-border-strong);
     padding: 0 0 5px;
-    transition: border-bottom-color $transitionDuration;
-
-    &:has(input.lpCategoryName:hover) {
-        border-bottom-color: var(--lp-border-hover);
-    }
-
-    &:has(input.lpCategoryName:focus) {
-        border-bottom-color: var(--lp-accent-green-deep);
-    }
 
     .lpCategoryHead {
         align-items: center;
@@ -226,14 +216,26 @@ export default {
         height: 11px;
     }
 
-    // Quiet input base comes from .lpSilent; the rename affordance is the
-    // header's border-bottom above, not an underline of its own.
+    // Quiet input base comes from .lpSilent; the rename affordance matches the
+    // item rows — outlined on hover, filled on focus. The negative margin
+    // cancels the box's padding so the title doesn't drift off the swatch.
     input.lpCategoryName {
         flex: 1 1 auto;
         font-size: 14.5px;
         font-weight: 700;
+        margin: 0 -5px;
         min-width: 0;
-        padding: 0 2px;
+        padding: 2px 7px;
+        transition: border-color $transitionDuration;
+
+        &:hover {
+            border-color: var(--lp-border);
+        }
+
+        &:focus {
+            background: var(--lp-bg);
+            border-color: var(--lp-border-strong);
+        }
     }
 
     // padding-right mirrors the rows' unit-picker right padding; the unit's

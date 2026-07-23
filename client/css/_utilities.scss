@@ -240,13 +240,13 @@
     }
 }
 
-// Silent inline inputs: plain text that happens to be editable. This is the
-// state-independent base only — each context wires its own affordance
-// trigger (titles underline on their own :hover/:focus; item fields reveal
-// underlines through the row's :focus-within — see item.vue).
+// Silent inline inputs: plain text that happens to be editable. The
+// transparent border reserves the box every context outlines on :focus, so
+// revealing it never shifts the text. This is the state-independent base
+// only — each context wires its own affordance trigger (see item.vue,
+// category.vue and the list title in dashboard.vue).
 .lpSilent {
     background: transparent;
-    border: none;
     border: 1px solid transparent;
     border-radius: 0;
     box-shadow: none;
@@ -258,7 +258,7 @@
     }
 
     &.lpSilentError {
-        border-bottom-color: var(--lp-danger);
+        border-color: var(--lp-danger);
     }
 }
 

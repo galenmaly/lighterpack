@@ -234,20 +234,26 @@ export default {
     }
 }
 
+// Rename affordance matches the item rows: a quiet box that outlines on
+// hover and fills on focus, never an underline. The negative margin cancels
+// the box's own padding so the title text keeps its place in the header.
 #lpListName {
     flex: 1 1 auto;
     font-size: 22px;
     font-weight: 700;
     height: 27px;
+    margin-left: -3px;
     min-width: 0;
-    padding: 0 4px 1px;
+    padding: 0 7px;
+    transition: border-color $transitionDuration;
 
     &:hover {
-        border-bottom-color: var(--lp-border-strong);
+        border-color: var(--lp-border);
     }
 
     &:focus {
-        border-bottom-color: var(--lp-accent-green-deep);
+        background: var(--lp-bg);
+        border-color: var(--lp-border-strong);
     }
 }
 
