@@ -85,6 +85,8 @@ $transitionDurationSlow: 0.4s;
     // Lines & shadows
     --lp-border-strong: #{$grey-200};
     --lp-border: #{$grey-100};
+    // One step past border-strong: a hairline darkening under a hovered title.
+    --lp-border-hover: #{$grey-400};
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
 
     // Accents (brand)
@@ -121,6 +123,8 @@ $transitionDurationSlow: 0.4s;
     --lp-sidebar-muted: #{$grey-500};
     --lp-sidebar-handle: #{$grey-600};
     --lp-sidebar-link: #{$blue2};
+
+    --lp-page-bg-url: url("/images/lp_bg2.jpg");
 }
 
 @mixin lp-dark-theme {
@@ -142,6 +146,7 @@ $transitionDurationSlow: 0.4s;
     // Lines & shadows
     --lp-border-strong: #{$grey-700};
     --lp-border: #{$grey-750};
+    --lp-border-hover: #{$grey-600};
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
 
     // Accents — only the hues too dim on the dark surface are re-tuned.
@@ -166,4 +171,6 @@ $transitionDurationSlow: 0.4s;
     --lp-bubble-bg: #{color.mix($green1, $grey-950, 12%)};
     --lp-bubble-border: #{color.mix($green1, $grey-950, 25%)};
     --lp-bubble-text: #{$green2};
+
+    --lp-page-bg-url: url("/images/lp_bg_dark.jpg");
 }

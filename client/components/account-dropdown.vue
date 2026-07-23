@@ -31,7 +31,7 @@
                 Sign In
             </router-link>
             <span class="lpAccountSep">·</span>
-            <router-link to="/register" class="lpHref">
+            <router-link to="/register" class="lpHref lpButton lpSmall">
                 Register
             </router-link>
         </div>
@@ -100,7 +100,7 @@ export default {
 
 .lpAvatar {
     align-items: center;
-    background: var(--lp-sidebar-bg);
+    background: var(--lp-tooltip-bg);
     border-radius: 50%;
     color: $grey-0;
     cursor: pointer;
@@ -108,12 +108,12 @@ export default {
     flex: 0 0 auto;
     font-size: 12px;
     font-weight: 700;
-    height: 26px;
+    height: 24px;
     justify-content: center;
     line-height: 1;
     text-transform: uppercase;
     user-select: none;
-    width: 26px;
+    width: 24px;
 }
 
 #accountPopover {

@@ -67,7 +67,7 @@ export default {
 $welcomeVerticalSpacing: 80px;
 
 #lpWelcomeContainer {
-    background: #385f8b url("/images/lp_bg2.jpg") 50% 50%;
+    background: #385f8b var(--lp-page-bg-url) 50% 50%;
     background-size: cover;
     min-height: 100vh;
     padding-top: $welcomeVerticalSpacing;

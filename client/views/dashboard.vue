@@ -27,9 +27,7 @@
                 </div>
             </div>
         </div>
-        <div class="lpFrameFill lpFrameFillRight">
-            <div class="lpFrameHairlineCap" />
-        </div>
+        <div class="lpFrameFill lpFrameFillRight" />
 
         <globalAlerts />
         <speedbump
@@ -185,12 +183,6 @@ export default {
     background: var(--lp-content-bg);
 }
 
-// Continues the content header's bottom hairline across the right filler.
-.lpFrameHairlineCap {
-    border-bottom: 1px solid var(--lp-border);
-    height: 52px;
-}
-
 .lpContentCol {
     background: var(--lp-content-bg);
     color: var(--lp-text);
@@ -213,11 +205,14 @@ export default {
 
 #header {
     align-items: center;
-    border-bottom: 1px solid var(--lp-border);
     display: flex;
     flex: 0 0 auto;
     gap: 18px;
     padding: 13px 32px;
+
+    .lpTarget  .lpSprite {
+        height: 14px;
+    }
 }
 
 #hamburger {
@@ -235,18 +230,16 @@ export default {
     }
 }
 
-// Plain text that happens to be an input: quiet base from .lpSilent, rename
-// affordance is an underline on hover/focus, never a boxed field.
 #lpListName {
     flex: 1 1 auto;
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 700;
     height: 27px;
     min-width: 0;
     padding: 0 4px 1px;
 
     &:hover {
-        border-bottom-color: var(--lp-border);
+        border-bottom-color: var(--lp-border-hover);
     }
 
     &:focus {
@@ -266,6 +259,21 @@ export default {
 
         &:hover {
             color: var(--lp-link-blue);
+        }
+    }
+
+    &.lpAccount {
+        padding-left: 20px;
+
+        &:before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 6px;
+            bottom: 0px;
+            width: 1px;
+            background: var(--lp-border);
+            left: 0;
         }
     }
 }

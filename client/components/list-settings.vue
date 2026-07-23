@@ -3,7 +3,6 @@
         <PopoverHover>
             <template #target><span><i class="lpSprite lpSettings" /> Settings</span></template>
             <template #content><div>
-                <div class="lpListSettingsScope">Display settings for this list</div>
                 <ul id="lpOptionalFields">
                     <li v-for="optionalField in optionalFieldsLookup" :key="optionalField.name" class="lpOptionalField">
                         <toggle v-model="optionalField.value" @update:model-value="toggleOptionalField(optionalField.name)">
@@ -118,12 +117,6 @@ export default {
     gap: 8px;
     margin: 0;
     padding: 0;
-}
-
-.lpListSettingsScope {
-    font-size: 12px;
-    opacity: 0.7;
-    margin-bottom: 6px;
 }
 
 .lpOptionalField {
