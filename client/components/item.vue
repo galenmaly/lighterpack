@@ -540,23 +540,23 @@ export default {
         }
     }
 
-    // The lifted card. Drawn as an out-of-flow layer (::after) inset a constant
-    // halo around the row's padding box rather than by growing the row itself,
-    // so the row's box is byte-identical lifted or not: neighbors never bump,
+    // The row band — a flat grey fill marking the hovered row and the row being
+    // edited. Drawn as an out-of-flow layer (::after) inset a constant halo
+    // around the row's padding box rather than by growing the row itself, so
+    // the row's box is byte-identical banded or not: neighbors never bump,
     // columns never jump, and the absolutely-positioned gutter controls stay
     // put. The inset is a constant halo around the row box, so retuning the
-    // row padding above moves the card with it. Sits below the row's content but
+    // row padding above moves the band with it. Sits below the row's content but
     // above its background and border (negative z-index inside the row's own
     // stacking context), so it covers the hairline divider for free.
-    // Shared with dragula's mirror so a dragged row keeps the same card.
+    // Shared with dragula's mirror so a dragged row keeps a solid backing.
     // The horizontal insets sit 3px right of even (-9 left, -15 right): the qty
     // stepper bleeds into the right gutter, so a symmetric inset crowds it on
     // the right while leaving slack on the left.
+    &:hover::after,
     &:focus-within::after,
     &.gu-mirror::after {
-        background: var(--lp-surface);
-        border-radius: 7px;
-        box-shadow: var(--lp-lift-shadow);
+        background: var(--lp-row-hover);
         content: "";
         inset: -3px -15px -6px -9px;
         position: absolute;
@@ -591,6 +591,14 @@ export default {
         // The card's own shadow reads as "lifted"; the 0.8 ghosting .gu-mirror
         // applies by default just makes it look washed out.
         opacity: 1;
+
+        // Resting rows are flat, but this clone really is floating over the
+        // list, so it keeps the lifted card: surface fill, rounded, shadowed.
+        &::after {
+            background: var(--lp-surface);
+            border-radius: 7px;
+            box-shadow: var(--lp-lift-shadow);
+        }
 
         // You're holding it, so it stays lit even though nothing is hovered.
         .lpHandle {
