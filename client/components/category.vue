@@ -129,11 +129,11 @@ export default {
     }
 
     .lpItem {
-        grid-template-columns: 180px minmax(0, 1fr) auto 72px 30px;
+        grid-template-columns: 180px minmax(0, 1fr) auto 82px 35px;
     }
 
     .lpItemsHeader {
-        grid-template-columns: minmax(0, 1fr) 72px 30px;
+        grid-template-columns: minmax(0, 1fr) 82px 35px;
     }
 
     .lpItemsFooter {
@@ -142,20 +142,20 @@ export default {
 
     &.lpHasPrice {
         .lpItem {
-            grid-template-columns: 180px minmax(0, 1fr) auto 52px 72px 30px;
+            grid-template-columns: 180px minmax(0, 1fr) auto 52px 82px 35px;
         }
 
         .lpItemsHeader {
-            grid-template-columns: minmax(0, 1fr) 52px 72px 30px;
+            grid-template-columns: minmax(0, 1fr) 52px 82px 35px;
         }
     }
 
     &.lpHasImages .lpItem {
-        grid-template-columns: 90px 180px minmax(0, 1fr) auto 72px 30px;
+        grid-template-columns: 90px 180px minmax(0, 1fr) auto 82px 35px;
     }
 
     &.lpHasImages.lpHasPrice .lpItem {
-        grid-template-columns: 90px 180px minmax(0, 1fr) auto 52px 72px 30px;
+        grid-template-columns: 90px 180px minmax(0, 1fr) auto 52px 82px 35px;
     }
 
     // Gutter controls live in the side margins so columns never shift.

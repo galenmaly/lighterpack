@@ -389,12 +389,17 @@ export default {
     // z-index against this row — landing above the list background but below
     // the row's own content — instead of escaping behind the whole list.
     isolation: isolate;
-    padding: 5px 0 2px;
+    padding: 2px 0 2px;
 
     // Base quiet-input look comes from .lpSilent; fields stay bare until the
     // row's :focus-within reveals underlines (below).
     input {
-        padding: 0 2px 2px;
+        padding: 3px 7px;
+
+        &:focus {
+            background: var(--lp-bg);
+            border-color: var(--lp-border-strong);
+        }
     }
 
     .lpName {
@@ -558,7 +563,7 @@ export default {
     &.gu-mirror::after {
         background: var(--lp-row-hover);
         content: "";
-        inset: -3px -15px -6px -9px;
+        inset: -3px -16px -3px -5px;
         position: absolute;
         z-index: -1;
     }
@@ -571,12 +576,8 @@ export default {
         // card itself is the "this row is live" signal; the underline marks
         // the single field you're in.
         input {
-            &:focus {
-                border-bottom-color: var(--lp-accent-green-deep);
-            }
-
             &.lpSilentError {
-                border-bottom-color: var(--lp-danger);
+                border-color: var(--lp-danger);
             }
         }
     }
@@ -721,11 +722,11 @@ export default {
     }
 
     .lpUp {
-        top: 2px;
+        top: 3px;
     }
 
     .lpDown {
-        top: 13px;
+        top: 14px;
     }
 }
 </style>

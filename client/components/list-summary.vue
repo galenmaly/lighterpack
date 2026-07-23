@@ -194,7 +194,7 @@ export default {
         padding: 3px 0;
 
         &.hover {
-            background: var(--lp-border);
+            background: var(--lp-row-hover);
         }
     }
 

@@ -121,10 +121,8 @@ export default {
     }
 }
 
-// Same lift treatment as an item row mid-edit.
 .lpListDescriptionInput {
-    background: var(--lp-surface);
-    box-shadow: var(--lp-lift-shadow);
+    border-color: var(--lp-border);
     display: block;
     min-height: 72px;
     outline: none;

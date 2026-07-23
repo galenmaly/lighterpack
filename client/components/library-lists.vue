@@ -112,7 +112,7 @@ export default {
 
     #lists {
         margin: 0;
-        max-height: 178px;
+        max-height: 240px;
         padding: 0;
     }
 }
@@ -124,7 +124,7 @@ export default {
     display: flex;
     font-size: 13px;
     list-style: none;
-    padding: 5px 8px 5px 18px;
+    padding: 5px 8px 5px 20px;
     position: relative;
 
     &:hover {
@@ -149,10 +149,9 @@ export default {
     }
 
     .lpHandle {
-        left: 2px;
+        left: 4px;
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        transform: translateY(-2px);
     }
 
     &:hover .lpHandle {
