@@ -28,7 +28,7 @@ $darkYellow: #a58c00;
    Tags list each step's consumers by theme: [L] light only, [D] dark
    only, [both] both themes (mostly the always-dark sidebar chrome). */
 $grey-0: #fff;      // [L] page/surface bg, tooltip text · [both] white ink on fills
-$grey-50: #f1f2f4;  // [L] hovered/active row band
+$grey-50: #f4f5f6;  // [L] hovered/active row band
 $grey-100: #e0e1e3; // [L] hairline, get-started bg · [D] body text · [both] sidebar text
 $grey-200: #BBB; // [L] strong hairline, resting icons
 $grey-400: #9a9da3; // [D] secondary text
@@ -123,7 +123,7 @@ $transitionDurationSlow: 0.4s;
     --lp-sidebar-inset: #{$grey-850};
     --lp-sidebar-border: #{$grey-700};
     --lp-sidebar-text: #{$grey-100};
-    --lp-sidebar-muted: #{$grey-500};
+    --lp-sidebar-muted: #{$grey-400};
     --lp-sidebar-handle: #{$grey-600};
     --lp-sidebar-link: #{$blue2};
 

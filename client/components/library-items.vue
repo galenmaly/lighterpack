@@ -199,7 +199,7 @@ export default {
     gap: 8px;
     list-style: none;
     margin: 0;
-    padding: 4px 6px 4px 18px;
+    padding: 6px 6px 6px 18px;
     position: relative;
 
     &.gu-mirror {
@@ -249,14 +249,14 @@ export default {
         color: var(--lp-sidebar-muted);
         flex: 0 0 auto;
         float: none;
-        font-size: 11px;
+        font-size: 12px;
         width: auto;
     }
 
     .lpDescription {
         color: var(--lp-sidebar-muted);
         display: block;
-        font-size: 11px;
+        font-size: 12px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
