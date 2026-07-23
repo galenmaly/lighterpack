@@ -31,18 +31,30 @@ export default {
 // Fixed dark rail: the sticky inner column pins to the viewport while the
 // window scrollbar scrolls the content column only. Collapses to zero width
 // when the sidebar is toggled off.
+// min-width is what actually lets flex-basis animate: the inner column is a
+// fixed 220px, so the rail's automatic minimum size pins it at 220px and
+// flex-basis: 0 does nothing until that floor is lifted.
+//
+// Clipping is then its own concern, and it has to hold for the whole collapse
+// *and* the whole expand so the inner column is never painted wider than the
+// rail carrying it. The clip is released — instantly, one beat late — only once
+// the rail is fully open, which is the only moment popovers (the + New flyout)
+// need to overhang the content column. clip-path rather than overflow: overflow
+// would make the rail a scroll container and unpin .lpSidebarSticky.
 #sidebar {
     background: var(--lp-sidebar-bg);
+    clip-path: inset(-100vh -100vw);
     color: var(--lp-sidebar-text);
     flex: 0 0 220px;
-    transition: flex-basis $transitionDurationSlow;
+    min-width: 0;
+    transition: flex-basis $transitionDurationSlow, clip-path 0s $transitionDurationSlow, background $transitionDurationSlow;
     z-index: $sidebar;
 
-    // Clip only while collapsed — popovers (+ New flyout, account menu)
-    // must be free to overhang the content column when the rail is open.
     #main:not(.lpHasSidebar) & {
+        background: var(--lp-bg);
+        clip-path: inset(0);
         flex-basis: 0;
-        overflow: hidden;
+        transition: flex-basis $transitionDurationSlow, clip-path 0s, background $transitionDurationSlow;
     }
 }
 

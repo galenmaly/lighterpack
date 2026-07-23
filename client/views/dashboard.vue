@@ -171,8 +171,12 @@ export default {
     min-width: 0;
 }
 
+// The left filler carries the rail's surface out to the viewport edge, so it
+// has to change surface on the same beat the rail collapses — swapping it
+// outright reads as a flash next to the sliding rail.
 .lpFrameFillLeft {
     background: var(--lp-content-bg);
+    transition: background-color $transitionDurationSlow;
 
     .lpHasSidebar & {
         background: var(--lp-sidebar-bg);
@@ -239,7 +243,7 @@ export default {
     padding: 0 4px 1px;
 
     &:hover {
-        border-bottom-color: var(--lp-border-hover);
+        border-bottom-color: var(--lp-border-strong);
     }
 
     &:focus {
@@ -272,7 +276,7 @@ export default {
             top: 6px;
             bottom: 0px;
             width: 1px;
-            background: var(--lp-border);
+            background: var(--lp-border-strong);
             left: 0;
         }
     }
