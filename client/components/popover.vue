@@ -65,13 +65,17 @@ export default {
 
     .lpContent {
         background: var(--lp-surface);
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+        // Three corners rounded; the call site squares off whichever corner
+        // sits closest to the target, so the menu reads as growing out of it.
+        border-radius: 10px;
+        // Same lift as a dragged row — the menu floats above the page.
+        box-shadow: var(--lp-lift-shadow);
         color: var(--lp-text);
         left: 50%;
         margin-top: 15px;
         min-width: 100%;
         opacity: 0;
-        padding: 12px;
+        padding: 16px;
         pointer-events: none;
         position: absolute;
         top: 100%;
@@ -80,31 +84,17 @@ export default {
         white-space: nowrap;
         z-index: $dialog;
 
+        // Invisible bridge across the margin gap to the target: without it a
+        // slow mouse move from target to menu crosses dead space and the
+        // hover-triggered menu dismisses. pointer-events is inherited, so the
+        // bridge is only live while the menu is shown (parent flips to `all`).
         &::before {
-            background-color: var(--lp-surface);
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
             content: "";
-            display: block;
-            height: 20px;
-            left: 50%;
-            margin-left: -10px;
-            position: absolute;
-            top: -10px;
-            transform: rotate(45deg);
-            width: 20px;
-            z-index: $dialog - 1;
-        }
-
-        &::after {
-            background: var(--lp-surface);
-            content: "";
-            display: block;
-            height: 15px;
+            height: 18px;
             left: 0;
             position: absolute;
-            top: 0;
-            width: 100%;
-            z-index: $dialog + 1;
+            right: 0;
+            top: -18px;
         }
 
         & > *:first-child {

@@ -179,22 +179,15 @@ export default {
     padding-bottom: 4px;
 }
 
-// The + New flyout opens to the right of the rail so it never covers the
-// list rows beneath it (an open popover would swallow their clicks).
+// The + New flyout drops beneath its target at the top-right of the rail.
+// It right-anchors so a menu wider than the "+ New" link still stays within
+// the rail, and the top-right corner — nearest the target — is squared off.
 #addListFlyout {
     .lpContent {
-        left: 100%;
-        margin-top: 0;
-        top: -8px;
+        border-top-right-radius: 0;
+        left: auto;
+        right: 0;
         transform: none;
-
-        &::before {
-            display: none;
-        }
-
-        &::after {
-            display: none;
-        }
 
         a {
             display: block;

@@ -124,17 +124,13 @@ export default {
     }
 
     // Header-anchored menu: hangs from the right edge instead of centering on
-    // the target, so it never overhangs the content column.
+    // the target, so it never overhangs the content column. The top-right
+    // corner sits under the avatar, so that's the one squared off.
     .lpContent {
+        border-top-right-radius: 0;
         left: auto;
         right: 0;
         transform: none;
-
-        &::before {
-            left: auto;
-            margin-left: 0;
-            right: 10px;
-        }
     }
 }
 

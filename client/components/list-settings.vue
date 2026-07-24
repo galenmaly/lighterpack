@@ -133,6 +133,17 @@ export default {
     }
 }
 
+// Share and Settings hang from the right edge of their header target rather
+// than centering under it, so the top-right corner — the one nearest the
+// target — is squared off while the other three stay rounded.
+#share .lpContent,
+#settings .lpContent {
+    border-top-right-radius: 0;
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
 #share .lpContent {
     width: 330px;
 }
