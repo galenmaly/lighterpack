@@ -62,10 +62,11 @@
     }
 
     .tooltip {
-        background: var(--lp-tooltip-bg);
+        background: var(--lp-surface);
         border: 1px solid var(--lp-surface);
+        border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-        color: var(--lp-tooltip-text);
+        color: var(--lp-text);
         display: none;
         padding: 3px;
         position: absolute;

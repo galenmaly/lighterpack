@@ -279,7 +279,7 @@ export default {
             content: "";
             display: block;
             position: absolute;
-            top: 6px;
+            top: 2px;
             bottom: 0px;
             width: 1px;
             background: var(--lp-border-strong);

@@ -100,7 +100,7 @@ export default {
 
 .lpAvatar {
     align-items: center;
-    background: var(--lp-tooltip-bg);
+    background: var(--lp-sidebar-bg);
     border-radius: 50%;
     color: $grey-0;
     cursor: pointer;
@@ -111,6 +111,7 @@ export default {
     height: 24px;
     justify-content: center;
     line-height: 1;
+    margin-top: -7px;
     text-transform: uppercase;
     user-select: none;
     width: 24px;
