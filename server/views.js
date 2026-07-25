@@ -346,7 +346,7 @@ function init() {
         });
 
         // fs.writeFile(filePath, data, function(err) {
-        logger.info('views init complete.');
+        logger.info({message: 'views init complete.'});
     });
 }
 

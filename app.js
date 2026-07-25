@@ -77,6 +77,6 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     return res.status(500).json({ message: 'An unexpected error occurred.' });
 });
 
-logger.info('Starting up Lighterpack...');
+logger.info({ message: 'Starting up Lighterpack...' });
 app.listen(config.get('port'));
-logger.info(`Listening on ${config.get('port')}`);
+logger.info({ message: `Listening on ${config.get('port')}` });
