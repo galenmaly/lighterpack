@@ -29,7 +29,7 @@ $darkYellow: #a58c00;
    only, [both] both themes (mostly the always-dark sidebar chrome). */
 $grey-0: #fff;      // [L] page/surface bg, [both] white ink on fills
 $grey-50: #f4f5f6;  // [L] hovered/active row band
-$grey-100: #e0e1e3; // [L] hairline, get-started bg · [D] body text · [both] sidebar text
+$grey-100: #e0e1e3; // [L] hairline · [D] body text · [both] sidebar text
 $grey-200: #BBB; // [L] strong hairline, resting icons
 $grey-400: #9a9da3; // [D] secondary text
 $grey-500: #82868c; // [both] sidebar muted text
@@ -37,7 +37,7 @@ $grey-600: #6c6c70; // [L] secondary text · [both] sidebar handle
 $grey-650: #4a4a4a; // [D] subtle border, resting icons
 $grey-700: #3a3d42; // [D] strong hairline · [both] sidebar border
 $grey-750: #333336; // [D] faint hairline (kept distinct from surface)
-$grey-800: #2e2e30; // [D] surface, get-started bg · [both] sidebar bg
+$grey-800: #2e2e30; // [D] surface · [both] sidebar bg
 $grey-850: #26262a; // [both] sidebar inset
 $grey-900: #24272b; // [L] body text
 $grey-950: #1e1e1e; // [D] page bg
@@ -74,7 +74,6 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-0}; // page background
     --lp-content-bg: #{$grey-0}; // content column
     --lp-surface: #{$grey-0}; // panels, modals, lifted rows
-    --lp-get-started-bg: #{$grey-100};
     --lp-welcome-footer-bg: rgba(255, 255, 255, 0.65);
     --lp-welcome-panel-bg: rgba(255, 255, 255, 0.9);
 
@@ -133,7 +132,6 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-950};
     --lp-content-bg: #{$grey-950};
     --lp-surface: #{$grey-800};
-    --lp-get-started-bg: #{$grey-800};
     --lp-welcome-footer-bg: rgba(0, 0, 0, 0.65);
     --lp-welcome-panel-bg: rgba(30, 30, 30, 0.92);
 

@@ -1,20 +1,7 @@
 <template>
     <div class="lpListBody">
-        <div v-if="isListNew" id="getStarted">
-            <h2>Welcome to LighterPack!</h2>
-            <p>Here's what you need to get started:</p>
-            <ol>
-                <li>Click on things to edit them. Give your list and category a name.</li>
-                <li>Add new categories and give items weights to start the visualization.</li>
-                <li v-if="!isLocalSaving">
-                    When you're done, share your list with others!
-                </li>
-            </ol>
-            <p v-if="isLocalSaving" class="lpWarning">
-                <strong>Note:</strong> Your data is being saved to your local computer. In order to share your lists please register an account.
-            </p>
-        </div>
-        <list-summary v-if="!isListNew" :list="list" />
+        <get-started v-if="isListNew" />
+        <list-summary v-else :list="list" />
 
 
         <div style="clear: both;" />
@@ -31,6 +18,7 @@
 
 <script>
 import category from './category.vue';
+import getStarted from './get-started.vue';
 import listDescription from './list-description.vue';
 import listSummary from './list-summary.vue';
 
@@ -40,6 +28,7 @@ import { getElementIndex } from '../utils/utils.js';
 export default {
     name: 'List',
     components: {
+        getStarted,
         listSummary,
         listDescription,
         category,
@@ -63,9 +52,6 @@ export default {
         },
         isListNew() {
             return this.list.totalWeight === 0;
-        },
-        isLocalSaving() {
-            return this.$store.state.saveType === 'local';
         },
     },
     watch: {
@@ -155,32 +141,6 @@ export default {
     font-size: 13px;
     font-weight: 600;
     margin: 0 0 20px;
-}
-
-#getStarted {
-    background: var(--lp-get-started-bg);
-    display: flex;
-    flex-direction: column;
-    height: 220px;
-    justify-content: center;
-    line-height: 1.6;
-    margin-top: 22px;
-    padding: $spacingLarge;
-
-    h2 {
-        font-size: 24px;
-        line-height: 1;
-    }
-
-    h2,
-    p,
-    ol {
-        margin: 0 0 $spacingMedium;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
 }
 
 </style>
