@@ -23,5 +23,21 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/_globals";
 
+// The footer stays pinned to the bottom, but its two halves sit side by side
+// and wrap into a tall block at this width — tall enough to cover the
+// register button behind it. Stack them instead and keep it compact.
+// (#lpWelcomeFooter's base rules live in _base.scss, which the share bundle
+// also compiles, so the phone override lives here in the app bundle.)
+@media only screen and (width <= $mobile) {
+    #lpWelcomeFooter {
+        align-items: center;
+        flex-direction: column;
+        font-size: 12px;
+        gap: 2px;
+        padding: 8px 12px;
+        text-align: center;
+    }
+}
 </style>

@@ -1,4 +1,5 @@
 import dashboard from './views/dashboard.vue';
+import gear from './views/gear.vue';
 import welcome from './views/welcome.vue';
 import signin from './views/signin.vue';
 import register from './views/register.vue';
@@ -8,6 +9,7 @@ import moderation from './views/moderation.vue';
 
 export default [
     { path: '/', component: dashboard },
+    { path: '/gear', component: gear },
     { path: '/welcome', component: welcome },
     { path: '/signin', component: signin },
     { path: '/signin/reset-password', component: signin },

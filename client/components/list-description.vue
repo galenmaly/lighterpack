@@ -139,4 +139,14 @@ export default {
     font-size: 11.5px;
     margin: 6px 2px 0;
 }
+
+// The list body loses its side padding on a phone so row dividers can run full
+// bleed, which left this box flush to both edges. It also sits directly under
+// the summary strip with no air above it, and the desktop's 25px below is more
+// gap than the first category header needs.
+@media only screen and (width <= $mobile) {
+    .lpListDescriptionContainer {
+        margin: 14px 14px 12px;
+    }
+}
 </style>

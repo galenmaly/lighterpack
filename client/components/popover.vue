@@ -1,5 +1,20 @@
 <template>
     <div v-click-outside="hide" :class="{'lpPopover': true, 'lpPopoverShown': shown}">
+        <!-- Phone only (display: none above the breakpoint). Without it the tap
+             that dismisses the menu carries on into whatever is under it —
+             usually an item row, which then opens its editor. Catching that tap
+             also makes "anywhere else" a reliable way to close, which is what a
+             menu on a touch screen needs since there's no hovering away. -->
+        <!-- Teleported out to the body: the menu positions itself against the
+             sticky header, which means this would otherwise be trapped in the
+             header's stacking context and dim the header along with the page.
+             Outside it, the scrim can sit under the app bar and over
+             everything else. -->
+        <Teleport to="body">
+            <transition name="lpPopoverScrim">
+                <div v-if="shown" class="lpPopoverScrim" data-testid="popover-scrim" @click.stop="hide" />
+            </transition>
+        </Teleport>
         <div class="lpTarget">
             <slot name="target" />
         </div>
@@ -130,6 +145,43 @@ export default {
             opacity: 1;
             pointer-events: all;
         }
+    }
+}
+
+.lpPopoverScrim {
+    display: none;
+}
+
+// A backstop for any popover that isn't given phone placement of its own (the
+// header menus get theirs in dashboard.vue): stop it growing wider than the
+// screen. Deliberately not touching white-space — these menus size themselves
+// off their widest line, so letting them wrap collapsed the drawer's list menu
+// to one word per line.
+@media only screen and (width <= $mobile) {
+    .lpPopover .lpContent {
+        max-width: calc(100vw - 24px);
+    }
+
+    // Same dimming as the drawer, so an open menu reads as the same kind of
+    // "tap anywhere to get out of this". Under the app bar ($mobileHeader), so
+    // the header and the menu it carries stay lit while the page behind dims.
+    .lpPopoverScrim {
+        background: rgba(0, 0, 0, 0.35);
+        display: block;
+        inset: 0;
+        position: fixed;
+        z-index: $popoverScrim;
+    }
+
+    // Fades rather than snapping in, matching the drawer's scrim.
+    .lpPopoverScrim-enter-active,
+    .lpPopoverScrim-leave-active {
+        transition: opacity $transitionDuration;
+    }
+
+    .lpPopoverScrim-enter-from,
+    .lpPopoverScrim-leave-to {
+        opacity: 0;
     }
 }
 

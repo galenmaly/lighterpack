@@ -1,7 +1,8 @@
 <template>
-    <div v-if="isLoaded" id="main" :class="{lpHasSidebar: library.showSidebar}">
+    <div v-if="isLoaded" id="main" :class="{lpHasSidebar: library.showSidebar, lpDrawerOpen: drawerOpen}">
         <div class="lpFrameFill lpFrameFillLeft" />
         <sidebar />
+        <div class="lpDrawerScrim" data-testid="drawer-scrim" @click="closeDrawer" />
         <div class="lpContentCol">
             <div id="header">
                 <span class="headerItem">
@@ -65,6 +66,8 @@ import copyList from '../components/copy-list.vue';
 import speedbump from '../components/speedbump.vue';
 import accountDropdown from '../components/account-dropdown.vue';
 
+import { isMobile } from '../utils/viewport.js';
+
 export default {
     name: 'Dashboard',
     components: {
@@ -101,9 +104,13 @@ export default {
             },
         };
     },
+    setup() {
+        return { isMobile };
+    },
     data() {
         return {
             isLoaded: false,
+            drawerOpen: false,
             showAccount: false,
             showHelp: false,
             showDeleteAccount: false,
@@ -130,6 +137,14 @@ export default {
             return this.$store.state.loggedIn;
         },
     },
+    watch: {
+        // Picking a list is the drawer's whole job, so it gets out of the way
+        // once you have. Watching the id rather than wiring a callback through
+        // library-lists keeps the drawer's business in the drawer's owner.
+        'library.defaultListId': function closeOnListChange() {
+            this.drawerOpen = false;
+        },
+    },
     beforeMount() {
         if (!this.$store.state.library) {
             this.$router.push('/welcome');
@@ -138,8 +153,19 @@ export default {
         }
     },
     methods: {
+        // The rail's collapsed state is a saved account preference
+        // (library.showSidebar, serialized with the library); the phone drawer
+        // is throwaway view state. Keeping them separate means opening the
+        // drawer on a phone doesn't collapse the rail on the desktop.
         toggleSidebar() {
-            this.$store.commit('toggleSidebar');
+            if (this.isMobile) {
+                this.drawerOpen = !this.drawerOpen;
+            } else {
+                this.$store.commit('toggleSidebar');
+            }
+        },
+        closeDrawer() {
+            this.drawerOpen = false;
         },
         updateListName(evt) {
             this.$store.commit('updateListName', { id: this.list.id, name: evt.target.value });
@@ -294,5 +320,185 @@ export default {
     justify-content: space-between;
     margin-top: auto;
     padding: 80px 56px 20px;
+}
+
+// Dims the list behind the open drawer and catches the tap that closes it.
+// Inert until the drawer opens, so it never eats a click on the desktop.
+.lpDrawerScrim {
+    display: none;
+}
+
+// ============================================================
+// Phone layout — app bar (#18a) and drawer (#11f)
+//
+// The three-region desktop frame (dark filler | rail | content | light
+// filler) collapses to one column: the fillers have nothing to bleed to at
+// this width, and the rail lifts out of the flow into an overlay drawer.
+// ============================================================
+@media only screen and (width <= $mobile) {
+    #main {
+        display: block;
+    }
+
+    .lpFrameFill {
+        display: none;
+    }
+
+    .lpContentCol {
+        display: block;
+        width: auto;
+    }
+
+    // The header stops being page chrome and becomes the app bar: dark, full
+    // bleed, and stuck to the top so the list title and the drawer stay
+    // reachable well down a long list.
+    #header {
+        background: var(--lp-sidebar-bg);
+        color: var(--lp-sidebar-text);
+        gap: 12px;
+        padding: 11px 14px;
+        position: sticky;
+        top: 0;
+        z-index: $mobileHeader;
+    }
+
+    #hamburger {
+        color: var(--lp-sidebar-text);
+        opacity: 1;
+    }
+
+    // On the desktop the hamburger rotates with the rail; here it tracks the
+    // drawer instead, so the saved rail state must stop driving it.
+    #main.lpHasSidebar #hamburger {
+        transform: none;
+    }
+
+    #main.lpDrawerOpen #hamburger {
+        transform: rotate(90deg);
+    }
+
+    #lpListName {
+        color: var(--lp-sidebar-text);
+        font-size: 17px;
+        margin-left: -5px;
+        padding: 3px 5px;
+
+        // The desktop rename affordance outlines on hover, which a phone can't
+        // do; the field is still tappable, it just stays quiet until focused.
+        &:hover {
+            border-color: transparent;
+        }
+
+        &:focus {
+            background: var(--lp-sidebar-inset);
+            border-color: var(--lp-sidebar-border);
+        }
+    }
+
+    // Share / Settings / account collapse to their icons — the labels don't fit
+    // beside a list title at 390px. font-size: 0 drops the label text node
+    // without touching the sprite, which carries its own px dimensions.
+    // Centred with flex rather than left to inline layout: font-size: 0
+    // collapses the line box these icons would otherwise sit on the baseline
+    // of, which hung them 2px above the app bar's centre.
+    .headerItem .lpTarget,
+    .headerItem .lpTarget > span {
+        align-items: center;
+        display: flex;
+    }
+
+    .headerItem .lpTarget {
+        color: var(--lp-sidebar-text);
+        font-size: 0;
+        padding: 0;
+
+        .lpSprite {
+            height: 17px;
+            top: 0;
+            width: 17px;
+        }
+
+        &:hover {
+            color: var(--lp-sidebar-text);
+        }
+    }
+
+    // The rule dividing the avatar from the other actions is desktop chrome;
+    // at this width the gap reads on its own.
+    .headerItem.lpAccount {
+        padding-left: 0;
+
+        &:before {
+            display: none;
+        }
+    }
+
+    // Header menus hang off the viewport: they're anchored to a control a few
+    // pixels from the right edge, and the desktop flyout centres itself on
+    // that control — which put the Share menu 19px past the left edge.
+    //
+    // Dropping the popover's own positioning context lets the content resolve
+    // against the sticky header instead. That's full-bleed, so the menu can
+    // span the screen with a margin either side and sit directly under the app
+    // bar, which is where a phone expects it.
+    // Both of these are positioned on the desktop, and either one would
+    // capture the menu as its containing block.
+    .headerItem,
+    .headerItem .lpPopover {
+        position: static;
+    }
+
+    // Full bleed, flush to the app bar, rounded only where it ends: the menu
+    // reads as a panel pulled down out of the header rather than a card
+    // floating under it. #main raises specificity over popover.vue's own
+    // .lpPopoverShown rules, whose injection order isn't guaranteed.
+    #main .headerItem .lpPopover .lpContent {
+        border-radius: 0 0 12px 12px;
+        left: 0;
+        margin-top: 0;
+        // Settings can outgrow a short screen once every optional field and
+        // the currency box are in it.
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        right: 0;
+        // Slides the last few pixels into place as it fades in.
+        transform: translateY(-8px);
+        white-space: normal;
+    }
+
+    #main .headerItem .lpPopover.lpPopoverShown .lpContent {
+        margin-top: 0;
+        transform: none;
+    }
+
+    // The bridge that lets a mouse travel from target to menu across the gap.
+    // There's no travelling on a touch screen, and the padding it adds pushes
+    // the avatar off the app bar's centre.
+    .headerItem .lpPopover .lpTarget {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .lpDrawerScrim {
+        background: rgba(0, 0, 0, 0.35);
+        display: block;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: fixed;
+        transition: opacity $transitionDurationSlow;
+        z-index: $mobileScrim;
+
+        .lpDrawerOpen & {
+            opacity: 1;
+            pointer-events: all;
+        }
+    }
+
+    #lpFooter {
+        flex-direction: column;
+        gap: 4px;
+        padding: 40px 14px 20px;
+    }
 }
 </style>

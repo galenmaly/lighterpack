@@ -286,6 +286,19 @@ const store = createStore({
             context.commit('setSaveType', 'local');
             context.commit('setLoggedIn', false);
         },
+        // Start an account-less library. Both ways into "skip registration" --
+        // the desktop register form's link and the mobile landing card's footer
+        // strip -- land here so the two cannot drift apart. A library already
+        // saving locally is left alone; only a first-timer gets a blank one.
+        startLocalLibrary(context) {
+            if (context.state.saveType === 'local') {
+                return;
+            }
+            const library = new Library();
+            context.commit('loadLibraryData', JSON.stringify(library.save()));
+            context.commit('setSaveType', 'local');
+            context.commit('setLoggedIn', false);
+        },
         loadRemote(context) {
             return fetchJson('/signin', {
                 method: 'POST',

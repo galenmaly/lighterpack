@@ -1,7 +1,7 @@
 <template>
     <form class="lpRegister lpFields" data-testid="register-form" @submit.prevent="submit">
         <div class="lpFields">
-            <input v-model="username" v-focus-on-create type="text" placeholder="Username" name="username">
+            <input v-model="username" v-focus-on-create="autofocus" type="text" placeholder="Username" name="username">
             <input v-model="email" type="email" placeholder="Email" name="email">
             <input v-model="password" type="password" placeholder="Password" name="password">
             <input v-model="passwordConfirm" type="password" placeholder="Confirm password" name="passwordConfirm">
@@ -21,7 +21,6 @@
 import errors from './errors.vue';
 import spinner from './spinner.vue';
 
-import { Library } from '../dataTypes.js';
 import { fetchJson } from '../utils/utils.js';
 
 export default {
@@ -29,6 +28,11 @@ export default {
     components: {
         errors,
         spinner,
+    },
+    props: {
+        // Off on the mobile landing card: both tabs are mounted at once, and
+        // focusing a field there would raise the keyboard over the hero.
+        autofocus: { type: Boolean, default: true },
     },
     data() {
         return {
@@ -40,21 +44,9 @@ export default {
             errors: [],
         };
     },
-    computed: {
-        isLocalSaving() {
-            return this.$store.state.saveType === 'local';
-        },
-    },
     methods: {
         loadLocal() {
-            if (this.isLocalSaving) {
-                this.$router.push('/');
-                return;
-            }
-            const library = new Library();
-            this.$store.commit('loadLibraryData', JSON.stringify(library.save()));
-            this.$store.commit('setSaveType', 'local');
-            this.$store.commit('setLoggedIn', false);
+            this.$store.dispatch('startLocalLibrary');
             this.$router.push('/');
         },
         submit() {

@@ -43,12 +43,22 @@ $grey-900: #24272b; // [L] body text
 $grey-950: #1e1e1e; // [D] page bg
 $grey-1000: #111;   // [L] bubble-text mix
 
+/* breakpoints — the phone layout. Kept in sync with client/utils/viewport.js,
+   which drives the component swaps (mobile item rows, mobile summary) that
+   a media query can't express. Change one, change the other. */
+$mobile: 720px;
+
 /* spacing */
 $spacingSmall: 10px;
 $spacingMedium: 15px;
 $spacingLarge: 30px;
 
 /* z-index stack */
+// Dims the page behind an open header menu but stays under the app bar, so the
+// header and the menu hanging off it both read as above the overlay.
+$popoverScrim: 5;
+$mobileHeader: 10; // sticky app bar — under the drawer and its scrim
+$mobileScrim: 19; // dims the list behind the open drawer, over the app bar
 $sidebar: 20;
 $aboveSidebar: 30;
 $belowDialog: 90;

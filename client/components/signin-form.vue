@@ -4,7 +4,7 @@
             {{ message }}
         </p>
         <div class="lpFields">
-            <input v-model="username" v-focus-on-create type="text" placeholder="Username" name="username" class="username">
+            <input v-model="username" v-focus-on-create="autofocus" type="text" placeholder="Username" name="username" class="username">
             <input ref="passwordInput" v-model="password" type="password" placeholder="Password" name="password" class="password">
         </div>
 
@@ -34,7 +34,12 @@ export default {
         errors,
         spinner,
     },
-    props: ['message'],
+    props: {
+        message: { type: String, default: '' },
+        // Off on the mobile landing card: both tabs are mounted at once, and
+        // focusing a field there would raise the keyboard over the hero.
+        autofocus: { type: Boolean, default: true },
+    },
     data() {
         return {
             fetching: false,

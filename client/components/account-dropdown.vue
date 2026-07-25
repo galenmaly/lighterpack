@@ -167,6 +167,22 @@ export default {
     justify-content: space-between;
 }
 
+// The -7px nudge above aligns the avatar with the light header's baseline on
+// the desktop. The phone app bar centres its row instead, so the same nudge
+// just lifts the avatar off-centre against the list title.
+@media only screen and (width <= $mobile) {
+    .lpAvatar {
+        height: 26px;
+        margin-top: 0;
+        width: 26px;
+    }
+
+    #accountPopover .lpTarget {
+        display: flex;
+        padding: 0;
+    }
+}
+
 .signInRegisterButtons {
     align-items: center;
     display: flex;

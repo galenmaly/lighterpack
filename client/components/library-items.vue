@@ -284,4 +284,7 @@ export default {
 .lpLibraryItem:hover .lpHandle {
     visibility: visible;
 }
+
+// No phone rules here: below $mobile the drawer links out to the gear screen
+// (see sidebar.vue) and this component isn't rendered at all.
 </style>

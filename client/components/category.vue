@@ -1,5 +1,5 @@
 <template>
-    <li :id="category.id" class="lpCategory" data-testid="category">
+    <li :id="category.id" class="lpCategory" :class="{lpCategoryEmpty: isEmpty}" data-testid="category">
         <ul class="lpItems lpDataTable" :class="{lpHasPrice: optionalFields['price'], lpHasImages: optionalFields['images']}">
             <li class="lpHeader lpItemsHeader">
                 <span class="lpHandleCell">
@@ -23,7 +23,7 @@
                 </span>
                 <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory" title="Remove this category" @click="removeCategory(category)"><i class="lpSprite lpSpriteRemove" /></a></span>
             </li>
-            <item v-for="itemContainer in itemContainers" :key="itemContainer.item.id" :item-container="itemContainer" :category="category" />
+            <component :is="itemComponent" v-for="itemContainer in itemContainers" :key="itemContainer.item.id" :item-container="itemContainer" :category="category" />
             <li class="lpFooter lpItemsFooter">
                 <span class="lpAddItemCell">
                     <a class="lpAdd lpAddItem" @click="newItem"><i class="lpSprite lpSpriteAdd" />Add new item</a>
@@ -35,18 +35,30 @@
 
 <script>
 import item from './item.vue';
+import itemMobile from './item-mobile.vue';
 
 import utilsMixin from '../mixins/utils-mixin.js';
+import { isMobile } from '../utils/viewport.js';
 
 export default {
     name: 'Category',
     components: {
         item,
+        itemMobile,
     },
     mixins: [utilsMixin],
     inject: ['initSpeedbump'],
     props: ['category'],
+    setup() {
+        return { isMobile };
+    },
     computed: {
+        // Display-vs-edit is a mode on a phone and no mode at all on the
+        // desktop, so the row swaps components rather than reflowing. Both
+        // share item-mixin.js, so only the markup differs.
+        itemComponent() {
+            return this.isMobile ? 'itemMobile' : 'item';
+        },
         library() {
             return this.$store.state.library;
         },
@@ -58,6 +70,9 @@ export default {
         },
         swatchColor() {
             return this.category.displayColor || '';
+        },
+        isEmpty() {
+            return this.category.categoryItems.length === 0;
         },
     },
     mounted() {
@@ -285,5 +300,99 @@ export default {
 .lpCategory .lpHeader:hover .lpRemove,
 .lpCategory .lpHeader:hover .lpHandle {
     visibility: visible;
+}
+
+// ============================================================
+// Phone layout — category header and footer (#11a/#18a)
+//
+// On the desktop the header is a grid whose trailing columns line up with the
+// item rows' price/weight/qty. Mobile item rows are their own component
+// (item-mobile.vue) with a two-line layout, so there are no columns left to
+// align to: the header stops being a table head and becomes a band —
+// swatch · name · subtotal — with the rows' 14px inset.
+// ============================================================
+@media only screen and (width <= $mobile) {
+    .lpCategory {
+        margin: 0;
+    }
+
+    .lpItems .lpItemsHeader {
+        column-gap: 7px;
+        display: flex;
+        padding: 11px 14px 5px;
+    }
+
+    .lpItemsHeader .lpCategoryHead {
+        flex: 1 1 auto;
+    }
+
+    .lpItemsHeader input.lpCategoryName {
+        // 16px keeps iOS Safari from zooming the page when the field takes
+        // focus. The design draws 14px, but a rename that yanks the viewport
+        // is the worse trade.
+        font-size: 16px;
+    }
+
+    .lpItemsHeader .lpPriceCell {
+        font-size: 11.5px;
+    }
+
+    .lpItemsHeader .lpWeightCell {
+        font-size: 12.5px;
+        padding-right: 0;
+
+        // The caret is a spacer reserving the item rows' unit-picker width so
+        // the subtotal lines up with the weights below. There's no column to
+        // line up with here.
+        .lpGhostCaret {
+            display: none;
+        }
+    }
+
+    // Item counts are desktop-only detail; the design's header carries price
+    // and weight and stops there.
+    .lpItemsHeader .lpQtyCell {
+        display: none;
+    }
+
+    // Reordering categories is a pointer drag with no touch equivalent yet
+    // (#11e is deferred), so the handle would be a dead control.
+    .lpItems .lpHandleCell {
+        display: none;
+    }
+
+    // Out of the gutter — there isn't one at this width — and out of the flow
+    // entirely until the category is empty. There's no hover to reveal it, and
+    // deleting a category full of items is a big action to leave one stray tap
+    // away, so emptying it first makes that deliberate. Removed rather than
+    // just hidden: reserving the space nudged every populated header's weight
+    // out of line with the item rows below it.
+    .lpItems .lpRemoveCell {
+        display: none;
+    }
+
+    .lpCategoryEmpty .lpItems .lpRemoveCell {
+        display: block;
+        position: static;
+        transform: none;
+
+        .lpRemove {
+            visibility: visible;
+        }
+    }
+
+    // The inset lives on the footer, not the link. As a block the link spanned
+    // the row, so the empty space to the right of the words was a tap target
+    // too — and tapping it added an item you hadn't aimed for.
+    .lpItemsFooter {
+        padding: 0 14px;
+
+        .lpAdd {
+            align-items: center;
+            display: inline-flex;
+            font-size: 12.5px;
+            padding: 11px 0;
+        }
+    }
 }
 </style>

@@ -141,4 +141,15 @@ export default {
     }
 }
 
+// The fixed 420px is wider than the viewport it's centred in, so the dialog
+// hangs off both edges. Fill the width instead, minus a margin that keeps it
+// reading as a dialog.
+@media only screen and (width <= $mobile) {
+    .lpModal {
+        max-height: calc(100% - 32px);
+        padding: 20px 18px;
+        width: calc(100% - 24px);
+    }
+}
+
 </style>

@@ -1,6 +1,6 @@
 <template>
-    <div @mouseenter="show" @mouseleave="startHideTimeout">
-        <Popover :shown="shown">
+    <div @mouseenter="onPointerEnter" @mouseleave="onPointerLeave" @click="toggleOnTap">
+        <Popover :shown="shown" @hide="hide">
             <template #target>
                 <slot name="target" />
             </template>
@@ -34,6 +34,35 @@ export default {
             }
             this.shown = true;
             this.$emit('shown');
+        },
+        hasHover() {
+            return window.matchMedia('(hover: hover)').matches;
+        },
+        // Touch screens fire compatibility mouseenter/mouseleave after a tap.
+        // Left alone, that opened the menu a beat before the tap handler ran,
+        // which then saw an open menu and closed it again — so tapping did
+        // nothing at all. Hover drives these only where hover exists.
+        onPointerEnter() {
+            if (this.hasHover()) {
+                this.show();
+            }
+        },
+        onPointerLeave() {
+            if (this.hasHover()) {
+                this.startHideTimeout();
+            }
+        },
+        // Hover was the only way these menus ever opened, which left them
+        // unreachable on a touch screen entirely.
+        toggleOnTap() {
+            if (this.hasHover()) {
+                return;
+            }
+            if (this.shown) {
+                this.hide();
+            } else {
+                this.show();
+            }
         },
         startHideTimeout() {
             this.hideTimeout = setTimeout(this.hide, 50);

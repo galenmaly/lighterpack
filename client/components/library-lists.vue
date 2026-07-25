@@ -4,13 +4,13 @@
             <span class="lpSectionLabel">Lists · {{ library.lists.length }}</span>
             <PopoverHover id="addListFlyout">
                 <template #target>
-                    <span><a class="lpSidebarNew" data-testid="new-list" @click="newList">+ New</a></span>
+                    <span><a class="lpSidebarNew" data-testid="new-list" @click="newListFromTarget">+ New</a></span>
                 </template>
                 <template #content>
                     <div>
-                        <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
-                        <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
+                        <a class="lpAdd" data-testid="new-list-blank" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
                         <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
+                        <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
                     </div>
                 </template>
             </PopoverHover>
@@ -56,6 +56,15 @@ export default {
         },
         setDefaultList(list) {
             this.$store.commit('setDefaultList', list);
+        },
+        // On a pointer device the flyout is already open on hover, so clicking
+        // the target itself is the shortcut that makes a list outright. With no
+        // hover, the tap is what opens the menu — creating a list here too
+        // would mean picking "Add new list" from it left you with two.
+        newListFromTarget() {
+            if (window.matchMedia('(hover: hover)').matches) {
+                this.newList();
+            }
         },
         newList() {
             this.$store.commit('newList');
@@ -202,5 +211,30 @@ export default {
 
 .lpLibraryList:hover .lpRemove {
     visibility: visible;
+}
+
+// ============================================================
+// Phone layout — list rows in the drawer (#11f)
+// ============================================================
+@media only screen and (width <= $mobile) {
+    // The desktop cap (~7 rows) exists to leave the gear region room in a
+    // fixed-height rail. The drawer is full-height, so give the lists more of
+    // it and let the region scroll.
+    .lpSidebarListsRegion #lists {
+        max-height: 45vh;
+    }
+
+    .lpLibraryList {
+        font-size: 14px;
+        padding: 11px 12px 11px 20px;
+    }
+
+    // Every reveal-on-hover control is unreachable on a touch screen. The
+    // design's answer for deletion is the swipe gesture (#11e), which isn't
+    // built yet — until it is, the ✕ stays visible so lists can still be
+    // deleted from a phone. It's speedbumped, so a stray tap is recoverable.
+    .lpLibraryList .lpRemove {
+        visibility: visible;
+    }
 }
 </style>

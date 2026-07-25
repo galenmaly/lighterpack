@@ -1,7 +1,7 @@
 <template>
     <div class="lpListBody">
         <get-started v-if="isListNew" />
-        <list-summary v-else :list="list" />
+        <component :is="summaryComponent" v-else :list="list" />
 
 
         <div style="clear: both;" />
@@ -21,17 +21,23 @@ import category from './category.vue';
 import getStarted from './get-started.vue';
 import listDescription from './list-description.vue';
 import listSummary from './list-summary.vue';
+import listSummaryMobile from './list-summary-mobile.vue';
 
 import dragula from 'dragula';
 import { getElementIndex } from '../utils/utils.js';
+import { isMobile } from '../utils/viewport.js';
 
 export default {
     name: 'List',
     components: {
         getStarted,
         listSummary,
+        listSummaryMobile,
         listDescription,
         category,
+    },
+    setup() {
+        return { isMobile };
     },
     data() {
         return {
@@ -52,6 +58,12 @@ export default {
         },
         isListNew() {
             return this.list.totalWeight === 0;
+        },
+        // The collapsed scoreboard strip has no desktop counterpart, so the
+        // summary swaps components rather than reflowing. See
+        // list-summary-mobile.vue.
+        summaryComponent() {
+            return this.isMobile ? 'listSummaryMobile' : 'listSummary';
         },
     },
     watch: {
@@ -141,6 +153,26 @@ export default {
     font-size: 13px;
     font-weight: 600;
     margin: 0 0 20px;
+}
+
+// ============================================================
+// Phone layout (#11a/#18a)
+//
+// The 56px gutters exist so desktop row controls (drag handle, remove ✕) can
+// bleed into the margins. There's no room for gutters at this width and no
+// hover to reveal them, so the body goes edge to edge and the rows carry
+// their own 14px inset — which lets the hairline dividers run full bleed,
+// as the design draws them.
+// ============================================================
+@media only screen and (width <= $mobile) {
+    .lpListBody {
+        padding: 0;
+    }
+
+    .lpListBody .addCategory {
+        margin: 0;
+        padding: 14px;
+    }
 }
 
 </style>

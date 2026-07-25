@@ -99,4 +99,33 @@ export default {
         padding-left: 18px;
     }
 }
+
+// ============================================================
+// Phone layout
+//
+// A 260px chart beside a fixed 450px column is ~760px of content in a 390px
+// viewport, which scrolled the whole page sideways. Stack them, and shrink the
+// decorative chart to something that reads as a flourish rather than the
+// screen's main event.
+// ============================================================
+@media only screen and (width <= $mobile) {
+    #getStarted {
+        flex-direction: column;
+        gap: 4px;
+        padding: 22px 18px 24px;
+    }
+
+    .lpGetStartedChart .lpDecorChart {
+        height: 120px;
+        width: 120px;
+    }
+
+    .lpGetStartedText {
+        flex: 0 1 auto;
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+}
 </style>
