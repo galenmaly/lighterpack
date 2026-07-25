@@ -123,7 +123,7 @@ $transitionDurationSlow: 0.4s;
     --lp-sidebar-handle: #{$grey-600};
     --lp-sidebar-link: #{$blue2};
 
-    --lp-page-bg-url: url("/images/lp_bg2.jpg");
+    --lp-page-bg-url: url("/images/lp_bg_light.webp");
 }
 
 @mixin lp-dark-theme {
@@ -169,5 +169,5 @@ $transitionDurationSlow: 0.4s;
     --lp-bubble-border: #{color.mix($green1, $grey-950, 25%)};
     --lp-bubble-text: #{$green2};
 
-    --lp-page-bg-url: url("/images/lp_bg_dark.jpg");
+    --lp-page-bg-url: url("/images/lp_bg_dark.webp");
 }

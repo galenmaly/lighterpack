@@ -202,7 +202,7 @@ export default {
 // below and stays put. The title carries its own rename affordance.
 .lpItemsHeader {
     border-bottom: 1px solid var(--lp-border-strong);
-    padding: 0 0 5px;
+    padding: 0 0 2px;
 
     .lpCategoryHead {
         align-items: center;
@@ -225,7 +225,7 @@ export default {
         font-weight: 700;
         margin: 0 -5px;
         min-width: 0;
-        padding: 2px 7px;
+        padding: 3px 7px;
         transition: border-color $transitionDuration;
 
         &:hover {

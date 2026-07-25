@@ -241,10 +241,9 @@ export default {
     flex: 1 1 auto;
     font-size: 22px;
     font-weight: 700;
-    height: 27px;
     margin-left: -3px;
     min-width: 0;
-    padding: 0 7px;
+    padding: 3px 7px;
     transition: border-color $transitionDuration;
 
     &:hover {
