@@ -1,6 +1,7 @@
 // Takes a json mongo export file and writes to the postgres database
 
 import fs from 'fs';
+import crypto from 'crypto';
 import readline from 'readline';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
@@ -17,7 +18,7 @@ if (process.argv.length !== 4) {
     process.exit(1);
 }
 
-const dryRun = true;
+const dryRun = false;
 console.log(`Dry run: ${dryRun}`);
 
 const dumpPath = process.argv[2];
@@ -33,6 +34,16 @@ let unknownRegistrationCount = 0;
 const duplicateUsers = [];
 const duplicateLists = [];
 const reencodeFailures = [];
+const splitRecords = [];
+const unparseableRecords = [];
+
+const tryParseUser = (text) => {
+    try {
+        return JSON.parse(text);
+    } catch {
+        return null;
+    }
+};
 
 async function processLineByLine(dumpPath, userDates) {
     const stream = fs.createReadStream(dumpPath, {flags: 'r', encoding: 'utf-8'});
@@ -42,8 +53,31 @@ async function processLineByLine(dumpPath, userDates) {
         crlfDelay: Infinity
     });
   
+    let pending = null;
+
     for await (const line of rl) {
-        const user = JSON.parse(line);
+        // 22 records in the 2026-07-14 dump contain a raw newline inside a
+        // string -- mongo stored it unescaped, so mongoexport wrote the record
+        // across several physical lines. Reading line-by-line and calling
+        // JSON.parse directly throws on the first one (`theckeler`, ~4% in) and
+        // kills the whole import. Accumulate until the record parses, joining
+        // with an escaped newline because a literal one is not legal inside a
+        // JSON string.
+        let user = tryParseUser(line);
+
+        if (user && pending !== null) {
+            // The fragment we were accumulating never completed, so it is
+            // genuinely corrupt rather than merely split. Record and move on.
+            unparseableRecords.push(pending.slice(0, 200));
+            pending = null;
+        } else if (!user) {
+            if (!line.trim() && pending === null) continue;
+            pending = pending === null ? line : `${pending}\\n${line}`;
+            user = tryParseUser(pending);
+            if (!user) continue; // still incomplete -- keep accumulating
+            splitRecords.push(user.username);
+            pending = null;
+        }
 
         let dateUserRegistered;
         let dateUserLastSeen;
@@ -80,7 +114,11 @@ async function processLineByLine(dumpPath, userDates) {
         const userBatch = {
             username: username,
             email: user.email,
-            token: user.token,
+            // One account in the export has no token. It is NOT NULL, so the
+            // insert would fail and that user would be dropped. A fresh random
+            // token costs nothing -- it just means no pre-existing session,
+            // which is already true for an account that had no token.
+            token: user.token || crypto.randomBytes(48).toString('hex'),
             password: user.password,
             library: libraryJson,
             // One higher than the mongo value: sessions survive the cutover
@@ -131,6 +169,10 @@ async function processLineByLine(dumpPath, userDates) {
             console.log(i);
         }
     }
+
+    if (pending !== null) {
+        unparseableRecords.push(pending.slice(0, 200));
+    }
 }
 
 processLineByLine(dumpPath, userDates).then(() => {
@@ -141,5 +183,15 @@ processLineByLine(dumpPath, userDates).then(() => {
     console.log(JSON.stringify(duplicateLists));
     console.log(`re-encode failures (stored raw): ${reencodeFailures.length}`);
     console.log(JSON.stringify(reencodeFailures));
+    console.log(`records rejoined from multiple lines: ${splitRecords.length}`);
+    console.log(JSON.stringify(splitRecords));
+    console.log(`records that never parsed (SKIPPED -- investigate): ${unparseableRecords.length}`);
+    console.log(JSON.stringify(unparseableRecords));
+    return knex.destroy();
+}).catch((err) => {
+    // Without this an import failure exits 0 with an unhandled rejection
+    // warning, which is easy to mistake for success.
+    console.error('IMPORT FAILED:', err);
+    process.exitCode = 1;
     return knex.destroy();
 });

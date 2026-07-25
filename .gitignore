@@ -21,3 +21,6 @@ app.sublime-workspace
 
 # User-uploaded images (content-hashed webp files)
 /public/userimages/
+
+# Local migration runbook -- deliberately untracked
+/MIGRATION.md
