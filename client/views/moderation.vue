@@ -19,10 +19,15 @@
                     Clear session
                 </button>
                 <button @click="resetPassword(userToInspect)">
-                    Reset password
+                    Create password reset link
                 </button>
-                <template v-if="newPassword">
-                    <strong>New Password:</strong> {{ newPassword }}
+                <template v-if="resetUrl">
+                    <p class="lp-moderation-reset-url">
+                        <strong>Reset link:</strong> <code>{{ resetUrl }}</code>
+                        <br>
+                        Send this to the user. It expires in one hour, works once, and
+                        leaves their current password working until they use it.
+                    </p>
                 </template>
             </section>
             <section>
@@ -45,7 +50,7 @@ export default {
             searchResults: null,
             userToInspect: null,
             editableLibrary: null,
-            newPassword: null,
+            resetUrl: null,
         };
     },
     computed: {
@@ -75,7 +80,7 @@ export default {
         setUser(user) {
             this.userToInspect = user;
             this.editableLibrary = JSON.stringify(this.userToInspect.library);
-            this.newPassword = null;
+            this.resetUrl = null;
         },
         clearSession(user) {
             fetchJson(`/moderation/clear-session`, {
@@ -103,7 +108,7 @@ export default {
                 body: JSON.stringify({username: user.username}),
             })
                 .then((response) => {
-                    this.newPassword = response.newPassword;
+                    this.resetUrl = response.resetUrl;
                 })
                 .catch((err) => {
                     console.log(err);

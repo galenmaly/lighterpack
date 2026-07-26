@@ -33,9 +33,16 @@ export default {
     },
     computed: {
         message() {
-            if (this.$route.path.indexOf('/reset-password') > -1 || this.$route.path.indexOf('/forgot-username') > -1) {
-                return 'An email has been sent to the address associated with your account. Note: emails to yahoo.com addresses are currently being blocked. Please reach out to info@lighterpack.com for assistance if you do not receive your email.';
+            const deliveryNote = ' Note: emails to yahoo.com addresses are currently being blocked. Please reach out to info@lighterpack.com for assistance if you do not receive your email.';
+
+            if (this.$route.path.indexOf('/reset-password') > -1) {
+                return `A password reset link has been sent to the address associated with your account. The link expires in one hour.${deliveryNote}`;
             }
+
+            if (this.$route.path.indexOf('/forgot-username') > -1) {
+                return `An email has been sent to the address associated with your account.${deliveryNote}`;
+            }
+
             return '';
         },
     },

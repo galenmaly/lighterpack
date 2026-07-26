@@ -9,7 +9,9 @@ create table users(
     library JSON NOT NULL,
     sync_token integer NOT NULL DEFAULT 0,
     registered timestamp NOT NULL,
-    last_seen timestamp NOT NULL
+    last_seen timestamp NOT NULL,
+    reset_token_hash text,
+    reset_token_expires timestamp
 );
 
 create table list(

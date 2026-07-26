@@ -23,6 +23,29 @@ const sessionCookieOptions = () => ({
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+
+// Only the hash is stored, so a leaked database dump can't be used to reset
+// anyone's password - the same reasoning that applies to the password column.
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
+// The raw token is the only copy that ever leaves the server. How it reaches
+// the user is the caller's business: the public flow emails it, moderation
+// hands it back for a human to relay when email is the thing that's broken.
+const issueResetToken = async function (user) {
+    const tokenBuffer = await randomBytesAsync(32);
+    const token = tokenBuffer.toString('hex');
+
+    await knex('users').where({user_id: user.user_id}).update({
+        reset_token_hash: hashResetToken(token),
+        reset_token_expires: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+    });
+
+    return token;
+};
+
+const resetPasswordUrl = (token) => `${config.get('deployUrl')}/reset-password/${token}`;
+
 // one day in many years this can go away.
 import CryptoJS from './sha3.js';
 
@@ -158,4 +181,4 @@ function isModerator(username) {
     return moderatorList.indexOf(username) > -1;
 }
 
-export { authenticateModerator, authenticateUser, verifyPassword, generateSession, isModerator, sessionCookieOptions };
+export { authenticateModerator, authenticateUser, verifyPassword, generateSession, isModerator, sessionCookieOptions, issueResetToken, hashResetToken, resetPasswordUrl, RESET_TOKEN_TTL_MS };

@@ -9,7 +9,7 @@ import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
-import { authenticateUser, verifyPassword, sessionCookieOptions } from './auth.js';
+import { authenticateUser, verifyPassword, generateSession, sessionCookieOptions, issueResetToken, hashResetToken, resetPasswordUrl, RESET_TOKEN_TTL_MS } from './auth.js';
 import { sniffImage, storeImage } from './images.js';
 import { Library } from '../client/dataTypes.js';
 
@@ -36,6 +36,10 @@ const knex = Knex({
 });
 
 const randomBytesAsync = promisify(crypto.randomBytes);
+
+// Applies to the public endpoint only. A moderator issuing a link is acting
+// because this flow already failed, so that path deliberately skips it.
+const RESET_RESEND_COOLDOWN_MS = 5 * 60 * 1000;
 
 
 router.post('/register', (req, res) => {
@@ -279,33 +283,44 @@ async function forgotPassword(req, res) {
 
         const user = users[0];
 
-        const newPassword = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 12)();
-        const salt = await bcrypt.genSalt(10);
-        const newPasswordHash = await bcrypt.hash(newPassword, salt);
+        // A link sent minutes ago is still sitting in the user's inbox, so send
+        // nothing and let them use it - otherwise anyone can point this endpoint
+        // at a username and flood that address. Throttling the recipient rather
+        // than the caller is what makes this hold up against rotating IPs.
+        // reset_token_expires is always the issue time plus the TTL, so it
+        // doubles as a record of when the last link went out.
+        const resendAllowedBelow = new Date(Date.now() + RESET_TOKEN_TTL_MS - RESET_RESEND_COOLDOWN_MS);
+        if (user.reset_token_expires && new Date(user.reset_token_expires) > resendAllowedBelow) {
+            // Reported as success: whether a mail actually went out this time is
+            // not something the caller needs to distinguish.
+            logWithRequest(req, { message: 'Password reset link already sent recently, not resending', username });
+            return res.status(200).json({ username });
+        }
 
-        const email = user.email;
-
-        const message = `Hello ${username},\n It looks like you forgot your password. Here's your new one: \n\n Username: ${username}\n Password: ${newPassword}\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
-
-        // Persist the new password before emailing it, so the password we send
-        // is always the one that actually works. (Emailing first meant a failed
-        // save left the user with a password that didn't match.)
+        // The existing password is deliberately left alone until the token is
+        // redeemed. Changing it here would let anyone who knows a username lock
+        // that account out, and a failed send would strand the user entirely.
+        // Minting before sending also means the link we email is always one
+        // that can actually be redeemed.
+        let token;
         try {
-            await knex('users').where({user_id: user.user_id}).update({
-                password: newPasswordHash
-            });
+            token = await issueResetToken(user);
         } catch (err) {
-            logWithRequest(req, { message: 'Error saving new password', err });
+            logWithRequest(req, { message: 'Error saving reset token', err });
             return res.status(500).json({ message: 'An error occurred' });
         }
 
-        logWithRequest(req, { message: 'Attempting to send new password', email });
+        const email = user.email;
+
+        const message = `Hello ${username},\n It looks like you forgot your password. Follow the link below to choose a new one: \n\n ${resetPasswordUrl(token)}\n\n This link expires in one hour and can only be used once. If you didn't ask to reset your password, you can ignore this email - your current password still works.\n\n If you continue to have problems, please reply to this email with details.\n\n Thanks!`;
+
+        logWithRequest(req, { message: 'Attempting to send password reset link', email });
         try {
             const mailgunResponse = await sendMail({
                 from: 'LighterPack <info@mg.lighterpack.com>',
                 to: email,
                 replyTo: 'LighterPack <info@lighterpack.com>',
-                subject: 'Your new LighterPack password',
+                subject: 'Reset your LighterPack password',
                 text: message,
             });
             logWithRequest(req, { message: 'Message sent', response: mailgunResponse.message });
@@ -314,11 +329,66 @@ async function forgotPassword(req, res) {
             return res.status(500).json({ message: 'An error occurred' });
         }
 
-        logWithRequest(req, { message: 'password changed for user', username });
+        logWithRequest(req, { message: 'password reset link sent for user', username });
         return res.status(200).json({ username });
     } catch (err) {
         logWithRequest(req, { message: 'Forgot password lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });
+    }
+}
+
+router.post('/resetPassword', (req, res) => {
+    resetPassword(req, res);
+});
+
+const invalidTokenError = { errors: [{ message: 'This password reset link is invalid or has expired. Please request a new one.' }] };
+
+async function resetPassword(req, res) {
+    logWithRequest(req);
+
+    const token = String(req.body.token || '');
+    const password = String(req.body.password || '');
+
+    if (!token) {
+        return res.status(400).json(invalidTokenError);
+    }
+
+    if (password.length < 5 || password.length > 60) {
+        return res.status(400).json({ errors: [{ field: 'password', message: 'Please enter a password between 5 and 60 characters.' }] });
+    }
+
+    try {
+        // An expired token matches nothing: `reset_token_expires > now` is also
+        // false when the column is NULL, which is how a redeemed token looks.
+        const users = await knex('users')
+            .where({ reset_token_hash: hashResetToken(token) })
+            .where('reset_token_expires', '>', new Date());
+
+        if (!users.length) {
+            logWithRequest(req, { message: 'Password reset with invalid or expired token' });
+            return res.status(400).json(invalidTokenError);
+        }
+
+        const user = users[0];
+
+        const salt = await bcrypt.genSalt(10);
+        const newPasswordHash = await bcrypt.hash(password, salt);
+
+        // Clearing the token in the same update makes the link single-use.
+        await knex('users').where({user_id: user.user_id}).update({
+            password: newPasswordHash,
+            reset_token_hash: null,
+            reset_token_expires: null,
+        });
+
+        logWithRequest(req, { message: 'password reset for user', username: user.username });
+
+        // Signs this browser in. generateSession also overwrites users.token,
+        // which invalidates every other session - the point of a reset.
+        return generateSession(req, res, user, signin);
+    } catch (err) {
+        logWithRequest(req, { message: 'Password reset error', err });
+        return res.status(500).json({ errors: [{ message: 'An error occurred, please try again later.' }] });
     }
 }
 

@@ -81,6 +81,11 @@ export default defineConfig({
       NODE_CONFIG: JSON.stringify({
         port: Number(process.env.LP_PORT || 3000),
         deployUrl: `http://localhost:${process.env.LP_PORT || '3000'}`,
+        // Lets the suite exercise the moderator-only endpoints. Names have to be
+        // fixed rather than generated, since the list is read at startup. One
+        // per worker, because a user row holds a single session token - sharing
+        // an account across workers would sign each other out.
+        moderators: Array.from({ length: 32 }, (_, i) => `lpe2emoderator${i}`),
       }),
     },
   },

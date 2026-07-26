@@ -15,7 +15,13 @@ process.on('unhandledRejection', (err) => {
 });
 
 const app = express();
-app.enable('trust proxy');
+
+// Trust exactly one hop - nginx - rather than the whole X-Forwarded-For chain.
+// Trusting the chain means req.ip is the leftmost entry, which the client sets
+// itself: anyone could forge the address in the access log below, and any future
+// per-IP throttle would be a header away from useless. This number is the count
+// of proxies in front of node, so adding a CDN ahead of nginx makes it 2.
+app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
     req.uuid = uuidv4();

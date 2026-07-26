@@ -1,11 +1,9 @@
-import bcrypt from 'bcryptjs';
 import express from 'express';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
-import { customAlphabet } from 'nanoid';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
-import { authenticateModerator } from './auth.js';
+import { authenticateModerator, issueResetToken, resetPasswordUrl } from './auth.js';
 
 const router = express.Router();
 
@@ -57,17 +55,17 @@ async function resetPassword(req, res) {
             return res.status(500).json({ message: 'An error occurred.' });
         }
 
-        const newPassword = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 20)();
+        // Hand back a link rather than setting a password, and send no mail:
+        // this endpoint exists for when mail delivery is the broken thing, so
+        // the moderator relays the link however they can reach the user. Their
+        // current password keeps working until they actually use it, which
+        // matters because a relay that never lands would otherwise lock them
+        // out of an account they could still get into. No cooldown here - the
+        // moderator is acting precisely because the normal flow failed.
+        const token = await issueResetToken(users[0]);
 
-        const salt = await bcrypt.genSalt(10);
-        const newPasswordHash = await bcrypt.hash(newPassword, salt);
-
-        await knex('users').where({username}).update({
-            password: newPasswordHash
-        });
-
-        logWithRequest(req, { message: 'MODERATION password changed', username });
-        return res.status(200).json({ newPassword });
+        logWithRequest(req, { message: 'MODERATION password reset link issued', username });
+        return res.status(200).json({ resetUrl: resetPasswordUrl(token) });
     } catch (err) {
         logWithRequest(req, { message: 'MODERATION Reset password lookup error', username, err });
         return res.status(500).json({ message: 'An error occurred' });

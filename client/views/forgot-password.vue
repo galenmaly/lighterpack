@@ -7,8 +7,8 @@
                         Forgot Your Password?
                     </h3>
 
-                    <p>Please enter your username.</p>
-                    <form class="forgotPassword" @submit.prevent="resetPassword">
+                    <p>Enter your username and we'll email you a link to choose a new password.</p>
+                    <form class="forgotPassword" @submit.prevent="requestPasswordReset">
                         <div class="lpFields">
                             <input v-model="forgotPasswordUsername" type="text" placeholder="Username" name="username" class="username">
                             <input type="submit" value="Submit" class="lpButton">
@@ -63,7 +63,7 @@ export default {
         };
     },
     methods: {
-        resetPassword() {
+        requestPasswordReset() {
             this.forgotPasswordErrors = [];
 
             return fetchJson('/forgotPassword', {
