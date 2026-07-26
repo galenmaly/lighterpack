@@ -52,16 +52,6 @@
                     placeholder="Name"
                     @input="saveItem"
                 >
-                <input
-                    v-model="displayWeight"
-                    v-empty-if-zero
-                    data-testid="item-weight"
-                    type="text"
-                    inputmode="decimal"
-                    :class="{lpWeight: true, lpSilent: true, lpItemMobileField: true, lpItemMobileWeightField: true, lpSilentError: weightError}"
-                    @input="saveWeight"
-                >
-                <unitSelect class="lpItemMobileUnitChip" :unit="item.authorUnit" :on-change="setUnit" />
             </div>
 
             <!-- #11c. Sits under the field being typed into rather than
@@ -93,30 +83,66 @@
                     placeholder="Description"
                     @input="saveItem"
                 >
-                <label v-if="optionalFields['price']" class="lpItemMobileInline">
-                    <span class="lpItemMobileInlineLabel">{{ library.currencySymbol }}</span>
-                    <input
-                        v-model="displayPrice"
-                        v-empty-if-zero
-                        data-testid="item-price"
-                        type="text"
-                        inputmode="decimal"
-                        :class="{lpPrice: true, lpSilent: true, lpItemMobileField: true, lpItemMobileNumField: true, lpSilentError: priceError}"
-                        @input="savePrice"
-                        @blur="setDisplayPrice"
-                    >
-                </label>
-                <label class="lpItemMobileInline">
-                    <span class="lpItemMobileInlineLabel">×</span>
-                    <input
-                        v-model="displayQty"
-                        data-testid="item-qty"
-                        type="text"
-                        inputmode="numeric"
-                        :class="{lpQty: true, lpSilent: true, lpItemMobileField: true, lpItemMobileNumField: true, lpSilentError: qtyError}"
-                        @input="saveQty"
-                    >
-                </label>
+            </div>
+
+            <!-- The numbers get a line of their own, each under its own name.
+                 Sharing the description's line left three unlabelled fields
+                 splitting whatever width the description didn't take, and a
+                 bare number only explains itself under the desktop's column
+                 headers — there are none here. -->
+            <div class="lpItemMobileEditorFields">
+                <!-- for/id rather than a wrapping label. A label containing the
+                     unit picker forwards the tap that opens the picker on to
+                     the weight input, and that second click reaches the
+                     document listener the picker just bound to close itself —
+                     the menu opened and shut in the same gesture. -->
+                <div class="lpItemMobileFieldGroup">
+                    <label class="lpItemMobileFieldLabel" :for="'lpMobileWeight' + item.id">Weight</label>
+                    <span class="lpItemMobileFieldControl">
+                        <input
+                            :id="'lpMobileWeight' + item.id"
+                            v-model="displayWeight"
+                            v-empty-if-zero
+                            data-testid="item-weight"
+                            type="text"
+                            inputmode="decimal"
+                            :class="{lpWeight: true, lpSilent: true, lpItemMobileField: true, lpItemMobileWeightField: true, lpSilentError: weightError}"
+                            @input="saveWeight"
+                        >
+                        <unitSelect class="lpItemMobileUnitChip" :unit="item.authorUnit" :on-change="setUnit" />
+                    </span>
+                </div>
+                <div class="lpItemMobileFieldGroup">
+                    <label class="lpItemMobileFieldLabel" :for="'lpMobileQty' + item.id">Qty</label>
+                    <span class="lpItemMobileFieldControl">
+                        <input
+                            :id="'lpMobileQty' + item.id"
+                            v-model="displayQty"
+                            data-testid="item-qty"
+                            type="text"
+                            inputmode="numeric"
+                            :class="{lpQty: true, lpSilent: true, lpItemMobileField: true, lpItemMobileNumField: true, lpSilentError: qtyError}"
+                            @input="saveQty"
+                        >
+                    </span>
+                </div>
+                <div v-if="optionalFields['price']" class="lpItemMobileFieldGroup">
+                    <label class="lpItemMobileFieldLabel" :for="'lpMobilePrice' + item.id">Price</label>
+                    <span class="lpItemMobileFieldControl">
+                        <span class="lpItemMobileInlineLabel">{{ library.currencySymbol }}</span>
+                        <input
+                            :id="'lpMobilePrice' + item.id"
+                            v-model="displayPrice"
+                            v-empty-if-zero
+                            data-testid="item-price"
+                            type="text"
+                            inputmode="decimal"
+                            :class="{lpPrice: true, lpSilent: true, lpItemMobileField: true, lpItemMobileNumField: true, lpItemMobilePriceField: true, lpSilentError: priceError}"
+                            @input="savePrice"
+                            @blur="setDisplayPrice"
+                        >
+                    </span>
+                </div>
             </div>
 
             <!-- Flags get their own row at full touch size. mousedown.prevent
@@ -559,15 +585,15 @@ export default {
 .lpItemMobileEditing {
     // Same green edge and tinted surface the design gives the open row; the
     // tokens are the app's, so it re-themes with everything else.
-    background: var(--lp-bubble-bg);
-    box-shadow: inset 3px 0 0 var(--lp-accent-green-deep);
+    background: var(--lp-row-hover);
+    box-shadow: inset 3px 0 0 var(--lp-border-strong);
 }
 
 // Fade only — the row's height slide already supplies the movement, and
 // sliding the contents on top of it was the jarring part.
 .lpItemMobileEditor {
     animation: lpItemMobileEditorIn $transitionDuration ease-out;
-    padding: 8px 14px 4px;
+    padding: 6px 14px 2px;
 }
 
 @keyframes lpItemMobileEditorIn {
@@ -588,8 +614,52 @@ export default {
 }
 
 .lpItemMobileEditorMid {
-    gap: 12px;
-    margin-top: 9px;
+    margin-top: 10px;
+}
+
+// Three labelled cells rather than three bare numbers wedged in beside the
+// description. Left-packed at fixed widths: the row has to hold together
+// whether or not the list is tracking price.
+.lpItemMobileEditorFields {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.lpItemMobileFieldGroup {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+}
+
+.lpItemMobileFieldLabel {
+    color: var(--lp-text-secondary);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+// The unit picker and the currency symbol live inside the field's underline
+// instead of beside it, so a cell reads as one control rather than a number
+// with something stuck to it.
+.lpItemMobileFieldControl {
+    align-items: center;
+    border-bottom: 1px solid var(--lp-border-strong);
+    display: flex;
+    gap: 2px;
+    padding-bottom: 1px;
+
+    &:focus-within {
+        border-bottom-color: var(--lp-accent-green-deep);
+    }
+    // The underline belongs to the cell now; the input inside it goes bare.
+    .lpItemMobileField,
+    .lpItemMobileField:focus {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
 }
 
 // A single scrolling row, not a wrapping list: it keeps the editor's height
@@ -654,66 +724,74 @@ export default {
     flex: 1 1 auto;
     font-size: 16px;
     min-width: 0;
-    padding: 2px 0 3px;
+    padding: 1px 0 2px;
 
     &:focus {
         border-bottom-color: var(--lp-accent-green-deep);
-        border-bottom-width: 1.5px;
         outline: none;
-        padding-bottom: 2.5px;
     }
 }
 
-.lpItemMobileFieldActive {
-    border-bottom-color: var(--lp-accent-green-deep);
-    border-bottom-width: 1.5px;
-    padding-bottom: 2.5px;
-}
-
+// Left-aligned, unlike the desktop's columns: each number sits under its own
+// label now, and ranging them right would pull them away from it.
 .lpItemMobileWeightField,
 .lpItemMobileNumField {
     flex: 0 0 auto;
     font-variant-numeric: tabular-nums;
-    text-align: right;
     width: 52px;
 }
 
 .lpItemMobileNumField {
-    width: 44px;
+    width: 38px;
 }
 
-.lpItemMobileInline {
-    align-items: center;
-    color: var(--lp-text-secondary);
-    display: flex;
-    flex: 0 0 auto;
-    gap: 3px;
+.lpItemMobilePriceField {
+    width: 60px;
 }
 
 .lpItemMobileInlineLabel {
+    color: var(--lp-text-secondary);
     font-size: 13px;
 }
 
-// The unit picker becomes a real chip — the desktop's bare caret is a hover
-// affordance and far under a thumb-sized target.
+// A bare unit and caret, not a boxed chip: sharing the weight field's underline
+// it doesn't need an outline of its own, and the box was reading as a second
+// control parked beside the number. The thumb-sized target it was carrying
+// comes back as an invisible overlay — padding that big would push the unit
+// away from the number it belongs to.
+.lpItemMobileUnitChip.lpUnitSelect,
+.lpItemMobileUnitChip.lpUnitSelect:hover {
+    background: none;
+    border-color: transparent;
+}
+
 .lpItemMobileUnitChip.lpUnitSelect {
-    background: var(--lp-surface);
-    border: 1px solid var(--lp-border-strong);
-    border-radius: 5px;
     flex: 0 0 auto;
-    font-size: 12.5px;
+    font-size: 13.5px;
     font-weight: 600;
-    padding: 8px 11px;
+    padding: 0 2px 0 4px;
+
+    &::after {
+        content: '';
+        inset: -11px -8px -11px -2px;
+        position: absolute;
+    }
 
     .lpDisplay {
         width: auto;
     }
 }
 
+// Still tinted while its menu is open — with the resting border gone that's
+// the only thing left saying which picker you opened.
+.lpItemMobileUnitChip.lpUnitSelect.lpOpen {
+    background: var(--lp-surface);
+}
+
 .lpItemMobileEditorFlags {
     align-items: center;
     display: flex;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .lpItemMobileFlag {
@@ -722,7 +800,7 @@ export default {
     cursor: pointer;
     display: flex;
     flex: 0 0 auto;
-    height: 44px;
+    height: 40px;
     justify-content: center;
     width: 44px;
 

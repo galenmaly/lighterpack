@@ -188,6 +188,25 @@ test.describe('Phone item rows', () => {
     await expect(page.getByTestId('item-rest').first()).toContainText('36');
     expect(await readItemNames(page)).toContain('Duffel bag XL');
   });
+
+  // The unit picker sits inside the weight field rather than beside it. When
+  // that field's name was a wrapping <label>, the tap opening the picker was
+  // forwarded on to the weight input, and the click that produced reached the
+  // document listener the picker had just bound — so it opened and shut in the
+  // same gesture, and the unit could never be changed from a phone.
+  test('the unit picker in the editor opens and changes the unit', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.getByTestId('item-rest').first().tap();
+    const picker = page.getByTestId('item-editor').getByTestId('unit-select');
+    await picker.tap();
+
+    const menu = picker.locator('.lpUnitDropdown');
+    await expect(menu).toBeVisible();
+
+    await menu.locator('li.lb').tap();
+    await expect(picker).toContainText('lb');
+  });
 });
 
 test.describe('Phone item search', () => {
