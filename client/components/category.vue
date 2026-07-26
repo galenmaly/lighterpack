@@ -350,6 +350,10 @@ export default {
         .lpGhostCaret {
             display: none;
         }
+
+        .lpSubtotalUnit {
+            padding-left: 4px;
+        }
     }
 
     // Item counts are desktop-only detail; the design's header carries price
