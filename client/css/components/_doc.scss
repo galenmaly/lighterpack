@@ -5,28 +5,31 @@
 // selectors scoped under .lpDoc rather than classes.
 .lpDoc {
     color: var(--lp-text);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.6;
     margin: 0 auto;
-    max-width: 42rem;
-    padding: 3rem 1.25rem 5rem;
+    max-width: 800px;
+    padding: 2.5rem 1.25rem 5rem;
 
+    // Sizes are em, not rem: the app sets `html.lp { font-size: 13px }`, so a
+    // rem here is 13px and the headings would land under this block's own
+    // 16px body text. em keys the scale to .lpDoc instead.
     h1 {
-        font-size: 2rem;
+        font-size: 2em;
         line-height: 1.2;
         margin: 0 0 1.5rem;
     }
 
     h2 {
         border-top: 1px solid var(--lp-border);
-        font-size: 1.3rem;
+        font-size: 1.375em;
         line-height: 1.3;
         margin: 2.5rem 0 0.75rem;
         padding-top: 1.75rem;
     }
 
     h3 {
-        font-size: 1.05rem;
+        font-size: 1.125em;
         margin: 1.75rem 0 0.5rem;
     }
 
@@ -86,10 +89,33 @@
     }
 }
 
+// These pages render outside the app shell, so the sidebar's wordmark isn't
+// there to say whose site this is. The header restates it and doubles as the
+// way back. Weight and family match #sidebar .lpWordmark; the size is bumped
+// because here it is the page's only chrome rather than a rail label.
+.lpDocHeader {
+    border-bottom: 1px solid var(--lp-border);
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.25rem;
+
+    // Two classes, to outrank the `.lpDoc a` link color above regardless of
+    // where this block lands in the file.
+    .lpDocWordmark {
+        color: var(--lp-text);
+        font-size: 20px;
+        font-weight: 700;
+        text-decoration: none;
+
+        &:hover {
+            color: var(--lp-link-blue);
+        }
+    }
+}
+
 .lpDocFooter {
     border-top: 1px solid var(--lp-border);
     color: var(--lp-text-secondary);
-    font-size: 13px;
+    font-size: 14px;
     margin-top: 3rem;
     padding-top: 1.25rem;
 

@@ -114,7 +114,7 @@ You have the right to:
  - Delete your account and all its associated data
  - Export all of your data
 
-You can perform these actions yourself from the account menu when logged into LigherPack.
+You can perform these actions yourself from the account menu when logged into LighterPack.
 
 ## Law enforcement and legal requests
 
