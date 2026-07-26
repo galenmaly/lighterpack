@@ -12,13 +12,13 @@
             <SigninForm :message="message" />
         </modal>
 
-        <blackoutFooter />
+        <siteFooter fixed />
         <globalAlerts />
     </div>
 </template>
 
 <script>
-import blackoutFooter from '../components/blackout-footer.vue';
+import siteFooter from '../components/site-footer.vue';
 import globalAlerts from '../components/global-alerts.vue';
 import modal from '../components/modal.vue';
 import SigninForm from '../components/signin-form.vue';
@@ -26,7 +26,7 @@ import SigninForm from '../components/signin-form.vue';
 export default {
     name: 'Signin',
     components: {
-        blackoutFooter,
+        siteFooter,
         globalAlerts,
         modal,
         SigninForm,

@@ -122,21 +122,6 @@
     }
 }
 
-#lpFooter {
-    color: var(--lp-text-secondary);
-    display: flex;
-    justify-content: space-between;
-    padding: 150px 0 20px;
-}
-
-#lpWelcomeFooter {
-    background: var(--lp-welcome-footer-bg);
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    left: 0;
-    padding: $spacingSmall;
-    position: fixed;
-    right: 0;
-    z-index: $blackoutFooter;
-}
+// The site footer lives in client/components/site-footer.vue -- both its shared
+// styles and its fixed variant, so the share bundle (which compiles this file
+// too) does not carry rules for a footer it never renders.

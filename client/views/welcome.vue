@@ -76,18 +76,7 @@
                 </div>
             </div>
 
-            <div class="lpMobileFooter">
-                <div class="lpMobileFooterLinks">
-                    <a class="lpHref" href="https://github.com/galenmaly/lighterpack" target="_blank" rel="noopener noreferrer">Copyleft</a>
-                    <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a>
-                    <a class="lpHref" href="/privacy">Privacy</a>
-                    <a class="lpHref" href="/terms">Terms</a>
-                </div>
-                <div class="lpMobileFooterNote">
-                    Site by <a class="lpHref" href="https://www.galenmaly.com/" target="_blank" rel="noopener noreferrer">Galen Maly</a>
-                    and <a class="lpHref" href="https://github.com/galenmaly/lighterpack/graphs/contributors" target="_blank" rel="noopener noreferrer">friends</a>.
-                </div>
-            </div>
+            <siteFooter class="lpMobileFooter" />
         </div>
 
         <div v-else id="lpWelcome" class="lpContainer">
@@ -127,24 +116,24 @@
         <globalAlerts />
         <!-- The fixed footer would sit on top of the phone layout, which ends
              in a footer of its own. -->
-        <blackoutFooter v-if="!isMobile" />
+        <siteFooter v-if="!isMobile" fixed />
     </div>
 </template>
 
 <script>
-import blackoutFooter from '../components/blackout-footer.vue';
 import globalAlerts from '../components/global-alerts.vue';
 import registerForm from '../components/register-form.vue';
 import SigninForm from '../components/signin-form.vue';
+import siteFooter from '../components/site-footer.vue';
 import isMobile from '../utils/viewport.js';
 
 export default {
     name: 'Welcome',
     components: {
-        blackoutFooter,
         globalAlerts,
         registerForm,
         SigninForm,
+        siteFooter,
     },
     data() {
         return {
@@ -510,14 +499,19 @@ $mobileColumnOuter: $mobileColumn + $mobileGutter * 2;
     }
 }
 
-// The tint stays full-bleed; only its contents line up with the column above.
-.lpMobileFooter {
+// This page ends in its footer instead of floating one over the photo, so the
+// shared footer gets a tint and a rule here. The tint stays full-bleed; only
+// its contents line up with the column above. Both classes, to outrank
+// .lpSiteFooter's own gap and type size whichever order the bundle emits them.
+.lpSiteFooter.lpMobileFooter {
     align-items: center;
     background: var(--lp-row-hover);
     border-top: 1px solid var(--lp-border);
-    display: flex;
-    flex-direction: column;
+    // Body size rather than the 12px the footer uses inside the app: everything
+    // else on this page is set larger, and 12px reads as fine print next to it.
+    font-size: 13px;
     gap: 14px;
+    line-height: 1.5;
     padding: 20px $mobileGutter 26px;
 
     > * {
@@ -534,19 +528,5 @@ $mobileColumnOuter: $mobileColumn + $mobileGutter * 2;
     text-decoration: underline;
     text-decoration-color: var(--lp-border-strong);
     text-underline-offset: 3px;
-}
-
-.lpMobileFooterLinks {
-    color: var(--lp-text);
-    display: flex;
-    flex-wrap: wrap;
-    font-size: 14.5px;
-    gap: 8px 20px;
-}
-
-.lpMobileFooterNote {
-    color: var(--lp-text-secondary);
-    font-size: 13px;
-    line-height: 1.5;
 }
 </style>

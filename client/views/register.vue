@@ -17,13 +17,13 @@
             <registerForm />
         </modal>
 
-        <blackoutFooter />
+        <siteFooter fixed />
         <globalAlerts />
     </div>
 </template>
 
 <script>
-import blackoutFooter from '../components/blackout-footer.vue';
+import siteFooter from '../components/site-footer.vue';
 import globalAlerts from '../components/global-alerts.vue';
 import modal from '../components/modal.vue';
 import registerForm from '../components/register-form.vue';
@@ -31,7 +31,7 @@ import registerForm from '../components/register-form.vue';
 export default {
     name: 'Register',
     components: {
-        blackoutFooter,
+        siteFooter,
         globalAlerts,
         modal,
         registerForm,

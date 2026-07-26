@@ -37,12 +37,12 @@
                 </router-link>
             </div>
         </modal>
-        <blackoutFooter />
+        <siteFooter fixed />
     </div>
 </template>
 
 <script>
-import blackoutFooter from '../components/blackout-footer.vue';
+import siteFooter from '../components/site-footer.vue';
 import errors from '../components/errors.vue';
 import modal from '../components/modal.vue';
 import { fetchJson } from '../utils/utils.js';
@@ -50,7 +50,7 @@ import { fetchJson } from '../utils/utils.js';
 export default {
     name: 'ForgotPassword',
     components: {
-        blackoutFooter,
+        siteFooter,
         errors,
         modal,
     },

@@ -16,21 +16,7 @@
 
             <list />
 
-            <div id="lpFooter">
-                <div class="lpSiteBy">
-                    Site by <a class="lpHref" href="https://www.galenmaly.com/" target="_blank" rel="noopener noreferrer">Galen Maly</a>
-                    and <a class="lpHref" href="https://github.com/galenmaly/lighterpack/graphs/contributors" target="_blank" rel="noopener noreferrer">friends</a>.
-                </div>
-                <div class="lpContact">
-                    <a class="lpHref" href="https://github.com/galenmaly/lighterpack" target="_blank" rel="noopener noreferrer">Copyleft</a> LighterPack 2019
-                    -
-                    <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a>
-                    -
-                    <a class="lpHref" href="/privacy">Privacy</a>
-                    -
-                    <a class="lpHref" href="/terms">Terms</a>
-                </div>
-            </div>
+            <siteFooter id="lpFooter" />
         </div>
         <div class="lpFrameFill lpFrameFillRight" />
 
@@ -69,6 +55,7 @@ import importCSV from '../components/import-csv.vue';
 import copyList from '../components/copy-list.vue';
 import speedbump from '../components/speedbump.vue';
 import accountDropdown from '../components/account-dropdown.vue';
+import siteFooter from '../components/site-footer.vue';
 
 import { isMobile } from '../utils/viewport.js';
 
@@ -90,6 +77,7 @@ export default {
         speedbump,
         globalAlerts,
         accountDropdown,
+        siteFooter,
     },
     provide() {
         return {
@@ -317,11 +305,9 @@ export default {
     }
 }
 
+// Layout and type come from the shared footer; the app only places it -- last
+// in the content column, held to the same gutters as the list above it.
 #lpFooter {
-    color: var(--lp-text-secondary);
-    display: flex;
-    font-size: 12px;
-    justify-content: space-between;
     margin-top: auto;
     padding: 80px 56px 20px;
 }
@@ -500,8 +486,6 @@ export default {
     }
 
     #lpFooter {
-        flex-direction: column;
-        gap: 4px;
         padding: 40px 14px 20px;
     }
 }

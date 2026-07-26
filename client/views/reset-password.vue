@@ -31,12 +31,12 @@
             </form>
         </modal>
 
-        <blackoutFooter />
+        <siteFooter fixed />
     </div>
 </template>
 
 <script>
-import blackoutFooter from '../components/blackout-footer.vue';
+import siteFooter from '../components/site-footer.vue';
 import errors from '../components/errors.vue';
 import modal from '../components/modal.vue';
 import spinner from '../components/spinner.vue';
@@ -45,7 +45,7 @@ import { fetchJson } from '../utils/utils.js';
 export default {
     name: 'ResetPassword',
     components: {
-        blackoutFooter,
+        siteFooter,
         errors,
         modal,
         spinner,
