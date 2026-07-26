@@ -107,7 +107,7 @@ $transitionDurationSlow: 0.4s;
     --lp-accent-green-deep: #{$green1};
     --lp-accent-orange: #{$orange1};
     --lp-active-yellow: #{$yellow1};
-    --lp-selected-bg: #{$blue1}; // selection fill; white text sits on it, so it holds in both themes
+    --lp-selected-bg: #{$green1}; // selection fill; white text sits on it, so it holds in both themes
 
     // Status / highlight
     --lp-danger: #{$red1};

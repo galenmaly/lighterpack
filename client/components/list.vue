@@ -1,5 +1,5 @@
 <template>
-    <div class="lpListBody">
+    <div class="lpListBody" :class="{ lpDensityCompact: isCompact }">
         <get-started v-if="isListNew" />
         <component :is="summaryComponent" v-else :list="list" />
 
@@ -58,6 +58,11 @@ export default {
         },
         isListNew() {
             return this.list.totalWeight === 0;
+        },
+        // Set in the Settings menu. Only the edit page honours it — the share
+        // page is rendered server-side from the same data.
+        isCompact() {
+            return this.library.preferences.density === 'compact';
         },
         // The collapsed scoreboard strip has no desktop counterpart, so the
         // summary swaps components rather than reflowing. See

@@ -87,12 +87,14 @@ export default {
     // painting altogether. The cost is that it also traps the unit dropdown in
     // here; see the z-index lift further down.
     isolation: isolate;
-    padding: 2px 0 2px;
+    padding: var(--lp-row-padding-y, 2px) 0;
 
     // Base quiet-input look comes from .lpSilent; fields stay bare until the
-    // row's :focus-within reveals underlines (below).
+    // row's :focus-within reveals underlines (below). The inputs are the
+    // tallest thing in the row, so their vertical padding — not the row's —
+    // is what actually sets the row height.
     input {
-        padding: 3px 7px;
+        padding: var(--lp-row-input-padding-y, 3px) 7px;
 
         &:focus {
             background: var(--lp-bg);
@@ -320,6 +322,17 @@ export default {
             visibility: visible;
         }
     }
+}
+
+// Compact density, set in the Settings menu (list.vue puts the class on the
+// list body). Squeezing the row's own padding only buys 4px, because the
+// inputs are what the row is actually as tall as; taking 2px off each of them
+// too lands rows 8px shorter, at the pre-redesign density. Type size, columns
+// and the hover band's tuned bleed are all untouched, so the row reads the
+// same — there's just less air around it.
+.lpDensityCompact .lpItem {
+    --lp-row-padding-y: 0;
+    --lp-row-input-padding-y: 2px;
 }
 
 // Item hint bubbles: float below the lifted row and overlap the next row.

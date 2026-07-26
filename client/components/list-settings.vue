@@ -17,23 +17,34 @@
                         <input id="currencySymbol" type="text" maxlength="4" :value="library.currencySymbol" @input="updateCurrencySymbol($event)">
                     </label>
                 </div>
+                <div id="lpDensitySettings">
+                    <hr>
+                    <span class="lpDensityLabel">Density</span>
+                    <button-group v-model="density" label="Density" :options="densityOptions" />
+                </div>
             </div></template>
         </PopoverHover>
     </span>
 </template>
 
 <script>
+import buttonGroup from './button-group.vue';
 import PopoverHover from './popover-hover.vue';
 import toggle from './toggle.vue';
 
 export default {
     name: 'ListSettings',
     components: {
+        buttonGroup,
         PopoverHover,
         toggle,
     },
     data() {
         return {
+            densityOptions: [
+                { value: 'comfortable', label: 'Comfortable', testid: 'density-comfortable' },
+                { value: 'compact', label: 'Compact', testid: 'density-compact' },
+            ],
             optionalFieldsLookup: [{
                 name: 'images',
                 displayName: 'Item images',
@@ -71,6 +82,16 @@ export default {
         },
         isSignedIn() {
             return this.$store.state.loggedIn;
+        },
+        // Density is a display preference rather than a property of the list,
+        // so it lives on the library and follows you between lists.
+        density: {
+            get() {
+                return this.library.preferences.density;
+            },
+            set(value) {
+                this.$store.commit('setPreference', { preference: 'density', value });
+            },
         },
     },
     watch: {
@@ -130,6 +151,13 @@ export default {
         display: inline-block;
         margin-left: 10px;
         width: 50px;
+    }
+}
+
+#lpDensitySettings {
+    .lpDensityLabel {
+        display: block;
+        margin-bottom: 6px;
     }
 }
 

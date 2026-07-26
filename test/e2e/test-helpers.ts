@@ -239,6 +239,15 @@ export const disableSetting = async (page: Page, settingLabel: string): Promise<
 };
 
 /**
+ * Picks a row density in the settings menu.
+ */
+export const setDensity = async (page: Page, density: 'Comfortable' | 'Compact'): Promise<void> => {
+  const settings = page.locator('#settings');
+  await settings.hover();
+  await settings.getByLabel(density, { exact: true }).check();
+};
+
+/**
  * Marks an item as worn.
  */
 export const markItemAsWorn = async (itemRow: Locator): Promise<void> => {

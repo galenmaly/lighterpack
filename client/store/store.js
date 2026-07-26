@@ -80,6 +80,10 @@ const store = createStore({
         togglePreference(state, preference) {
             state.library.preferences[preference] = !state.library.preferences[preference];
         },
+        // For preferences that pick one of several values rather than flip.
+        setPreference(state, { preference, value }) {
+            state.library.preferences[preference] = value;
+        },
         updateCurrencySymbol(state, currencySymbol) {
             state.library.currencySymbol = currencySymbol;
         },

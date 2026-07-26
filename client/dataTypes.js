@@ -14,6 +14,8 @@ const defaultOptionalFields = {
 const defaultPreferences = {
     sharedItemBubble: true,
     wornQtyHint: true,
+    // Row height on the edit page: 'comfortable' | 'compact'.
+    density: 'comfortable',
 };
 
 const Item = function ({ id, unit }) {

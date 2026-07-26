@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { registerUser, loginUser, logoutUser, generateTestUser } from './auth-utils';
-import { createCategory, addItem, enableSetting, disableSetting, getCategoryNames, openSidebar } from './test-helpers';
+import { createCategory, addItem, enableSetting, disableSetting, getCategoryNames, openSidebar, setDensity } from './test-helpers';
 
 test.describe('Settings Persistence After Reload', () => {
   test('should persist item prices setting after reload', async ({ page }) => {
@@ -321,5 +321,42 @@ test.describe('Per-list settings', () => {
     await openSidebar(page);
     await page.locator('#lists').getByText('List B', { exact: true }).click();
     await expect(page.getByTestId('item-price')).toHaveCount(0);
+  });
+
+  test('should persist row density after reload', async ({ page }) => {
+    const { username, password, email } = generateTestUser('persist-density');
+
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
+
+    const category = await createCategory(page, 'Gear');
+    await addItem(category, 'Tent', { weight: '10' });
+
+    const listBody = page.locator('.lpListBody');
+    const row = page.getByTestId('item-row').first();
+    await expect(listBody).not.toHaveClass(/lpDensityCompact/);
+    const comfortableHeight = (await row.boundingBox()).height;
+
+    // Compact takes 2px off each end of the row and 2px off each end of the
+    // inputs inside it — the inputs being what the row is as tall as.
+    await setDensity(page, 'Compact');
+    await expect(listBody).toHaveClass(/lpDensityCompact/);
+    expect((await row.boundingBox()).height).toBe(comfortableHeight - 8);
+
+    await page.waitForResponse(
+      (response) => response.url().includes('saveLibrary') && response.status() === 200,
+      { timeout: 15000 },
+    );
+    await page.reload();
+    await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
+
+    await expect(page.locator('.lpListBody')).toHaveClass(/lpDensityCompact/);
+    expect((await page.getByTestId('item-row').first().boundingBox()).height)
+      .toBe(comfortableHeight - 8);
+
+    // And back — density is a library-wide preference, not a per-list one.
+    await setDensity(page, 'Comfortable');
+    await expect(page.locator('.lpListBody')).not.toHaveClass(/lpDensityCompact/);
+    expect((await page.getByTestId('item-row').first().boundingBox()).height).toBe(comfortableHeight);
   });
 });
