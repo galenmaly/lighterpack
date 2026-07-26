@@ -70,6 +70,7 @@ sets cookies through our site.
 - **Mailgun** — delivers the transactional email we
   send. Your email address is passed to Mailgun when we send transactional emails.
 
+We used to use Imgur to store images. Newly uploaded images are stored by LighterPack.
 No one else receives your data, except where required by law.
 
 ## Email we send you
