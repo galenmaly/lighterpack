@@ -62,7 +62,7 @@ async function sweepLibraryImages(library, convertFn) {
         if (!convertFn) {
             stats.converted += 1;
             stats.bytesBefore += item.imageUrl.length;
-            stats.bytesAfter += '/userimages/xx/0123456789abcdef.webp'.length;
+            stats.bytesAfter += '/userimages/xx/0123456789abcdef/0123456789abcdef.webp'.length;
             continue;
         }
 
@@ -80,16 +80,21 @@ async function sweepLibraryImages(library, convertFn) {
     return stats;
 }
 
-/** Write the buffer to a temp file and run it through the upload pipeline. */
-async function convertBuffer(buf, width) {
-    const tmpPath = path.join(os.tmpdir(), `lp-datauri-${process.pid}-${crypto.randomBytes(6).toString('hex')}`);
-    fs.writeFileSync(tmpPath, buf);
-    try {
-        const { imageUrl } = await storeImage(tmpPath, buf, width);
-        return imageUrl;
-    } finally {
-        fs.rmSync(tmpPath, { force: true });
-    }
+/**
+ * Build the converter for one user: writes the buffer to a temp file and runs
+ * it through the upload pipeline, storing the result among that user's images.
+ */
+function convertBufferFor(userId) {
+    return async function convertBuffer(buf, width) {
+        const tmpPath = path.join(os.tmpdir(), `lp-datauri-${process.pid}-${crypto.randomBytes(6).toString('hex')}`);
+        fs.writeFileSync(tmpPath, buf);
+        try {
+            const { imageUrl } = await storeImage(tmpPath, buf, width, userId);
+            return imageUrl;
+        } finally {
+            fs.rmSync(tmpPath, { force: true });
+        }
+    };
 }
 
 async function main() {
@@ -131,7 +136,7 @@ async function main() {
         for (const row of rows) {
             totals.matched += 1;
             const library = typeof row.library === 'string' ? JSON.parse(row.library) : row.library;
-            const stats = await sweepLibraryImages(library, live ? convertBuffer : null);
+            const stats = await sweepLibraryImages(library, live ? convertBufferFor(row.user_id) : null);
             for (const key of ['converted', 'failed', 'unsupported', 'bytesBefore', 'bytesAfter']) totals[key] += stats[key];
             if (stats.converted === 0) continue;
 

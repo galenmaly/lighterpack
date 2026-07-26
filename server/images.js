@@ -2,11 +2,23 @@
 //
 // Uploads are converted with cwebp (`apt install webp`; override the binary
 // path with config key "cwebpPath") into two content-hashed files under
-// public/userimages/<2-char-fanout>/:
+// public/userimages/<shard>/<user token>/:
 //   <id>.webp     display size (max 1600px wide)
 //   <id>_t.webp   thumbnail (max 180px wide — 2x the 90px item-row cell)
 // cwebp reads jpeg/png/webp only, and -metadata none strips EXIF (including
 // GPS) from the stored copies.
+//
+// Files live under the uploading user's own directory, so an account's photos
+// can be deleted outright without asking whether anyone else is using them.
+// Identical bytes uploaded by two users are stored twice; that costs nothing
+// worth having, since across all of production only 0.03% of images were ever
+// held by more than one user. The content hash still names the file, so one
+// user reusing a photo across items keeps sharing a single copy.
+//
+// The token is derived from user_id rather than being the id itself, to keep
+// the database key out of public URLs. It shards on its first two characters
+// because directories that grow with the user table get slow to walk (and hit
+// ext4's ~65k subdirectory cap without the dir_nlink feature).
 
 import { execFile } from 'node:child_process';
 import crypto from 'node:crypto';
@@ -98,14 +110,26 @@ async function convert(srcPath, destPath, sourceWidth, maxWidth) {
 }
 
 /**
- * Convert an uploaded image into hosted display + thumbnail webps.
- * Content-addressed: re-uploading identical bytes reuses the existing files.
- * Returns { imageUrl } (thumbnail URL is derived: .webp -> _t.webp).
+ * Public storage token for a user: stable, opaque, and not the user_id itself.
  */
-async function storeImage(srcPath, buf, width) {
+function userImageToken(userId) {
+    return crypto.createHash('sha256').update(String(userId)).digest('hex').slice(0, 16);
+}
+
+/** Directory holding one user's images, and the URL path that maps to it. */
+function userImageLocation(userId) {
+    const token = userImageToken(userId);
+    const urlPath = `/userimages/${token.slice(0, 2)}/${token}`;
+    return { urlPath, dir: path.join(userImagesDir, token.slice(0, 2), token) };
+}
+
+/**
+ * Convert an image into display + thumbnail webps inside `dir`, named by a
+ * hash of the bytes. Skips the conversion when both files are already there,
+ * so re-storing the same image is a no-op. Returns the id.
+ */
+async function storeImageFiles(srcPath, buf, width, dir) {
     const id = crypto.createHash('sha256').update(buf).digest('hex').slice(0, 16);
-    const fanout = id.slice(0, 2);
-    const dir = path.join(userImagesDir, fanout);
     const displayPath = path.join(dir, `${id}.webp`);
     const thumbPath = path.join(dir, `${id}_t.webp`);
 
@@ -115,7 +139,49 @@ async function storeImage(srcPath, buf, width) {
         await convert(srcPath, thumbPath, width, THUMB_MAX_WIDTH);
     }
 
-    return { imageUrl: `/userimages/${fanout}/${id}.webp` };
+    return id;
+}
+
+/**
+ * Convert an uploaded image into hosted webps owned by `userId`.
+ * Returns { imageUrl } (thumbnail URL is derived: .webp -> _t.webp).
+ */
+async function storeImage(srcPath, buf, width, userId) {
+    const { urlPath, dir } = userImageLocation(userId);
+    const id = await storeImageFiles(srcPath, buf, width, dir);
+    return { imageUrl: `${urlPath}/${id}.webp` };
+}
+
+/**
+ * Give a user their own copy of an image already converted elsewhere, and
+ * return the URL that serves it. Used by the imgur mirror, which converts once
+ * per imgur id and then hands the result to each user holding that id.
+ */
+function adoptImage(sourceDir, id, userId) {
+    const { urlPath, dir } = userImageLocation(userId);
+    fs.mkdirSync(dir, { recursive: true });
+    for (const name of [`${id}.webp`, `${id}_t.webp`]) {
+        const dest = path.join(dir, name);
+        if (!fs.existsSync(dest)) fs.copyFileSync(path.join(sourceDir, name), dest);
+    }
+    return `${urlPath}/${id}.webp`;
+}
+
+/**
+ * Delete every image a user uploaded. Safe to call for users who never
+ * uploaded anything. Returns the number of files removed.
+ *
+ * Only touches files under the user's own directory, so an item pointing at
+ * someone else's /userimages/ URL (the Image URL field takes any path) is left
+ * alone — and conversely, the owner deleting their account does remove the
+ * photo even if another list still links to it.
+ */
+function deleteUserImages(userId) {
+    const { dir } = userImageLocation(userId);
+    if (!fs.existsSync(dir)) return 0;
+    const count = fs.readdirSync(dir).length;
+    fs.rmSync(dir, { recursive: true, force: true });
+    return count;
 }
 
 /**
@@ -129,4 +195,6 @@ function thumbnailUrl(imageUrl) {
     return imageUrl;
 }
 
-export { sniffImage, storeImage, thumbnailUrl };
+export {
+    sniffImage, storeImage, storeImageFiles, adoptImage, thumbnailUrl, deleteUserImages, userImageLocation,
+};

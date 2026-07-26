@@ -5,20 +5,25 @@
 // images, so this rescues what still exists. Two independent phases:
 //
 //   FETCH — download each id's 640px variant (what the site serves today),
-//   convert through the upload pipeline (server/images.js), and record the
-//   outcome in a ledger file. Needs no database when run from a dump, so it
-//   can run from any machine imgur doesn't block, days before the migration:
+//   convert through the upload pipeline (server/images.js) into a staging
+//   directory, and record the outcome in a ledger file. Needs no database when
+//   run from a dump, so it can run from any machine imgur doesn't block, days
+//   before the migration:
 //     node scripts/mirror-imgur-images.js --fetch --dump logs/users-2026-07-14.json.gz
 //     node scripts/mirror-imgur-images.js --fetch            (ids from postgres)
-//   The ledger (and public/userimages/) must ship to the server with the
-//   fetched files. Resume is automatic: ids already in the ledger are skipped,
-//   transient errors are retried on the next run. Throttled via --delay ms
-//   (default 1000); --limit N caps new fetches per run.
+//   The ledger and the staging directory must both ship to the server. Resume
+//   is automatic: ids already in the ledger are skipped, transient errors are
+//   retried on the next run. Throttled via --delay ms (default 1000); --limit N
+//   caps new fetches per run.
 //
-//   REWRITE — post-migration, on the server: point items at the mirrored
-//   files (sets imageUrl, clears the imgur id) for every id the ledger has:
+//   REWRITE — post-migration, on the server: give each user their own copy of
+//   the staged files and point their items at them (sets imageUrl, clears the
+//   imgur id) for every id the ledger has:
 //     node scripts/mirror-imgur-images.js --rewrite           (dry run)
 //     node scripts/mirror-imgur-images.js --rewrite --live
+//   Staging exists because images are stored per user (see server/images.js):
+//   one fetch per imgur id, then a copy for each user that references it — 84
+//   of production's 270k ids are held by more than one user.
 //   Items whose image is dead at imgur (removed/notfound) are left alone by
 //   default so nothing is destroyed; add --clear-dead to blank those refs.
 //   Same safety story as convert-datauri-images.js: guarded per-user updates,
@@ -36,9 +41,12 @@ import config from 'config';
 import Knex from 'knex';
 import cloneDeep from 'lodash/cloneDeep.js';
 
-import { sniffImage, storeImage } from '../server/images.js';
+import { sniffImage, storeImageFiles, adoptImage, userImageLocation } from '../server/images.js';
 
 const BATCH_SIZE = 50;
+// Fetched images land here, converted but unowned; rewrite copies each one
+// into the directory of every user whose library references it.
+const DEFAULT_STAGING_DIR = 'logs/imgur-mirror-staging';
 const LEDGER_SAVE_EVERY = 200;
 const IMGUR_ID_RE = /^[A-Za-z0-9]{5,8}$/;
 // Deleted images 302 to this placeholder instead of 404ing.
@@ -62,9 +70,11 @@ function isRemovedImage(finalUrl, buf) {
 
 /**
  * Point items at mirrored files using the ledger (mutates the library).
+ * `adopt(id)` returns the URL for this user's own copy of a staged image;
+ * tests pass a stub, so no files are touched unless a real one is supplied.
  * Returns { rewritten, dead, deadCleared, unfetched }.
  */
-function rewriteLibraryImages(library, ledgerImages, { clearDead = false } = {}) {
+function rewriteLibraryImages(library, ledgerImages, { clearDead = false, adopt = null } = {}) {
     const stats = { rewritten: 0, dead: 0, deadCleared: 0, unfetched: 0 };
     for (const item of library.items || []) {
         if (typeof item.image !== 'string' || !IMGUR_ID_RE.test(item.image)) continue;
@@ -72,7 +82,7 @@ function rewriteLibraryImages(library, ledgerImages, { clearDead = false } = {})
         if (!entry) {
             stats.unfetched += 1;
         } else if (entry.status === 'ok') {
-            item.imageUrl = entry.url;
+            item.imageUrl = adopt ? adopt(entry.id) : entry.id;
             item.image = '';
             stats.rewritten += 1;
         } else {
@@ -142,7 +152,7 @@ async function idsFromDatabase(knex) {
     return ids;
 }
 
-async function fetchImgurImage(id) {
+async function fetchImgurImage(id, stagingDir) {
     const response = await fetch(`https://i.imgur.com/${id}l.jpg`, {
         redirect: 'follow',
         signal: AbortSignal.timeout(30000),
@@ -164,8 +174,8 @@ async function fetchImgurImage(id) {
     const tmpPath = path.join(os.tmpdir(), `lp-imgur-${process.pid}-${crypto.randomBytes(6).toString('hex')}`);
     fs.writeFileSync(tmpPath, buf);
     try {
-        const { imageUrl } = await storeImage(tmpPath, buf, sniffed.width);
-        return { status: 'ok', url: imageUrl };
+        const storedId = await storeImageFiles(tmpPath, buf, sniffed.width, stagingDir);
+        return { status: 'ok', id: storedId };
     } finally {
         fs.rmSync(tmpPath, { force: true });
     }
@@ -173,7 +183,7 @@ async function fetchImgurImage(id) {
 
 const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
-async function runFetch({ dumpPath, ledgerPath, delayMs, maxFetches }) {
+async function runFetch({ dumpPath, ledgerPath, delayMs, maxFetches, stagingDir }) {
     const ledger = loadLedger(ledgerPath);
     let knex = null;
     let ids;
@@ -201,7 +211,7 @@ async function runFetch({ dumpPath, ledgerPath, delayMs, maxFetches }) {
     for (const id of pending) {
         if (interrupted || fetched >= maxFetches) break;
         try {
-            const outcome = await fetchImgurImage(id);
+            const outcome = await fetchImgurImage(id, stagingDir);
             ledger.images[id] = outcome;
             counts[outcome.status] += 1;
             consecutiveErrors = 0;
@@ -234,19 +244,25 @@ async function runFetch({ dumpPath, ledgerPath, delayMs, maxFetches }) {
     console.log('');
     console.log(`this run:      ${counts.ok} mirrored, ${counts.removed} removed, ${counts.notfound} not found, ${counts.unsupported} unsupported, ${counts.errors} errors`);
     console.log(`ledger:        ${total}/${ids.size} ids resolved (${ledgerPath})`);
+    console.log(`staged files:  ${stagingDir} — ship this with the ledger`);
     if (total < ids.size) console.log(`remaining:     ${ids.size - total} — rerun to continue`);
     if (interrupted) process.exit(130);
 }
 
-async function runRewrite({ ledgerPath, live, clearDead, onlyUser }) {
+async function runRewrite({ ledgerPath, live, clearDead, onlyUser, stagingDir }) {
     const ledger = loadLedger(ledgerPath);
     const known = Object.keys(ledger.images).length;
     if (known === 0) {
         console.error(`ledger ${ledgerPath} is empty or missing — run --fetch first`);
         process.exit(1);
     }
+    if (!fs.existsSync(stagingDir)) {
+        console.error(`staging directory ${stagingDir} is missing — it holds the fetched files and must ship with the ledger`);
+        process.exit(1);
+    }
     console.log(live ? 'LIVE RUN — rewriting libraries' : 'Dry run — no rows updated (--live to apply)');
     console.log(`ledger: ${known} resolved ids (${ledgerPath})`);
+    console.log(`staged: ${stagingDir}`);
 
     const knex = makeKnex();
     const totals = { matched: 0, usersRewritten: 0, raced: 0, rewritten: 0, dead: 0, deadCleared: 0, unfetched: 0 };
@@ -267,7 +283,13 @@ async function runRewrite({ ledgerPath, live, clearDead, onlyUser }) {
         for (const row of rows) {
             totals.matched += 1;
             const library = typeof row.library === 'string' ? JSON.parse(row.library) : row.library;
-            const stats = rewriteLibraryImages(library, ledger.images, { clearDead });
+            // Each user gets their own copy of the staged file. A dry run works
+            // out the same URL without writing anything. On a lost update the
+            // copy is left behind and reused when the next run retries the row.
+            const adopt = live
+                ? (id) => adoptImage(stagingDir, id, row.user_id)
+                : (id) => `${userImageLocation(row.user_id).urlPath}/${id}.webp`;
+            const stats = rewriteLibraryImages(library, ledger.images, { clearDead, adopt });
             for (const key of ['rewritten', 'dead', 'deadCleared', 'unfetched']) totals[key] += stats[key];
             if (stats.rewritten === 0 && stats.deadCleared === 0) continue;
 
@@ -311,11 +333,12 @@ async function main() {
     };
     const mode = args.includes('--fetch') ? 'fetch' : (args.includes('--rewrite') ? 'rewrite' : null);
     if (!mode) {
-        console.error('usage: mirror-imgur-images.js --fetch [--dump file.json[.gz]] [--delay ms] [--limit n] [--ledger file]');
-        console.error('       mirror-imgur-images.js --rewrite [--live] [--clear-dead] [--user name] [--ledger file]');
+        console.error('usage: mirror-imgur-images.js --fetch [--dump file.json[.gz]] [--delay ms] [--limit n] [--ledger file] [--staging dir]');
+        console.error('       mirror-imgur-images.js --rewrite [--live] [--clear-dead] [--user name] [--ledger file] [--staging dir]');
         process.exit(1);
     }
     const ledgerPath = flagValue('--ledger') || 'logs/imgur-mirror-ledger.json';
+    const stagingDir = flagValue('--staging') || DEFAULT_STAGING_DIR;
 
     if (mode === 'fetch') {
         const delayMs = flagValue('--delay') ? parseInt(flagValue('--delay'), 10) : 1000;
@@ -324,13 +347,14 @@ async function main() {
             console.error('--delay must be >= 0 and --limit must be positive');
             process.exit(1);
         }
-        await runFetch({ dumpPath: flagValue('--dump'), ledgerPath, delayMs, maxFetches });
+        await runFetch({ dumpPath: flagValue('--dump'), ledgerPath, delayMs, maxFetches, stagingDir });
     } else {
         await runRewrite({
             ledgerPath,
             live: args.includes('--live'),
             clearDead: args.includes('--clear-dead'),
             onlyUser: flagValue('--user'),
+            stagingDir,
         });
     }
 }

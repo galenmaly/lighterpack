@@ -5,6 +5,12 @@ import { createCategory, addItem } from './test-helpers';
 
 // Requires cwebp on the machine running the server (apt install webp).
 
+// A valid 8x8 png (verified against cwebp), small enough to skip resizing.
+const PNG_8X8 = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAD0lEQVR4nGM4gwMwDC0JAMg9mQEkEhIxAAAAAElFTkSuQmCC',
+  'base64',
+);
+
 test.describe('Image upload', () => {
   test('uploads an image, shows the hosted thumbnail, and renders it on the share page', async ({ page }) => {
     const { username, password, email } = generateTestUser('imgupload');
@@ -17,16 +23,11 @@ test.describe('Image upload', () => {
     await row.hover();
     await row.getByTitle('Upload a photo or use a photo from the web').click();
 
-    // A valid 8x8 png (verified against cwebp), small enough to skip resizing.
-    const png = Buffer.from(
-      'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAD0lEQVR4nGM4gwMwDC0JAMg9mQEkEhIxAAAAAElFTkSuQmCC',
-      'base64',
-    );
-    await page.locator('#image').setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: png });
+    await page.locator('#image').setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: PNG_8X8 });
 
     const thumb = row.locator('img.lpItemImage');
     await expect(thumb).toBeVisible();
-    await expect(thumb).toHaveAttribute('src', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}_t\.webp/);
+    await expect(thumb).toHaveAttribute('src', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}\/[0-9a-f]{16}_t\.webp/);
 
     // The hosted files are really served.
     const thumbSrc = new URL((await thumb.getAttribute('src'))!, page.url()).toString();
@@ -46,8 +47,36 @@ test.describe('Image upload', () => {
     await page.goto(shareUrl);
     const shareImg = page.locator('img.lpItemImage');
     await expect(shareImg).toBeVisible();
-    await expect(shareImg).toHaveAttribute('src', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}_t\.webp/);
-    await expect(shareImg).toHaveAttribute('href', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}\.webp/);
+    await expect(shareImg).toHaveAttribute('src', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}\/[0-9a-f]{16}_t\.webp/);
+    await expect(shareImg).toHaveAttribute('href', /\/userimages\/[0-9a-f]{2}\/[0-9a-f]{16}\/[0-9a-f]{16}\.webp/);
+  });
+
+  test('deleting an account removes the photos it uploaded', async ({ page }) => {
+    const { username, password, email } = generateTestUser('imgdelete');
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
+
+    const category = await createCategory(page, 'Photo Gear');
+    const row = await addItem(category, 'Camera', { weight: '12' });
+
+    await row.hover();
+    await row.getByTitle('Upload a photo or use a photo from the web').click();
+    await page.locator('#image').setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: PNG_8X8 });
+
+    const thumb = row.locator('img.lpItemImage');
+    await expect(thumb).toBeVisible();
+    const thumbUrl = new URL((await thumb.getAttribute('src'))!, page.url()).toString();
+    const displayUrl = thumbUrl.replace('_t.webp', '.webp');
+    expect((await page.request.get(thumbUrl)).status()).toBe(200);
+    expect((await page.request.get(displayUrl)).status()).toBe(200);
+
+    const deleteUrl = new URL('/delete-account', page.url()).toString();
+    const deleted = await page.request.post(deleteUrl, { data: { username, password } });
+    expect(deleted.status()).toBe(200);
+
+    // Both variants are gone from disk, not merely unreferenced.
+    expect((await page.request.get(thumbUrl)).status()).toBe(404);
+    expect((await page.request.get(displayUrl)).status()).toBe(404);
   });
 
   test('rejects a file that is not an image', async ({ page }) => {

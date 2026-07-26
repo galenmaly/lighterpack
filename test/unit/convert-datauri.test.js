@@ -48,13 +48,13 @@ describe('sweepLibraryImages', () => {
 
     test('live run rewrites only convertible data uris', async () => {
         const library = makeLibrary();
-        const stats = await sweepLibraryImages(library, async () => '/userimages/ab/abcdef1234567890.webp');
+        const stats = await sweepLibraryImages(library, async () => '/userimages/cd/cdef567890abcdef/abcdef1234567890.webp');
         assert.equal(stats.converted, 1);
-        assert.equal(library.items[0].imageUrl, '/userimages/ab/abcdef1234567890.webp');
+        assert.equal(library.items[0].imageUrl, '/userimages/cd/cdef567890abcdef/abcdef1234567890.webp');
         assert.equal(library.items[1].imageUrl, 'https://example.com/photo.jpg');
         assert.equal(library.items[3].imageUrl, AVIF_DATA_URI);
         assert.equal(stats.bytesBefore, PNG_DATA_URI.length);
-        assert.equal(stats.bytesAfter, '/userimages/ab/abcdef1234567890.webp'.length);
+        assert.equal(stats.bytesAfter, '/userimages/cd/cdef567890abcdef/abcdef1234567890.webp'.length);
     });
 
     test('a conversion failure leaves the item untouched', async () => {

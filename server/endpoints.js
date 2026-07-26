@@ -10,7 +10,7 @@ import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
 import { authenticateUser, verifyPassword, generateSession, sessionCookieOptions, issueResetToken, hashResetToken, resetPasswordUrl, RESET_TOKEN_TTL_MS } from './auth.js';
-import { sniffImage, storeImage } from './images.js';
+import { sniffImage, storeImage, deleteUserImages } from './images.js';
 import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
@@ -545,6 +545,16 @@ async function deleteAccount(req, res, user) {
 
         logWithRequest(req, { message: 'Completed account delete', username: user.username });
 
+        // After the commit, so a rolled-back delete never destroys photos. Best
+        // effort: the account itself is already gone, and leaving files behind
+        // is recoverable in a way that failing the request to the user is not.
+        try {
+            const removed = deleteUserImages(user.user_id);
+            logWithRequest(req, { message: 'Deleted account images', username: user.username, removed });
+        } catch (err) {
+            logWithRequest(req, { message: 'Account image cleanup failed', username: user.username, err });
+        }
+
         return res.status(200).json({ message: 'success' });
     } catch (err) {
         logWithRequest(req, { message: 'Account delete failed', username: user.username, err });
@@ -598,7 +608,7 @@ async function imageUpload(req, res, user) {
             return res.status(400).json({ message: 'Please upload a JPEG, PNG, or WebP image.' });
         }
 
-        const { imageUrl } = await storeImage(upload.filepath, buf, sniffed.width);
+        const { imageUrl } = await storeImage(upload.filepath, buf, sniffed.width, user.user_id);
         logWithRequest(req, {
             message: 'image stored', username: user.username, imageUrl, type: sniffed.type, width: sniffed.width, height: sniffed.height,
         });

@@ -39,9 +39,13 @@ describe('isRemovedImage', () => {
 
 describe('rewriteLibraryImages', () => {
     const ledgerImages = {
-        Q6pIESl: { status: 'ok', url: '/userimages/ab/abcdef1234567890.webp' },
+        Q6pIESl: { status: 'ok', id: 'abcdef1234567890' },
         deadone: { status: 'removed' },
     };
+
+    // Stands in for adoptImage, which copies staged files into a user's
+    // directory; the rewrite itself only cares about the URL that comes back.
+    const adopt = (id) => `/userimages/cd/cdef567890abcdef/${id}.webp`;
 
     function makeLibrary() {
         return {
@@ -54,17 +58,17 @@ describe('rewriteLibraryImages', () => {
         };
     }
 
-    test('points mirrored items at hosted files and clears the imgur id', () => {
+    test('points mirrored items at the user\'s own copy and clears the imgur id', () => {
         const library = makeLibrary();
-        const stats = rewriteLibraryImages(library, ledgerImages);
+        const stats = rewriteLibraryImages(library, ledgerImages, { adopt });
         assert.equal(stats.rewritten, 1);
         assert.equal(library.items[0].image, '');
-        assert.equal(library.items[0].imageUrl, '/userimages/ab/abcdef1234567890.webp');
+        assert.equal(library.items[0].imageUrl, '/userimages/cd/cdef567890abcdef/abcdef1234567890.webp');
     });
 
     test('leaves dead and unfetched ids in place by default', () => {
         const library = makeLibrary();
-        const stats = rewriteLibraryImages(library, ledgerImages);
+        const stats = rewriteLibraryImages(library, ledgerImages, { adopt });
         assert.equal(stats.dead, 1);
         assert.equal(stats.deadCleared, 0);
         assert.equal(stats.unfetched, 1);
@@ -75,7 +79,7 @@ describe('rewriteLibraryImages', () => {
 
     test('clears dead ids with clearDead', () => {
         const library = makeLibrary();
-        const stats = rewriteLibraryImages(library, ledgerImages, { clearDead: true });
+        const stats = rewriteLibraryImages(library, ledgerImages, { clearDead: true, adopt });
         assert.equal(stats.deadCleared, 1);
         assert.equal(library.items[1].image, '');
         assert.equal(library.items[2].image, 'notinled'); // unfetched still untouched

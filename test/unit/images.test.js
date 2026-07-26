@@ -1,7 +1,11 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { sniffImage, thumbnailUrl } from '../../server/images.js';
+import {
+    sniffImage, thumbnailUrl, userImageLocation, deleteUserImages,
+} from '../../server/images.js';
 
 // Real 1x1 images for end-to-end sniffing sanity.
 const PNG_1X1 = Buffer.from(
@@ -81,12 +85,75 @@ describe('sniffImage', () => {
 
 describe('thumbnailUrl', () => {
     test('derives _t variant for locally hosted uploads', () => {
-        assert.equal(thumbnailUrl('/userimages/ab/abcdef1234567890.webp'), '/userimages/ab/abcdef1234567890_t.webp');
+        assert.equal(
+            thumbnailUrl('/userimages/cd/cdef567890abcdef/abcdef1234567890.webp'),
+            '/userimages/cd/cdef567890abcdef/abcdef1234567890_t.webp',
+        );
     });
 
     test('passes external urls through unchanged', () => {
         assert.equal(thumbnailUrl('https://example.com/photo.jpg'), 'https://example.com/photo.jpg');
         assert.equal(thumbnailUrl(''), '');
         assert.equal(thumbnailUrl(undefined), undefined);
+    });
+});
+
+describe('userImageLocation', () => {
+    const userId = '523a29bf-5710-3ffb-3400-000000000002';
+
+    test('is stable for a user and different between users', () => {
+        assert.equal(userImageLocation(userId).urlPath, userImageLocation(userId).urlPath);
+        assert.notEqual(userImageLocation(userId).urlPath, userImageLocation('other-user').urlPath);
+    });
+
+    test('keeps the user_id out of the url', () => {
+        assert.ok(!userImageLocation(userId).urlPath.includes(userId));
+    });
+
+    test('shards on the first two characters of the token', () => {
+        const { urlPath } = userImageLocation(userId);
+        const [, , shard, token] = urlPath.split('/');
+        assert.match(token, /^[0-9a-f]{16}$/);
+        assert.equal(shard, token.slice(0, 2));
+    });
+
+    test('urlPath and dir agree', () => {
+        const { urlPath, dir } = userImageLocation(userId);
+        const [shard, token] = urlPath.split('/').slice(2);
+        assert.equal(path.basename(dir), token);
+        assert.equal(path.basename(path.dirname(dir)), shard);
+    });
+});
+
+describe('deleteUserImages', () => {
+    const userId = 'delete-me-user';
+
+    test('removes every file the user owns and is safe to repeat', () => {
+        const { dir } = userImageLocation(userId);
+        fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(path.join(dir, 'abcdef1234567890.webp'), 'display');
+        fs.writeFileSync(path.join(dir, 'abcdef1234567890_t.webp'), 'thumb');
+
+        assert.equal(deleteUserImages(userId), 2);
+        assert.equal(fs.existsSync(dir), false);
+        // A user who never uploaded anything is not an error.
+        assert.equal(deleteUserImages(userId), 0);
+    });
+
+    test('leaves another user\'s copy of the same image alone', () => {
+        const keeper = 'keeper-user';
+        const { dir: goingDir } = userImageLocation(userId);
+        const { dir: keeperDir } = userImageLocation(keeper);
+        for (const dir of [goingDir, keeperDir]) {
+            fs.mkdirSync(dir, { recursive: true });
+            // Same bytes, so the same filename — the case content-addressing
+            // used to collapse into one shared file.
+            fs.writeFileSync(path.join(dir, 'deadbeefdeadbeef.webp'), 'same bytes');
+        }
+
+        deleteUserImages(userId);
+
+        assert.equal(fs.existsSync(path.join(keeperDir, 'deadbeefdeadbeef.webp')), true);
+        fs.rmSync(keeperDir, { recursive: true, force: true });
     });
 });
