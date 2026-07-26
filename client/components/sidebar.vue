@@ -47,7 +47,7 @@ export default {
     background: var(--lp-sidebar-bg);
     clip-path: inset(-100vh -100vw);
     color: var(--lp-sidebar-text);
-    flex: 0 0 220px;
+    flex: 0 0 250px;
     min-width: 0;
     transition: flex-basis $transitionDurationSlow, clip-path 0s $transitionDurationSlow, background $transitionDurationSlow;
     z-index: $sidebar;
@@ -69,7 +69,7 @@ export default {
     position: sticky;
     top: 0;
     transition: opacity $transitionDurationSlow;
-    width: 220px;
+    width: 250px;
 
     #main:not(.lpHasSidebar) & {
         opacity: 0;
@@ -78,10 +78,10 @@ export default {
 
 #sidebar .lpWordmark {
     flex: 0 0 auto;
-    font-size: 17px;
+    font-size: 22px;
     font-weight: 700;
     margin: 0;
-    padding: 16px 18px 10px;
+    padding: 18px 18px 24px;
 }
 
 .lpSidebarDivider {
@@ -100,7 +100,7 @@ export default {
 .lpSectionLabel {
     color: var(--lp-sidebar-muted);
     flex: 1 1 auto;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -109,7 +109,7 @@ export default {
 .lpSidebarNew {
     color: var(--lp-accent-green-deep);
     cursor: pointer;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
 
     &:hover {

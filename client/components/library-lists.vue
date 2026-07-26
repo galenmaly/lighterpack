@@ -121,7 +121,7 @@ export default {
 
     #lists {
         margin: 0;
-        max-height: 240px;
+        max-height: 280px;
         padding: 0;
     }
 }
@@ -133,7 +133,7 @@ export default {
     display: flex;
     font-size: 13px;
     list-style: none;
-    padding: 5px 8px 5px 20px;
+    padding: 6px 8px 6px 20px;
     position: relative;
 
     &:hover {
@@ -142,7 +142,6 @@ export default {
 
     &.lpActive {
         background: var(--lp-sidebar-inset);
-        box-shadow: inset 3px 0 0 var(--lp-active-yellow);
         color: var(--lp-active-yellow);
         font-weight: 600;
 

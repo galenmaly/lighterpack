@@ -18,9 +18,11 @@
                             {{ item.authorUnit }}
                         </span>
                     </span>
-                    <span class="lpDescription">{{ item.description }}</span>
+                    <span class="lpLibraryItemBottomline">
+                        <span class="lpDescription">{{ item.description }}</span>
+                        <a class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently" @click="removeItem(item)"><i class="lpSprite lpSpriteRemove" /></a>
+                    </span>
                 </span>
-                <a class="lpRemove lpRemoveLibraryItem speedbump" title="Delete this item permanently" @click="removeItem(item)"><i class="lpSprite lpSpriteRemove" /></a>
             </li>
         </ul>
     </section>
@@ -151,7 +153,7 @@ export default {
     flex: 1 1 0;
     flex-direction: column;
     min-height: 0;
-    padding-top: 3px;
+    padding-top: 12px;
 }
 
 #library {
@@ -170,7 +172,7 @@ export default {
     display: flex;
     flex: 0 0 auto;
     gap: 7px;
-    margin: 0 14px 8px;
+    margin: 8px 14px;
     padding: 6px 10px;
 
     svg {
@@ -182,7 +184,7 @@ export default {
         border: none;
         color: var(--lp-sidebar-text);
         flex: 1 1 auto;
-        font-size: 12px;
+        font-size: 13px;
         min-width: 0;
         outline: none;
         padding: 0;
@@ -208,17 +210,12 @@ export default {
         color: var(--lp-sidebar-text);
     }
 
-    // The handle lives in the row's left padding rather than in flow, so rows
-    // line up identically whether or not the item is already in the list.
-    // Lopsided padding slides the glyph to the left of its box, opening up the
-    // gap to the item name while the 16px grab target keeps its full width.
-    // (The rail scrolls, so a negative offset would be clipped instead.)
     .lpHandle {
         left: 2px;
         margin: 0;
-        padding: 4px 9px 4px 1px;
+        padding: 3px 9px 20px 1px;
         position: absolute;
-        top: 2px;
+        top: 0;
     }
 
     .lpLibraryItemBody {
@@ -230,6 +227,13 @@ export default {
     .lpLibraryItemTopline {
         align-items: baseline;
         display: flex;
+        gap: 8px;
+    }
+
+    .lpLibraryItemBottomline {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
         gap: 8px;
     }
 
