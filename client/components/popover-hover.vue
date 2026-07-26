@@ -1,11 +1,14 @@
 <template>
-    <div @mouseenter="onPointerEnter" @mouseleave="onPointerLeave" @click="toggleOnTap">
-        <Popover :shown="shown" @hide="hide">
+    <div @mouseenter="onPointerEnter" @mouseleave="onPointerLeave">
+        <Popover :shown="shown" @hide="hide" @target-tap="toggleOnTap">
             <template #target>
                 <slot name="target" />
             </template>
+            <!-- Menus whose items act and then get out of the way close
+                 themselves with this; the controls that hold state (toggles,
+                 text boxes) leave it alone and the menu stays put. -->
             <template #content>
-                <slot name="content" />
+                <slot name="content" :hide="hide" />
             </template>
         </Popover>
     </div>

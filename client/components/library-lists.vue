@@ -6,11 +6,11 @@
                 <template #target>
                     <span><a class="lpSidebarNew" data-testid="new-list" @click="newListFromTarget">+ New</a></span>
                 </template>
-                <template #content>
+                <template #content="{ hide }">
                     <div>
-                        <a class="lpAdd" data-testid="new-list-blank" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
-                        <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
-                        <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
+                        <a class="lpAdd" data-testid="new-list-blank" @click="hide(); newList()"><i class="lpSprite lpSpriteAdd" />Add new list</a>
+                        <a class="lpCopy" @click="hide(); copyList()"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
+                        <a class="lpAdd" @click="hide(); importCSV()"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
                     </div>
                 </template>
             </PopoverHover>

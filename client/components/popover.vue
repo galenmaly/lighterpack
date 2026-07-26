@@ -15,7 +15,11 @@
                 <div v-if="shown" class="lpPopoverScrim" data-testid="popover-scrim" @click.stop="hide" />
             </transition>
         </Teleport>
-        <div class="lpTarget">
+        <!-- The tap that opens the menu is caught here rather than on a wrapper
+             around the whole popover: content and target share that wrapper, so
+             taps on the controls inside an open menu were read as taps on the
+             button that opens it. -->
+        <div class="lpTarget" @click="$emit('target-tap')">
             <slot name="target" />
         </div>
         <div class="lpContent">
@@ -37,7 +41,7 @@ export default {
             required: true,
         },
     },
-    emits: ['hide'],
+    emits: ['hide', 'target-tap'],
     beforeMount() {
         this.bindEscape();
     },

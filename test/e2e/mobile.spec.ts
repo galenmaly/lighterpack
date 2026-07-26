@@ -303,6 +303,87 @@ test.describe('Phone header', () => {
     await page.getByTestId('account-menu').tap();
     await expect(popover).toHaveClass(/lpPopoverShown/);
   });
+
+  // The tap handler that opens these menus sat on a wrapper around the whole
+  // popover, content included, so every tap on a control inside one was read
+  // as another tap on the button that opens it. Settings was unusable: the
+  // toggles are labels, which fire a second click on their checkbox, so the
+  // menu closed and reopened on each one — a visible flash of the scrim — and
+  // the currency box closed the menu outright before it could take focus.
+  test('a toggle inside a menu leaves the menu open', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.locator('#settings .lpTarget').tap();
+    const popover = page.locator('#settings .lpPopover');
+    await expect(popover).toHaveClass(/lpPopoverShown/);
+
+    // Watch the open/closed state across the tap rather than only after it: a
+    // close followed by a reopen settles back on "shown" and sails past a bare
+    // end-state assertion. The class is what the scrim's v-if keys off, and it
+    // flips even when the leave transition is cancelled before the scrim
+    // actually leaves the DOM.
+    await page.evaluate(() => {
+      const w = window as unknown as { __shownFlips: number };
+      w.__shownFlips = 0;
+      new MutationObserver(() => { w.__shownFlips += 1; })
+        .observe(document.querySelector('#settings .lpPopover')!, {
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+    });
+
+    await page.getByText('Item prices', { exact: true }).tap();
+
+    await expect(popover).toHaveClass(/lpPopoverShown/);
+    await expect(page.getByTestId('popover-scrim')).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as { __shownFlips: number }).__shownFlips)).toBe(0);
+    expect(await page.locator('#lpOptionalFields input').nth(1).isChecked()).toBe(true);
+  });
+
+  test('the currency box inside the Settings menu takes focus', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.locator('#settings .lpTarget').tap();
+    await page.getByText('Item prices', { exact: true }).tap();
+
+    const currency = page.locator('#currencySymbol');
+    await expect(currency).toBeVisible();
+    await currency.tap();
+
+    await expect(page.locator('#settings .lpPopover')).toHaveClass(/lpPopoverShown/);
+    await expect(currency).toBeFocused();
+
+    await currency.fill('£');
+    await expect(page.locator('#settings .lpPopover')).toHaveClass(/lpPopoverShown/);
+  });
+
+  // Picking an action from a menu still has to dismiss it — otherwise the menu
+  // and its scrim sit over whatever the action just opened.
+  test('choosing an action from a menu dismisses it', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.getByTestId('account-menu').tap();
+    await expect(page.locator('#accountPopover .lpPopover')).toHaveClass(/lpPopoverShown/);
+
+    await page.locator('#accountPopover .lpContent').getByText('Help', { exact: true }).tap();
+
+    await expect(page.locator('#accountPopover .lpPopover')).not.toHaveClass(/lpPopoverShown/);
+    await expect(page.getByTestId('popover-scrim')).toHaveCount(0);
+  });
+
+  // The dark-mode switch lives in the same menu as those actions and must not
+  // be swept up by them.
+  test('the dark mode switch leaves the account menu open', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.getByTestId('account-menu').tap();
+    const wasDark = await page.getByTestId('dark-mode-toggle').isChecked();
+
+    await page.locator('#accountPopover .lpContent').getByText('Dark mode', { exact: true }).tap();
+
+    await expect(page.locator('#accountPopover .lpPopover')).toHaveClass(/lpPopoverShown/);
+    expect(await page.getByTestId('dark-mode-toggle').isChecked()).toBe(!wasDark);
+  });
 });
 
 test.describe('Phone chrome fits the viewport', () => {

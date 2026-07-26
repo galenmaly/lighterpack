@@ -4,15 +4,17 @@
             <template #target>
                 <span class="lpAvatar" :title="username">{{ initial }}</span>
             </template>
-            <template #content>
+            <template #content="{ hide }">
                 <div class="lpAccountMenu">
                     <div class="lpAccountMenuUser">
                         Signed in as <span class="username">{{ username }}</span>
                     </div>
                     <hr>
-                    <a class="lpHref accountSettings" @click="showAccount">Account Settings</a><br>
-                    <a class="lpHref" @click="showHelp">Help</a>
+                    <a class="lpHref accountSettings" @click="hide(); showAccount()">Account Settings</a><br>
+                    <a class="lpHref" @click="hide(); showHelp()">Help</a>
                     <hr>
+                    <!-- No hide(): the switch is a setting, not an errand, so
+                         the menu stays open to show it flip. -->
                     <toggle
                         class="lpAccountMenuTheme"
                         :model-value="isDark"
@@ -22,7 +24,7 @@
                         Dark mode
                     </toggle>
                     <hr>
-                    <a class="lpHref signout" @click="signout">Sign Out</a>
+                    <a class="lpHref signout" @click="hide(); signout()">Sign Out</a>
                 </div>
             </template>
         </PopoverHover>
