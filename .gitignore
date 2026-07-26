@@ -2,6 +2,7 @@ extIds.txt
 node_modules
 .DS_Store
 /config/local.json
+/config/readonly.json
 /public/dist/*
 app.sublime-project
 app.sublime-workspace

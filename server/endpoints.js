@@ -13,6 +13,7 @@ const config = require('config');
 const { logWithRequest } = require('./log.js');
 
 const { authenticateUser, verifyPassword } = require('./auth.js');
+const { isReadOnly } = require('./readonly.js');
 
 let mailgun;
 
@@ -124,7 +125,11 @@ function returnLibrary(req, res, user) {
     logWithRequest(req, { message: 'signed in', username: user.username });
     if (!user.syncToken) {
         user.syncToken = 0;
-        db.users.save(user);
+        // /signin has to stay open while read-only so people can still load their lists,
+        // which makes this backfill the one write the guard never sees.
+        if (!isReadOnly()) {
+            db.users.save(user);
+        }
     }
     return res.json({ username: user.username, library: JSON.stringify(user.library), syncToken: user.syncToken });
 }

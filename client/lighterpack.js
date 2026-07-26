@@ -5,6 +5,7 @@ import VueRouter from 'vue-router';
 
 import routes from './routes';
 import store from './store/store';
+import readonlyBanner from './components/readonly-banner.vue';
 
 const focusDirectives = require('./utils/focus.js');
 const dataTypes = require('./dataTypes.js');
@@ -44,6 +45,9 @@ var initLighterPack = function () {
     window.LighterPack = new Vue({
         router,
         store,
+        components: {
+            readonlyBanner, // rendered from _index.html, above the router-view
+        },
         data: {
             path: '',
             fatal: '',

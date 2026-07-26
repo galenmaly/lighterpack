@@ -10,6 +10,7 @@ const markdown = require('markdown').markdown;
 const config = require('config');
 const mongojs = require('mongojs');
 const { logWithRequest, logger } = require('./log.js');
+const { renderClientScript } = require('./readonly.js');
 
 const collections = ['users', 'libraries'];
 const db = mongojs(config.get('databaseUrl'), collections);
@@ -76,9 +77,18 @@ if (config.get('environment') === 'production') {
 index = index.replace('{{styles}}', appStylesHtml);
 index = index.replace('{{scripts}}', appScriptsHtml);
 
+/*
+    Rendered per request rather than once at startup, so editing config/readonly.json
+    changes the banner on the next page load with no restart.
+*/
+function renderIndex() {
+    // Function replacement, so '$&' and friends in the message stay literal.
+    return index.replace('{{readonly}}', () => renderClientScript());
+}
+
 for (let i = 0; i < vueRoutes.length; i++) {
     router.get(vueRoutes[i].path, (req, res) => {
-        res.send(index);
+        res.send(renderIndex());
     });
 }
 

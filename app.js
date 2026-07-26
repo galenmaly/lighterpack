@@ -8,7 +8,8 @@ const express = require('express');
 const morgan = require('morgan');
 const uuid = require('uuid');
 
-const { logger } = require('./server/log.js');
+const { logger, logWithRequest } = require('./server/log.js');
+const { createGuard, getReadOnly } = require('./server/readonly.js');
 
 morgan.token('username', function getUsername (req) {
     return req.lighterpackusername
@@ -48,6 +49,10 @@ const oneDay = 86400000;
 
 app.use(compression());
 app.use(cookieParser());
+
+// Ahead of the body parsers, so a rejected save is not read into memory first.
+app.use(createGuard(logWithRequest));
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({
     extended: true,
@@ -64,6 +69,10 @@ app.use('/', moderationEndpoints);
 app.use('/', views);
 
 logger.info("Starting up Lighterpack...");
+
+if (getReadOnly().enabled) {
+    logger.info("Read-only mode is ON - writes will be rejected. See config/readonly.json.");
+}
 
 if (config.get('environment') === 'production') {
     webpackConfig = require('./webpack.config');

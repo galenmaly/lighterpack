@@ -14,6 +14,24 @@ const saveInterval = 10000;
 
 Vue.use(Vuex);
 
+/*
+    Read-only mode is decided by the server and injected into the page as
+    window.lpReadOnly - see server/readonly.js. Reading it once at startup is enough;
+    the guard on the server is what actually protects the database.
+*/
+function readOnlyState() {
+    const injected = typeof window !== 'undefined' && window.lpReadOnly;
+
+    if (!injected || injected.enabled !== true) {
+        return { enabled: false, message: '' };
+    }
+
+    return {
+        enabled: true,
+        message: injected.message || 'LighterPack is temporarily read-only. Changes you make right now will not be saved.',
+    };
+}
+
 const store = new Vuex.Store({
     state: {
         library: false,
@@ -24,6 +42,7 @@ const store = new Vuex.Store({
         loggedIn: false,
         directiveInstances: {},
         globalAlerts: [],
+        readOnly: readOnlyState(),
     },
     getters: {
         activeList(state) {
@@ -355,6 +374,12 @@ const store = new Vuex.Store({
                 };
 
                 if (state.saveType === 'remote') {
+                    // The server would reject this with a 503 anyway; not sending it keeps
+                    // people from collecting an error alert every ten seconds. Local
+                    // (signed out) saves stay on - they never touch our database.
+                    if (state.readOnly.enabled) {
+                        return;
+                    }
                     saveRemotely(saveData);
                 } else if (state.saveType === 'local') {
                     localStorage.library = saveData;
