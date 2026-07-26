@@ -1,0 +1,5 @@
+// Stylesheet for server-rendered long-form document pages (/privacy).
+// Deliberately minimal: base tokens, typography and the .lpDoc block. No JS
+// ships with these pages, so none of the app or share component styles apply.
+@import "_base";
+@import "components/doc";

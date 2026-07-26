@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import Mustache from 'mustache';
+import { Marked } from 'marked';
 import { thumbnailUrl } from './images.js';
 import config from 'config';
 import cloneDeep from 'lodash/cloneDeep.js';
@@ -42,6 +43,7 @@ let shareScriptsHtml = '';
 const shareScriptsLinks = [];
 let appScriptsHtml = '';
 let appStylesHtml = '';
+let docStylesHtml = '';
 
 const manifestPath = path.join(import.meta.dirname, '../public/dist/.vite/manifest.json');
 const hasBuiltAssets = fs.existsSync(manifestPath);
@@ -69,6 +71,13 @@ if (hasBuiltAssets) {
             shareStylesLinks.push(cssFile);
         });
     }
+
+    // Doc entry is CSS-only, so the manifest points `file` straight at the
+    // stylesheet and there is no `css` array to walk.
+    const docEntry = manifest['client/css/doc.scss'];
+    if (docEntry) {
+        docStylesHtml += `<link rel='stylesheet' href='/dist/${docEntry.file}' />`;
+    }
 } else {
     // Dev without a build: proxy to Vite dev server (port 5173).
     appStylesHtml = '';
@@ -77,10 +86,77 @@ if (hasBuiltAssets) {
     shareStylesHtml = '';
     shareScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
         + '<script type="module" src="http://localhost:5173/client/share-entry.js"></script>';
+    // Vite serves scss as a JS module that injects a style tag, so in dev the
+    // doc pages do load a script even though the built version never does.
+    docStylesHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
+        + '<script type="module" src="http://localhost:5173/client/css/doc.scss"></script>';
 }
 
 index = index.replace('{{styles}}', appStylesHtml);
 index = index.replace('{{scripts}}', appScriptsHtml);
+
+// Long-form document pages (/privacy, /terms) are rendered from markdown once
+// at startup and served as static HTML — no JS, no database, nothing
+// per-request to get wrong. The shared marked renderer is hardened for
+// untrusted list descriptions: it drops inline HTML and stamps
+// target="_blank" rel="nofollow ugc" on every link. That is wrong for a
+// first-party document, so these get a default Marked instance of their own.
+const docMarked = new Marked();
+
+const docPages = [
+    {
+        path: '/privacy',
+        file: 'PRIVACY.md',
+        title: 'Privacy Policy',
+        description: 'What LighterPack collects, who else handles it, and how to delete it.',
+    },
+    {
+        path: '/terms',
+        file: 'TERMS.md',
+        title: 'Terms of Use',
+        description: 'The house rules for using LighterPack, in plain English.',
+    },
+];
+
+const docTemplate = fs.readFileSync(path.join(import.meta.dirname, '../templates/doc.mustache'), 'utf8');
+
+function renderDocPage(doc, sibling) {
+    const source = fs.readFileSync(path.join(import.meta.dirname, '..', doc.file), 'utf8');
+    // Wide tables must scroll inside their own box rather than widening the
+    // page on a phone; marked has no hook for wrapping a block-level token.
+    const content = docMarked.parse(source)
+        .replace(/<table>/g, '<div class="lpDocTableScroll"><table>')
+        .replace(/<\/table>/g, '</table></div>');
+
+    return Mustache.render(docTemplate, {
+        styles: docStylesHtml,
+        content,
+        title: doc.title,
+        description: doc.description,
+        siblingPath: sibling.path,
+        siblingTitle: sibling.title,
+    });
+}
+
+docPages.forEach((doc, i) => {
+    // Each doc links to the next one in the list, so the two policies stay
+    // reachable from each other without either page hardcoding the other.
+    const sibling = docPages[(i + 1) % docPages.length];
+    let page = '';
+    try {
+        page = renderDocPage(doc, sibling);
+    } catch (err) {
+        logger.error({ message: `Error rendering ${doc.file}`, err });
+    }
+
+    router.get(doc.path, (req, res) => {
+        if (!page) {
+            return res.status(500).send(`${doc.title} is temporarily unavailable.`);
+        }
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.send(page);
+    });
+});
 
 for (let i = 0; i < vueRoutes.length; i++) {
     router.get(vueRoutes[i].path, (req, res) => {

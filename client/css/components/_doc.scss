@@ -1,0 +1,99 @@
+@import "../globals";
+
+// Long-form prose pages rendered from markdown on the server (/privacy).
+// The markup is whatever `marked` emits, so everything here is element
+// selectors scoped under .lpDoc rather than classes.
+.lpDoc {
+    color: var(--lp-text);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 42rem;
+    padding: 3rem 1.25rem 5rem;
+
+    h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin: 0 0 1.5rem;
+    }
+
+    h2 {
+        border-top: 1px solid var(--lp-border);
+        font-size: 1.3rem;
+        line-height: 1.3;
+        margin: 2.5rem 0 0.75rem;
+        padding-top: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.05rem;
+        margin: 1.75rem 0 0.5rem;
+    }
+
+    p,
+    ul,
+    ol {
+        margin: 0 0 1rem;
+    }
+
+    ul,
+    ol {
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.4rem;
+    }
+
+    a {
+        color: var(--lp-link-blue);
+    }
+
+    strong {
+        font-weight: 600;
+    }
+
+    code {
+        background: var(--lp-hover-bg);
+        border-radius: 3px;
+        font-size: 0.9em;
+        padding: 0.1em 0.35em;
+    }
+
+    // Tables can outrun a phone viewport; let the table scroll rather than the
+    // page. The wrapper is emitted by the privacy template, not by marked.
+    table {
+        border-collapse: collapse;
+        font-size: 0.95em;
+        width: 100%;
+    }
+
+    th,
+    td {
+        border-bottom: 1px solid var(--lp-border);
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        font-weight: 600;
+    }
+
+    .lpDocTableScroll {
+        margin-bottom: 1rem;
+        overflow-x: auto;
+    }
+}
+
+.lpDocFooter {
+    border-top: 1px solid var(--lp-border);
+    color: var(--lp-text-secondary);
+    font-size: 13px;
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+
+    a {
+        color: var(--lp-link-blue);
+    }
+}

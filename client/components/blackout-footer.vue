@@ -8,6 +8,10 @@
             <a class="lpHref" href="https://github.com/galenmaly/lighterpack" target="_blank" rel="noopener noreferrer">Copyleft</a> LighterPack 2019
             -
             <a class="lpHref" href="mailto:info@lighterpack.com">Contact</a>
+            -
+            <a class="lpHref" href="/privacy">Privacy</a>
+            -
+            <a class="lpHref" href="/terms">Terms</a>
         </div>
     </div>
 </template>
