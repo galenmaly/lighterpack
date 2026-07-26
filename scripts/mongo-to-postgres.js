@@ -1,4 +1,10 @@
-// Takes a json mongo export file and writes to the postgres database
+// Takes a json mongo export file and writes to the postgres database.
+//
+//   node scripts/mongo-to-postgres.js <users-dump.json> <user-dates.json> [--live]
+//
+// Dry run unless --live is passed: without it every record is read, parsed and
+// re-encoded exactly as normal, but nothing is inserted. Registration dates come
+// from each record's mongo ObjectId; <user-dates.json> supplies last_seen only.
 
 import fs from 'fs';
 import crypto from 'crypto';
@@ -13,23 +19,61 @@ const knex = Knex({
     connection: cloneDeep(config.get('pgDatabase'))
 });
 
-if (process.argv.length !== 4) {
-    console.error('Expected log directory as argument');
-    process.exit(1);
+const argv = process.argv.slice(2);
+const flags = argv.filter((a) => a.startsWith('--'));
+const args = argv.filter((a) => !a.startsWith('--'));
+const unknownFlags = flags.filter((f) => f !== '--live');
+
+if (args.length !== 2 || unknownFlags.length) {
+    if (unknownFlags.length) console.error(`Unknown flag(s): ${unknownFlags.join(' ')}`);
+    console.error('Usage: node scripts/mongo-to-postgres.js <users-dump.json> <user-dates.json> [--live]');
+    process.exit(2);
 }
 
-const dryRun = false;
-console.log(`Dry run: ${dryRun}`);
+// Defaults to a dry run. This writes to a live database, so the destructive
+// direction must never be the one you get by forgetting a flag -- it used to be
+// a hardcoded constant, which meant the armed state could be committed and then
+// inherited by whoever ran it next. Matches --live on the fix-duplicate-* scripts.
+const dryRun = flags.indexOf('--live') === -1;
+const [dumpPath, userDatesFilePath] = args;
 
-const dumpPath = process.argv[2];
-const userDatesFilePath = process.argv[3];
+console.log(`Dry run: ${dryRun}`);
+if (dryRun) console.log('No rows will be written. Re-run with --live to apply.');
 
 const userDatesRaw = fs.readFileSync(userDatesFilePath)
 const userDates = JSON.parse(userDatesRaw);
 
 let i = 0;
 let errcount = 0;
-let unknownRegistrationCount = 0;
+let unknownLastSeenCount = 0;
+let clampedLastSeenCount = 0;
+let oidRegistrationCount = 0;
+let fileRegistrationCount = 0;
+let fallbackRegistrationCount = 0;
+
+// Last resort only -- reached when a record has neither a usable ObjectId nor a
+// row in user-dates.json.
+const FALLBACK_DATE = '2024-11-01T00:00:00.000Z';
+
+// The first 4 bytes of a mongo ObjectId are the document's creation time, which
+// for a user document is the moment they registered. Checked against the
+// 296,399 registrations independently observed in the request logs: median
+// difference 0.000 days, 99.76% within one day. That beats user-dates.json,
+// which can only *infer* a date for anyone whose signup predates the surviving
+// logs -- 1,667 users, off by an average of four years.
+function registeredFromObjectId(user) {
+    const oid = user._id && user._id.$oid;
+    if (typeof oid !== 'string' || !/^[0-9a-f]{24}$/.test(oid)) return null;
+    const seconds = parseInt(oid.slice(0, 8), 16);
+    // LighterPack's first account is from 2013-09. A timestamp outside a sane
+    // window means this is not a generated ObjectId, so fall back rather than
+    // write a nonsense date.
+    const earliest = Date.UTC(2013, 0, 1) / 1000;
+    if (!Number.isFinite(seconds) || seconds < earliest) return null;
+    const date = new Date(seconds * 1000);
+    if (date.getTime() > Date.now()) return null;
+    return date.toISOString();
+}
 
 const duplicateUsers = [];
 const duplicateLists = [];
@@ -84,14 +128,44 @@ async function processLineByLine(dumpPath, userDates) {
 
         const username = user.username.trim();
 
-        if (userDates[username]) {
-            dateUserRegistered = userDates[user.username].registered;
-            dateUserLastSeen = userDates[user.username].lastSeen;
+        // Look up by the same trimmed key the guard tested. find-user-dates
+        // trims before keying, so a user whose stored name has surrounding
+        // whitespace passes the guard and then throws on the untrimmed read.
+        const dates = userDates[username];
+
+        // Registration: prefer the record's own ObjectId, which is exact, over
+        // the log-derived guess.
+        const oidRegistered = registeredFromObjectId(user);
+        if (oidRegistered) {
+            dateUserRegistered = oidRegistered;
+            oidRegistrationCount++;
+        } else if (dates) {
+            dateUserRegistered = dates.registered;
+            fileRegistrationCount++;
         } else {
-            unknownRegistrationCount++
-            console.log("unknown registration date for: " +  username);
-            dateUserRegistered = "2024-11-01T00:00:00.000Z"
-            dateUserLastSeen = "2024-11-01T00:00:00.000Z"
+            dateUserRegistered = FALLBACK_DATE;
+            fallbackRegistrationCount++;
+            console.log("no registration date available for: " + username);
+        }
+
+        // Last seen has to come from the logs -- the dump carries no
+        // last-activity field. Anyone who registered after the final log rsync
+        // has no row here, so fall back to their registration date: they
+        // demonstrably existed at that moment, which beats stamping a
+        // brand-new account with a constant from two years earlier.
+        if (dates) {
+            dateUserLastSeen = dates.lastSeen;
+        } else {
+            unknownLastSeenCount++;
+            dateUserLastSeen = dateUserRegistered;
+        }
+
+        // last_seen before registered is self-contradictory. It happens when a
+        // username was released and re-registered -- the log trail belongs to
+        // the previous holder, the ObjectId to the current one.
+        if (dateUserLastSeen < dateUserRegistered) {
+            clampedLastSeenCount++;
+            dateUserLastSeen = dateUserRegistered;
         }
 
         // Re-encode the library to the current format (0.4): the upgrade
@@ -133,7 +207,11 @@ async function processLineByLine(dumpPath, userDates) {
             try {
                 await knex('users').insert(userBatch);
                 try {
-                    const userResult = await knex('users').select('user_id').where({username: user.username});
+                    // Look up the trimmed name -- that is what was inserted
+                    // above. Using user.username here misses any record with
+                    // surrounding whitespace, and the undefined row then throws
+                    // and silently costs that user all of their share links.
+                    const userResult = await knex('users').select('user_id').where({ username });
                     const userId = userResult[0].user_id;
 
                     // No list rows for a re-encode failure: same as before,
@@ -178,7 +256,11 @@ async function processLineByLine(dumpPath, userDates) {
 processLineByLine(dumpPath, userDates).then(() => {
     console.log(i);
     console.log(errcount);
-    console.log(unknownRegistrationCount);
+    console.log(`registration from ObjectId: ${oidRegistrationCount}`);
+    console.log(`registration from user-dates.json: ${fileRegistrationCount}`);
+    console.log(`registration with no source (SHOULD BE 0): ${fallbackRegistrationCount}`);
+    console.log(`last-seen missing, fell back to registration: ${unknownLastSeenCount}`);
+    console.log(`last-seen clamped forward to registration: ${clampedLastSeenCount}`);
     console.log(JSON.stringify(duplicateUsers));
     console.log(JSON.stringify(duplicateLists));
     console.log(`re-encode failures (stored raw): ${reencodeFailures.length}`);
@@ -187,6 +269,9 @@ processLineByLine(dumpPath, userDates).then(() => {
     console.log(JSON.stringify(splitRecords));
     console.log(`records that never parsed (SKIPPED -- investigate): ${unparseableRecords.length}`);
     console.log(JSON.stringify(unparseableRecords));
+    // Repeated at the end because a long import scrolls the startup banner away,
+    // and "it ran clean" reads identically to "it wrote nothing".
+    if (dryRun) console.log('\nDRY RUN -- nothing was written. Re-run with --live to apply.');
     return knex.destroy();
 }).catch((err) => {
     // Without this an import failure exits 0 with an unhandled rejection

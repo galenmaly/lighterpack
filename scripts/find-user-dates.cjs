@@ -34,6 +34,7 @@ let num2013Registration = 0;
 let num2014Registration = 0;
 let numFallbackRegistration = 0;
 let numDBRegistration = 0;
+let numFirstSeenRegistration = 0;
 
 // probably not comprehensive
 const badUsernameSubstrings = [
@@ -79,8 +80,12 @@ function findFiles(files, directory) {
     return files;
 }
 
+// Shortest entry in the list above ('{"data":{', 9 chars). Anything shorter
+// than that cannot contain one, so it skips the scan -- derived rather than
+// hardcoded, because a hardcoded 12 let 'bad cookie!' (11) through as a user.
+const minBadUsernameLength = Math.min(...badUsernameSubstrings.map((s) => s.length));
+
 function isRealUsername(username) {
-    const minBadUsernameLength = 12;
     if (username.length < minBadUsernameLength) {
         return true;
     }
@@ -97,6 +102,10 @@ function addUserIfDoesntExist(username, timestamp, source) {
         usernames[username] = {
             username,
             registered: null,
+            // How `registered` was arrived at. Only 'register-url' and
+            // 'register-message' are an observed registration event; everything
+            // else is an inferred lower bound of decreasing quality.
+            registeredSource: null,
             firstSeen: timestamp,
             lastSeen: timestamp,
             source,
@@ -128,6 +137,11 @@ async function importLogFile(fileName) {
             continue;
         }
 
+        // A line that is literally `null` (or a bare number/string) parses
+        // without throwing, so the catch above does not cover it. Dereferencing
+        // it used to abort the whole multi-minute run on one junk line.
+        if (!log || typeof log !== 'object') continue;
+
         const username = log.username ? String(log.username).trim() : null;
         const timestamp = log.timestamp;
         if (!username || !timestamp) continue;
@@ -143,7 +157,12 @@ async function importLogFile(fileName) {
         if (!isRealUsername(username)) continue;
 
         if (log.message === 'Saving new user' || log.url === '/register') {
-            userRegistrationQueue.push({ username, registered: timestamp });
+            // Two eras. Early logs put the username straight on the `/register`
+            // request line. The current format logs that access line with no
+            // username at all and carries it on the app-level 'Saving new user'
+            // message instead -- so both paths are needed to cover all logs.
+            const via = log.url === '/register' ? 'register-url' : 'register-message';
+            userRegistrationQueue.push({ username, registered: timestamp, via });
         }
 
         if (log.message === 'signed in' || log.message === 'saved library'
@@ -161,6 +180,7 @@ async function importLogFile(fileName) {
         const existing = usernames[reg.username].registered;
         if (!existing || reg.registered < existing) {
             usernames[reg.username].registered = reg.registered;
+            usernames[reg.username].registeredSource = reg.via;
         }
     });
 }
@@ -193,11 +213,26 @@ async function importDatabaseFile(fileName) {
         if (!usernames[username].registered) {
             if (fileDate === '2016-07-08T00:00:00.000Z') {
                 usernames[username].registered = '2014-09-01T00:00:00.000Z'; // gap in logs from 2014-08 to 2015-01
+                usernames[username].registeredSource = '2014-gap-patch';
                 num2014Registration++;
+                numDBRegistration++;
             } else {
-                usernames[username].registered = fileDate;
+                // A dump only proves the account existed by its snapshot date.
+                // When the logs already saw this user earlier, that sighting is
+                // a far tighter lower bound. Without this the oldest accounts --
+                // active since 2013, but with no surviving /register line -- get
+                // stamped with the dump date, i.e. years too late.
+                const seen = usernames[username].firstSeen;
+                if (seen && seen < fileDate) {
+                    usernames[username].registered = seen;
+                    usernames[username].registeredSource = 'first-seen';
+                    numFirstSeenRegistration++;
+                } else {
+                    usernames[username].registered = fileDate;
+                    usernames[username].registeredSource = 'db-snapshot';
+                    numDBRegistration++;
+                }
             }
-            numDBRegistration++;
         }
     }
 }
@@ -219,6 +254,7 @@ async function main() {
     for (const username in usernames) {
         if (!usernames[username].registered && earlyUsers.indexOf(username) > -1) {
             usernames[username].registered = '2013-11-01T00:00:00.000Z'; // manually grabbed early users from an old db snapshot
+            usernames[username].registeredSource = 'early-users-list';
             num2013Registration++;
         }
     }
@@ -229,9 +265,27 @@ async function main() {
 
     for (const username in usernames) {
         if (!usernames[username].registered) {
-            usernames[username].registered = '2024-11-01T00:00:00.000Z';
-            numFallbackRegistration++;
+            // Every user gets a firstSeen from addUserIfDoesntExist, so the
+            // arbitrary date below is a genuine last resort and should stay 0.
+            const seen = usernames[username].firstSeen;
+            if (seen) {
+                usernames[username].registered = seen;
+                usernames[username].registeredSource = 'first-seen';
+                numFirstSeenRegistration++;
+            } else {
+                usernames[username].registered = '2024-11-01T00:00:00.000Z';
+                usernames[username].registeredSource = 'hardcoded-fallback';
+                numFallbackRegistration++;
+            }
         }
+    }
+
+    // A registration date later than the last sighting is self-contradictory.
+    // It should be 0; anything else means a date source is lying.
+    let numRegisteredAfterLastSeen = 0;
+    for (const username in usernames) {
+        const user = usernames[username];
+        if (user.lastSeen && user.registered > user.lastSeen) numRegisteredAfterLastSeen++;
     }
 
     fs.writeFileSync(outputFileName, JSON.stringify(usernames));
@@ -241,7 +295,25 @@ async function main() {
     console.log(`num 2013 registration: ${num2013Registration}`);
     console.log(`num 2014 registration: ${num2014Registration}`);
     console.log(`num db registration: ${numDBRegistration}`);
+    console.log(`num first-seen registration: ${numFirstSeenRegistration}`);
     console.log(`num fallback registration: ${numFallbackRegistration}`);
+    console.log(`num registered after last seen (should be 0): ${numRegisteredAfterLastSeen}`);
+
+    // Where each registration date actually came from. The first two buckets are
+    // an observed registration event; the rest are inferred lower bounds.
+    const byProvenance = {};
+    for (const username in usernames) {
+        const key = usernames[username].registeredSource || 'none';
+        byProvenance[key] = (byProvenance[key] || 0) + 1;
+    }
+    const total = Object.keys(usernames).length;
+    console.log('\nregistration date provenance:');
+    Object.entries(byProvenance)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([key, count]) => {
+            const pct = ((count / total) * 100).toFixed(1);
+            console.log(`  ${key.padEnd(20)} ${String(count).padStart(7)}  ${pct}%`);
+        });
 }
 
 main().catch((err) => {
