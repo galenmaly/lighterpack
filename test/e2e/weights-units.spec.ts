@@ -54,6 +54,29 @@ test.describe('Weight Units', () => {
     // Verify category subtotal reflects the weight in lb (2.5 lb = 40 oz)
     await expect(category.getByTestId('category-subtotal-weight')).toHaveText(/^40(\.0+)?$/);
   });
+
+  test('should close an open unit dropdown when another one is opened', async ({ page }) => {
+    const category = page.getByTestId('category').last();
+    // a weight so the list summary (and its total-unit picker) renders
+    await addItem(category, 'Second Item', { weight: '10' });
+
+    const rows = category.getByTestId('item-row');
+    const openPickers = page.locator('.lpUnitSelect.lpOpen');
+
+    // An open dropdown hangs down over the row beneath it, so open the lower
+    // picker first and reach up for the one above — a click a user can make.
+    await rows.nth(1).getByTestId('unit-select').click();
+    await expect(openPickers).toHaveCount(1);
+
+    await rows.nth(0).getByTestId('unit-select').click();
+    await expect(openPickers).toHaveCount(1);
+    await expect(rows.nth(0).getByTestId('unit-select')).toHaveClass(/lpOpen/);
+
+    // Same across component boundaries: the summary's total-unit picker
+    await page.locator('.lpTotalUnit .lpUnitSelect').first().click();
+    await expect(openPickers).toHaveCount(1);
+    await expect(page.locator('.lpTotalUnit .lpUnitSelect').first()).toHaveClass(/lpOpen/);
+  });
 });
 
 test.describe('Weight Calculations', () => {

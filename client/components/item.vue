@@ -80,9 +80,12 @@ export default {
 
 .lpItem {
     border-bottom: 1px solid var(--lp-border);
-    // Isolate so the row-wide hover catcher (&::before) resolves its negative
-    // z-index against this row — landing above the list background but below
-    // the row's own content — instead of escaping behind the whole list.
+    // Isolate so the row's two negative-z pseudos — the hover catcher
+    // (&::before) and the active band (&::after) — resolve against this row,
+    // landing above the list background but below the row's own content,
+    // instead of escaping behind the whole list. Drop this and the band stops
+    // painting altogether. The cost is that it also traps the unit dropdown in
+    // here; see the z-index lift further down.
     isolation: isolate;
     padding: 2px 0 2px;
 
@@ -230,8 +233,14 @@ export default {
         z-index: -1;
     }
 
+    // A row reads as active while you're on it: hovering, editing one of its
+    // fields, or with its unit picker open. The picker needs saying out loud —
+    // clicking it moves focus off the row's inputs and the pointer wanders onto
+    // the dropdown's own options, so neither :hover nor :focus-within can be
+    // trusted to hold while it's open.
     &:hover,
-    &:focus-within {
+    &:focus-within,
+    &:has(.lpUnitSelect.lpOpen) {
         .lpRemove,
         .lpHandle,
         .lpArrows,
@@ -255,12 +264,22 @@ export default {
     // the right while leaving slack on the left.
     &:hover::after,
     &:focus-within::after,
+    &:has(.lpUnitSelect.lpOpen)::after,
     &.gu-mirror::after {
         background: var(--lp-row-hover);
         content: "";
         inset: -3px -16px -3px -5px;
         position: absolute;
         z-index: -1;
+    }
+
+    // The unit dropdown is a tall menu inside the row, and `isolation` above
+    // traps it in the row's stacking context, so its own z-index can't lift it
+    // over the neighbours — the rows below paint on top and swallow the lower
+    // options. Lift the whole row instead, above both resting rows and a
+    // focused one (2), for as long as the picker is open.
+    &:has(.lpUnitSelect.lpOpen) {
+        z-index: 3;
     }
 
     &:focus-within {

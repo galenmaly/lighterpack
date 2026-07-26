@@ -1,5 +1,5 @@
 <template>
-    <div class="lpUnitSelect" data-testid="unit-select" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle($event)">
+    <div class="lpUnitSelect" data-testid="unit-select" :class="{lpOpen: isOpen, lpHover: isFocused}" @click="toggle">
         <select class="lpUnit lpInvisible" :value="unit" @keyup="keyup($event)" @focus="focusSelect" @blur="blurSelect">
             <option v-for="unit in units" :key="unit" :value="unit">
                 {{ unit }}
@@ -32,8 +32,10 @@ export default {
         };
     },
     methods: {
-        toggle(evt) {
-            evt.stopPropagation();
+        // Deliberately lets the click keep bubbling: the window listener below
+        // is what closes every other open picker, and stopping it here left
+        // them all open at once.
+        toggle() {
             if (!this.isOpen) {
                 this.open();
             } else {
@@ -71,7 +73,17 @@ export default {
                 this.close();
             }
         },
-        closeOnClick(_evt) {
+        // Any click that lands outside this picker closes it — including one on
+        // another picker, which is how opening a second one dismisses the first.
+        // The click that opened us reaches here too (the listener is bound
+        // mid-dispatch, and window sits above us in the bubble path); the
+        // containment test is what keeps that click from closing us again.
+        // Clicks on our own options are left to toggle(), which closes us after
+        // the option has been picked.
+        closeOnClick(evt) {
+            if (this.$el.contains(evt.target)) {
+                return;
+            }
             this.close();
         },
         focusSelect() {
