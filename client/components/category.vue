@@ -266,7 +266,7 @@ export default {
             color: var(--lp-text-secondary);
             font-size: 12px;
             font-weight: 400;
-            padding-left: 6px;
+            padding-left: 11px;
         }
 
         .lpGhostCaret {
@@ -278,7 +278,10 @@ export default {
     .lpPriceCell,
     .lpQtyCell {
         font-weight: 400;
-        padding-right: 2px;
+    }
+
+    .lpQtyCell {
+        padding-right: 8px;
     }
 }
 

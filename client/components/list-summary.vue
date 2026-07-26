@@ -205,7 +205,7 @@ export default {
     .lpTotal {
         font-weight: 700;
         margin-top: 3px;
-        padding: 5px 0 2px;
+        padding: 5px 0 4px;
 
         .lpNumber:not(.lpWeightVal) {
             font-weight: 400;
@@ -214,7 +214,7 @@ export default {
 
     .lpBreakdown {
         color: var(--lp-text-secondary);
-        padding: 2px 0;
+        padding: 4px 0;
 
         .lpCategoryCell,
         .lpNumber {

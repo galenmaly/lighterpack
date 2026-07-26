@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:'Source Sans 3','Helvetica Neue',sans-serif}
+a{color:#2a78d6}a:hover{color:#1c5fa8}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 'Source Sans 3',sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 'Source Sans 3',sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 'Source Sans 3',sans-serif;color:rgba(0,0,0,.5)}
+.dv-note{font-size:10.5px;line-height:1.45;color:#82868c;border-left:2px solid #c8cacd;padding-left:6px}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t8">
+<div class="dv-thd"><a class="dv-tid" href="#t8">8</a><span class="dv-tname">7a, full page</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+<a href="#5c">5c</a>'s hero and tabbed card, <a href="#7a">7a</a>'s labelled value prop, top to bottom at 390×844. Fold line marked at 844px — the card's Sign in button and the anonymous strip both clear it. Everything below is scroll: the section header, the three steps, then the screenshot bleeding off the bottom, then the footer.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="8a"><div class="dv-olabel"><a class="dv-oid" href="#8a">8a</a>Full page — hero, tabs, "How it works", shot, footer</div>
+<div class="dv-card" style="width:390px;border-radius:2px;position:relative">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 22px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:26px 20px 0">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#82868c;padding-bottom:14px;border-bottom:1px solid #e0e1e3">How it works</div>
+    <div style="display:flex;flex-direction:column;gap:13px;padding:16px 0 22px">
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+    </div>
+    <div style="border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:190px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:78px;height:78px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Bivy</span><span style="color:#9a9da3">8 oz</span></div>
+    </div>
+  </div>
+  <div style="background:#f0eee9;border-top:1px solid rgba(0,0,0,.07);padding:20px 20px 26px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px;color:#3a3d42"><span style="border-bottom:1px solid #c8cacd">About</span><span style="border-bottom:1px solid #c8cacd">Donate</span><span style="border-bottom:1px solid #c8cacd">Contact</span><span style="border-bottom:1px solid #c8cacd">Privacy</span></div>
+    <div style="font-size:13px;line-height:1.5;color:#82868c">LighterPack is free and has no ads. It's kept running by donations.</div>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:844px;border-top:2px dashed rgba(214,32,60,.55);pointer-events:none"><span style="position:absolute;left:100%;top:-8px;margin-left:10px;white-space:nowrap;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#d6203c">fold · 390×844</span></div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">above the fold: headline, both tabs, both fields, the Sign in button, and the anonymous escape hatch. Nothing critical is below</div>
+  <div class="dv-note">"How it works" gets a hairline rule under it so it reads as a section boundary, not a stray caption — the only new structural element on the page</div>
+  <div class="dv-note">the shot is deliberately cut by the section's bottom edge; the tan footer that follows is the same <span style="font-family:ui-monospace,monospace;font-size:11px">#f0eee9</span> as the tab strip, closing the page on the color it opened the card with</div>
+  <div class="dv-note">footer carries the "free, no ads" line that <a href="#6a">6a</a> was worried about losing</div>
+</div></div>
+
+</div>
+<div class="dv-next">Whole page is one screen plus roughly one scroll. If you want it shorter I'd drop the item rows in the shot to two; if you want the copy fixed rather than labelled, <a href="#7b">7b</a>'s sentence slots into this same layout with no structural change.</div>
+</section>
+
+<section class="dv-turn" id="t7">
+<div class="dv-thd"><a class="dv-tid" href="#t7">7</a><span class="dv-tname">Giving the value prop context</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+You're right, and it's a copy problem more than a layout one. "Enter your packing lists" is <b>imperative</b> — it's phrased as an instruction to the reader, so it only makes sense standing next to the form that grants you the thing to enter them into. On desktop the register panel was its neighbor and did that work silently. Alone on mobile it's a command with no object. Two ways out: stop instructing (describe the product instead), or restore an object for the instruction to point at.<br><br>
+<a href="#7a">7a</a> label it — a "How it works" header reframes the same three lines as description. <a href="#7b">7b</a> rewrite to third person, so it describes what LighterPack does rather than what you should do. <a href="#7c">7c</a> give each line its object back — the step sits on the UI that performs it. <a href="#7d">7d</a> invert — screenshot first, prose as its caption, so the picture supplies the context before any words.<br><br>
+Each mock shows the bottom of the sign-in card plus what follows, since that's the seam in question. Same for desktop: whatever wording wins here should replace the desktop list too — it reads as instructions there for the same reason, it just gets away with it.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="7a"><div class="dv-olabel"><a class="dv-oid" href="#7a">7a</a>Label it — "How it works"</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#9fb5d0,#c3d1e0);padding-bottom:24px">
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:26px 20px 0">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#82868c;padding-bottom:14px;border-bottom:1px solid #e0e1e3">How it works</div>
+    <div style="display:flex;flex-direction:column;gap:13px;padding:16px 0 22px">
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+      <div style="display:flex;gap:11px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+    </div>
+    <div style="border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:150px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:76px;height:76px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">two words of scaffolding and the imperatives become a description of a process rather than orders. Cheapest possible fix, and it works on desktop unchanged</div>
+  <div class="dv-note">cost: doesn't fix the sentences themselves — "enter where?" is answered by the header's implication, not by the line</div>
+</div></div>
+
+<div class="dv-opt" id="7b"><div class="dv-olabel"><a class="dv-oid" href="#7b">7b</a>Rewrite — describe the product, not the reader</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#9fb5d0,#c3d1e0);padding-bottom:24px">
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:26px 20px 0">
+    <div style="font-size:17px;line-height:1.5;color:#3a3d42">A LighterPack list holds every item you're carrying and what it weighs. It adds up the categories, shows you where the weight actually is, and gives you a link to send anyone.</div>
+    <div style="margin-top:20px;border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:158px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:76px;height:76px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">no instructions, so nothing to be confused about — it names the noun ("a LighterPack list") in the first four words, which is exactly the missing context</div>
+  <div class="dv-note">same three claims, same order, now as a sentence a person would actually say. Reads as an answer to "what is this?" rather than a setup wizard</div>
+  <div class="dv-note">cost: a paragraph scans worse than a numbered list, and loses the tidy 1-2-3 rhythm the desktop page has had forever</div>
+</div></div>
+
+<div class="dv-opt" id="7c"><div class="dv-olabel"><a class="dv-oid" href="#7c">7c</a>Give each line its object</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#9fb5d0,#c3d1e0);padding-bottom:24px">
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:26px 20px 24px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">Every item, with its weight</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:9px 11px">
+        <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:4px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+        <div style="display:flex;gap:8px;align-items:center;padding:6px 0 2px"><span style="flex:1;height:26px;border:1.5px solid #efa026;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:12px;color:#24272b">Bivy<span style="display:inline-block;width:1.5px;height:13px;background:#efa026;margin-left:1px"></span></span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">Where the weight actually is</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:11px;display:flex;align-items:center;gap:16px">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">One link to send anyone</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:11px;display:flex;align-items:center;gap:8px"><span style="flex:1;height:30px;background:#f4f3f0;border:1px solid #e0e1e3;border-radius:5px;display:flex;align-items:center;padding:0 9px;font-size:11.5px;color:#3a3d42">lighterpack.com/r/8fk2qd</span><span style="height:30px;padding:0 12px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:5px;display:flex;align-items:center;font-size:12px;font-weight:700;color:#fff">Copy</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">"enter where?" can't be asked when the answer is directly underneath the sentence. Each heading is a noun phrase describing what you're looking at, not a command</div>
+  <div class="dv-note">also the only version where "share" is demonstrated instead of claimed — and the typing row carries the app's orange live-field rule</div>
+  <div class="dv-note">cost: longest, and three crops to keep in sync with the real UI</div>
+</div></div>
+
+<div class="dv-opt" id="7d"><div class="dv-olabel"><a class="dv-oid" href="#7d">7d</a>Invert — picture first, words as caption</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#9fb5d0,#c3d1e0);padding-bottom:24px">
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:24px 0 0">
+    <div style="margin:0 0 0 20px;border:1px solid #e0e1e3;border-right:none;border-top-left-radius:7px;border-bottom-left-radius:0;overflow:hidden;padding:13px 0 12px 15px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:8px;padding-right:15px"><span style="flex:1;font-size:15px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11.5px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:13px 15px 12px 0">
+        <div style="width:84px;height:84px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11.5px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:4px;padding-right:15px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12.5px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11.5px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:6px 15px 6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+      <div style="display:flex;gap:8px;padding:6px 15px 6px 0;font-size:12px"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+    </div>
+    <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:15.5px;line-height:1.5;color:#3a3d42">That's a list: your gear, its weight, and a total that updates as you type. Share it with a link — no account needed to start one.</div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">the screenshot answers "enter where?" before the sentence is read, so the copy can be casual and short — it's labelling something already on screen</div>
+  <div class="dv-note">"That's a list" only parses because the picture came first; the ordering is doing the grammatical work</div>
+  <div class="dv-note">cost: leans hard on the shot being legible at 390px, and the desktop page can't adopt the same trick without reordering its columns</div>
+</div></div>
+
+</div>
+<div class="dv-next">The real fix is <a href="#7b">7b</a> or <a href="#7c">7c</a> — both stop giving orders. <a href="#7b">7b</a> is a copy change you could ship to desktop and mobile in the same commit; <a href="#7c">7c</a> is the more convincing page but a real build. <a href="#7a">7a</a> if you want the smallest possible edit. Want me to apply the winning wording to the desktop layout too, so they say the same thing?</div>
+</section>
+
+<section class="dv-turn" id="t6">
+<div class="dv-thd"><a class="dv-tid" href="#t6">6</a><span class="dv-tname">5c's top, four endings for the value prop</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+Checkbox gone everywhere — stay signed in is the default, no ceremony. Hero + tabbed card is fixed from <a href="#5c">5c</a>; only what happens below it changes. The reason the 1-2-3 list feels orphaned on mobile is that on desktop it sat <i>beside</i> the screenshot as its caption — cut in half and stacked, it becomes a stray list of verbs with a picture under it. So: either give it back its picture, or stop making it a list.<br><br>
+<a href="#6a">6a</a> absorb it into the hero as one line, leave only the screenshot below. <a href="#6b">6b</a> re-pair list and shot inside one bordered block, the way desktop had them. <a href="#6c">6c</a> turn each step into its own cropped shot — the list becomes the visuals. <a href="#6d">6d</a> cut it entirely; the product shot is the pitch.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="6a"><div class="dv-olabel"><a class="dv-oid" href="#6a">6a</a>Absorb — one line in the hero, shot below</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 8px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="padding:0 20px 20px;font-size:15.5px;line-height:1.5;color:rgba(255,255,255,.94);text-shadow:0 1px 10px rgba(20,40,70,.5)">Enter your gear, see where the weight is, share the list.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:24px 20px 0">
+    <div style="border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:196px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:78px;height:78px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">the three verbs survive as one sentence where they're actually useful — before you decide to sign up. Below the card there's exactly one thing: the product, cropped by the screen edge so it reads as "there's more down there"</div>
+  <div class="dv-note">shortest page, no orphan section, and the hero carries copy instead of a bare headline over sky</div>
+  <div class="dv-note">cost: "share your lists with others" loses its billing — it's the feature that actually spreads the product</div>
+</div></div>
+
+<div class="dv-opt" id="6b"><div class="dv-olabel"><a class="dv-oid" href="#6b">6b</a>Re-pair — list and shot back in one block</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 22px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:24px 20px 0">
+    <div style="border:1px solid #e0e1e3;border-top-left-radius:7px;border-top-right-radius:7px;border-bottom:none;overflow:hidden">
+      <div style="padding:16px 16px 14px;background:#faf9f7;border-bottom:1px solid #e0e1e3;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;gap:10px;font-size:15px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+        <div style="display:flex;gap:10px;font-size:15px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+        <div style="display:flex;gap:10px;font-size:15px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+      </div>
+      <div style="padding:12px 14px 0;height:172px">
+        <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+        <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+          <div style="width:76px;height:76px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+          <div style="flex:1;font-size:11px;color:#24272b">
+            <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+            <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+            <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+            <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+        <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">smallest possible fix: one border wraps both, list on the tan tint as the caption, screenshot as the proof. Reads as a single "here's what it is" object instead of two loose things</div>
+  <div class="dv-note">keeps all three claims and the desktop's caption-plus-evidence relationship, just rotated 90°</div>
+  <div class="dv-note">cost: still a numbered list — the least imaginative of the four, and the block is tall enough that the shot is half-cropped</div>
+</div></div>
+
+<div class="dv-opt" id="6c"><div class="dv-olabel"><a class="dv-oid" href="#6c">6c</a>Show the steps — each one is its own crop</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 22px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:26px 20px 24px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">Enter your packing lists</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:9px 11px;background:#fff">
+        <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:4px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+        <div style="display:flex;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+        <div style="display:flex;gap:8px;align-items:center;padding:6px 0 2px"><span style="flex:1;height:26px;border:1.5px solid #efa026;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:12px;color:#24272b">Bivy<span style="display:inline-block;width:1.5px;height:13px;background:#efa026;margin-left:1px"></span></span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">Visualize your pack weights</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:11px;display:flex;align-items:center;gap:16px">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:16px;font-weight:700;color:#24272b">Share your lists with others</div>
+      <div style="border:1px solid #e0e1e3;border-radius:6px;padding:11px;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:30px;background:#f4f3f0;border:1px solid #e0e1e3;border-radius:5px;display:flex;align-items:center;padding:0 9px;font-size:11.5px;color:#3a3d42">lighterpack.com/r/8fk2qd</span><span style="height:30px;padding:0 12px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:5px;display:flex;align-items:center;font-size:12px;font-weight:700;color:#fff">Copy</span></div>
+        <div style="font-size:11.5px;color:#82868c">Anyone with the link can see this list.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">the list stops being a list — each claim is a heading over the actual UI that does it. Vertical scroll is the one thing mobile has plenty of, so spend it here</div>
+  <div class="dv-note">the share step finally gets shown rather than asserted, and step 1 shows an item mid-type with the orange live-field border from <a href="#3c">3c</a> — same rule as the app</div>
+  <div class="dv-note">cost: longest page by far, and three crops mean three things to keep in sync with the real app</div>
+</div></div>
+
+<div class="dv-opt" id="6d"><div class="dv-olabel"><a class="dv-oid" href="#6d">6d</a>Cut it — the screenshot is the pitch</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 22px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:22px 0 0">
+    <div style="margin:0 0 0 20px;border:1px solid #e0e1e3;border-right:none;border-bottom:none;border-top-left-radius:7px;overflow:hidden;padding:13px 0 0 15px;height:214px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:8px;padding-right:15px"><span style="flex:1;font-size:15px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11.5px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:13px 15px 13px 0">
+        <div style="width:86px;height:86px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11.5px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2.5px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:4px;padding-right:15px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12.5px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11.5px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:6px 15px 6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+      <div style="display:flex;gap:8px;padding:6px 15px 6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.05)"><span style="flex:1;color:#24272b">Pad</span><span style="color:#9a9da3">12 oz</span></div>
+      <div style="display:flex;gap:8px;padding:6px 15px 6px 0;font-size:12px"><span style="flex:1;color:#24272b">Bivy</span><span style="color:#9a9da3">8 oz</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">no words below the fold at all — the shot runs off the right and bottom edges like a real window you're peeking into. Headline says what it is, picture says what it looks like</div>
+  <div class="dv-note">the bleed is the trick: cropping on two edges makes it read as a screenshot of something bigger, not a small framed image floating in white</div>
+  <div class="dv-note">cost: "free, no ads" and the share pitch go unsaid; if anything on this page earns SEO text, it's those</div>
+</div></div>
+
+</div>
+<div class="dv-next">I'd take <a href="#6a">6a</a> for the change you're describing — it removes the orphan instead of decorating it, and the sentence does more work in the hero than the list did at the bottom. <a href="#6c">6c</a> is the better page if you're willing to make the mobile landing longer and want share to actually land. <a href="#6b">6b</a> is the safe one-line fix. Want me to try <a href="#6a">6a</a> with a small "free, no ads, no account needed" line under the shot, so the page keeps one piece of persuasion below the fold?</div>
+</section>
+
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Mobile landing — same skin, phone architecture</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+No overhaul — the desktop skin (flat panels, 7px radius, hairline fields, <a href="#4k">4k</a> orange button) held at 390px; what has to change is <b>order and density</b>. Two forms + a pitch + a product shot don't co-exist above the fold, so each option picks a different thing to put first. <a href="#5a">5a</a> literal stack — the desktop page in source order, register first, sign-in at the bottom. <a href="#5b">5b</a> sign-in first — mobile traffic is mostly "open my list at the trailhead", so the returning user gets the top of the screen and the pitch scrolls under it. <a href="#5c">5c</a> one tabbed card — both forms in a single panel, segmented; the shortest page. <a href="#5d">5d</a> try-first — a single Start-a-list button owns the fold, auth folds into disclosures.<br><br>
+Shared mobile rules: fields 48px / 16px text (16px stops iOS zoom-on-focus), buttons 48px full-width, the desktop sidebar drops out of the mock entirely — on a phone the mock is just the pie + three rows, cropped at the bottom edge.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="5a"><div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>Literal stack — desktop order, register first</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 58%,#c9d5e2);padding-bottom:26px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:20px 20px 26px;font-size:25px;line-height:1.22;font-weight:400;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)"><b>LighterPack</b> helps you track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="height:3px;background:#efa026"></div>
+      <div style="padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:18px;font-weight:700;color:#24272b;margin-bottom:2px">Register an account</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Email</div>
+        <div style="height:48px;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 12.5px;font-size:16px;color:#24272b">••••••••<span style="display:inline-block;width:1.5px;height:17px;background:#efa026;margin-left:1px"></span></div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Confirm password</div>
+        <div style="height:48px;margin-top:4px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Register</div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Skip registration</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:22px 20px 4px;display:flex;flex-direction:column;gap:11px">
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+  </div>
+  <div style="background:#fff;padding:18px 20px 0">
+    <div style="border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:158px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11px;font-weight:700;color:#24272b">5.42</span></div>
+      <div style="display:flex;gap:8px;padding:5px 0;font-size:11.5px"><span style="flex:1;color:#24272b">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+    </div>
+  </div>
+  <div style="background:#f0eee9;border-top:1px solid rgba(0,0,0,.07);padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:18px;font-weight:700;color:#24272b;margin-bottom:2px">Sign in</div>
+    <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+    <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+    <div style="height:48px;margin-top:4px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+    <div style="height:44px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">nothing reordered, nothing cut — the desktop page read top-to-bottom; the register card keeps its orange edge and floats over the photo, everything after it sits on white</div>
+  <div class="dv-note">cost: a returning user with an expired session scrolls past a four-field form they don't want. That's ~1.5 screens of thumb travel every time</div>
+</div></div>
+
+<div class="dv-opt" id="5b"><div class="dv-olabel"><a class="dv-oid" href="#5b">5b</a>Sign-in first — the trailhead case wins the fold</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 70%,#b9c8db);padding-bottom:22px">
+    <div style="padding:16px 20px 14px;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="height:3px;background:#efa026"></div>
+      <div style="padding:18px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:18px;font-weight:700;color:#24272b;margin-bottom:2px">Sign in</div>
+        <div style="height:48px;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 12.5px;font-size:16px;color:#24272b">galen<span style="display:inline-block;width:1.5px;height:17px;background:#efa026;margin-left:1px"></span></div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+    </div>
+    <div style="margin:16px 20px 0;text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 10px rgba(20,40,70,.5)">New here? <b style="border-bottom:1.5px solid rgba(255,255,255,.7)">Make an account</b></div>
+  </div>
+  <div style="background:#fff;padding:24px 20px 18px">
+    <div style="font-size:22px;line-height:1.25;font-weight:700;color:#24272b">Track the gear you bring on adventures.</div>
+    <div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+    </div>
+    <div style="margin-top:18px;border:1px solid #e0e1e3;border-radius:6px;overflow:hidden;padding:12px 14px;background:#fff">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0 4px">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="background:#f0eee9;border-top:1px solid rgba(0,0,0,.07);padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:18px;font-weight:700;color:#24272b;margin-bottom:2px">Make an account</div>
+    <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+    <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Email</div>
+    <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+    <div style="height:48px;margin-top:4px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Register</div>
+    <div style="height:44px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Skip registration</span></div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">sign-in card is fully above the fold on a 390×844 screen — land, autofill, thumb the button. Sessions persist by default, so most returning visits skip this card entirely</div>
+  <div class="dv-note">the pitch still exists, it just sits below; the inline "New here?" line jumps to the register block so first-timers aren't stranded</div>
+  <div class="dv-note">cost: a login screen as your front door reads closed to a first-time visitor arriving from a shared list link</div>
+</div></div>
+
+<div class="dv-opt" id="5c"><div class="dv-olabel"><a class="dv-oid" href="#5c">5c</a>Tabbed card — both forms, one panel</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 62%,#c3d1e0);padding-bottom:24px">
+    <div style="padding:16px 20px 0;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</div>
+    <div style="padding:18px 20px 22px;font-size:24px;line-height:1.24;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="margin:0 16px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 8px 26px rgba(20,40,70,.22);overflow:hidden">
+      <div style="display:flex;background:#f0eee9;border-bottom:1px solid #e0e1e3">
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#24272b;background:#fff;box-shadow:inset 0 -2.5px 0 #efa026">Sign in</div>
+        <div style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#82868c">Register</div>
+      </div>
+      <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+        <div style="height:48px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+        <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+        <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+      <div style="border-top:1px solid #e9eaec;background:#faf9f7;padding:13px 18px;text-align:center;font-size:14.5px;color:#3a3d42">or <span style="font-weight:600;color:#24272b;border-bottom:1px solid #c8cacd">start a list without an account</span></div>
+    </div>
+  </div>
+  <div style="background:#fff;padding:22px 20px 20px;display:flex;flex-direction:column;gap:11px">
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+    <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+    <div style="margin-top:8px;border:1px solid #e0e1e3;border-top-left-radius:6px;border-top-right-radius:6px;border-bottom:none;overflow:hidden;padding:12px 14px 0;height:150px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:9px;height:9px;background:#d6203c"></span><span style="flex:1;font-size:12px;font-weight:700;color:#24272b">Sleep</span></div>
+    </div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">shortest page of the four — one card, one tab tap between the two jobs; the orange under-tab is the same 3px accent the desktop panel wears on its top edge</div>
+  <div class="dv-note">the anonymous path gets its own footer strip inside the card, so it's a peer of both forms instead of a footnote under one</div>
+  <div class="dv-note">cost: a tab hides half the content from search engines' and skimmers' first read; register's four fields make the card jump height on switch</div>
+</div></div>
+
+<div class="dv-opt" id="5d"><div class="dv-olabel"><a class="dv-oid" href="#5d">5d</a>Try-first — one button owns the fold, auth in disclosures</div>
+<div class="dv-card" style="width:390px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 60%,#c9d5e2);padding-bottom:26px;position:relative">
+    <div style="display:flex;align-items:center;padding:16px 20px 0"><span style="flex:1;font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.45)">LighterPack</span><span style="font-size:14.5px;font-weight:600;color:#fff;border-bottom:1.5px solid rgba(255,255,255,.6)">Sign in</span></div>
+    <div style="padding:26px 20px 0;font-size:27px;line-height:1.2;font-weight:700;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+    <div style="padding:12px 20px 0;font-size:15.5px;line-height:1.5;color:rgba(255,255,255,.94);text-shadow:0 1px 10px rgba(20,40,70,.5)">Free, no ads, no account needed to start.</div>
+    <div style="margin:22px 16px 0;height:52px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12),0 4px 16px rgba(20,40,70,.28);display:flex;align-items:center;justify-content:center;font-size:16.5px;font-weight:700;color:#fff">Start a packing list</div>
+    <div style="margin:12px 16px 0;height:48px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.72);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:600;color:#fff">Create an account</div>
+  </div>
+  <div style="background:#fff;padding:20px 20px 0">
+    <div style="border:1px solid #e0e1e3;border-radius:6px;padding:12px 14px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share</span></div>
+      <div style="display:flex;align-items:center;gap:18px;padding:11px 0 6px">
+        <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="flex:1;font-size:11px;color:#24272b">
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:8px;height:8px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:7px;padding:2px 0;font-weight:700"><span style="width:8px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px;padding-bottom:20px">
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+      <div style="display:flex;gap:10px;font-size:15.5px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+    </div>
+  </div>
+  <div style="background:#f0eee9;border-top:1px solid rgba(0,0,0,.07)">
+    <div style="display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(0,0,0,.07)"><span style="flex:1;font-size:16px;font-weight:700;color:#24272b">Sign in</span><span style="font-size:15px;color:#82868c">▾</span></div>
+    <div style="padding:14px 20px 18px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid rgba(0,0,0,.07)">
+      <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Username</div>
+      <div style="height:48px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 13px;font-size:16px;color:#9a9da3">Password</div>
+      <div style="height:48px;margin-top:2px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">Sign in</div>
+      <div style="height:40px;display:flex;align-items:center;justify-content:center;font-size:14.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+    </div>
+    <div style="display:flex;align-items:center;padding:16px 20px"><span style="flex:1;font-size:16px;font-weight:700;color:#24272b">Register an account</span><span style="font-size:15px;color:#82868c">▸</span></div>
+  </div>
+</div>
+<div style="max-width:390px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">the fold is a promise and a button — no form at all. "Start a packing list" drops you straight into an anonymous list; account is the second-tier action</div>
+  <div class="dv-note">both forms still live on the page as expanded/collapsed disclosures at the bottom, so autofill and deep links still work; header "Sign in" scrolls to the open one</div>
+  <div class="dv-note">cost: the most change from what's live, and the returning user pays one tap or a scroll — the opposite bet from <a href="#5b">5b</a></div>
+</div></div>
+
+</div>
+<div class="dv-next">My pick is <a href="#5b">5b</a> — mobile is disproportionately the "check my list at the trailhead" session, and it's the only one that fixes the real complaint (sign-in above the fold, and sessions that stay signed in by default) without inventing new page architecture. <a href="#5c">5c</a> is the compromise if you want first-timers and returners equally served; <a href="#5d">5d</a> only if the anonymous-first bet from <a href="#3a">3a</a> wins on desktop too. Want the fold line drawn in, or a keyboard-up state showing what's visible while typing?</div>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Button finish — is flat the only modern answer?</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+No — subtle gradients are back, just quieter. What dates the current button is the ~15% top-to-bottom shift + hard border, not the gradient per se. Four finishes on the same geometry: <a href="#4a">4a</a> today's live button for reference; <a href="#4b">4b</a> pure flat (what turns 1–3 used); <a href="#4c">4c</a> modern subtle — ~5% luminance shift, no border; <a href="#4d">4d</a> lit edge — flat fill + 1px inner top highlight + hairline bottom shade, the current fashion for "tactile without gloss". <a href="#4c">4c</a> or <a href="#4d">4d</a> keeps your flair instinct site-wide without reading 2014; whichever wins applies to inputs' neighbors too (the field stays flat — only the pressable thing gets depth, that's the point of it).
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Current live (reference)</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(180deg,#f7a521,#e08c0b);border:1px solid #c87f10;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,.2)">Register</div>
+</div>
+<div class="dv-note" style="max-width:250px">~15% shift, hard border, text shadow — the 2014 tells</div></div>
+
+<div class="dv-opt" id="4b"><div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>Flat</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+  <div style="height:40px;background:#e29416;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:250px">matches the app's flat surfaces exactly; safest, least personality</div></div>
+
+<div class="dv-opt" id="4c"><div class="dv-olabel"><a class="dv-oid" href="#4c">4c</a>Modern subtle — ~5% shift</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(180deg,#f2a832,#e99a15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+  <div style="height:40px;background:linear-gradient(180deg,#e89c1e,#dd8f0c);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:250px">the gradient survives, the border and text-shadow don't; hover shifts the whole ramp darker</div></div>
+
+<div class="dv-opt" id="4d"><div class="dv-olabel"><a class="dv-oid" href="#4d">4d</a>Lit edge — flat + inner highlight</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:#efa026;border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+  <div style="height:40px;background:#e29416;border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:250px">reads tactile at a glance, flat in a screenshot; pressed state inverts the highlights (top shade, bottom light)</div></div>
+
+</div>
+<div class="dv-next">Pick a finish and it retrofits into every comp above plus the app's buttons (Share/Settings stay text-only — this is for filled primaries only).</div>
+
+<div class="dv-thd" style="margin-top:30px"><a class="dv-tid" href="#t4">4+</a><span class="dv-tname">Follow-up — your angled gradient, 10% ramp, border removed vs lit edge</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4e"><div class="dv-olabel"><a class="dv-oid" href="#4e">4e</a>Yours, border removed only</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f7a521,#e08c0b);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+</div>
+<div class="dv-note" style="max-width:250px">the 15% angled ramp, no border, no text-shadow — already 80% of the fix; still a touch glossy at this depth</div></div>
+
+<div class="dv-opt" id="4f"><div class="dv-olabel"><a class="dv-oid" href="#4f">4f</a>10% angled, borderless</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+  <div style="height:40px;background:linear-gradient(105deg,#ea9a19,#d78708);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:250px">the middle ground: keeps your top-left light source, visible but not glossy</div></div>
+
+<div class="dv-opt" id="4g"><div class="dv-olabel"><a class="dv-oid" href="#4g">4g</a>10% angled + lit edge</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+  <div style="height:40px;background:linear-gradient(105deg,#ea9a19,#d78708);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:250px">gradient + highlight replaces the border's job (edge definition) with light instead of a line; the most "finished" of the set</div></div>
+
+<div class="dv-opt" id="4h"><div class="dv-olabel"><a class="dv-oid" href="#4h">4h</a>15% angled + lit edge (keep your depth)</div>
+<div class="dv-card" style="width:250px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f7a521,#e08c0b);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Register</div>
+</div>
+<div class="dv-note" style="max-width:250px">your full ramp, modern dressing — this is where "glossy" starts creeping back; shown as the upper bound</div></div>
+
+</div>
+<div class="dv-next">Answer to your question: yes — the border is the biggest offender (a dark hard line around a gradient is the skeuomorphic tell), and lit edge replaces its function. My pick is <a href="#4g">4g</a>: your angle, 10% ramp, highlight instead of border.</div>
+
+<div class="dv-thd" style="margin-top:30px"><a class="dv-tid" href="#t4">4++</a><span class="dv-tname">Hover visibility on 4g — is shadow-on-hover still okay?</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4i"><div class="dv-olabel"><a class="dv-oid" href="#4i">4i</a>Darken only (4g as-is, reference)</div>
+<div class="dv-card" style="width:230px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">rest</div>
+  <div style="height:40px;background:linear-gradient(105deg,#ea9a19,#d78708);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:230px">you're right — ~6% darker on an already-mid orange is a squint</div></div>
+
+<div class="dv-opt" id="4j"><div class="dv-olabel"><a class="dv-oid" href="#4j">4j</a>Shadow only</div>
+<div class="dv-card" style="width:230px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">rest</div>
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12),0 3px 10px rgba(200,127,16,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:230px">fill unchanged, a soft tinted shadow appears — visible, but subtle on busy backgrounds</div></div>
+
+<div class="dv-opt" id="4k"><div class="dv-olabel"><a class="dv-oid" href="#4k">4k</a>Darken + lift shadow</div>
+<div class="dv-card" style="width:230px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">rest</div>
+  <div style="height:40px;background:linear-gradient(105deg,#ea9a19,#d78708);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.14),0 3px 10px rgba(60,40,5,.28);transform:translateY(-1px);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:230px">darker ramp + shadow + 1px rise — the same "lift" your edit states use; unmissable without a color jump</div></div>
+
+<div class="dv-opt" id="4l"><div class="dv-olabel"><a class="dv-oid" href="#4l">4l</a>Brighten instead</div>
+<div class="dv-card" style="width:230px;padding:22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="height:40px;background:linear-gradient(105deg,#f4a72c,#e39110);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">rest</div>
+  <div style="height:40px;background:linear-gradient(105deg,#f9b342,#ee9f1e);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">hover</div>
+</div>
+<div class="dv-note" style="max-width:230px">lighten reads better than darken on saturated mids — but costs white-text contrast at the top edge</div></div>
+
+</div>
+<div class="dv-next">Shadow-on-hover isn't out of style — what dates the current one is likely a hard/offset shadow. And it's already your vocabulary: the edit state IS a lift. My pick is <a href="#4k">4k</a> — hover means "this will lift when you press it", same physics as the edit cards. Pressed state: transform back to 0, shadow gone, slightly darker still.</div>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Broader search — what else this page could be</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+Dropping the "white boxes on a photo" frame entirely. Same constraints (sign-in form on page, register on page). Four directions: <a href="#3a">3a</a> <b>the demo IS the landing page</b> — you land inside the redesigned app on a real sample list; auth lives in the dark sidebar where it structurally belongs. The strongest fit for LighterPack's culture: skip-registration stops being a link and becomes the default experience. <a href="#3b">3b</a> <b>split-tone</b> — the app's dark sidebar chrome becomes the page architecture: forms on ink, photo on the right; no floating boxes at all. <a href="#3c">3c</a> <b>the band</b> — one full-width frosted strip across the photo holding register / steps / sign-in; architecture instead of cards. <a href="#3d">3d</a> a wilder detail: the register form drawn in the app's own <b>gear-list grammar</b> — a category header, hairline rows, a green add-row — the form as a packing list. Flair through identity, not accent bars.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Demo-first — land inside the app, auth in the sidebar</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="display:flex;height:470px">
+    <div style="width:250px;flex:none;background:#2e2e30;display:flex;flex-direction:column">
+      <div style="padding:18px 20px 4px;font-size:18px;font-weight:700;color:#fff">LighterPack</div>
+      <div style="padding:2px 20px 14px;font-size:12px;line-height:1.5;color:#9a9da3">helps you track the gear you bring on adventures.</div>
+      <div style="margin:0 20px;padding:10px 12px;background:#26262a;border:1px solid #3c3c40;border-radius:6px;font-size:11.5px;line-height:1.5;color:#c9c9c9">You're in a <b style="color:#e8c400">live demo</b> — edit anything below. Like it? Keep this list:</div>
+      <div style="margin:10px 20px 0;height:36px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">Create account &amp; keep list</div>
+      <div style="margin:8px 20px 0;text-align:center;font-size:11.5px;color:#8a8d92"><span style="border-bottom:1px solid #55565b">or continue without one</span></div>
+      <div style="border-top:1px solid #3c3c40;margin:16px 20px 12px"></div>
+      <div style="padding:0 20px;font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92;margin-bottom:8px">SIGN IN</div>
+      <div style="margin:0 20px 8px;height:34px;background:#26262a;border:1px solid #3c3c40;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#8a8d92">Username</div>
+      <div style="margin:0 20px 8px;height:34px;background:#26262a;border:1px solid #3c3c40;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#8a8d92">Password</div>
+      <div style="margin:0 20px;display:flex;align-items:center;gap:10px"><div style="height:34px;flex:1;border:1px solid #55565b;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;color:#e8e8ea">Sign in</div><span style="font-size:11px;color:#8a8d92"><span style="border-bottom:1px solid #55565b">Forgot?</span></span></div>
+      <div style="flex:1"></div>
+      <div style="padding:12px 20px;border-top:1px solid #3c3c40;font-size:11px;color:#8a8d92">Free · no ads · <span style="border-bottom:1px solid #55565b">GitHub</span></div>
+    </div>
+    <div style="flex:1;background:#fff;padding:14px 30px;min-width:0">
+      <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:8px"><span style="flex:1;font-size:16px;font-weight:700;color:#24272b">Denali <span style="font-size:11px;font-weight:600;color:#9a9da3;margin-left:6px">sample list</span></span><span style="font-size:11px;font-weight:600;color:#3a3d42">Share&nbsp;&nbsp;&nbsp;&nbsp;Settings</span></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:38px;padding:16px 0">
+        <div style="width:110px;height:110px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+        <div style="width:250px;font-size:11.5px;color:#24272b">
+          <div style="display:flex;gap:8px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:9px;height:9px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:9.5px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:8px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:9px;height:9px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:9.5px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:8px;padding:2.5px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:9px;height:9px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:9.5px;padding-top:1px">lb</span></div>
+          <div style="display:flex;gap:8px;padding:3px 0;font-weight:700"><span style="width:9px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:9.5px;padding-top:1px;font-weight:400">lb</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;border-bottom:1px solid #d5d7da;padding-bottom:4px"><span style="width:10px;height:10px;background:#d6203c"></span><span style="flex:1;font-size:13px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:11.5px;font-weight:700;color:#24272b">5.42 <span style="font-weight:400;color:#9a9da3;font-size:9.5px">lb</span></span></div>
+      <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:11.5px"><span style="width:130px;color:#24272b">Sleeping Bag</span><span style="flex:1;color:#9a9da3">Montbell Down Expedition</span><span style="color:#24272b">55 <span style="color:#9a9da3;font-size:9.5px">oz</span></span></div>
+      <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:11.5px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.1);border:1.5px solid #efa026;border-radius:6px;padding-left:8px;padding-right:8px"><span style="width:126px;color:#24272b">Sleeping Pad<span style="display:inline-block;width:1.5px;height:12px;background:#efa026;vertical-align:-2px;margin-left:1px"></span></span><span style="flex:1;color:#9a9da3">Thermarest X-Therm</span><span style="color:#24272b">15 <span style="color:#9a9da3;font-size:9.5px">oz</span></span></div>
+      <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:11.5px"><span style="width:130px;color:#24272b">Tent</span><span style="flex:1;color:#9a9da3">Hilleberg Nammatj 3</span><span style="color:#24272b">106 <span style="color:#9a9da3;font-size:9.5px">oz</span></span></div>
+      <div style="padding:5px 0;font-size:11.5px;font-weight:600;color:#8fbe4f">+ Add new item</div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">no marketing page at all: first paint is the product with a sample list mid-edit (note the orange edit row). The 1-2-3 pitch is unnecessary — you're doing step 1 already</div>
+  <div class="dv-note" style="flex:1">sidebar = auth column: demo banner, keep-this-list CTA, full sign-in form on ink. Returning users get their form top-left, always in the same place as the app they know</div>
+  <div class="dv-note" style="flex:1">costs: no photo, no headline moment; demo state needs real engineering (localStorage list → account merge on register)</div>
+</div></div>
+
+<div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Split-tone — forms on ink, photo as the other half</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="display:flex;height:470px">
+    <div style="width:340px;flex:none;background:#2e2e30;padding:26px 34px;display:flex;flex-direction:column">
+      <div style="font-size:19px;font-weight:700;color:#fff">LighterPack</div>
+      <div style="margin-top:22px;font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92">SIGN IN</div>
+      <div style="margin-top:10px;height:36px;background:#26262a;border:1px solid #3c3c40;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#8a8d92">Username</div>
+      <div style="margin-top:8px;height:36px;background:#26262a;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 11.5px;font-size:13px;color:#fff">galen<span style="display:inline-block;width:1.5px;height:14px;background:#efa026;margin-left:1px"></span></div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:12px"><div style="height:36px;flex:1;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">Sign in</div><span style="font-size:11.5px;color:#8a8d92"><span style="border-bottom:1px solid #55565b">Forgot?</span></span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin:22px 0"><span style="flex:1;height:1px;background:#3c3c40"></span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92">NEW HERE</span><span style="flex:1;height:1px;background:#3c3c40"></span></div>
+      <div style="height:36px;border:1px solid #55565b;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#e8e8ea">Register an account</div>
+      <div style="margin-top:8px;height:36px;display:flex;align-items:center;justify-content:center;font-size:12.5px;color:#8a8d92"><span style="border-bottom:1px solid #55565b">Try it without an account</span></div>
+      <div style="flex:1"></div>
+      <div style="font-size:11px;color:#8a8d92">Free · no ads · <span style="border-bottom:1px solid #55565b">GitHub</span></div>
+    </div>
+    <div style="flex:1;background:linear-gradient(180deg,#6f8fba,#9fb5d0 60%,#c9d5e2);position:relative;padding:40px 48px;min-width:0">
+      <div style="font-size:30px;line-height:1.2;font-weight:700;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5);max-width:420px">Track the gear you bring on adventures.</div>
+      <div style="display:flex;gap:24px;margin-top:14px;font-size:13.5px;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.5)"><span><b>1.</b> Enter lists</span><span><b>2.</b> Visualize weight</span><span><b>3.</b> Share</span></div>
+      <div style="position:absolute;left:48px;right:48px;bottom:-1px;background:#fff;border:1px solid rgba(0,0,0,.1);border-bottom:none;border-radius:7px 7px 0 0;box-shadow:0 -8px 40px rgba(20,40,70,.3);padding:16px 24px 0;height:216px;overflow:hidden">
+        <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:6px"><span style="flex:1;font-size:13px;font-weight:700;color:#24272b">Denali</span><span style="font-size:9.5px;font-weight:600;color:#3a3d42">Share&nbsp;&nbsp;&nbsp;Settings</span></div>
+        <div style="display:flex;align-items:center;gap:26px;padding:10px 0;justify-content:center">
+          <div style="width:74px;height:74px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+          <div style="width:200px;font-size:9.5px;color:#24272b">
+            <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span>7.31</span><span style="color:#9a9da3;font-size:8px">lb</span></div>
+            <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span>5.42</span><span style="color:#9a9da3;font-size:8px">lb</span></div>
+            <div style="display:flex;gap:6px;padding:2px 0;font-weight:700"><span style="width:7px"></span><span style="flex:1">Total</span><span>52.67</span><span style="color:#9a9da3;font-size:8px;font-weight:400">lb</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:8px;height:8px;background:#d6203c"></span><span style="flex:1;font-size:11px;font-weight:700;color:#24272b">Sleep</span></div>
+        <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Sleeping Bag</span><span style="flex:1;color:#9a9da3">Montbell Down Expedition</span><span style="color:#24272b">55 oz</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">the app's own sidebar chrome becomes the page: auth on ink, no floating cards anywhere. Sign-in first (your returning-user reality), register one click below</div>
+  <div class="dv-note" style="flex:1">the product mock rises from the bottom edge — the page literally continues into the app; photo stays as the right-half backdrop</div>
+  <div class="dv-note" style="flex:1">cost: register is a click away (modal or expands in the column) — acceptable if most traffic is returning users, wrong if growth matters more</div>
+</div></div>
+
+<div class="dv-opt" id="3c"><div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>The band — one frosted strip, no boxes</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 55%,#c9d5e2);padding:44px 0 78px">
+    <div style="text-align:center;font-size:30px;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.45);padding:0 40px"><b>LighterPack</b> helps you track the gear you bring on adventures.</div>
+    <div style="margin-top:38px;background:rgba(255,255,255,.82);backdrop-filter:blur(6px);border-top:1px solid rgba(255,255,255,.9);border-bottom:1px solid rgba(0,0,0,.08);display:flex;align-items:stretch;padding:24px 72px;gap:40px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:15px;font-weight:700;color:#24272b">Register an account</div>
+        <div style="display:flex;gap:10px"><div style="flex:1;height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Username</div><div style="flex:1;height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Email</div></div>
+        <div style="display:flex;gap:10px"><div style="flex:1;height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Password</div><div style="flex:1;height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Confirm</div></div>
+        <div style="display:flex;gap:10px;align-items:center"><div style="height:38px;background:#efa026;border-radius:6px;display:flex;align-items:center;padding:0 22px;font-size:13.5px;font-weight:700;color:#fff">Register</div><span style="font-size:12px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">or try it without an account</span></span></div>
+      </div>
+      <div style="width:1px;background:rgba(0,0,0,.1);flex:none"></div>
+      <div style="width:220px;flex:none;display:flex;flex-direction:column;gap:8px;justify-content:center;font-size:13.5px;color:#3a3d42">
+        <div style="display:flex;gap:9px"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+        <div style="display:flex;gap:9px"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+        <div style="display:flex;gap:9px"><b style="color:#24272b">3.</b> Share your lists with others</div>
+      </div>
+      <div style="width:1px;background:rgba(0,0,0,.1);flex:none"></div>
+      <div style="width:250px;flex:none;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:15px;font-weight:700;color:#24272b">Sign in</div>
+        <div style="height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Username</div>
+        <div style="height:36px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#9a9da3">Password</div>
+        <div style="display:flex;gap:10px;align-items:center"><div style="height:38px;background:#efa026;border-radius:6px;display:flex;align-items:center;padding:0 22px;font-size:13.5px;font-weight:700;color:#fff">Sign in</div><span style="font-size:12px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot?</span></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">one architectural element instead of two cards: a frosted band spanning the full width, photo visible above and below; hairline dividers section register / pitch / sign-in</div>
+  <div class="dv-note" style="flex:1">flair is the material itself (blur + light borders), not an accent bar; both forms visible, zero clicks</div>
+  <div class="dv-note" style="flex:1">cost: horizontally rigid — collapses to stacked sections on narrow screens; frosted glass is trendier than the app's flat language</div>
+</div></div>
+
+<div class="dv-opt" id="3d"><div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>Wilder — the register form in the app's gear-list grammar</div>
+<div style="background:linear-gradient(180deg,#8aa3c4,#b3c3d8);border-radius:8px;padding:30px 34px;width:430px">
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);padding:20px 26px 16px">
+    <div style="display:flex;align-items:center;gap:9px;border-bottom:1px solid #d5d7da;padding-bottom:5px"><span style="width:10px;height:10px;background:#efa026;flex:none"></span><span style="flex:1;font-size:14.5px;font-weight:700;color:#24272b">Your account</span><span style="font-size:11px;color:#82868c">4 items</span></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:110px;flex:none;font-size:12.5px;color:#24272b">Username</span><div style="flex:1;height:30px;border:1px solid #d5d7da;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#9a9da3">trailname</div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:110px;flex:none;font-size:12.5px;color:#24272b">Email</span><div style="flex:1;height:30px;border:1px solid #d5d7da;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#9a9da3">you@example.com</div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:110px;flex:none;font-size:12.5px;color:#24272b">Password</span><div style="flex:1;height:30px;border:1.5px solid #efa026;border-radius:5px;display:flex;align-items:center;padding:0 9.5px;font-size:12px;color:#24272b">••••••••<span style="display:inline-block;width:1.5px;height:12px;background:#efa026;margin-left:1px"></span></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:110px;flex:none;font-size:12.5px;color:#24272b">Confirm</span><div style="flex:1;height:30px;border:1px solid #d5d7da;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#9a9da3"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0 4px"><div style="height:38px;background:#efa026;border-radius:6px;display:flex;align-items:center;padding:0 22px;font-size:13.5px;font-weight:700;color:#fff">Register</div><span style="flex:1"></span><span style="font-size:12px;font-weight:600;color:#8fbe4f">+ Skip — start a list instead</span></div>
+    <div style="height:2px;margin-top:10px;background:linear-gradient(90deg,#efa026 75%,#f0f0ef 75%)"></div>
+  </div>
+</div>
+<div style="max-width:430px;display:flex;flex-direction:column;gap:8px">
+  <div class="dv-note">the form speaks the product's language before you're in it: category header with color chip, hairline rows, the green add-row as the anonymous path, a weight-bar at 75% ("almost packed")</div>
+  <div class="dv-note">works as the register panel inside 2a/3c; delightful to your existing users, possibly cryptic to brand-new ones — the bar and chip mean nothing yet</div>
+</div></div>
+
+</div>
+<div class="dv-next">My read: <a href="#3a">3a</a> is the most honest to what LighterPack is (try-first product); <a href="#3b">3b</a> is the best-looking answer to "more than white boxes" while keeping a conventional landing. <a href="#3d">3d</a> could nest inside either as the register treatment.</div>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Sign-in form stays on the page + the flair comes back</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+Constraints locked: the sign-in <b>form</b> (not a button) lives on the home page — with sessions expiring often, this page is a login screen as much as a pitch, and your users already told you so. And the flair stays. Three takes: <a href="#2a">2a</a> restores the orange top edge on the 1a layout, tucked inside the 7px radius as a 3px inset bar. <a href="#2b">2b</a>/<a href="#2c">2c</a> are alternate flair placements on the same panel (title underline / left edge) if the top bar feels too 2019. <a href="#2d">2d</a> keeps 1b's register-first hero but puts the full sign-in form in a slim bar across the top — form on page, hero keeps one job. Leaning <a href="#2a">2a</a> for layout and keeping your top bar: it's the panel's existing signature, and inset in the radius it reads intentional, not legacy.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>1a layout, orange top edge restored — inset in the 7px radius</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 55%,#c9d5e2);padding:0 0 90px">
+    <div style="text-align:center;padding:44px 40px 40px;font-size:30px;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.45)"><b>LighterPack</b> helps you track the gear you bring on adventures.</div>
+    <div style="display:flex;justify-content:center;align-items:flex-start;gap:36px;padding:0 40px">
+      <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);overflow:hidden">
+        <div style="height:3px;background:#efa026"></div>
+        <div style="padding:25px 32px 28px;display:flex;gap:36px">
+        <div style="width:250px;display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:17px;font-weight:700;color:#24272b;margin-bottom:2px">Register an account</div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Email</div>
+          <div style="height:38px;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 11.5px;font-size:13px;color:#24272b">••••••••<span style="display:inline-block;width:1.5px;height:14px;background:#efa026;margin-left:1px"></span></div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Confirm password</div>
+          <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Register</div>
+          <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Skip registration</span></div>
+        </div>
+        <div style="width:300px;display:flex;flex-direction:column;gap:10px;padding-top:6px">
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+          <div style="margin-top:6px;border:1px solid #e0e1e3;border-radius:5px;overflow:hidden;display:flex;height:172px">
+            <div style="width:64px;flex:none;background:#2e2e30;padding:7px 0"><div style="padding:2px 8px;font-size:6.5px;font-weight:700;color:#fff">LighterPack</div><div style="padding:2px 8px;font-size:6px;color:#e8c400;background:#26262a;box-shadow:inset 1.5px 0 0 #e8c400">Denali</div><div style="padding:2px 8px;font-size:6px;color:#c9c9c9">JMT 2024</div><div style="padding:2px 8px;font-size:6px;color:#c9c9c9">Winter Overnight</div></div>
+            <div style="flex:1;background:#fff;padding:7px 10px">
+              <div style="font-size:8px;font-weight:700;color:#24272b;border-bottom:1px solid #e0e1e3;padding-bottom:3px">Denali</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:6px 0 5px;justify-content:center">
+                <div style="width:44px;height:44px;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 34%,#000 35%);mask:radial-gradient(circle,transparent 34%,#000 35%)"></div>
+                <div style="font-size:6px;color:#3a3d42;line-height:1.7"><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#2a72c8;margin-top:2px"></span>Carry<span style="color:#9a9da3">7.31 lb</span></div><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#d6203c;margin-top:2px"></span>Sleep<span style="color:#9a9da3">5.42 lb</span></div><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#e8c400;margin-top:2px"></span>Clothing<span style="color:#9a9da3">20.91 lb</span></div></div>
+              </div>
+              <div style="font-size:6.5px;font-weight:700;color:#24272b;border-bottom:1px solid #d5d7da;padding-bottom:1px;display:flex;gap:3px;align-items:center"><span style="width:4px;height:4px;background:#d6203c"></span>Sleep</div>
+              <div style="font-size:6px;color:#3a3d42;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex"><span style="flex:1">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+              <div style="font-size:6px;color:#3a3d42;padding:2px 0;display:flex"><span style="flex:1">Sleeping Pad</span><span style="color:#9a9da3">15 oz</span></div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);overflow:hidden;width:314px">
+        <div style="height:3px;background:#efa026"></div>
+        <div style="padding:25px 32px 28px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:17px;font-weight:700;color:#24272b;margin-bottom:2px">Sign in</div>
+        <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+        <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+        <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Sign in</div>
+        <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">the 3px bar sits inside the panel's border and radius — clipped corners make it read as a designed edge, not a browser-default rule; it's the same #efa026 as buttons/focus, so the page stays one-accent</div>
+  <div class="dv-note" style="flex:1">everything else is 1a: flat buttons, whole-border focus, quiet grey links</div>
+</div></div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Flair alt — orange title underline</div>
+<div style="background:linear-gradient(180deg,#8aa3c4,#b3c3d8);border-radius:8px;padding:30px 34px;width:314px">
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);padding:25px 32px 28px;display:flex;flex-direction:column;gap:12px">
+    <div style="margin-bottom:2px"><span style="font-size:17px;font-weight:700;color:#24272b;display:inline-block;border-bottom:2.5px solid #efa026;padding-bottom:4px">Sign in</span></div>
+    <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+    <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+    <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Sign in</div>
+    <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+  </div>
+</div>
+<div class="dv-note" style="max-width:380px">flair moves to the type: a short 2.5px underline hugging the heading. Smaller, closer to the content, echoes how category headers carry their color chip. Risk: reads as a "tab"</div></div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Flair alt — orange left edge</div>
+<div style="background:linear-gradient(180deg,#8aa3c4,#b3c3d8);border-radius:8px;padding:30px 34px;width:314px">
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);overflow:hidden;display:flex">
+    <div style="width:3px;flex:none;background:#efa026"></div>
+    <div style="padding:25px 32px 28px 29px;display:flex;flex-direction:column;gap:12px;flex:1">
+      <div style="font-size:17px;font-weight:700;color:#24272b;margin-bottom:2px">Sign in</div>
+      <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+      <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+      <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Sign in</div>
+      <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+    </div>
+  </div>
+</div>
+<div class="dv-note" style="max-width:380px">same 3px, rotated to the left edge — matches the sidebar's active-list marker. Risk: it's also our "selected" grammar in-app, and the left-border card is a tired pattern; here only for completeness</div></div>
+
+<div class="dv-opt" id="2d"><div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Rework, sign-in form inline in a top bar — hero keeps one job</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 55%,#c9d5e2);padding-bottom:70px">
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 44px;background:rgba(23,35,52,.38);border-bottom:1px solid rgba(255,255,255,.14)">
+      <div style="font-size:17px;font-weight:700;color:#fff">LighterPack</div>
+      <span style="flex:1"></span>
+      <div style="height:32px;width:150px;background:rgba(255,255,255,.94);border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#82868c">Username</div>
+      <div style="height:32px;width:150px;background:rgba(255,255,255,.94);border-radius:6px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;color:#82868c">Password</div>
+      <div style="height:32px;background:#efa026;border-radius:6px;display:flex;align-items:center;padding:0 16px;font-size:12.5px;font-weight:700;color:#fff">Sign in</div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-left:4px"><span style="border-bottom:1px solid rgba(255,255,255,.45)">Forgot?</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:52px;padding:38px 72px 0">
+      <div style="width:400px;flex:none">
+        <div style="font-size:34px;line-height:1.2;font-weight:700;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin:22px 0 26px;font-size:15px;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.5)">
+          <div style="display:flex;gap:10px"><b>1.</b> Enter your packing lists</div>
+          <div style="display:flex;gap:10px"><b>2.</b> Visualize your pack weights</div>
+          <div style="display:flex;gap:10px"><b>3.</b> Share your lists with others</div>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.25);overflow:hidden;width:280px">
+          <div style="height:3px;background:#efa026"></div>
+          <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px">
+            <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+            <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Email</div>
+            <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+            <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">Create your account</div>
+            <div style="height:40px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;color:#3a3d42">Try it without an account</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:7px;box-shadow:0 18px 50px rgba(20,40,70,.35);overflow:hidden;display:flex;height:330px">
+        <div style="width:128px;flex:none;background:#2e2e30;padding:12px 0">
+          <div style="padding:3px 14px;font-size:10.5px;font-weight:700;color:#fff;margin-bottom:6px">LighterPack</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#e8c400;font-weight:600;background:#26262a;box-shadow:inset 2px 0 0 #e8c400">Denali</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">JMT 2024</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Alaska Bike Tour</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Winter Overnight</div>
+          <div style="border-top:1px solid #3c3c40;margin:8px 14px 6px"></div>
+          <div style="padding:2px 14px;font-size:7.5px;font-weight:700;letter-spacing:.09em;color:#8a8d92">GEAR · 48</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Bear Canister</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Headlamp</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Pack</div>
+        </div>
+        <div style="flex:1;padding:14px 22px;min-width:0">
+          <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:9.5px;font-weight:600;color:#3a3d42">Share&nbsp;&nbsp;&nbsp;Settings</span></div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:26px;padding:12px 0">
+            <div style="width:86px;height:86px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+            <div style="width:190px;font-size:9.5px;color:#24272b">
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;font-weight:700"><span style="width:7px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:8px;padding-top:1px;font-weight:400">lb</span></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:8px;height:8px;background:#d6203c"></span><span style="flex:1;font-size:11px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:9.5px;font-weight:700;color:#24272b">5.42 <span style="font-weight:400;color:#9a9da3;font-size:8px">lb</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Sleeping Bag</span><span style="flex:1;color:#9a9da3">Montbell Down Expedition</span><span style="color:#24272b">55 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Sleeping Pad</span><span style="flex:1;color:#9a9da3">Thermarest X-Therm</span><span style="color:#24272b">15 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Tent</span><span style="flex:1;color:#9a9da3">Hilleberg Nammatj 3</span><span style="color:#24272b">106 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="padding:4px 0;font-size:9.5px;font-weight:600;color:#8fbe4f">+ Add new item</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">full sign-in form, always visible, zero clicks — returning users with expired sessions land, type, enter; browser autofill targets it fine</div>
+  <div class="dv-note" style="flex:1">the dark strip separates "returning user" chrome from the pitch; register card keeps the hero and the anonymous button, and carries the orange top-bar flair</div>
+  <div class="dv-note" style="flex:1">cost: inline fields are tight at 150px, and the bar pattern collapses poorly on mobile (would stack into a disclosure there)</div>
+</div></div>
+
+</div>
+<div class="dv-next">Also worth fixing regardless of layout: longer session expiry (or a "remember me" checkbox on the sign-in form) attacks the root cause — the page then serves fewer annoyed re-logins no matter where the form sits.</div>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Landing page under the redesign — restyle vs rework, plus the control kit</span></div>
+
+<div style="max-width:760px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:14px 20px;margin:0 0 24px;font-size:13px;line-height:1.55;color:#3a3d42">
+Source is the live-site screenshot. What changes under the new system: gradient buttons → <b>flat orange #efa026</b> with a darker hover (orange is edit-focus inside the app, but out here it's just the brand color); inputs pick up the app's field grammar — hairline #d5d7da, 6px radius, <b>whole border goes orange on focus</b>; panels go to the edit card's 7px radius with a hairline + soft shadow, dropping the orange top bar and the pale grey panel fill; Open Sans → Source Sans 3. <a href="#1a">1a</a> is that restyle, same two-panel structure. <a href="#1b">1b</a> is the rework with the other ideas: the register/sign-in duplication collapses — sign-in becomes a compact header action, the page gets one job; the tiny 2014 screenshot is replaced by a big live mock of the redesigned list view; "Skip registration" — actually LighterPack's signature move — is promoted from a footnote link to a real secondary button ("Try it without an account"); a scrim fixes the white-headline-on-sky contrast. <a href="#1c">1c</a> is the control kit both are built from. Photo note: the mountain photo stays — the blue gradient in the comps is a stand-in.
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Restyle — same structure, new controls and panel geometry</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 55%,#c9d5e2);padding:0 0 90px">
+    <div style="text-align:center;padding:44px 40px 40px;font-size:30px;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.45)"><b>LighterPack</b> helps you track the gear you bring on adventures.</div>
+    <div style="display:flex;justify-content:center;align-items:flex-start;gap:36px;padding:0 40px">
+      <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);padding:28px 32px;display:flex;gap:36px">
+        <div style="width:250px;display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:17px;font-weight:700;color:#24272b;margin-bottom:2px">Register an account</div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Email</div>
+          <div style="height:38px;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 11.5px;font-size:13px;color:#24272b">••••••••<span style="display:inline-block;width:1.5px;height:14px;background:#efa026;margin-left:1px"></span></div>
+          <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Confirm password</div>
+          <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Register</div>
+          <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Skip registration</span></div>
+        </div>
+        <div style="width:300px;display:flex;flex-direction:column;gap:10px;padding-top:6px">
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">1.</b> Enter your packing lists</div>
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">2.</b> Visualize your pack weights</div>
+          <div style="display:flex;gap:9px;font-size:14px;color:#3a3d42"><b style="color:#24272b">3.</b> Share your lists with others</div>
+          <div style="margin-top:6px;border:1px solid #e0e1e3;border-radius:5px;overflow:hidden;display:flex;height:172px">
+            <div style="width:64px;flex:none;background:#2e2e30;padding:7px 0"><div style="padding:2px 8px;font-size:6.5px;font-weight:700;color:#fff">LighterPack</div><div style="padding:2px 8px;font-size:6px;color:#e8c400;background:#26262a;box-shadow:inset 1.5px 0 0 #e8c400">Denali</div><div style="padding:2px 8px;font-size:6px;color:#c9c9c9">JMT 2024</div><div style="padding:2px 8px;font-size:6px;color:#c9c9c9">Winter Overnight</div></div>
+            <div style="flex:1;background:#fff;padding:7px 10px">
+              <div style="font-size:8px;font-weight:700;color:#24272b;border-bottom:1px solid #e0e1e3;padding-bottom:3px">Denali</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:6px 0 5px;justify-content:center">
+                <div style="width:44px;height:44px;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 34%,#000 35%);mask:radial-gradient(circle,transparent 34%,#000 35%)"></div>
+                <div style="font-size:6px;color:#3a3d42;line-height:1.7"><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#2a72c8;margin-top:2px"></span>Carry<span style="color:#9a9da3">7.31 lb</span></div><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#d6203c;margin-top:2px"></span>Sleep<span style="color:#9a9da3">5.42 lb</span></div><div style="display:flex;gap:5px"><span style="width:5px;height:5px;background:#e8c400;margin-top:2px"></span>Clothing<span style="color:#9a9da3">20.91 lb</span></div></div>
+              </div>
+              <div style="font-size:6.5px;font-weight:700;color:#24272b;border-bottom:1px solid #d5d7da;padding-bottom:1px;display:flex;gap:3px;align-items:center"><span style="width:4px;height:4px;background:#d6203c"></span>Sleep</div>
+              <div style="font-size:6px;color:#3a3d42;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex"><span style="flex:1">Sleeping Bag</span><span style="color:#9a9da3">55 oz</span></div>
+              <div style="font-size:6px;color:#3a3d42;padding:2px 0;display:flex"><span style="flex:1">Sleeping Pad</span><span style="color:#9a9da3">15 oz</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="width:250px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:7px;box-shadow:0 10px 34px rgba(20,40,70,.22);padding:28px 32px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:17px;font-weight:700;color:#24272b;margin-bottom:2px">Sign in</div>
+        <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+        <div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+        <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-top:4px">Sign in</div>
+        <div style="text-align:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Forgot username/password?</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">panels: 7px radius, hairline + one soft shadow; orange top bar and grey panel fill dropped — the orange now lives only in the buttons and the focus ring</div>
+  <div class="dv-note" style="flex:1">inputs 38px / 6px radius; focused field shows the whole-border orange from the name-edit lock; flat #efa026 buttons, hover #e29416</div>
+  <div class="dv-note" style="flex:1">screenshot swapped for a mock of the redesigned list view; quiet links restyled from blue to the app's grey-underline grammar</div>
+</div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Rework — one job, sign-in to the header, anonymous path promoted</div>
+<div class="dv-card" style="width:1200px;border-radius:2px">
+  <div style="background:linear-gradient(180deg,#6f8fba,#9fb5d0 55%,#c9d5e2);padding-bottom:70px">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 44px">
+      <div style="font-size:17px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.4)">LighterPack</div>
+      <span style="flex:1"></span>
+      <div style="height:34px;border:1px solid rgba(255,255,255,.75);border-radius:6px;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#fff">Sign in</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:52px;padding:38px 72px 0">
+      <div style="width:400px;flex:none">
+        <div style="font-size:34px;line-height:1.2;font-weight:700;color:#fff;text-shadow:0 1px 14px rgba(20,40,70,.5)">Track the gear you bring on adventures.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin:22px 0 26px;font-size:15px;color:#fff;text-shadow:0 1px 8px rgba(20,40,70,.5)">
+          <div style="display:flex;gap:10px"><b>1.</b> Enter your packing lists</div>
+          <div style="display:flex;gap:10px"><b>2.</b> Visualize your pack weights</div>
+          <div style="display:flex;gap:10px"><b>3.</b> Share your lists with others</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;width:280px">
+          <div style="height:38px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Username</div>
+          <div style="height:38px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Email</div>
+          <div style="height:38px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Password</div>
+          <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;box-shadow:0 2px 10px rgba(20,40,70,.25)">Create your account</div>
+          <div style="height:40px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.75);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;color:#fff">Try it without an account</div>
+        </div>
+      </div>
+      <div style="flex:1;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:7px;box-shadow:0 18px 50px rgba(20,40,70,.35);overflow:hidden;display:flex;height:330px">
+        <div style="width:128px;flex:none;background:#2e2e30;padding:12px 0">
+          <div style="padding:3px 14px;font-size:10.5px;font-weight:700;color:#fff;margin-bottom:6px">LighterPack</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#e8c400;font-weight:600;background:#26262a;box-shadow:inset 2px 0 0 #e8c400">Denali</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">JMT 2024</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Alaska Bike Tour</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Winter Overnight</div>
+          <div style="border-top:1px solid #3c3c40;margin:8px 14px 6px"></div>
+          <div style="padding:2px 14px;font-size:7.5px;font-weight:700;letter-spacing:.09em;color:#8a8d92">GEAR · 48</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Bear Canister</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Headlamp</div>
+          <div style="padding:3px 14px;font-size:9.5px;color:#c9c9c9">Pack</div>
+        </div>
+        <div style="flex:1;padding:14px 22px;min-width:0">
+          <div style="display:flex;align-items:center;border-bottom:1px solid #e0e1e3;padding-bottom:7px"><span style="flex:1;font-size:14px;font-weight:700;color:#24272b">Denali</span><span style="font-size:9.5px;font-weight:600;color:#3a3d42">Share&nbsp;&nbsp;&nbsp;Settings</span></div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:26px;padding:12px 0">
+            <div style="width:86px;height:86px;flex:none;border-radius:50%;background:conic-gradient(#2a72c8 0 14%,#d6203c 14% 24%,#e8c400 24% 64%,#3e9c35 64% 67%,#8a2be2 67% 92%,#f28022 92% 100%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></div>
+            <div style="width:190px;font-size:9.5px;color:#24272b">
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#2a72c8;margin-top:2px"></span><span style="flex:1">Carry</span><span style="font-variant-numeric:tabular-nums">7.31</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#d6203c;margin-top:2px"></span><span style="flex:1">Sleep</span><span style="font-variant-numeric:tabular-nums">5.42</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.06)"><span style="width:7px;height:7px;background:#e8c400;margin-top:2px"></span><span style="flex:1">Clothing</span><span style="font-variant-numeric:tabular-nums">20.91</span><span style="color:#9a9da3;font-size:8px;padding-top:1px">lb</span></div>
+              <div style="display:flex;gap:6px;padding:2px 0;font-weight:700"><span style="width:7px"></span><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">52.67</span><span style="color:#9a9da3;font-size:8px;padding-top:1px;font-weight:400">lb</span></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;border-bottom:1px solid #d5d7da;padding-bottom:3px"><span style="width:8px;height:8px;background:#d6203c"></span><span style="flex:1;font-size:11px;font-weight:700;color:#24272b">Sleep</span><span style="font-size:9.5px;font-weight:700;color:#24272b">5.42 <span style="font-weight:400;color:#9a9da3;font-size:8px">lb</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Sleeping Bag</span><span style="flex:1;color:#9a9da3">Montbell Down Expedition</span><span style="color:#24272b">55 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Sleeping Pad</span><span style="flex:1;color:#9a9da3">Thermarest X-Therm</span><span style="color:#24272b">15 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:9.5px"><span style="width:90px;color:#24272b">Tent</span><span style="flex:1;color:#9a9da3">Hilleberg Nammatj 3</span><span style="color:#24272b">106 <span style="color:#9a9da3;font-size:8px">oz</span></span></div>
+          <div style="padding:4px 0;font-size:9.5px;font-weight:600;color:#8fbe4f">+ Add new item</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;display:flex;gap:22px">
+  <div class="dv-note" style="flex:1">one job per page: register form inline in the hero; returning users get a header "Sign in" (opens the same panel as 1a's card, right-aligned dropdown or /signin)</div>
+  <div class="dv-note" style="flex:1">"Try it without an account" promoted to a real secondary button — anonymous lists are the product's signature low-friction move, not a footnote</div>
+  <div class="dv-note" style="flex:1">the product IS the pitch: big live mock of the redesigned list view instead of the 2014 screenshot; headline scrim fixes white-on-sky contrast</div>
+</div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Control kit — the pieces both comps are built from</div>
+<div class="dv-card" style="width:560px;border-radius:2px;padding:22px 26px;display:flex;flex-direction:column;gap:18px">
+  <div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92;margin-bottom:8px">TEXT INPUT</div>
+    <div style="display:flex;gap:14px">
+      <div style="flex:1"><div style="height:38px;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Rest</div></div>
+      <div style="flex:1"><div style="height:38px;border:1px solid #b9bcc0;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#9a9da3">Hover</div></div>
+      <div style="flex:1"><div style="height:38px;border:1.5px solid #efa026;border-radius:6px;display:flex;align-items:center;padding:0 11.5px;font-size:13px;color:#24272b">Focus<span style="display:inline-block;width:1.5px;height:14px;background:#efa026;margin-left:1px"></span></div></div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92;margin-bottom:8px">ERROR</div>
+    <div style="width:calc(33% - 6px)"><div style="height:38px;border:1.5px solid #d6203c;border-radius:6px;display:flex;align-items:center;padding:0 11.5px;font-size:13px;color:#24272b">galen</div><div style="font-size:11.5px;color:#d6203c;margin-top:4px">Username is taken</div></div>
+  </div>
+  <div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#8a8d92;margin-bottom:8px">BUTTONS</div>
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <div style="height:40px;background:#efa026;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;padding:0 22px">Primary</div>
+      <div style="height:40px;background:#e29416;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;padding:0 22px">Hover</div>
+      <div style="height:40px;background:#fff;border:1px solid #d5d7da;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;color:#3a3d42;padding:0 22px">Secondary</div>
+      <div style="height:40px;display:flex;align-items:center;font-size:12.5px;color:#82868c"><span style="border-bottom:1px solid #c8cacd">Quiet link</span></div>
+    </div>
+  </div>
+</div>
+<div class="dv-note" style="max-width:560px">focus + error borders are whole-border color swaps per the name-edit lock; keyboard focus on buttons gets a 2px #efa026 outer ring (not shown). These states apply in-app too — item fields, settings, share dialog.</div></div>
+
+</div>
+<div class="dv-next">Call: <a href="#1a">1a</a> keeps the familiar page and just modernizes the skin; <a href="#1b">1b</a> commits to register-first with the anonymous path visible. Either way <a href="#1c">1c</a> is the shared kit. Want the real Denali photo dropped in, or the sign-in dropdown for 1b drawn out?</div>
+</section>
+
+</x-dc>
+</body>
+</html>

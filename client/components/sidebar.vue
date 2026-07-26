@@ -7,11 +7,6 @@
 
             <libraryLists />
             <div class="lpSidebarDivider" />
-            <!-- The rail lists gear inline because it has the height for it and
-                 because those rows are the drag source for the list. Neither
-                 holds on a phone: there's no room, and dragging isn't a touch
-                 gesture yet — so the drawer links out to the gear screen
-                 instead (#11f), which is where one-tap add lives. -->
             <router-link v-if="isMobile" to="/gear" class="lpSidebarNav" data-testid="drawer-gear">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
                 Gear library
@@ -48,19 +43,6 @@ export default {
 <style lang="scss">
 @import "../css/_globals";
 
-// Fixed dark rail: the sticky inner column pins to the viewport while the
-// window scrollbar scrolls the content column only. Collapses to zero width
-// when the sidebar is toggled off.
-// min-width is what actually lets flex-basis animate: the inner column is a
-// fixed 220px, so the rail's automatic minimum size pins it at 220px and
-// flex-basis: 0 does nothing until that floor is lifted.
-//
-// Clipping is then its own concern, and it has to hold for the whole collapse
-// *and* the whole expand so the inner column is never painted wider than the
-// rail carrying it. The clip is released — instantly, one beat late — only once
-// the rail is fully open, which is the only moment popovers (the + New flyout)
-// need to overhang the content column. clip-path rather than overflow: overflow
-// would make the rail a scroll container and unpin .lpSidebarSticky.
 #sidebar {
     background: var(--lp-sidebar-bg);
     clip-path: inset(-100vh -100vw);
@@ -83,6 +65,7 @@ export default {
     flex-direction: column;
     height: 100vh;
     opacity: 1;
+    padding-right: 1px;
     position: sticky;
     top: 0;
     transition: opacity $transitionDurationSlow;
@@ -107,7 +90,6 @@ export default {
     margin: 6px 18px 0;
 }
 
-// Shared section chrome (LISTS · n / GEAR · n headers, + New action)
 .lpSidebarSectionHeader {
     align-items: center;
     display: flex;
