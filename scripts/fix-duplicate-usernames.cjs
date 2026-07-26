@@ -11,8 +11,19 @@
 // for a dry run, so it can be rehearsed anywhere. --live connects to mongo
 // (run on the old server, from the old app root, while writes are blocked).
 //
+// Rename notices are not delivered immediately. Every message is handed to
+// Mailgun during the run but stamped with o:deliverytime, so Mailgun holds it
+// and delivers a few hours later — by which point the migrated site is up and
+// a recipient following the password-reset link lands on a working page.
+// Delivery time is computed once at startup, so the whole batch arrives
+// together no matter how long the rename loop takes.
+//
 // Usage:
-//   node scripts/fix-duplicate-usernames.cjs <users-dump.json> <user-dates.json> [--live] [--send-emails]
+//   node scripts/fix-duplicate-usernames.cjs <users-dump.json> <user-dates.json> [--live] [--send-emails] [--delay-hours N]
+//
+// --delay-hours defaults to 2; 0 sends immediately. Mailgun caps scheduling at
+// 3 days on most plans, so anything over 72 is rejected here rather than by the
+// API mid-batch.
 //
 // Writes <users-dump>.dup-usernames-report.json either way.
 
@@ -24,16 +35,49 @@ const readline = require('readline');
 const MAX_DELETABLE_ITEMS = 10;
 const EMAIL_IF_SEEN_WITHIN_MS = 2 * 365 * 24 * 60 * 60 * 1000;
 
-const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-const flags = process.argv.slice(2).filter((a) => a.startsWith('--'));
-if (args.length !== 2) {
-    console.error('Usage: node scripts/fix-duplicate-usernames.cjs <users-dump.json> <user-dates.json> [--live] [--send-emails]');
+const DEFAULT_DELAY_HOURS = 2;
+const MAX_DELAY_HOURS = 72;
+
+const argv = process.argv.slice(2);
+const delayIdx = argv.indexOf('--delay-hours');
+const delayRaw = delayIdx === -1 ? null : argv[delayIdx + 1];
+if (delayIdx !== -1) argv.splice(delayIdx, 2);
+const args = argv.filter((a) => !a.startsWith('--'));
+const flags = argv.filter((a) => a.startsWith('--'));
+if (args.length !== 2 || (delayIdx !== -1 && delayRaw === undefined)) {
+    console.error('Usage: node scripts/fix-duplicate-usernames.cjs <users-dump.json> <user-dates.json> [--live] [--send-emails] [--delay-hours N]');
     process.exit(2);
 }
 const [dumpPath, userDatesPath] = args;
 const dryRun = flags.indexOf('--live') === -1;
 const sendEmails = flags.indexOf('--send-emails') !== -1;
+
+// Matched as a literal rather than passed straight to Number(), which reads ''
+// and ' ' as 0 — an unset shell variable would silently mean "send now", the
+// one outcome scheduling exists to prevent.
+const delayHours = delayRaw === null ? DEFAULT_DELAY_HOURS : Number(delayRaw);
+const delayValid = delayRaw === null
+    || (/^\d+(\.\d+)?$/.test(String(delayRaw).trim()) && delayHours <= MAX_DELAY_HOURS);
+if (!delayValid) {
+    console.error(`--delay-hours must be a number between 0 and ${MAX_DELAY_HOURS}, got "${delayRaw}"`);
+    process.exit(2);
+}
+
+// Mailgun wants RFC 2822 with a numeric offset ('Fri, 14 Oct 2011 12:00:00
+// +0000'); toUTCString() spells the zone 'GMT', which is only the obsolete
+// form, so swap it rather than trust Mailgun's parser to accept it.
+function toRfc2822(date) {
+    return date.toUTCString().replace(/GMT$/, '+0000');
+}
+
+// Stamped once so a slow rename loop doesn't smear delivery across hours.
+const deliverAt = delayHours === 0 ? null : new Date(Date.now() + delayHours * 60 * 60 * 1000);
 console.log(`Dry run: ${dryRun}  Send emails: ${sendEmails}`);
+if (sendEmails) {
+    console.log(deliverAt
+        ? `Mail scheduled for ${toRfc2822(deliverAt)} (in ${delayHours}h)`
+        : 'Mail sends immediately (--delay-hours 0)');
+}
 
 const userDates = JSON.parse(fs.readFileSync(userDatesPath, 'utf-8'));
 
@@ -201,13 +245,15 @@ function sendMail(to, originalUsername, newUsername) {
         text = text.replace('${originalUsername}', originalUsername);
     }
     text = text.replace('${newUsername}', newUsername);
-    const body = new URLSearchParams({
+    const fields = {
         from: 'LighterPack <info@mg.lighterpack.com>',
         to,
         subject: 'LighterPack account update',
         text,
         'h:Reply-To': 'LighterPack <info@lighterpack.com>',
-    }).toString();
+    };
+    if (deliverAt) fields['o:deliverytime'] = toRfc2822(deliverAt);
+    const body = new URLSearchParams(fields).toString();
     const auth = Buffer.from(`api:${config.get('mailgunAPIKey')}`).toString('base64');
     return new Promise((resolve, reject) => {
         const req = https.request({
@@ -287,8 +333,17 @@ readDump().then(async (byName) => {
     }
 
     const reportPath = `${dumpPath}.dup-usernames-report.json`;
-    fs.writeFileSync(reportPath, JSON.stringify({ dryRun, groups: actions }, null, 2));
+    fs.writeFileSync(reportPath, JSON.stringify({
+        dryRun,
+        deliverAt: deliverAt ? deliverAt.toISOString() : null,
+        groups: actions,
+    }, null, 2));
     console.log(`----\nDuplicate username groups: ${actions.length} (${deletes} deletes, ${renames} renames, ${emails} emails)`);
+    if (emails && deliverAt) {
+        console.log(dryRun
+            ? `Would hand mail to Mailgun, held until ${toRfc2822(deliverAt)}`
+            : `Mail handed to Mailgun, held until ${toRfc2822(deliverAt)}`);
+    }
     console.log(`Report: ${reportPath}`);
     if (dryRun && actions.length) console.log('Dry run only — re-run with --live to apply.');
 }).catch((err) => {
