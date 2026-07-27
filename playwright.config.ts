@@ -41,7 +41,15 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'ui.primaryPointerCapabilities': 6,
+            'ui.allPointerCapabilities': 6,
+          },
+        },
+      },
     },
     /* TODO: investigate why webkit appears to be broken */
     /*{
