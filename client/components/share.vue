@@ -5,8 +5,8 @@
             <template #content>
                 <div class="lpFields">
                     <div class="lpField">
-                        <label for="shareUrl">Share your list</label>
-                        <input id="shareUrl" ref="shareInput" v-select-on-focus type="text" :value="shareUrl">
+                        <label for="lpListUrl">Share your list</label>
+                        <input id="lpListUrl" ref="shareInput" v-select-on-focus type="text" :value="shareUrl">
                     </div>
                     <div class="lpField">
                         <label for="embedUrl">Embed your list</label>
