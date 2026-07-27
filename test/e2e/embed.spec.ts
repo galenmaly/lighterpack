@@ -169,13 +169,13 @@ test.describe('Embed Feature', () => {
         .locator('li.lpCategory')
         .filter({ has: page.locator('h2', { hasText: 'Tent Category' }) });
       // 16 + 8 = 24 oz
-      await expect(tentCat.locator('.lpItemsFooter .lpDisplaySubtotal')).toHaveText('24');
+      await expect(tentCat.locator('.lpItemsHeader .lpDisplaySubtotal')).toHaveText('24');
 
       const foodCat = list
         .locator('li.lpCategory')
         .filter({ has: page.locator('h2', { hasText: 'Food Category' }) });
       // 4 × 3 = 12 oz
-      await expect(foodCat.locator('.lpItemsFooter .lpDisplaySubtotal')).toHaveText('12');
+      await expect(foodCat.locator('.lpItemsHeader .lpDisplaySubtotal')).toHaveText('12');
     });
   });
 });

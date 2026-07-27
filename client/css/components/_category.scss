@@ -1,17 +1,69 @@
 @import "../globals";
 
+// Categories are further apart here than on the edit page (26px there): that
+// page closes each one with an "Add new item" footer, which is most of the
+// gap you actually see. There is nothing to add on a shared list, so the
+// space the footer used to hold belongs to the margin instead.
 .lpCategory {
     border: 2px solid transparent;
     list-style: none;
-    margin: 0 0 20px;
+    margin: 0 0 38px;
 }
 
+// Header band — swatch · name · subtotals, matching category.vue. The
+// trailing cells keep the flex widths from _item.scss, so they stay
+// column-aligned with the item rows below.
+.lpItemsHeader {
+    .lpCategoryHead {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+    }
+
+    .lpCategorySwatch {
+        flex: 0 0 11px;
+        height: 11px;
+    }
+
+    .lpCategoryName {
+        flex: 1 1 auto;
+        font-size: 14.5px;
+        font-weight: 700;
+        margin: 0;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lpPriceCell {
+        color: var(--lp-text-secondary);
+        font-size: 13px;
+        font-weight: 400;
+    }
+
+    .lpWeightCell {
+        color: var(--lp-text);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .lpQtyCell {
+        font-size: 12px;
+        font-weight: 400;
+    }
+}
+
+// 41px is the width of the item rows' unit picker, reserved here so the
+// subtotal number sits over the weights it totals rather than over the carets.
 .lpSubtotalUnit {
-    border-left: 1px solid transparent;
+    color: var(--lp-text-secondary);
     display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
     padding-left: 5px;
-    padding-right: 23px;
-    width: 43px;
+    padding-right: 21px;
+    width: 41px;
 }
 
 .lpDisplaySubtotal,
@@ -19,6 +71,30 @@
     padding-right: 4px;
 }
 
-.lpQtySubtotal {
-    padding-right: 25px; /* Accommodates delete column */
+@media only screen and (width <= 720px) {
+    .lpCategory {
+        margin: 0 0 30px;
+    }
+
+    .lpItemsHeader {
+        .lpCategoryName {
+            font-size: 14px;
+        }
+
+        .lpPriceCell {
+            font-size: 11.5px;
+        }
+
+        .lpWeightCell {
+            font-size: 12.5px;
+        }
+
+        // Nothing to line up with once the rows reflow, so the picker's
+        // reserved width goes away and the unit sits against its number.
+        .lpSubtotalUnit {
+            padding-left: 4px;
+            padding-right: 0;
+            width: auto;
+        }
+    }
 }

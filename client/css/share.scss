@@ -1,10 +1,13 @@
 @import "_base";
 @import "_utilities";
 @import "components/list";
-@import "components/category";
+// item before category: the category header's typography is layered on top of
+// the row layout that _item.scss gives its cells.
 @import "components/item";
+@import "components/category";
 @import "components/list-summary";
 @import "components/unit-select";
+@import "components/toggle";
 @import "components/modal";
 @import "components/share-overrides";
 @import "_print";

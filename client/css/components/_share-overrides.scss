@@ -1,19 +1,95 @@
 // Share page — disable transitions and apply share-specific overrides
 
+@import "../globals";
+
 #main.lpShare,
 .lpList {
     transition: none !important;
 }
 
 .lpShare {
-    .lpCategoryName {
-        font-size: 18px;
+    // Stands in for the app bar: the title on the left, the theme switch
+    // pushed to the right edge of the content column.
+    .lpShareHeader {
+        align-items: center;
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    // Matches #lpListName on the edit page; the app draws it in the app bar,
+    // which this page does not have, so it carries its own bottom margin.
+    .lpListName {
+        font-size: 22px;
+        font-weight: 700;
         margin: 0;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    // The switch is one setting on a page that is otherwise all content, so it
+    // sits behind a gear rather than in the header itself -- the same trade the
+    // edit page makes by keeping its copy in the account menu. Borrows that
+    // menu's surface and lift without popover.vue's hover bridge and scrim,
+    // which exist for the app's hover-opened header menus.
+    .lpShareMenu {
+        flex: 0 0 auto;
+        position: relative;
+    }
+
+    // Secondary text, not --lp-icon-rest: the row icons that use the resting
+    // grey sit next to content that explains them, and this is the only way in
+    // to the menu. At #bbb on white it was about 1.9:1 -- quiet past the point
+    // of being findable.
+    .lpShareMenuTarget {
+        background: none;
+        border: none;
+        border-radius: 4px;
+        color: var(--lp-text-secondary);
+        cursor: pointer;
+        display: block;
+        line-height: 0;
+        padding: 6px;
+        transition: color $transitionDuration;
+
+        &:hover {
+            color: var(--lp-text);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--lp-link-blue);
+            outline-offset: 2px;
+        }
+    }
+
+    .lpShareMenu.lpOpen .lpShareMenuTarget {
+        color: var(--lp-text);
+    }
+
+    .lpShareMenuContent {
+        background: var(--lp-surface);
+        border-radius: 10px;
+        box-shadow: var(--lp-lift-shadow);
+        color: var(--lp-text);
+        display: none;
+        margin-top: 6px;
+        padding: 14px 16px;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        white-space: nowrap;
+        z-index: $dialog;
+    }
+
+    .lpShareMenu.lpOpen .lpShareMenuContent {
+        display: block;
     }
 
     .lpItem {
         &:hover {
-            background: var(--lp-surface);
+            background: var(--lp-row-hover);
         }
 
         .lpActionsCell {
@@ -26,7 +102,7 @@
     }
 
     #lpListDescription {
-        margin: 30px 0;
+        margin: 8px 0 34px;
     }
 }
 

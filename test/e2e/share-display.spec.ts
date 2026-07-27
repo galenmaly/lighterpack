@@ -130,19 +130,19 @@ test.describe('Share Page Extended Coverage', () => {
     const shelterCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Shelter' }) });
-    await expect(shelterCategory.locator('.lpItemsFooter .lpQtySubtotal')).toHaveText('2');
+    await expect(shelterCategory.locator('.lpItemsHeader .lpQtySubtotal')).toHaveText('2');
 
     // Clothing: 1 blank + Rain Jacket (qty 2) + Socks (qty 3) = 6
     const clothingCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Clothing' }) });
-    await expect(clothingCategory.locator('.lpItemsFooter .lpQtySubtotal')).toHaveText('6');
+    await expect(clothingCategory.locator('.lpItemsHeader .lpQtySubtotal')).toHaveText('6');
 
     // Food: 1 blank + Trail Mix (qty 1) = 2
     const foodCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Food' }) });
-    await expect(foodCategory.locator('.lpItemsFooter .lpQtySubtotal')).toHaveText('2');
+    await expect(foodCategory.locator('.lpItemsHeader .lpQtySubtotal')).toHaveText('2');
   });
 
   test('should display category subtotal price', async ({ page }) => {
@@ -151,12 +151,12 @@ test.describe('Share Page Extended Coverage', () => {
     const shelterCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Shelter' }) });
-    await expect(shelterCategory.locator('.lpItemsFooter .lpPriceSubtotal')).toContainText('100');
+    await expect(shelterCategory.locator('.lpItemsHeader .lpPriceCell')).toContainText('100');
 
     const foodCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Food' }) });
-    await expect(foodCategory.locator('.lpItemsFooter .lpPriceSubtotal')).toContainText('5');
+    await expect(foodCategory.locator('.lpItemsHeader .lpPriceCell')).toContainText('5');
   });
 
   // ── Totals table ──────────────────────────────────────────────────────────

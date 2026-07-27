@@ -1,9 +1,12 @@
 @import "../globals";
 
+// 56px side gutters are the edit page's (.lpListBody in list.vue); the top and
+// bottom are this page's own, standing in for the app bar and footer it has
+// no equivalent of.
 .lpList {
     background: inherit;
     min-height: 100%;
-    padding: 0 20px;
+    padding: 32px 56px 64px;
     position: relative;
     z-index: $aboveSidebar;
 }
@@ -20,5 +23,13 @@
 #lpListDescription {
     h2 {
         border-bottom: 1px solid var(--lp-border-strong);
+    }
+}
+
+// Desktop gutters exist so the columns have room to breathe; at this width
+// they are just lost content, so the page keeps a modest inset instead.
+@media only screen and (width <= 720px) {
+    .lpList {
+        padding: 24px 16px 40px;
     }
 }

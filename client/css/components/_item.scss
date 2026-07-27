@@ -7,10 +7,8 @@
 }
 
 .lpItem,
-.lpItemsHeader,
-.lpItemsFooter {
+.lpItemsHeader {
     align-items: center;
-    border-top: 1px dotted var(--lp-border-strong);
     display: flex;
     flex-direction: row;
     justify-content: stretch;
@@ -60,21 +58,24 @@
         flex: 0 0 60px;
     }
 
-    .lpCategoryName {
+    // Swatch + category name; the flexible track the fixed cells sit against.
+    .lpCategoryHead {
         flex: 1 1 auto;
+        min-width: 0;
     }
 }
 
-.lpItemsHeader {
-    align-items: flex-end;
-    border-bottom: 1px solid var(--lp-border-strong);
-    border-top: none;
-    height: 31px;
+// Rows carry a soft hairline underneath rather than a dotted rule above, and
+// enough vertical padding to sit at the app's comfortable row height — there
+// are no inputs here to set it the way they do on the edit page.
+.lpItem {
+    border-bottom: 1px solid var(--lp-border);
+    padding: 5px 0;
 }
 
-.lpItemsFooter {
-    border-top-style: solid;
-    justify-content: flex-end;
+.lpItemsHeader {
+    border-bottom: 1px solid var(--lp-border-strong);
+    padding: 4px 0;
 }
 
 // Action icons: hidden unless the item has the state (worn/consumable/star)
@@ -105,14 +106,6 @@
     }
 }
 
-.lpHeader {
-    .lpWeightCell,
-    .lpQtyCell,
-    .lpPriceCell {
-        text-align: center;
-    }
-}
-
 // Narrow-viewport layout, shared by the app and the share/embed pages.
 // Items reflow into a wrapping row: qty, name, price, weight, then the
 // description and actions on their own lines. Share-specific read-only
@@ -130,16 +123,18 @@
             flex-basis: 65px;
         }
 
-        .lpHeader {
-            .lpWeightCell,
-            .lpPriceCell,
-            .lpQtyCell {
-                display: none;
-            }
-        }
+        // The rows reflow at this width, so there are no columns left for the
+        // header subtotals to line up with — it becomes a band of swatch, name
+        // and totals. It keeps price and weight and drops the item count, the
+        // same trade the app's mobile header makes.
+        .lpItemsHeader {
+            column-gap: 7px;
 
-        .lpFooter {
-            justify-content: flex-end;
+            .lpPriceCell,
+            .lpWeightCell {
+                flex: 0 0 auto;
+                margin: 0;
+            }
 
             .lpQtyCell {
                 display: none;

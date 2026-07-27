@@ -1,6 +1,27 @@
 import './css/share.scss';
 import pies from './pies.js';
-import { chartLineColor, chartHoverColor, onThemeChange } from './utils/theme.js';
+import {
+    initTheme, toggleTheme, chartLineColor, chartHoverColor, onThemeChange,
+} from './utils/theme.js';
+
+// Before DOM ready, matching lighterpack.js. The inline script in
+// share.mustache has already applied any stored choice to avoid a flash; this
+// re-applies the same value and registers the OS-change listener.
+//
+// Guarded because this runs at module scope on a public page: theme.js reaches
+// localStorage, which throws outright when a browser has storage disabled, and
+// an exception here would take the chart, unit pickers and image modal down
+// with it. Losing the stored theme is survivable -- the media query in
+// _base.scss still resolves a sensible one.
+function safely(fn) {
+    try {
+        return fn();
+    } catch (_e) {
+        return undefined;
+    }
+}
+
+safely(initTheme);
 
 function MgToWeight(value, unit) {
     if (unit === 'g') return Math.round(100 * value / 1000.0) / 100;
@@ -30,6 +51,67 @@ function updateSubtotalsUnit(unit) {
         el.textContent = MgToWeight(parseFloat(el.getAttribute('mg')), unit);
         const next = el.nextElementSibling;
         if (next) next.textContent = unit;
+    });
+}
+
+// Same switch, same lpTheme key, same precedence as the toggle in the app's
+// account menu -- a reader's choice here is the one they get on the edit page,
+// and vice versa. The checkbox also tracks the OS flipping underneath when no
+// explicit choice is stored, which is why it re-reads rather than assuming its
+// own state is authoritative.
+function initThemeToggle() {
+    const control = document.getElementById('lpThemeToggle');
+    if (!control) return;
+
+    const sync = () => {
+        control.checked = document.documentElement.getAttribute('data-theme') === 'dark';
+    };
+
+    sync();
+    control.addEventListener('change', () => {
+        // toggleTheme writes to localStorage before it applies the theme, so
+        // with storage disabled nothing changes and this throws. The sync()
+        // below then snaps the switch back to the theme actually in effect,
+        // which at least reads as a refusal rather than a silent no-op.
+        safely(toggleTheme);
+        sync();
+    });
+    onThemeChange(sync);
+}
+
+// The gear in the page header. .lpOpen is this page's existing "open" flag, so
+// the document-level handler at the bottom of initEventHandlers dismisses this
+// on an outside click too and it needs no handler of its own -- syncAria only
+// keeps the button in step with whoever cleared the class.
+function initShareMenu() {
+    const menu = document.querySelector('.lpShareMenu');
+    if (!menu) return;
+    const target = menu.querySelector('.lpShareMenuTarget');
+    const content = menu.querySelector('.lpShareMenuContent');
+
+    const syncAria = () => {
+        target.setAttribute('aria-expanded', String(menu.classList.contains('lpOpen')));
+    };
+
+    target.addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        menu.classList.toggle('lpOpen');
+        syncAria();
+    });
+
+    // Same call the app's account menu makes: the switch inside is a setting,
+    // not an errand, so flipping it leaves the menu open to show it flip.
+    content.addEventListener('click', evt => evt.stopPropagation());
+
+    // Registered after the dismiss-everything handler, so the class is already
+    // settled by the time this reads it.
+    document.addEventListener('click', syncAria);
+
+    document.addEventListener('keydown', (evt) => {
+        if (evt.key !== 'Escape' || !menu.classList.contains('lpOpen')) return;
+        menu.classList.remove('lpOpen');
+        syncAria();
+        target.focus();
     });
 }
 
@@ -119,6 +201,8 @@ function initEventHandlers() {
 
 function init() {
     initEventHandlers();
+    initShareMenu();
+    initThemeToggle();
 
     const chartContainer = document.querySelector('.lpChart');
     if (typeof chartData !== 'undefined' && chartContainer) {
@@ -131,8 +215,9 @@ function init() {
             lineColor: chartLineColor(),
             hoverColor: chartHoverColor(),
         });
-        // This page has no theme toggle, so the only source is the OS flipping
-        // under it. Nothing here unmounts, so the subscription is never dropped.
+        // Fires for both sources of a theme change here: the toggle above and
+        // the OS flipping underneath. Nothing on this page unmounts, so the
+        // subscription is never dropped.
         onThemeChange(() => {
             chart.update({ lineColor: chartLineColor(), hoverColor: chartHoverColor() });
         });

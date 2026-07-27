@@ -10,6 +10,11 @@ import {
   setItemStarRating,
 } from './test-helpers';
 
+// Set by the probe in the pre-paint theme test below.
+declare global {
+  interface Window { __earlyTheme?: string | null }
+}
+
 test.describe('Share View — XSS', () => {
   let shareUrl: string;
 
@@ -259,18 +264,18 @@ test.describe('Share View', () => {
     const shelterCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Shelter' }) });
-    await expect(shelterCategory.locator('.lpItemsFooter .lpDisplaySubtotal')).toHaveText('32');
+    await expect(shelterCategory.locator('.lpItemsHeader .lpDisplaySubtotal')).toHaveText('32');
 
     const clothingCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Clothing' }) });
-    await expect(clothingCategory.locator('.lpItemsFooter .lpDisplaySubtotal')).toHaveText('16');
+    await expect(clothingCategory.locator('.lpItemsHeader .lpDisplaySubtotal')).toHaveText('16');
 
     const foodCategory = page
       .locator('li.lpCategory')
       .filter({ has: page.locator('h2', { hasText: 'Food' }) });
     // 5 × 4 oz = 20 oz
-    await expect(foodCategory.locator('.lpItemsFooter .lpDisplaySubtotal')).toHaveText('20');
+    await expect(foodCategory.locator('.lpItemsHeader .lpDisplaySubtotal')).toHaveText('20');
   });
 
   test('should display total weight and worn/consumable/base breakdowns', async ({ page }) => {
@@ -303,6 +308,110 @@ test.describe('Share View', () => {
 
     await expect(tentItem.locator('.lpWeight')).toHaveText('2');
     await expect(unitSelect.locator('span.lpDisplay')).toHaveText('lb');
+  });
+
+  // ── Interactive: dark mode ───────────────────────────────────────────────
+  //
+  // The toggle shares the lpTheme key with the one in the app's account menu,
+  // so a reader's choice follows them between the two pages.
+
+  test('the settings menu opens on the gear and dismisses on an outside click', async ({ page }) => {
+    await page.goto(shareUrl);
+
+    const gear = page.getByTestId('share-settings');
+    const control = page.getByTestId('dark-mode-toggle');
+    await expect(control).toBeHidden();
+    await expect(gear).toHaveAttribute('aria-expanded', 'false');
+
+    await gear.click();
+    await expect(control).toBeVisible();
+    await expect(gear).toHaveAttribute('aria-expanded', 'true');
+
+    // The switch is a setting, not an errand: flipping it leaves the menu open.
+    await control.click();
+    await expect(control).toBeVisible();
+
+    await page.locator('h1.lpListName').click();
+    await expect(control).toBeHidden();
+    await expect(gear).toHaveAttribute('aria-expanded', 'false');
+
+    await gear.click();
+    await expect(control).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(control).toBeHidden();
+    await expect(gear).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('dark mode toggle flips the theme and persists it', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto(shareUrl);
+
+    await page.getByTestId('share-settings').click();
+    const control = page.getByTestId('dark-mode-toggle');
+    await expect(control).not.toBeChecked();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
+    await control.click();
+    await expect(control).toBeChecked();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    expect(await page.evaluate(() => localStorage.getItem('lpTheme'))).toBe('dark');
+
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await page.getByTestId('share-settings').click();
+    await expect(page.getByTestId('dark-mode-toggle')).toBeChecked();
+  });
+
+  test('with nothing stored the toggle follows the OS preference', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto(shareUrl);
+
+    expect(await page.evaluate(() => localStorage.getItem('lpTheme'))).toBeNull();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await page.getByTestId('share-settings').click();
+    await expect(page.getByTestId('dark-mode-toggle')).toBeChecked();
+  });
+
+  // The bundle is a deferred module, so a stored theme has to be applied by the
+  // inline script in share.mustache or the page paints light and then flips.
+  test('a stored theme is applied before the bundle runs', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto(shareUrl);
+    await page.evaluate(() => localStorage.setItem('lpTheme', 'dark'));
+
+    await page.addInitScript(() => {
+      document.addEventListener('readystatechange', () => {
+        if (!window.__earlyTheme) {
+          window.__earlyTheme = document.documentElement.getAttribute('data-theme');
+        }
+      });
+    });
+    await page.goto(shareUrl);
+
+    expect(await page.evaluate(() => window.__earlyTheme)).toBe('dark');
+  });
+
+  // The share page is public, so theme.js reaching localStorage must not be
+  // able to take the chart and the unit pickers down with it.
+  test('the page still works when localStorage is unavailable', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        get() { throw new Error('storage disabled'); },
+      });
+    });
+    const pageErrors: string[] = [];
+    page.on('pageerror', e => pageErrors.push(e.message));
+
+    await page.goto(shareUrl);
+
+    await expect(page.locator('canvas.lpChart').first()).toBeVisible();
+    const unitSelect = page.locator('.lpTotalUnit .lpUnitSelect');
+    await unitSelect.click();
+    await unitSelect.locator('li.lb').click();
+    await expect(unitSelect.locator('span.lpDisplay')).toHaveText('lb');
+
+    expect(pageErrors).toEqual([]);
   });
 
   // ── CSV export ───────────────────────────────────────────────────────────

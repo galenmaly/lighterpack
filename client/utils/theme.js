@@ -11,10 +11,10 @@ function getTheme() {
 }
 
 /**
- * The theme actually in effect: an explicit override if the toggle has set one,
- * otherwise the OS preference. The share page never calls initTheme(), so it
- * has no data-theme attribute and always resolves through the media query —
- * the same path _base.scss uses to style it.
+ * The theme actually in effect: an explicit override if a toggle has set one,
+ * otherwise the OS preference. The attribute is absent only before initTheme()
+ * runs, so the media-query fallback also covers that window — the same path
+ * _base.scss uses to style the page until then.
  */
 function resolvedTheme() {
     return document.documentElement.getAttribute('data-theme')
@@ -61,8 +61,8 @@ function toggleTheme() {
  * Run fn(theme) whenever the effective theme changes, and return an unsubscribe.
  *
  * Subscribes to the media query itself rather than relying on applyTheme, so it
- * also fires on the share page, which never calls initTheme() and follows the
- * OS through CSS alone. Callers that unmount MUST unsubscribe.
+ * still fires for an OS-level change that arrives before initTheme() has run.
+ * Callers that unmount MUST unsubscribe.
  */
 function onThemeChange(fn) {
     if (!listeners.size) {

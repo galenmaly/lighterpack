@@ -6,11 +6,38 @@
         <link rel="shortcut icon" href="/favicon.png" />
         <style>.lpModalOverlay, #lpImageDialog { display: none;}</style>
         <meta name="viewport" content="width=device-width; initial-scale=1.0">
+        <!-- The bundle is a module at the end of the body, so it runs after
+             first paint. A stored theme has to land on <html> before then, or
+             a reader who picked dark against a light OS watches the page flip.
+             Only an explicit choice is applied; with none stored the media
+             query in _base.scss is already correct. initTheme() re-applies
+             this and adds the OS listener once the bundle runs. -->
+        <script>
+            (function () {
+                try {
+                    var t = localStorage.getItem('lpTheme');
+                    if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+                } catch (e) { /* storage blocked; fall through to the media query */ }
+            }());
+        </script>
     </head>
     <body>
         <div id="main" class="lpShare">
             <div class="lpList {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
-                <h1 class="lpListName">{{listName}}</h1>
+                <div class="lpShareHeader">
+                    <h1 class="lpListName">{{listName}}</h1>
+                    <div class="lpShareMenu">
+                        <button type="button" class="lpShareMenuTarget" data-testid="share-settings" aria-label="Page settings" aria-expanded="false" aria-controls="lpShareMenuContent">
+                            <i class="lpSprite lpSettings"></i>
+                        </button>
+                        <div class="lpShareMenuContent" id="lpShareMenuContent">
+                            <label class="lpToggle">
+                                <input type="checkbox" class="lpToggleControl" id="lpThemeToggle" data-testid="dark-mode-toggle">
+                                <span class="lpToggleText">Dark mode</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="lpListSummary">
                     <div class="lpChartContainer">
                         <canvas class="lpChart" height="260" width="260"></canvas>

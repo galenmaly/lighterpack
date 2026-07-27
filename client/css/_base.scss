@@ -32,7 +32,9 @@
 }
 
 // Auto dark mode: follows OS when no explicit override is set by the JS toggle.
-// The share page (no JS) always uses this path.
+// Both the app and the share page have a toggle, so either can land on the
+// explicit rules below; this path is what a reader who has never touched one
+// gets.
 @media (prefers-color-scheme: dark) {
     .lp:not([data-theme="light"]) {
         @include lp-dark-theme;
