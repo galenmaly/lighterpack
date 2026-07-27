@@ -30,7 +30,7 @@ test.describe('Shared item bubble', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Original List');
     await listNameInput.blur();
 
@@ -84,7 +84,7 @@ test.describe('Shared item bubble', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Focus A');
     await listNameInput.blur();
 
@@ -108,7 +108,7 @@ test.describe('Shared item bubble', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('List A');
     await listNameInput.blur();
 
@@ -137,7 +137,7 @@ test.describe('Shared item bubble', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Base List');
     await listNameInput.blur();
 

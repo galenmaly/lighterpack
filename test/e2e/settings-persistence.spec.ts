@@ -214,7 +214,7 @@ test.describe('List Name Persistence', () => {
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('My Backpacking Trip');
     await listNameInput.blur();
 
@@ -243,7 +243,7 @@ test.describe('Data Persistence Across Sessions', () => {
     await registerUser(page, username, password, email);
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Session Persist List');
     await listNameInput.blur();
 
@@ -285,7 +285,7 @@ test.describe('Per-list settings', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     await openSidebar(page);
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('List A');
     await listNameInput.blur();
 

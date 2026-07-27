@@ -50,7 +50,7 @@ test.beforeAll(async ({ browser }) => {
   await enableSetting(page, 'List descriptions');
   await enableSetting(page, 'Item prices');
 
-  const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+  const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
   await listNameInput.fill('Trail Ready');
   await listNameInput.blur();
 

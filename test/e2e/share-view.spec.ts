@@ -21,7 +21,7 @@ test.describe('Share View — XSS', () => {
 
     await enableSetting(page, 'List descriptions');
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('XSS Test List');
     await listNameInput.blur();
 
@@ -123,7 +123,7 @@ test.describe('Share View', () => {
     await enableSetting(page, 'Item prices');
 
     // Set list name and description
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Glacier Peak');
     await listNameInput.blur();
     await page.getByTestId('list-description-empty').click();

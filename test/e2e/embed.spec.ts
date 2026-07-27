@@ -36,7 +36,7 @@ test.describe('Embed Feature', () => {
     await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
 
     // Set list name
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Embed Test List');
     await listNameInput.blur();
 

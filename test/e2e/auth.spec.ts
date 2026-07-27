@@ -244,7 +244,7 @@ test.describe('User Authentication Tests', () => {
     await page.getByText('Try it without an account', { exact: true }).click();
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Local Data List');
     await listNameInput.blur();
 
@@ -268,7 +268,7 @@ test.describe('User Authentication Tests', () => {
     await registerForm.getByRole('button', { name: 'Register' }).click();
 
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
-    await expect(page.getByPlaceholder('List Name', { exact: true })).toHaveValue('Local Data List');
+    await expect(page.getByPlaceholder('Name your list', { exact: true })).toHaveValue('Local Data List');
   });
 
   test('should return out-of-date error from API when sync token mismatches', async ({ page }) => {

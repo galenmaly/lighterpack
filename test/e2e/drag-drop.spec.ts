@@ -73,7 +73,7 @@ test.describe('Drag and Drop', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Base List');
     await listNameInput.blur();
 

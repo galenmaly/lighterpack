@@ -44,7 +44,7 @@ test.describe('Share Page Extended Coverage', () => {
     await enableSetting(page, 'Item prices');
 
     // Set list name
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Trail Ready');
     await listNameInput.blur();
 

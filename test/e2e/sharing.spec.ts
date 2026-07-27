@@ -12,7 +12,7 @@ test.describe('List Sharing', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Set a list name
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('My Gear List');
     await listNameInput.blur();
 
@@ -95,7 +95,7 @@ test.describe('CSV Export', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     // Set up a list with items to export
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Export Test List');
     await listNameInput.blur();
 
@@ -222,7 +222,7 @@ test.describe('CSV Import', () => {
     await expect(page.locator('#importValidate')).toBeVisible();
     await page.getByText('Import List', { exact: true }).click();
 
-    await expect(page.getByPlaceholder('List Name', { exact: true })).toHaveValue('Trip List');
+    await expect(page.getByPlaceholder('Name your list', { exact: true })).toHaveValue('Trip List');
 
     const categoryNames = await getCategoryNames(page);
     expect(categoryNames).toContain('Shelter');
@@ -261,7 +261,7 @@ test.describe('CSV Import', () => {
     await expect(page.locator('#importValidate')).toBeVisible();
     await page.getByText('Import List', { exact: true }).click();
 
-    await expect(page.getByPlaceholder('List Name', { exact: true })).toHaveValue('Units');
+    await expect(page.getByPlaceholder('Name your list', { exact: true })).toHaveValue('Units');
 
     const itemRows = page.getByTestId('item-row');
     const itemNames = await itemRows.evaluateAll((nodes) =>

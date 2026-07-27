@@ -270,7 +270,7 @@ test.describe('Text Field Validation', () => {
   });
 
   test('should handle empty list name', async ({ page }) => {
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
 
     // Clear the list name
     await listNameInput.clear();

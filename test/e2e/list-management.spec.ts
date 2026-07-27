@@ -10,7 +10,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Base List');
     await listNameInput.blur();
 
@@ -35,7 +35,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('List One');
     await listNameInput.blur();
 
@@ -61,7 +61,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Original List');
     await listNameInput.blur();
 
@@ -84,7 +84,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Linked List');
     await listNameInput.blur();
 
@@ -120,7 +120,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Linked Delete');
     await listNameInput.blur();
 
@@ -185,7 +185,7 @@ test.describe('List Management', () => {
     await registerUser(page, username, password, email);
     await openSidebar(page);
 
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Keep List');
     await listNameInput.blur();
 

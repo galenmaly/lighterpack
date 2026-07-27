@@ -165,7 +165,7 @@ test.describe('Shared item bubble preference', () => {
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     await openSidebar(page);
-    const listNameInput = page.getByPlaceholder('List Name', { exact: true });
+    const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
     await listNameInput.fill('Original List');
     await listNameInput.blur();
     await createCategoryWithItem(page, 'Shelter', 'Shared Tent');
