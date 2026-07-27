@@ -1,29 +1,33 @@
-<div class="lpList lp {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
-    {{#styles}}
-        <link href="{{{baseUrl}}}/dist/{{{.}}}" rel="stylesheet" type="text/css" />
-    {{/styles}}
-    <style>.lpModalOverlay, #lpImageDialog { display: none; }
-    .lpList { padding: 0; } </style>
-    <h2 class="lpListName" >{{listName}}</h2>
-    <div class="lpListSummary">
-        <div class="lpChartContainer">
-            <canvas class="lpChart" height="260" width="260"></canvas>
-        </div>
-        <div class="lpTotalsContainer">
-            {{{renderedTotals}}}
+<div class="lpEmbed lp" data-theme="light">
+    <div class="lpEmbedBody">
+        <div class="lpList {{#optionalFields.images}}lpShowImages{{/optionalFields.images}} {{#optionalFields.worn}}lpShowWorn{{/optionalFields.worn}} {{#optionalFields.consumable}}lpShowConsumable{{/optionalFields.consumable}} {{#optionalFields.price}}lpShowPrices{{/optionalFields.price}}">
+            {{#styles}}
+                <link href="{{{baseUrl}}}/dist/{{{.}}}" rel="stylesheet" type="text/css" />
+            {{/styles}}
+            <style>.lpModalOverlay, #lpImageDialog { display: none; }
+            .lpList { padding: 0; } </style>
+            <h2 class="lpListName" >{{listName}}</h2>
+            <div class="lpListSummary">
+                <div class="lpChartContainer">
+                    <canvas class="lpChart" height="260" width="260"></canvas>
+                </div>
+                <div class="lpTotalsContainer">
+                    {{{renderedTotals}}}
+                </div>
+            </div>
+
+            <div style="clear:both"></div>
+
+            {{#renderedDescription}}
+                <div id="lpListDescription">
+                    <h2>Description</h2>
+                    {{{renderedDescription}}}
+                </div>
+            {{/renderedDescription}}
+
+            <ul class="lpCategories">{{{renderedCategories}}}</ul>
         </div>
     </div>
-
-    <div style="clear:both"></div>
-
-    {{#renderedDescription}}
-        <div id="lpListDescription">
-            <h2>Description</h2>
-            {{{renderedDescription}}}
-        </div>
-    {{/renderedDescription}}
-
-    <ul class="lpCategories">{{{renderedCategories}}}</ul>
+    <div class="lpDialog" id="lpImageDialog"></div>
+    <div class="lpModalOverlay"></div>
 </div>
-<div class="lpDialog" id="lpImageDialog"></div>
-<div id="lpModalOverlay"></div>

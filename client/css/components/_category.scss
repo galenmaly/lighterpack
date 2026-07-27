@@ -71,7 +71,7 @@
     padding-right: 4px;
 }
 
-@media only screen and (width <= 720px) {
+@container lpList (width <= 720px) {
     .lpCategory {
         margin: 0 0 30px;
     }

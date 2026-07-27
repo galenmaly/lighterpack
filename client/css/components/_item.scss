@@ -111,7 +111,7 @@
 // description and actions on their own lines. Share-specific read-only
 // tweaks (qty rendered as "N x", hiding inactive icons) stay in
 // _share-overrides.scss.
-@media only screen and (width <= 720px) {
+@container lpList (width <= 720px) {
     .lpItems {
         position: relative;
 

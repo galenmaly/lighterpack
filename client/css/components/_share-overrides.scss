@@ -106,10 +106,10 @@
     }
 }
 
-// Read-only rendering tweaks on top of the shared narrow-viewport layout
+// Read-only rendering tweaks on top of the shared narrow-container layout
 // in _item.scss: qty shown as an "N x " prefix and only active action
 // icons kept, since nothing is editable here.
-@media only screen and (width <= 720px) {
+@container lpList (width <= 720px) {
     .lpItem {
         .lpQtyCell {
             &[qty1] {

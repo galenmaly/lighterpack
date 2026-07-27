@@ -24,6 +24,8 @@ const templates = {};
 let shareTemplate = '';
 let embedTemplate = '';
 let embedJTemplate = '';
+// Absolute, unlike the style links: the embed runs on another origin.
+const embedScriptUrls = [];
 
 const vueRoutes = [ /* TODO - get this from same data source as Vue */
     { path: '/' },
@@ -41,7 +43,6 @@ let index = fs.readFileSync(path.join(import.meta.dirname, '../_index.html'), 'u
 let shareStylesHtml = '';
 const shareStylesLinks = [];
 let shareScriptsHtml = '';
-const shareScriptsLinks = [];
 let appScriptsHtml = '';
 let appStylesHtml = '';
 let docStylesHtml = '';
@@ -66,11 +67,15 @@ if (hasBuiltAssets) {
     const shareEntry = manifest['client/share-entry.js'];
     if (shareEntry) {
         shareScriptsHtml += `<script type="module" src='/dist/${shareEntry.file}'></script>`;
-        shareScriptsLinks.push(shareEntry.file);
         (shareEntry.css || []).forEach((cssFile) => {
             shareStylesHtml += `<link rel='stylesheet' href='/dist/${cssFile}' />`;
             shareStylesLinks.push(cssFile);
         });
+    }
+
+    const embedEntry = manifest['client/embed-entry.js'];
+    if (embedEntry) {
+        embedScriptUrls.push(`${config.get('deployUrl')}/e/dist/${embedEntry.file.replace('assets/', '')}`);
     }
 
     // Doc entry is CSS-only, so the manifest points `file` straight at the
@@ -87,6 +92,7 @@ if (hasBuiltAssets) {
     shareStylesHtml = '';
     shareScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
         + '<script type="module" src="http://localhost:5173/client/share-entry.js"></script>';
+    embedScriptUrls.push('http://localhost:5173/client/embed-entry.js');
     // Vite serves scss as a JS module that injects a style tag, so in dev the
     // doc pages do load a script even though the built version never does.
     docStylesHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
@@ -242,6 +248,16 @@ async function renderListView(req, res) {
     }
 }
 
+// The embed's bundle, served from a path we control so it can carry CORS —
+// module scripts are fetched cors-mode, and /dist is served by Apache. The
+// whole asset dir, not just the entry: the entry imports its chunks relatively.
+// Filenames are content-hashed, hence immutable.
+router.use('/e/dist', express.static(path.join(import.meta.dirname, '../public/dist/assets'), {
+    immutable: true,
+    maxAge: '1y',
+    setHeaders: (res) => res.set('Access-Control-Allow-Origin', '*'),
+}));
+
 router.get('/e/:id', (req, res) => {
     renderEmberView(req, res);
 });
@@ -312,7 +328,7 @@ async function renderEmberView(req, res) {
             renderedDescription: marked(list.description),
             baseUrl: config.get('deployUrl'),
             styles: shareStylesLinks,
-            scripts: shareScriptsLinks,
+            scripts: embedScriptUrls,
         };
         Object.assign(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));

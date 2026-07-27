@@ -13,10 +13,11 @@ listReport_{{externalId}} = function() {
         $list.append(unescape(renderedTemplate));
         $categories = $(".lpCategories", $list);
         $chartContainer = $(".lpChart", $list);
-        if (chartData) {
+        if (chartData && window.lpPies) {
             chartData = JSON.parse(unescape(chartData));
             addParents(chartData, false);
-            chart = pies({processedData: chartData, container: $chartContainer, hoverCallback: chartHover});    
+            // pies() wants the canvas node, not the jQuery object.
+            chart = window.lpPies({processedData: chartData, container: $chartContainer[0], hoverCallback: chartHover});
         }
         initEventHandlers();
     }
@@ -88,16 +89,23 @@ listReport_{{externalId}} = function() {
             }
         });
 
+        // Scoped to $list so several embeds on a page keep their own dialog.
+        // .on("load"), not .load(): a host page's jQuery 3 has no .load().
         $categories.on("click", ".lpItemImage", function() {
-            var imageUrl = $(this).attr("href");
-            
+            var imageUrl = $(this).attr("href"),
+                $dialog = $("#lpImageDialog", $list),
+                $overlay = $(".lpModalOverlay", $list);
+
             var $modalImage = $("<img src='"+imageUrl+"' />");
-            $("#lpImageDialog").empty().append($modalImage);
-            $modalImage.load(function() {
-                $("#lpImageDialog").show();
-                $("#lpIodalOverlay").show();
-                centerDialog();
+            $dialog.empty().append($modalImage);
+            $modalImage.on("load", function() {
+                $dialog.show();
+                $overlay.show();
             });
+        });
+
+        $list.on("click", ".lpModalOverlay", function() {
+            $(".lpModalOverlay, #lpImageDialog", $list).hide();
         });
 
         $(document).on("click", function() {
@@ -108,28 +116,33 @@ listReport_{{externalId}} = function() {
     init();
 };
 
-function centerDialog() {
-    var $ = jQuery,
-        $dialog = $(".lp_dialog:visible");
-
-    $dialog.css("margin-top", ""+(-1*$dialog.outerHeight()/2)+"px");
-}
-
 init_{{externalId}} = function() {
-    var $ = jQuery;
-    $.when(
-        {{#scripts}}
-        $.getScript("{{{baseUrl}}}/dist/{{{.}}}"),
-        {{/scripts}}
-        $.Deferred(function( deferred ){
-            $( deferred.resolve );
-        })
-    ).done(function(){
-        $(function() {
+    function run() {
+        jQuery(function() {
             listReport_{{externalId}}();
         });
-    });
+    }
 
+    // The bundle is an ES module, so it needs a module script -- $.getScript
+    // injects a classic one and `import` throws there.
+    var srcs = [{{#scripts}}"{{{.}}}",{{/scripts}}],
+        pending = srcs.length;
+
+    if (window.lpPies || !pending) {
+        run();
+        return;
+    }
+
+    for (var i = 0; i < srcs.length; i++) {
+        var s = document.createElement("script");
+        s.type = "module";
+        s.src = srcs[i];
+        // onerror too: a failed bundle should still leave the list readable.
+        s.onload = s.onerror = function() {
+            if (!--pending) run();
+        };
+        document.head.appendChild(s);
+    }
 }
 
 if (typeof jQuery === "undefined") {

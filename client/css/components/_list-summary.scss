@@ -153,7 +153,7 @@
     }
 }
 
-@media only screen and (width <= 720px) {
+@container lpList (width <= 720px) {
     .lpListSummary {
         gap: 30px;
     }
@@ -163,8 +163,8 @@
     }
 }
 
-// Stack the chart above the totals table on narrow screens.
-@media only screen and (width <= 480px) {
+// Stack the chart above the totals table in a narrow container.
+@container lpList (width <= 480px) {
     .lpListSummary {
         flex-direction: column;
         gap: 20px;
