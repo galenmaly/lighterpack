@@ -5,7 +5,7 @@ import weightUtils from '../utils/weight.js';
 import { Library } from '../dataTypes.js';
 import { fetchJson, readCookie, createCookie, arrayMove } from '../utils/utils.js';
 
-const saveInterval = 10000;
+const saveInterval = 5000;
 
 const store = createStore({
     state: {
