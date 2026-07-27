@@ -28,8 +28,4 @@ export default {
 
 <style lang="scss">
 
-#itemImageDialog {
-    width: 640px;
-}
-
 </style>

@@ -114,9 +114,13 @@
     input[type="text"],
     input[type="email"],
     input[type="password"],
+    select,
     textarea {
         background: var(--lp-surface);
         border: 1px solid var(--lp-border-strong);
+        // Matches .lpButton, which sits directly under these fields in every
+        // form that uses them.
+        border-radius: 4px;
         display: block;
         margin: 0 0 $spacingMedium;
         padding: $spacingSmall;

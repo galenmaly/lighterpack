@@ -2,9 +2,13 @@
     <modal id="itemLinkDialog" :shown="shown" @hide="$emit('hide')">
         <h2>Add a link for this item</h2>
         <form id="itemLinkForm" @submit.prevent="addLink">
-            <input v-model="url" type="text" d="itemLink" placeholder="Item Link">
-            <input type="submit" class="lpButton" value="Save">
-            <a class="lpHref close" @click="$emit('hide')">Cancel</a>
+            <div class="lpFields">
+                <input id="itemLink" v-model="url" type="text" placeholder="Item Link">
+            </div>
+            <div class="lpButtons">
+                <input type="submit" class="lpButton" value="Save">
+                <a class="lpHref" @click="$emit('hide')">Cancel</a>
+            </div>
         </form>
     </modal>
 </template>

@@ -5,26 +5,34 @@
                 <div class="lpHalf">
                     <h2>Add image by URL</h2>
                     <form id="itemImageUrlForm" @submit.prevent="saveImageUrl()">
-                        <input id="itemImageUrl" v-model="imageUrl" type="text" placeholder="Image URL">
-                        <input type="submit" class="lpButton" value="Save">
-                        <a class="lpHref close" @click="$emit('hide')">Cancel</a>
+                        <div class="lpFields">
+                            <input id="itemImageUrl" v-model="imageUrl" type="text" placeholder="Image URL">
+                        </div>
+                        <div class="lpButtons">
+                            <input type="submit" class="lpButton" value="Save">
+                            <a class="lpHref" @click="$emit('hide')">Cancel</a>
+                        </div>
                     </form>
                 </div>
                 <div class="lpHalf">
                     <h2>Upload image from disk</h2>
                     <template v-if="item && !hasImage">
-                        <button id="itemImageUpload" class="lpButton" @click="triggerImageUpload">
-                            Upload Image
-                        </button>
-                        <a class="lpHref close" @click="$emit('hide')">Cancel</a>
+                        <div class="lpButtons">
+                            <button id="itemImageUpload" class="lpButton" @click="triggerImageUpload">
+                                Upload Image
+                            </button>
+                            <a class="lpHref" @click="$emit('hide')">Cancel</a>
+                        </div>
                         <p v-if="uploading">
                             Uploading image...
                         </p>
                     </template>
                     <template v-if="item && hasImage">
-                        <button id="itemImageUpload" class="lpButton" @click="removeItemImage">
-                            Remove Image
-                        </button>
+                        <div class="lpButtons">
+                            <button id="itemImageUpload" class="lpButton" @click="removeItemImage">
+                                Remove Image
+                            </button>
+                        </div>
                     </template>
                 </div>
             </div>
@@ -123,5 +131,57 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/_globals";
+
+#itemImageDialog {
+    // Two ways in, side by side, need more room than the stock dialog. Below
+    // the phone breakpoint the columns stack and the modal's own full-width
+    // rule takes over, so this stays out of the way rather than overflowing.
+    @media only screen and (width > $mobile) {
+        width: 640px;
+    }
+
+    .columns {
+        display: flex;
+    }
+
+    // Floated halves were free to disagree about height. A flex row keeps them
+    // equal, which is what lets the two actions below line up with each other.
+    .lpHalf {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        float: none;
+        width: auto;
+    }
+
+    // Only the URL side has a field above its button, so pin both columns'
+    // actions to the foot of the row instead of letting them float up.
+    form {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    form .lpButtons,
+    .lpHalf > .lpButtons {
+        margin-top: auto;
+    }
+}
+
+@media only screen and (width <= $mobile) {
+    #itemImageDialog {
+        .columns {
+            flex-direction: column;
+            gap: $spacingLarge;
+        }
+
+        // The 20px gutter between side-by-side columns just indents them once
+        // they are stacked; the gap above spaces them instead.
+        .lpHalf {
+            padding: 0;
+        }
+    }
+}
 
 </style>
