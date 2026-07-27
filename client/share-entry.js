@@ -1,5 +1,6 @@
 import './css/share.scss';
 import pies from './pies.js';
+import { chartLineColor, chartHoverColor, onThemeChange } from './utils/theme.js';
 
 function MgToWeight(value, unit) {
     if (unit === 'g') return Math.round(100 * value / 1000.0) / 100;
@@ -123,7 +124,18 @@ function init() {
     if (typeof chartData !== 'undefined' && chartContainer) {
         const parsed = JSON.parse(unescape(chartData));
         addParents(parsed, false);
-        pies({ processedData: parsed, container: chartContainer, hoverCallback: chartHover });
+        const chart = pies({
+            processedData: parsed,
+            container: chartContainer,
+            hoverCallback: chartHover,
+            lineColor: chartLineColor(),
+            hoverColor: chartHoverColor(),
+        });
+        // This page has no theme toggle, so the only source is the OS flipping
+        // under it. Nothing here unmounts, so the subscription is never dropped.
+        onThemeChange(() => {
+            chart.update({ lineColor: chartLineColor(), hoverColor: chartHoverColor() });
+        });
     }
 }
 

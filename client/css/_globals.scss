@@ -36,7 +36,7 @@ $grey-500: #82868c; // [both] sidebar muted text
 $grey-600: #6c6c70; // [L] secondary text · [both] sidebar handle
 $grey-650: #4a4a4a; // [D] subtle border, resting icons
 $grey-700: #3a3d42; // [D] strong hairline · [both] sidebar border
-$grey-750: #333336; // [D] faint hairline (kept distinct from surface)
+$grey-750: #333336; // [D] faint hairline (kept distinct from surface) · [L] chart hover ring
 $grey-800: #2e2e30; // [D] surface · [both] sidebar bg
 $grey-850: #26262a; // [both] sidebar inset · [D] sunken strips
 $grey-900: #24272b; // [L] body text
@@ -104,6 +104,13 @@ $transitionDurationSlow: 0.4s;
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
     // Neutral band behind a hovered or actively-edited item row.
     --lp-row-hover: #{$grey-50};
+    // Separator stroked between pie-chart slices. One step off the content bg
+    // so the slices read as split without a visible outline. Canvas can't use
+    // a CSS variable, so pies.js is handed this value at chart creation.
+    --lp-chart-line: #{$grey-50};
+    // Ring around the hovered slice — ink against the content bg, so it has to
+    // invert per theme rather than sit one step off the background.
+    --lp-chart-hover-line: #{$grey-750};
 
     // Accents (brand)
     --lp-link-blue: #{$blue1};
@@ -165,6 +172,11 @@ $transitionDurationSlow: 0.4s;
     --lp-lift-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
     // Mirror of light's row band: one step off the page bg, not a tint.
     --lp-row-hover: #{$grey-800};
+    // Mirror of light's chart line: one step *lighter* than the content bg,
+    // where light goes one step darker than its white.
+    --lp-chart-line: #{$grey-850};
+    // Inverted from light: dark ink on white becomes light ink on the dark bg.
+    --lp-chart-hover-line: #{$grey-100};
 
     // Accents — only the hues too dim on the dark surface are re-tuned.
     // accent-green, accent-green-deep, accent-orange, active-yellow and

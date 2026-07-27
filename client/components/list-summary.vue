@@ -82,6 +82,7 @@ import colorPicker from './colorpicker.vue';
 import unitSelect from './unit-select.vue';
 
 import pies from '../pies.js';
+import { chartLineColor, chartHoverColor, onThemeChange } from '../utils/theme.js';
 import utilsMixin from '../mixins/utils-mixin.js';
 import colorUtils from '../utils/color.js';
 
@@ -114,8 +115,19 @@ export default {
     },
     mounted() {
         this.updateChart();
+        // The canvas can't follow the palette on its own, so re-hand it the
+        // colors when the theme flips. Stored off `data` — it's a handle, not
+        // state anything renders from.
+        this.stopThemeWatch = onThemeChange(() => this.recolorChart());
+    },
+    beforeUnmount() {
+        if (this.stopThemeWatch) this.stopThemeWatch();
     },
     methods: {
+        recolorChart() {
+            if (!this.chart) return;
+            this.chart.update({ lineColor: chartLineColor(), hoverColor: chartHoverColor() });
+        },
         updateChart(type) {
             const chartData = this.library.renderChart(type);
 
@@ -123,7 +135,13 @@ export default {
                 if (this.chart) {
                     this.chart.update({ processedData: chartData });
                 } else {
-                    this.chart = pies({ processedData: chartData, container: document.getElementsByClassName('lpChart')[0], hoverCallback: this.chartHover });
+                    this.chart = pies({
+                        processedData: chartData,
+                        container: document.getElementsByClassName('lpChart')[0],
+                        hoverCallback: this.chartHover,
+                        lineColor: chartLineColor(),
+                        hoverColor: chartHoverColor(),
+                    });
                 }
             }
             return chartData;

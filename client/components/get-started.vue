@@ -23,6 +23,7 @@
 <script>
 import pies from '../pies.js';
 import colorUtils from '../utils/color.js';
+import { chartLineColor, onThemeChange } from '../utils/theme.js';
 
 // The favicon's five wedges: the first five palette colors (blue, red,
 // yellow, green, purple) at the proportions the mark uses. Decorative
@@ -47,7 +48,19 @@ export default {
         },
     },
     mounted() {
-        pies({ processedData: faviconChartData(), container: this.$refs.chart });
+        // No hoverColor: the mark is pointer-events: none, so it never hovers.
+        // Handles live off `data` — nothing renders from them.
+        this.chart = pies({
+            processedData: faviconChartData(),
+            container: this.$refs.chart,
+            lineColor: chartLineColor(),
+        });
+        this.stopThemeWatch = onThemeChange(() => {
+            if (this.chart) this.chart.update({ lineColor: chartLineColor() });
+        });
+    },
+    beforeUnmount() {
+        if (this.stopThemeWatch) this.stopThemeWatch();
     },
 };
 </script>

@@ -13,8 +13,14 @@ export default function (args) {
     let hovered = null;
     let hoverCallback = null;
     let clickCallback = null;
-    const backgroundColor = 'rgb(245,245,245)';
+    // Stroke drawn between slices to separate them. Defaults to the light-theme
+    // panel color; pass `lineColor` to match a different surface (e.g. dark mode).
+    let lineColor = 'rgb(245,245,245)';
+    // Ring drawn around the slice under the cursor. Light-theme ink by default;
+    // pass `hoverColor` to keep it legible on a different surface.
+    let hoverColor = 'rgb(50,50,50)';
     let tooltip;
+    let eventsAttached = false;
     const frameRate = 10;
 
     function init() {
@@ -40,6 +46,8 @@ export default function (args) {
 
         if (args.clickCallback) clickCallback = args.clickCallback;
         if (args.hoverCallback) hoverCallback = args.hoverCallback;
+        if (args.lineColor) lineColor = args.lineColor;
+        if (args.hoverColor) hoverColor = args.hoverColor;
         drawGraph();
 
         tooltip = document.createElement('div');
@@ -48,19 +56,30 @@ export default function (args) {
     }
 
     function update(args) {
+        // A recolor leaves `hovered` pointing into the current data; a data
+        // change can retire it, so only the former restores the hover ring.
+        const recolorOnly = !args.data && !args.processedData;
+
+        if (args.lineColor) lineColor = args.lineColor;
+        if (args.hoverColor) hoverColor = args.hoverColor;
+
         const oldVisibleRings = getVisibleRings(data);
 
         if (args.data) {
             data = preprocess(args.data);
         } else if (args.processedData) {
             data = args.processedData;
-        } else {
+        } else if (!args.lineColor && !args.hoverColor) {
+            // Nothing to redraw for. A color-only update falls through so a
+            // theme change can restyle the existing slices in place.
             return;
         }
         setVisibleRings(oldVisibleRings, data);
 
         context.clearRect(0, 0, bounds.x, bounds.y);
         drawGraph();
+
+        if (recolorOnly && hovered) drawSlice(hovered, hoverColor);
     }
 
     function preprocess(srcData, parent) {
@@ -160,7 +179,7 @@ export default function (args) {
             context.strokeStyle = color;
             context.lineWidth = 2;
         } else {
-            context.strokeStyle = backgroundColor;
+            context.strokeStyle = lineColor;
             context.lineWidth = 3;
         }
 
@@ -238,6 +257,10 @@ export default function (args) {
     }
 
     function attachEvents() {
+        // drawGraph() runs on every update, so without this guard each redraw
+        // stacked another pair of handlers on the canvas.
+        if (eventsAttached) return;
+        eventsAttached = true;
         container.addEventListener('mousemove', hoverHandle);
         container.addEventListener('click', clickHandle);
     }
@@ -259,7 +282,7 @@ export default function (args) {
             if (newHovered != hovered) {
                 if (hovered) drawSlice(hovered);
                 hovered = newHovered;
-                drawSlice(hovered, 'rgb(50,50,50)');
+                drawSlice(hovered, hoverColor);
                 container.classList.add('activeHover');
                 if (hoverCallback) hoverCallback(newHovered);
             }
