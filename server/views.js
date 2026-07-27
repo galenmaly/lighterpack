@@ -316,6 +316,7 @@ async function renderEmberView(req, res) {
         };
         Object.assign(model, templates);
         model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
+        res.type('application/javascript');
         res.send(Mustache.render(embedJTemplate, model));
     } catch (err) {
         logWithRequest(req, {message: 'error rendering ember', err});
