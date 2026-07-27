@@ -1,6 +1,6 @@
 <template>
     <div id="resetPasswordContainer">
-        <modal id="resetPassword" :shown="true" :blackout="true">
+        <modal id="resetPassword" class="lpAuthCard" :shown="true" :blackout="true">
             <div class="lpModalHeader">
                 <h2>
                     Choose a new password

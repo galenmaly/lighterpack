@@ -1,6 +1,6 @@
 <template>
     <div id="forgotPasswordContainer">
-        <modal id="forgotPassword" :shown="true" :blackout="true">
+        <modal id="forgotPassword" class="lpAuthCard" :shown="true" :blackout="true">
             <div class="columns">
                 <div class="lpHalf">
                     <h3>
@@ -112,9 +112,39 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../css/_globals";
 
-#forgotPassword {
-    width: 620px;
+// Two halves side by side need more room than a default dialog.
+@media only screen and (width > $mobile) {
+    #forgotPassword {
+        width: 620px;
+    }
+}
+
+// On a phone they stack instead: at 50% of a 320px viewport neither form has
+// room for its heading, let alone its field. Without this the card keeps the
+// 620px above and hangs off both edges of the screen.
+@media only screen and (width <= $mobile) {
+    #forgotPasswordContainer .lpModal .lpHalf {
+        float: none;
+        padding: 0;
+        width: 100%;
+
+        // A rule between them, so the two separate requests do not read as one
+        // long form once they are in a single column.
+        + .lpHalf {
+            border-top: 1px solid var(--lp-border);
+            margin-top: 22px;
+            padding-top: 22px;
+        }
+    }
+
+    // The halves are floated on desktop, where this link clears them on its
+    // own. Stacked, it needs the separation stated. Its row treatment is the
+    // shared one in _auth-pages.
+    #forgotPasswordContainer .columns > .lpHref {
+        margin-top: 6px;
+    }
 }
 
 </style>

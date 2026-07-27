@@ -1,6 +1,6 @@
 <template>
     <div id="registerContainer">
-        <modal id="register" :shown="true" :blackout="true">
+        <modal id="register" class="lpAuthCard" :shown="true" :blackout="true">
             <div class="lpModalHeader">
                 <h2>
                     Register an account

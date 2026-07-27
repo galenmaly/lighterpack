@@ -1,6 +1,6 @@
 <template>
     <div id="signinContainer">
-        <modal id="signin" :shown="true" :blackout="true">
+        <modal id="signin" class="lpAuthCard" :shown="true" :blackout="true">
             <div class="lpModalHeader">
                 <h2>
                     Sign in

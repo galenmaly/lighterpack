@@ -1,0 +1,109 @@
+@import "globals";
+
+// The standalone auth pages -- /signin, /register, /forgot-password and the
+// /reset-password link target -- are the same card centred on the photo
+// background. They opt in with .lpAuthCard on the modal, which lands on the
+// modal's container element.
+//
+// On a phone they take the touch sizing the welcome card already uses, so
+// arriving from that card into one of these pages is not a change of scale.
+// The geometry only; every color stays on the shared tokens.
+
+// The fixed site footer occupies the bottom ~46px of these pages, so the card
+// is centred in what is left of the viewport rather than in the whole of it.
+// Without this the tallest card (forgot-password) puts its last link under the
+// footer on a small phone.
+$authFooterReserve: 46px;
+
+@media only screen and (width <= $mobile) {
+    .lpAuthCard .lpModal {
+        max-height: calc(100% - #{$authFooterReserve} - 14px);
+        top: calc(50% - #{$authFooterReserve * 0.5});
+    }
+
+    .lpAuthCard {
+        // The heading and its counterpart link ("Need to register?", "Return
+        // to sign in") are a two-line stack here. Side by side, each one wraps
+        // to two lines of its own and the pair reads as four ragged fragments.
+        .lpModalHeader {
+            align-items: flex-start;
+            flex-direction: column;
+            margin-bottom: $spacingSmall;
+
+            h2 {
+                margin: 0;
+            }
+
+            // Stacked, the link can take a full row and become a real target
+            // instead of one 17px line of text.
+            .lpHref {
+                align-items: center;
+                display: flex;
+                min-height: 44px;
+            }
+        }
+
+        // 16px on the inputs is load-bearing: anything smaller makes iOS zoom
+        // the page when a field takes focus, and the zoom is never undone.
+        .lpFields {
+            input[type="text"],
+            input[type="email"],
+            input[type="password"] {
+                border-radius: 6px;
+                font-size: 16px;
+                height: 48px;
+                margin: 0 0 10px;
+                padding: 0 13px;
+
+                &:focus {
+                    border-color: var(--lp-accent-orange);
+                    // Heavier border, compensating padding, so text does not shift.
+                    border-width: 1.5px;
+                    padding: 0 12.5px;
+                }
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        .lpError {
+            margin: 10px 0 0;
+        }
+
+        .lpButtons {
+            margin-top: 12px;
+
+            > * {
+                margin-bottom: 0;
+            }
+        }
+
+        .lpButton {
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            height: 48px;
+            padding: 0;
+            width: 100%;
+        }
+
+        // Every secondary link closing a form becomes its own 44px row, which
+        // is a touch target rather than a line of text with a hit area. The
+        // second selector is forgot-password, whose link closes the card
+        // rather than a .lpButtons group.
+        .lpButtons .lpHref,
+        .columns > .lpHref {
+            align-items: center;
+            color: var(--lp-text-secondary);
+            display: flex;
+            font-size: 14.5px;
+            height: 44px;
+            justify-content: center;
+            text-decoration: underline;
+            text-decoration-color: var(--lp-border-strong);
+            text-underline-offset: 3px;
+        }
+    }
+}
