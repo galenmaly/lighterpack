@@ -241,7 +241,7 @@ test.describe('User Authentication Tests', () => {
   test('should preserve local data when registering', async ({ page }) => {
     await page.goto(testRoot);
 
-    await page.getByText('Skip registration', { exact: true }).click();
+    await page.getByText('Try it without an account', { exact: true }).click();
     await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
 
     const listNameInput = page.getByPlaceholder('List Name', { exact: true });

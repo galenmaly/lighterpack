@@ -15,15 +15,9 @@
                 </h1>
 
                 <div class="lpMobileCard">
+                    <!-- Register leads: the page is addressed to people who do
+                         not have an account yet. -->
                     <div class="lpMobileTabs" role="tablist">
-                        <button
-                            id="lpMobileTabSignin" type="button" role="tab"
-                            :aria-selected="activeTab === 'signin'" aria-controls="lpMobilePanelSignin"
-                            :class="{ lpMobileTabActive: activeTab === 'signin' }"
-                            @click="activeTab = 'signin'"
-                        >
-                            Sign in
-                        </button>
                         <button
                             id="lpMobileTabRegister" type="button" role="tab"
                             :aria-selected="activeTab === 'register'" aria-controls="lpMobilePanelRegister"
@@ -32,29 +26,37 @@
                         >
                             Register
                         </button>
+                        <button
+                            id="lpMobileTabSignin" type="button" role="tab"
+                            :aria-selected="activeTab === 'signin'" aria-controls="lpMobilePanelSignin"
+                            :class="{ lpMobileTabActive: activeTab === 'signin' }"
+                            @click="activeTab = 'signin'"
+                        >
+                            Sign in
+                        </button>
                     </div>
 
                     <!-- v-show, not v-if: switching tabs keeps whatever the
                          other tab already had typed into it. -->
                     <div class="lpMobileCardBody">
                         <div
-                            v-show="activeTab === 'signin'" id="lpMobilePanelSignin"
-                            role="tabpanel" aria-labelledby="lpMobileTabSignin"
-                        >
-                            <SigninForm :autofocus="false" />
-                        </div>
-                        <div
                             v-show="activeTab === 'register'" id="lpMobilePanelRegister"
                             role="tabpanel" aria-labelledby="lpMobileTabRegister"
                         >
                             <registerForm :autofocus="false" />
                         </div>
+                        <div
+                            v-show="activeTab === 'signin'" id="lpMobilePanelSignin"
+                            role="tabpanel" aria-labelledby="lpMobileTabSignin"
+                        >
+                            <SigninForm :autofocus="false" />
+                        </div>
                     </div>
 
-                    <!-- Shared by both tabs; it must not appear to move when
-                         the form above it changes height. -->
-                    <div class="lpMobileAnon">
-                        or <a class="lpMobileAnonLink" @click="startWithoutAccount">start a list without an account</a>
+                    <!-- Only alongside register: it is a third way to start an
+                         account, which is not what someone signing in wants. -->
+                    <div v-if="activeTab === 'register'" class="lpMobileAnon">
+                        <a class="lpMobileAnonLink" @click="startWithoutAccount">Try it without an account</a>
                     </div>
                 </div>
             </div>
@@ -137,7 +139,7 @@ export default {
     },
     data() {
         return {
-            activeTab: 'signin',
+            activeTab: 'register',
         };
     },
     computed: {
@@ -151,11 +153,6 @@ export default {
     beforeMount() {
         if (this.$store.state.library) {
             this.$router.push('/');
-            return;
-        }
-        // Arriving with a register intent opens on that tab instead.
-        if (this.$route.query.register !== undefined) {
-            this.activeTab = 'register';
         }
     },
     methods: {
@@ -323,7 +320,7 @@ $mobileColumnOuter: $mobileColumn + $mobileGutter * 2;
 }
 
 .lpMobileTabs {
-    background: var(--lp-row-hover);
+    background: var(--lp-surface-sunken);
     border-bottom: 1px solid var(--lp-border);
     display: flex;
 
@@ -425,7 +422,7 @@ $mobileColumnOuter: $mobileColumn + $mobileGutter * 2;
 }
 
 .lpMobileAnon {
-    background: var(--lp-row-hover);
+    background: var(--lp-surface-sunken);
     border-top: 1px solid var(--lp-border);
     color: var(--lp-text);
     font-size: 14.5px;

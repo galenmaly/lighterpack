@@ -634,55 +634,59 @@ test.describe('Gear library screen', () => {
 test.describe('Phone onboarding', () => {
   // The landing page puts both forms in one tabbed card (design 8a), so the
   // desktop panels are not reflowed at this width -- a separate block renders.
-  test('opens on Sign in, and the card holds everything needed to act', async ({ page }) => {
+  test('opens on Register, and the card holds everything needed to act', async ({ page }) => {
     await page.goto(testRoot);
 
     const card = page.locator('.lpMobileCard');
     await expect(card).toBeVisible({ timeout: 20000 });
 
-    // Sign in is the default tab; the register fields are mounted but hidden.
-    await expect(page.getByTestId('signin-form')).toBeVisible();
-    await expect(page.getByTestId('register-form')).toBeHidden();
-
-    // Nothing required to act is below the fold at 390x844.
-    const strip = page.locator('.lpMobileAnon');
-    await expect(strip).toBeVisible();
-    const bottom = await strip.evaluate((el) => el.getBoundingClientRect().bottom);
-    expect(bottom).toBeLessThan(PHONE.height);
-  });
-
-  test('the Register tab swaps the form without moving the strip below it', async ({ page }) => {
-    await page.goto(testRoot);
-    await expect(page.locator('.lpMobileCard')).toBeVisible({ timeout: 20000 });
-
-    const stripTop = () => page.locator('.lpMobileAnon')
-      .evaluate((el) => el.getBoundingClientRect().top);
-    const before = await stripTop();
-
-    await page.locator('#lpMobileTabRegister').tap();
+    // Register leads and sits on the left; the sign-in fields are mounted but
+    // hidden behind the second tab.
     const form = page.getByTestId('register-form');
     await expect(form).toBeVisible();
     await expect(page.getByTestId('signin-form')).toBeHidden();
 
-    // Four fields instead of two, so the card grows and the strip moves with
-    // it rather than staying put or jumping somewhere else.
-    expect(await stripTop()).toBeGreaterThan(before);
+    const tabs = page.locator('.lpMobileTabs button');
+    await expect(tabs.first()).toHaveAttribute('id', 'lpMobileTabRegister');
+    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
 
-    // Validation still renders inside the card.
+    // Nothing required to act is below the fold at 390x844, four fields and all.
+    const strip = page.locator('.lpMobileAnon');
+    await expect(strip).toBeVisible();
+    const bottom = await strip.evaluate((el) => el.getBoundingClientRect().bottom);
+    expect(bottom).toBeLessThan(PHONE.height);
+
+    // Validation renders inside the card.
     await form.getByRole('button', { name: 'Register' }).tap();
     await expect(page.getByText('Please enter a username.')).toBeVisible();
+  });
+
+  test('the Sign in tab swaps the form and drops the anonymous strip', async ({ page }) => {
+    await page.goto(testRoot);
+    await expect(page.locator('.lpMobileCard')).toBeVisible({ timeout: 20000 });
+
+    await page.locator('#lpMobileTabSignin').tap();
+    await expect(page.getByTestId('signin-form')).toBeVisible();
+    await expect(page.getByTestId('register-form')).toBeHidden();
+
+    // Starting without an account is a way of registering, so it has no place
+    // under a form for people who already have one.
+    await expect(page.locator('.lpMobileAnon')).toBeHidden();
+
+    await page.locator('#lpMobileTabRegister').tap();
+    await expect(page.locator('.lpMobileAnon')).toBeVisible();
   });
 
   test('typing survives a round trip between the tabs', async ({ page }) => {
     await page.goto(testRoot);
     await expect(page.locator('.lpMobileCard')).toBeVisible({ timeout: 20000 });
 
-    const username = page.getByTestId('signin-form').getByPlaceholder('Username');
+    const username = page.getByTestId('register-form').getByPlaceholder('Username', { exact: true });
     await username.fill('roundtrip');
 
-    await page.locator('#lpMobileTabRegister').tap();
-    await expect(page.getByTestId('register-form')).toBeVisible();
     await page.locator('#lpMobileTabSignin').tap();
+    await expect(page.getByTestId('signin-form')).toBeVisible();
+    await page.locator('#lpMobileTabRegister').tap();
 
     await expect(username).toHaveValue('roundtrip');
   });
@@ -700,12 +704,5 @@ test.describe('Phone onboarding', () => {
     expect(await page.evaluate(
       () => (window as unknown as { LighterPack: any }).LighterPack.$store.state.saveType,
     )).toBe('local');
-  });
-
-  test('a register intent in the url opens on the Register tab', async ({ page }) => {
-    await page.goto(`${testRoot}welcome?register`);
-
-    await expect(page.getByTestId('register-form')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('signin-form')).toBeHidden();
   });
 });

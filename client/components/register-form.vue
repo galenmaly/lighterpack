@@ -12,7 +12,7 @@
                 Register
                 <spinner v-if="saving" />
             </button>
-            <a class="lpHref lpGetStarted" @click="loadLocal">Skip registration</a>
+            <a class="lpHref lpGetStarted" @click="loadLocal">Try it without an account</a>
         </div>
     </form>
 </template>

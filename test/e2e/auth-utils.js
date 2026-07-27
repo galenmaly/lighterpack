@@ -18,9 +18,9 @@ export function generateTestUser(prefix = 'test') {
 export async function registerUser(page, username, password, email) {
     await page.goto(testRoot);
 
-    // The phone landing card pairs the two forms as tabs and opens on sign-in.
-    // Both panels are mounted, so the register form resolves either way - it is
-    // just hidden until its tab is picked, which reads as a stuck fill().
+    // The phone landing card pairs the two forms as tabs and opens on register.
+    // Both panels are mounted, so either form resolves whichever tab is up - it
+    // is just hidden until its tab is picked, which reads as a stuck fill().
     const registerTab = page.locator('#lpMobileTabRegister');
     if (await registerTab.isVisible()) {
         await registerTab.click();
@@ -36,6 +36,13 @@ export async function registerUser(page, username, password, email) {
 
 export async function loginUser(page, username, password) {
     await page.goto(testRoot);
+
+    // Same as above, from the other side: on a phone the sign-in panel is the
+    // one behind a tab.
+    const signinTab = page.locator('#lpMobileTabSignin');
+    if (await signinTab.isVisible()) {
+        await signinTab.click();
+    }
 
     const signinForm = page.getByTestId('signin-form');
     await signinForm.getByPlaceholder('Username', { exact: true }).fill(username);

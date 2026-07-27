@@ -28,7 +28,7 @@ $darkYellow: #a58c00;
    Tags list each step's consumers by theme: [L] light only, [D] dark
    only, [both] both themes (mostly the always-dark sidebar chrome). */
 $grey-0: #fff;      // [L] page/surface bg, [both] white ink on fills
-$grey-50: #f4f5f6;  // [L] hovered/active row band
+$grey-50: #f4f5f6;  // [L] hovered/active row band, sunken strips
 $grey-100: #e0e1e3; // [L] hairline · [D] body text · [both] sidebar text
 $grey-200: #BBB; // [L] strong hairline, resting icons
 $grey-400: #9a9da3; // [D] secondary text
@@ -38,7 +38,7 @@ $grey-650: #4a4a4a; // [D] subtle border, resting icons
 $grey-700: #3a3d42; // [D] strong hairline · [both] sidebar border
 $grey-750: #333336; // [D] faint hairline (kept distinct from surface)
 $grey-800: #2e2e30; // [D] surface · [both] sidebar bg
-$grey-850: #26262a; // [both] sidebar inset
+$grey-850: #26262a; // [both] sidebar inset · [D] sunken strips
 $grey-900: #24272b; // [L] body text
 $grey-950: #1e1e1e; // [D] page bg
 $grey-1000: #111;   // [L] bubble-text mix
@@ -84,6 +84,10 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-0}; // page background
     --lp-content-bg: #{$grey-0}; // content column
     --lp-surface: #{$grey-0}; // panels, modals, lifted rows
+    // A strip recessed *inside* a surface -- a tab bar behind its active tab,
+    // a footer strip on a card. One step under the surface it sits in, which is
+    // not the same relationship as row-hover's one step off the page.
+    --lp-surface-sunken: #{$grey-50};
     --lp-welcome-footer-bg: rgba(255, 255, 255, 0.65);
     --lp-welcome-panel-bg: rgba(255, 255, 255, 0.9);
 
@@ -142,6 +146,10 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-950};
     --lp-content-bg: #{$grey-950};
     --lp-surface: #{$grey-800};
+    // Its own step rather than row-hover's: on dark the row band and the
+    // surface land on the same grey, so a strip inside a card would vanish
+    // into the card. This recesses instead, the way light's grey-50 does.
+    --lp-surface-sunken: #{$grey-850};
     --lp-welcome-footer-bg: rgba(0, 0, 0, 0.65);
     --lp-welcome-panel-bg: rgba(30, 30, 30, 0.92);
 
