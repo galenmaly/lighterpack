@@ -706,3 +706,174 @@ test.describe('Phone onboarding', () => {
     )).toBe('local');
   });
 });
+
+/**
+ * A press-and-hold drag, as client/utils/touch-reorder.js sees it.
+ *
+ * Playwright's touchscreen only taps, so the sequence is synthesised in the
+ * page. Plain Events carrying a `touches` array are enough — the handlers read
+ * clientY, target and preventDefault, none of which needs a trusted event. The
+ * native half — that a still finger leaves the browser free to have its scroll
+ * suppressed — needs a real one.
+ */
+async function holdAndDrag(page: Page, row: Locator, toY: number, opts: { hold?: number } = {}) {
+  const box = await row.boundingBox();
+  if (!box) throw new Error('row is not visible');
+  const x = box.x + (box.width / 2);
+  const fromY = box.y + (box.height / 2);
+
+  // Pinned to the node, not re-resolved per dispatch: the drag moves this row
+  // between categories, so a relative locator would stop matching it halfway
+  // through.
+  const handle = await row.elementHandle();
+  if (!handle) throw new Error('row went away');
+
+  const fire = (type: string, clientX: number, clientY: number) => handle.evaluate(
+    (el, args) => {
+      const evt: any = new Event(args.type, { bubbles: true, cancelable: true });
+      const touch = { clientX: args.clientX, clientY: args.clientY };
+      evt.touches = args.type === 'touchend' ? [] : [touch];
+      evt.changedTouches = [touch];
+      el.dispatchEvent(evt);
+    },
+    { type, clientX, clientY },
+  );
+
+  await fire('touchstart', x, fromY);
+  // HOLD_MS is 350; overshoot so the lift has definitely armed (or, when the
+  // caller asks for a short hold, definitely hasn't).
+  await page.waitForTimeout(opts.hold ?? 500);
+
+  const steps = 8;
+  for (let i = 1; i <= steps; i++) {
+    await fire('touchmove', x, fromY + (((toY - fromY) * i) / steps));
+    await page.waitForTimeout(30); // a couple of frames for the rAF loop to re-slot
+  }
+
+  await fire('touchend', x, toY);
+  await page.waitForTimeout(150);
+  await handle.dispose();
+}
+
+/** Item names in a category, in the order the phone rows are drawn. */
+const rowNames = (category: Locator) => category.locator('.lpItemMobileName').allTextContents();
+
+test.describe('Phone reordering (#11e)', () => {
+  test('press-and-hold moves an item within its category', async ({ page }) => {
+    await signUpWithList(page);
+
+    const carry = page.getByTestId('category').first();
+    expect(await rowNames(carry)).toEqual(['Duffel bag', 'Backpack']);
+
+    const backpack = carry.getByTestId('item-row').nth(1);
+    const duffel = carry.getByTestId('item-row').nth(0);
+    const duffelBox = await duffel.boundingBox();
+    if (!duffelBox) throw new Error('no duffel box');
+
+    // Above Duffel's midpoint is the only thing that decides the slot.
+    await holdAndDrag(page, backpack, duffelBox.y + 2);
+
+    await expect.poll(() => rowNames(carry)).toEqual(['Backpack', 'Duffel bag']);
+  });
+
+  test('a hold too short to arm is left to the scroller', async ({ page }) => {
+    await signUpWithList(page);
+
+    const carry = page.getByTestId('category').first();
+    const backpack = carry.getByTestId('item-row').nth(1);
+    const duffelBox = await carry.getByTestId('item-row').nth(0).boundingBox();
+    if (!duffelBox) throw new Error('no duffel box');
+
+    // Same gesture, released before HOLD_MS. Nothing should have lifted.
+    await holdAndDrag(page, backpack, duffelBox.y + 2, { hold: 80 });
+
+    expect(await rowNames(carry)).toEqual(['Duffel bag', 'Backpack']);
+    await expect(page.locator('.lpTouchLifted')).toHaveCount(0);
+  });
+
+  test('a row can be dragged into another category', async ({ page }) => {
+    await signUpWithList(page);
+
+    const carry = page.getByTestId('category').first();
+    const sleep = page.getByTestId('category').nth(1);
+    expect(await rowNames(sleep)).toEqual(['Sleeping Bag', 'Stuff sack']);
+
+    const backpack = carry.getByTestId('item-row').nth(1);
+    const sleepingBagBox = await sleep.getByTestId('item-row').nth(0).boundingBox();
+    if (!sleepingBagBox) throw new Error('no sleeping bag box');
+
+    await holdAndDrag(page, backpack, sleepingBagBox.y + 2);
+
+    await expect.poll(() => rowNames(sleep)).toEqual(['Backpack', 'Sleeping Bag', 'Stuff sack']);
+    expect(await rowNames(carry)).toEqual(['Duffel bag']);
+  });
+
+  test('the drop does not also open the row editor', async ({ page }) => {
+    await signUpWithList(page);
+
+    const carry = page.getByTestId('category').first();
+    const duffelBox = await carry.getByTestId('item-row').nth(0).boundingBox();
+    if (!duffelBox) throw new Error('no duffel box');
+
+    await holdAndDrag(page, carry.getByTestId('item-row').nth(1), duffelBox.y + 2);
+
+    // The click the touchend raises is swallowed; tap-to-edit is untouched.
+    await expect(page.getByTestId('item-editor')).toHaveCount(0);
+  });
+
+  // Guards the iOS-only symptom where a long press raises WebKit's word
+  // selection over whichever text the finger is on. Synthetic touches can't
+  // raise that, so this plants one by hand and pins the half that is ours: a
+  // drag clears any selection it finds.
+  test('a drag leaves no text selected behind it', async ({ page }) => {
+    await signUpWithList(page);
+
+    const carry = page.getByTestId('category').first();
+    const duffelBox = await carry.getByTestId('item-row').nth(0).boundingBox();
+    if (!duffelBox) throw new Error('no duffel box');
+
+    const backpack = carry.getByTestId('item-row').nth(1);
+    await backpack.locator('.lpItemMobileName').evaluate((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    });
+    // isCollapsed rather than toString: the row is user-select: none, so a
+    // range over it serialises to '' even while it is genuinely a live range.
+    expect(await page.evaluate(() => window.getSelection()?.isCollapsed)).toBe(false);
+
+    await holdAndDrag(page, backpack, duffelBox.y + 2);
+
+    expect(await page.evaluate(() => window.getSelection()?.isCollapsed)).toBe(true);
+    await expect.poll(() => rowNames(carry)).toEqual(['Backpack', 'Duffel bag']);
+  });
+
+  // No synthetic-touch test can watch the magnifier fail to appear, so what
+  // gets pinned instead is the hit test the shield rests on: let the text back
+  // to the surface and the loupe comes with it.
+  test('the row surface under a finger is the shield, not the text', async ({ page }) => {
+    await signUpWithList(page);
+
+    const name = page.getByTestId('category').first().locator('.lpItemMobileName').first();
+    // Measured and hit-tested in one evaluate, so both are in viewport
+    // coordinates and can't drift apart.
+    const depth = await name.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const stack = Array.from(document.elementsFromPoint(
+        rect.left + (rect.width / 2),
+        rect.top + (rect.height / 2),
+      )) as HTMLElement[];
+      return {
+        shield: stack.findIndex(node => node.classList.contains('lpItemMobileShield')),
+        text: stack.indexOf(el),
+      };
+    });
+
+    // Ordered, not topmost: whatever else the page floats over the row is not
+    // this test's business.
+    expect(depth.shield).toBeGreaterThanOrEqual(0);
+    expect(depth.shield).toBeLessThan(depth.text);
+  });
+});

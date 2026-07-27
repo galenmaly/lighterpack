@@ -25,6 +25,7 @@ import listSummaryMobile from './list-summary-mobile.vue';
 
 import dragula from 'dragula';
 import { getElementIndex } from '../utils/utils.js';
+import { createTouchReorder } from '../utils/touch-reorder.js';
 import { isMobile } from '../utils/viewport.js';
 
 export default {
@@ -42,6 +43,7 @@ export default {
     data() {
         return {
             itemDrake: null,
+            itemTouchReorder: null,
             categoryDragStartIndex: null,
             itemDragId: null,
         };
@@ -77,10 +79,30 @@ export default {
                 this.handleItemReorder();
             });
         },
+        // Crossing the breakpoint swaps the row component, so the gesture has
+        // to swap too. No categories watcher equivalent: the touch path
+        // delegates from the document, so re-rendered rows need no re-binding.
+        isMobile: {
+            immediate: true,
+            handler(mobile) {
+                if (mobile) {
+                    this.handleMobileItemReorder();
+                } else if (this.itemTouchReorder) {
+                    this.itemTouchReorder.destroy();
+                    this.itemTouchReorder = null;
+                }
+            },
+        },
     },
     mounted() {
         this.handleCategoryReorder();
         this.handleItemReorder();
+    },
+    beforeUnmount() {
+        if (this.itemTouchReorder) {
+            this.itemTouchReorder.destroy();
+            this.itemTouchReorder = null;
+        }
     },
     methods: {
         newCategory() {
@@ -120,6 +142,30 @@ export default {
                 drake.cancel(true);
             });
             this.itemDrake = drake;
+        },
+        // The phone's counterpart to handleItemReorder: same containers,
+        // mutation and drop-index arithmetic, only the gesture differs.
+        handleMobileItemReorder() {
+            if (this.itemTouchReorder) {
+                this.itemTouchReorder.destroy();
+            }
+            this.itemTouchReorder = createTouchReorder({
+                containers: () => Array.prototype.slice.call(document.getElementsByClassName('lpItems')),
+                itemSelector: '.lpItemMobile',
+                // Never after the footer — the desktop's accepts() exclusion.
+                endSelector: '.lpItemsFooter',
+                // A slow tap on a control is aiming at that control, not at
+                // lifting the row it sits in.
+                ignoreSelector: 'a, button, input, textarea, select',
+                // An open editor is a form, not a row to be shuffled.
+                canStart: $el => !$el.classList.contains('lpItemMobileEditing'),
+                onDrop: ({ el, toContainer }) => {
+                    const categoryId = parseInt(toContainer.parentElement.id); // fragile
+                    this.$store.commit('reorderItem', {
+                        list: this.list, itemId: parseInt(el.id), categoryId, dropIndex: getElementIndex(el) - 1,
+                    });
+                },
+            });
         },
         handleCategoryReorder() {
             const $categories = document.getElementsByClassName('lpCategories')[0];

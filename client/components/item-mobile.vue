@@ -34,6 +34,9 @@
                 {{ displayWeight }}
                 <span class="lpItemMobileUnit">{{ item.authorUnit }}</span>
             </span>
+            <!-- Covers the row's text so a press-and-hold lands on something
+                 with no words in it — see .lpItemMobileShield below. -->
+            <span class="lpItemMobileShield" aria-hidden="true" />
         </div>
 
         <!-- Edit state (#11d): same row, opened up. Commits as you type, like
@@ -466,6 +469,42 @@ export default {
     display: flex;
     gap: 10px;
     padding: 6px 14px;
+    position: relative; // anchors the shield below
+    // Holding the row reorders it (touch-reorder.js); left alone the same hold
+    // raises iOS's selection and image callouts over the gesture.
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+// iOS runs its long-press text interaction over text whose computed user-select
+// is none, so the rule above doesn't hold it off alone. The interaction starts
+// from whatever the touch hit-tests to, so this puts something with no words in
+// it between the finger and the text. Not airtight — the magnifier still
+// surfaces occasionally, which is why touch-reorder.js goes on clearing the
+// selection behind it.
+//
+// A real hit target, not pointer-events: none: clicks bubble to
+// .lpItemMobileRest's handler, where tap-to-edit already lives.
+.lpItemMobileShield {
+    inset: 0;
+    position: absolute;
+}
+
+// Lifted by a press-and-hold, riding under the finger.
+.lpItemMobile.lpTouchLifted {
+    background: var(--lp-content-bg);
+    box-shadow: var(--lp-lift-shadow);
+    // .lpCategory is unpositioned, so this lands in the root stacking context
+    // and clears neighbouring categories' rows too, not just its own.
+    z-index: $aboveSidebar;
+    // JS writes transform every frame; inheriting .lpItemMobile's height
+    // transition would make each frame animate towards the last and trail.
+    transition: none;
+}
+
+// A stray selection started under the moving finger would survive the drop.
+body.lpTouchReordering {
+    user-select: none;
 }
 
 .lpItemMobileThumb {
@@ -473,6 +512,9 @@ export default {
     height: 30px;
     position: relative;
     width: 30px;
+    // Above the shield, which would otherwise swallow the tap that opens the
+    // image.
+    z-index: 1;
 
     img {
         border-radius: 2px;
