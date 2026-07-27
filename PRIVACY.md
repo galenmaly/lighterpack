@@ -24,8 +24,9 @@ The rest of this document is the detail.
 When you create an account we store:
 
 - **Your username**
-- **Your email address**
+- **Your email address** - for account recovery
 - **Your password** - hashed with bcrypt.
+- **The date you registered and last visited** - for debugging and diagnostics
 
 Everything you enter into LighterPack including list names, item names, descriptions,
 weights, prices, quantities, links, and the images you upload, is stored in our
@@ -114,7 +115,7 @@ You have the right to:
  - Delete your account and all its associated data
  - Export all of your data
 
-You can perform these actions yourself from the account menu when logged into LighterPack.
+You can delete your account yourself from the Account Settings menu. For a data export you can email us.
 
 ## Law enforcement and legal requests
 
