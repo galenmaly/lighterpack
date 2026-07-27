@@ -26,11 +26,16 @@ export const emptyIfZero = {
             }
         });
 
-        // Once the user types, stop forcing the field empty so their input
-        // survives the re-render savePrice/saveWeight triggers.
-        el.addEventListener('input', () => {
+        // Stop forcing the field empty before the browser inserts the first
+        // character. Waiting for `input` is too late on iOS: saveWeight can
+        // trigger a Vue update earlier in that event, and updated() would then
+        // clear the character while this flag was still set.
+        const stopEmptying = () => {
             el._emptyIfZero = false;
-        });
+        };
+        el.addEventListener('beforeinput', stopEmptying);
+        // Keep input as a fallback for browsers without beforeinput.
+        el.addEventListener('input', stopEmptying);
 
         el.addEventListener('blur', () => {
             el._emptyIfZero = false;
@@ -45,7 +50,9 @@ export const emptyIfZero = {
     // bound zero, undoing the empty above. Re-clear it so a freshly-focused
     // zero field stays empty until the user actually types.
     updated(el) {
-        if (el._emptyIfZero && document.activeElement === el) {
+        if (el._emptyIfZero
+            && document.activeElement === el
+            && (el.value === '0' || el.value === '0.00')) {
             el.value = '';
         }
     },

@@ -117,6 +117,18 @@ test.describe('Phone item rows', () => {
     await expect(editor.getByPlaceholder('Name', { exact: true })).toHaveValue('');
   });
 
+  test('keeps the first weight character typed into a new item', async ({ page }) => {
+    await signUpWithList(page);
+
+    await page.getByText('Add new item', { exact: true }).first().tap();
+    const weight = page.getByTestId('item-editor').getByTestId('item-weight');
+
+    await weight.tap();
+    await weight.pressSequentially('7');
+
+    await expect(weight).toHaveValue('7');
+  });
+
   test('tapping a row opens exactly one editor, and tapping outside closes it', async ({ page }) => {
     await signUpWithList(page);
 
