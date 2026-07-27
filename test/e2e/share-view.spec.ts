@@ -290,8 +290,16 @@ test.describe('Share View', () => {
     const tentItem = page.locator('li.lpItem').filter({ hasText: 'Tent' });
     const unitSelect = tentItem.locator('.lpUnitSelect');
 
-    // Dispatch a click directly on the lb option — bypasses visibility, bubbles up to the list handler
-    await tentItem.locator('.lpUnitSelect li.lb').first().dispatchEvent('click');
+    // Open the picker the way a reader does. The options are display:none
+    // until it opens, so clicking one for real only works after this step --
+    // dispatching straight at a hidden option skips the open path entirely,
+    // which is where a click used to land on the enclosing item row instead.
+    await unitSelect.click();
+    await expect(unitSelect).toHaveClass(/lpOpen/);
+    await expect(unitSelect.locator('.lpUnitDropdown')).toBeVisible();
+    await expect(unitSelect.locator('span.lpDisplay')).toHaveText('oz');
+
+    await unitSelect.locator('li.lb').click();
 
     await expect(tentItem.locator('.lpWeight')).toHaveText('2');
     await expect(unitSelect.locator('span.lpDisplay')).toHaveText('lb');

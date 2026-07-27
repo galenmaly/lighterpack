@@ -43,8 +43,14 @@ function initEventHandlers() {
             const unitSelectEl = evt.target.closest('.lpUnitSelect');
             if (!unitSelectEl) return;
 
-            // Clicking the unit select container toggles it open
-            if (!evt.target.closest('li')) {
+            // Every picker is itself inside a row <li> (an item row, or the
+            // totals footer), so an option has to be matched against the
+            // dropdown it lives in -- a bare closest('li') walks straight past
+            // the option and hits the row, whose text is the whole row.
+            const option = evt.target.closest('.lpUnitDropdown li');
+
+            // Clicking anywhere else in the picker toggles it open
+            if (!option) {
                 evt.stopPropagation();
                 unitSelectEl.classList.toggle('lpOpen');
                 const value = unitSelectEl.querySelector('.lpUnit').value;
@@ -55,9 +61,7 @@ function initEventHandlers() {
             }
 
             // Clicking a unit option
-            const li = evt.target.closest('li');
-            if (!li) return;
-            const unit = li.textContent.trim();
+            const unit = option.textContent.trim();
             const displayEl = unitSelectEl.querySelector('.lpDisplay');
             const unitInput = unitSelectEl.querySelector('.lpUnit');
             if (displayEl) displayEl.textContent = unit;
