@@ -541,11 +541,11 @@ export default {
 
 // Without a thumbnail to badge, quantity becomes a chip beside the name.
 .lpItemMobileQty {
-    background: var(--lp-sidebar-bg);
+    background: var(--lp-surface-invert);
     border-radius: 8px;
-    color: $grey-0;
+    color: var(--lp-text-invert);
     flex: 0 0 auto;
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 700;
     padding: 1px 5px;
 }

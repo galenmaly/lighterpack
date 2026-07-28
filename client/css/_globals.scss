@@ -84,6 +84,7 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-0}; // page background
     --lp-content-bg: #{$grey-0}; // content column
     --lp-surface: #{$grey-0}; // panels, modals, lifted rows
+    --lp-surface-invert: #{$grey-900};
     // A strip recessed *inside* a surface -- a tab bar behind its active tab,
     // a footer strip on a card. One step under the surface it sits in, which is
     // not the same relationship as row-hover's one step off the page.
@@ -94,6 +95,7 @@ $transitionDurationSlow: 0.4s;
     // Text
     --lp-text: #{$grey-900};
     --lp-text-secondary: #{$grey-600};
+    --lp-text-invert: #{$grey-50};
     --lp-icon-rest: #{$grey-200};
 
     // Lines & shadows
@@ -153,6 +155,7 @@ $transitionDurationSlow: 0.4s;
     --lp-bg: #{$grey-950};
     --lp-content-bg: #{$grey-950};
     --lp-surface: #{$grey-800};
+    --lp-surface-invert: #{$grey-200};
     // Its own step rather than row-hover's: on dark the row band and the
     // surface land on the same grey, so a strip inside a card would vanish
     // into the card. This recesses instead, the way light's grey-50 does.
@@ -162,7 +165,8 @@ $transitionDurationSlow: 0.4s;
 
     // Text
     --lp-text: #{$grey-100};
-    --lp-text-secondary: #{$grey-400}; // ramp-mirror of light's grey-600 (both 3 steps off their theme's text); AA-legible on dark
+    --lp-text-secondary: #{$grey-400};
+    --lp-text-invert: #{$grey-900};
     --lp-icon-rest: #{$grey-650};
 
     // Lines & shadows
