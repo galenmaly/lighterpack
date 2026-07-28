@@ -41,6 +41,56 @@ describe('markdown renderer', () => {
     });
 });
 
+// Descriptions written before the May 2026 move off markdown-js can say
+// "###Big 3" with no space, which CommonMark reads as body text.
+describe('headings without a space after the hashes', () => {
+    it('renders one at the depth its hashes ask for', () => {
+        assert.match(marked('#One'), /<h1>One<\/h1>/);
+        assert.match(marked('###Big 3'), /<h3>Big 3<\/h3>/);
+        assert.match(marked('######Six'), /<h6>Six<\/h6>/);
+    });
+
+    it('still renders a properly spaced heading', () => {
+        assert.match(marked('### Big 3'), /<h3>Big 3<\/h3>/);
+        assert.match(marked('### Big 3 ###'), /<h3>Big 3<\/h3>/);
+    });
+
+    it('interrupts a paragraph, so consecutive lines each become headings', () => {
+        const html = marked('Intro\n###Big 3\nTent\n###Worn\nShoes');
+        assert.match(html, /<h3>Big 3<\/h3>/);
+        assert.match(html, /<h3>Worn<\/h3>/);
+    });
+
+    it('leaves hashes inside fenced code alone', () => {
+        assert.match(marked('```\n###code\n```'), /<code>###code/);
+        assert.match(marked('~~~\n###code\n~~~'), /<code>###code/);
+    });
+
+    it('leaves hashes inside indented code alone', () => {
+        assert.match(marked('    ###code'), /<code>###code/);
+    });
+
+    it('does not promote seven or more hashes', () => {
+        assert.doesNotMatch(marked('#######Seven'), /<h[1-6]>/);
+    });
+
+    it('respects an escaped hash', () => {
+        assert.doesNotMatch(marked('\\###escaped'), /<h[1-6]>/);
+    });
+
+    it('sanitizes html inside one just like any other heading', () => {
+        const html = marked('###<script>window.x=1</script>');
+        assert.doesNotMatch(html, /<script>/);
+        assert.match(html, /<h3>/);
+    });
+
+    it('hardens links inside one just like any other heading', () => {
+        const html = marked('###[gear](https://example.com)');
+        assert.match(html, /rel="noopener nofollow ugc"/);
+        assert.doesNotMatch(marked('###[bad](javascript:alert(1))'), /<a /);
+    });
+});
+
 describe('isSafeHref', () => {
     it('allows http, https, mailto, and relative urls', () => {
         assert.equal(isSafeHref('https://example.com'), true);

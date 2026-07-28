@@ -15,7 +15,25 @@ const isSafeHref = (href) => {
     return !/^[a-z][a-z0-9+.-]*:/i.test(cleaned) || /^(https?|mailto):/i.test(cleaned);
 };
 
+// Relax parsing of headers - allow headers without a space between # and text
+const FENCE_LINE = /^ {0,3}(?:```|~~~)/;
+const HASHES_WITHOUT_SPACE = /^( {0,3}#{1,6})(?=[^\s#])/;
+
+const spaceAfterHashes = (src) => {
+    let inFence = false;
+    return String(src).split('\n').map((line) => {
+        if (FENCE_LINE.test(line)) {
+            inFence = !inFence;
+            return line;
+        }
+        // Indented code needs no guard: the rule allows at most three leading
+        // spaces, so a four-space code line can never match it.
+        return inFence ? line : line.replace(HASHES_WITHOUT_SPACE, '$1 ');
+    }).join('\n');
+};
+
 marked.use({
+    hooks: { preprocess: spaceAfterHashes },
     renderer: {
         // Inline HTML tags are dropped (their surrounding text survives as its
         // own tokens). Block HTML swallows the whole line into one token, so
