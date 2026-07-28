@@ -91,6 +91,39 @@ test.describe('Settings Persistence After Reload', () => {
     await expect(page.locator('#currencySymbol')).toHaveValue('€');
   });
 
+  test('should persist pack weight toggle after reload', async ({ page }) => {
+    const { username, password, email } = generateTestUser('persist-pack');
+
+    await registerUser(page, username, password, email);
+    await expect(page.getByText('Welcome to LighterPack!')).toBeVisible();
+
+    const category = await createCategory(page, 'Gear');
+    await addItem(category, 'Tent', { weight: '30' });
+    await addItem(category, 'Boots', { weight: '20' });
+
+    // Boots go on your feet, so pack weight is the 30 oz left over.
+    const bootsRow = category.getByTestId('item-row').last();
+    await bootsRow.hover();
+    await bootsRow.getByTitle('Mark this item as worn').click();
+
+    // Off by default — the row only appears once the setting is checked.
+    await expect(page.getByTestId('pack-weight')).toBeHidden();
+    await enableSetting(page, 'Total pack weight');
+    await expect(page.getByTestId('pack-weight')).toHaveText(/^\s*30(\.0+)?\s*$/);
+
+    // Wait for auto-save
+    await page.waitForResponse(
+      (response) => response.url().includes('saveLibrary') && response.status() === 200,
+      { timeout: 15000 },
+    );
+
+    // Reload and verify
+    await page.reload();
+    await expect(page.getByText('Add new category', { exact: true })).toBeVisible();
+
+    await expect(page.getByTestId('pack-weight')).toHaveText(/^\s*30(\.0+)?\s*$/);
+  });
+
   test('should persist worn items toggle after reload', async ({ page }) => {
     const { username, password, email } = generateTestUser('persist-worn');
 

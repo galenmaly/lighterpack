@@ -72,6 +72,19 @@
                     </span>
                     <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
                 </li>
+                <li v-if="list.optionalFields['packWeight']" data-weight-type="pack" class="lpRow lpFooter lpBreakdown lpTotalPackWeight">
+                    <span class="lpCell lpLegendCell" />
+                    <span class="lpCell lpCategoryCell" title="Total weight minus worn items">
+                        Total Pack Weight
+                    </span>
+                    <span v-if="list.optionalFields['price']" class="lpCell lpNumber" />
+                    <span class="lpCell lpNumber lpWeightVal">
+                        <span class="lpDisplaySubtotal" data-testid="pack-weight" :mg="list.totalPackWeight" title="Total weight minus worn items">
+                            {{ displayWeight(list.totalPackWeight, library.totalUnit) }}
+                        </span>
+                    </span>
+                    <span class="lpCell lpUnitCell lpSubtotalUnit">{{ library.totalUnit }}</span>
+                </li>
             </ul>
         </div>
     </div>

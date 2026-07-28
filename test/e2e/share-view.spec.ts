@@ -126,6 +126,7 @@ test.describe('Share View', () => {
     // Enable optional settings before creating items so price inputs are available
     await enableSetting(page, 'List descriptions');
     await enableSetting(page, 'Item prices');
+    await enableSetting(page, 'Total pack weight');
 
     // Set list name and description
     const listNameInput = page.getByPlaceholder('Name your list', { exact: true });
@@ -283,7 +284,9 @@ test.describe('Share View', () => {
     await expect(page.locator('.lpTotalValue')).toHaveText('68');
     await expect(page.locator('.lpWornWeight .lpDisplaySubtotal')).toHaveText('16');
     await expect(page.locator('.lpConsumableWeight .lpDisplaySubtotal')).toHaveText('20');
-    await expect(page.locator('.lpPackWeight .lpDisplaySubtotal')).toHaveText('32');
+    await expect(page.locator('.lpBaseWeight .lpDisplaySubtotal')).toHaveText('32');
+    // The opt-in fifth row, switched on for this list: 68 total less 16 oz worn.
+    await expect(page.locator('.lpTotalPackWeight .lpDisplaySubtotal')).toHaveText('52');
   });
 
   // ── Interactive: unit switching ──────────────────────────────────────────

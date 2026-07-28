@@ -9,6 +9,7 @@ const defaultOptionalFields = {
     worn: true,
     consumable: true,
     listDescription: false,
+    packWeight: false,
 };
 
 const defaultPreferences = {

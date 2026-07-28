@@ -92,6 +92,15 @@
                             <span class="lpSummaryLegendUnit">{{ library.totalUnit }}</span>
                         </span>
                     </li>
+                    <li v-if="list.optionalFields['packWeight']" class="lpSummaryLegendRow lpSummaryLegendMuted lpTotalPackWeight">
+                        <span class="lpSummaryLegendSwatch" />
+                        <span class="lpSummaryLegendName">Total pack weight</span>
+                        <span v-if="list.optionalFields['price']" class="lpSummaryLegendPrice" />
+                        <span class="lpSummaryLegendWeight">
+                            <span data-testid="pack-weight">{{ displayWeight(list.totalPackWeight, library.totalUnit) }}</span>
+                            <span class="lpSummaryLegendUnit">{{ library.totalUnit }}</span>
+                        </span>
+                    </li>
                 </ul>
             </div>
         </transition>

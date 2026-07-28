@@ -66,6 +66,11 @@ export default {
                 cssClass: 'lpShowConsumable',
                 value: false,
             }, {
+                name: 'packWeight',
+                displayName: 'Total pack weight',
+                cssClass: 'lpShowPackWeight',
+                value: false,
+            }, {
                 name: 'listDescription',
                 displayName: 'List descriptions',
                 cssClass: 'lpShowListDescription',

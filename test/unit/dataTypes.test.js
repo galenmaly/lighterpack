@@ -91,7 +91,7 @@ describe('Library.load upgrade03to04', () => {
         assert.equal(typeof library.optionalFields, 'undefined');
         for (const list of library.lists) {
             assert.deepEqual(list.optionalFields, {
-                images: true, price: true, worn: false, consumable: true, listDescription: false,
+                images: true, price: true, worn: false, consumable: true, listDescription: false, packWeight: false,
             });
         }
         // each list owns its settings — no shared object between lists
@@ -152,7 +152,7 @@ describe('per-list settings', () => {
         reloaded.load(serialized);
 
         assert.deepEqual(reloaded.lists[0].optionalFields, {
-            images: false, price: false, worn: true, consumable: true, listDescription: false,
+            images: false, price: false, worn: true, consumable: true, listDescription: false, packWeight: false,
         });
     });
 
@@ -444,7 +444,7 @@ describe('serialization safety', () => {
 
         assert.equal(library.version, '0.4');
         assert.deepEqual(library.lists[0].optionalFields, {
-            images: false, price: false, worn: true, consumable: true, listDescription: false,
+            images: false, price: false, worn: true, consumable: true, listDescription: false, packWeight: false,
         });
     });
 
