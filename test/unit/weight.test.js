@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import weightUtils from '../../client/utils/weight.js';
 
-const { WeightToMg, MgToWeight } = weightUtils;
+const { WeightToMg, MgToWeight, MgToDisplayWeight } = weightUtils;
 
 describe('WeightToMg', () => {
     test('converts each supported unit to milligrams', () => {
@@ -34,6 +34,51 @@ describe('MgToWeight', () => {
 
     test('returns undefined for an unknown unit', () => {
         assert.equal(MgToWeight(1000, 'stone'), undefined);
+    });
+});
+
+describe('MgToDisplayWeight', () => {
+    test('leaves every unit but grams exactly as MgToWeight had it', () => {
+        for (const unit of ['kg', 'oz', 'lb']) {
+            for (const mg of [400, 34019.4, 446504.625, 5597325.28]) {
+                assert.equal(MgToDisplayWeight(mg, unit), MgToWeight(mg, unit));
+            }
+        }
+    });
+
+    test('drops the invented decimals when another unit is read as grams', () => {
+        assert.equal(MgToWeight(WeightToMg(1.2, 'oz'), 'g'), 34.02); // before
+        assert.equal(MgToDisplayWeight(WeightToMg(1.2, 'oz'), 'g'), 34);
+
+        assert.equal(MgToDisplayWeight(WeightToMg(15.75, 'oz'), 'g'), 447);
+        assert.equal(MgToDisplayWeight(WeightToMg(12.34, 'lb'), 'g'), 5597);
+    });
+
+    test('keeps a weight the author actually typed in grams', () => {
+        assert.equal(MgToDisplayWeight(WeightToMg(12.5, 'g'), 'g'), 12.5);
+        assert.equal(MgToDisplayWeight(WeightToMg(0.4, 'g'), 'g'), 0.4);
+        assert.equal(MgToDisplayWeight(WeightToMg(34, 'g'), 'g'), 34);
+    });
+
+    test('scales gram precision by magnitude', () => {
+        assert.equal(MgToDisplayWeight(60, 'g'), 0.06); // under 1g: two decimals
+        assert.equal(MgToDisplayWeight(34060, 'g'), 34.1); // 1-100g: one decimal
+        assert.equal(MgToDisplayWeight(999500, 'g'), 1000); // 100g up: whole grams
+    });
+
+    test('holds the boundaries', () => {
+        assert.equal(MgToDisplayWeight(999, 'g'), 1); // 0.999 -> 1.0
+        assert.equal(MgToDisplayWeight(1000, 'g'), 1);
+        assert.equal(MgToDisplayWeight(99950, 'g'), 100); // 99.95 -> 100.0
+        assert.equal(MgToDisplayWeight(100000, 'g'), 100);
+    });
+
+    test('a zero weight stays zero, not a rounding artefact', () => {
+        assert.equal(MgToDisplayWeight(0, 'g'), 0);
+    });
+
+    test('returns undefined for an unknown unit', () => {
+        assert.equal(MgToDisplayWeight(1000, 'stone'), undefined);
     });
 });
 

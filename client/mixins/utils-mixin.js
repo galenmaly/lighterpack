@@ -3,7 +3,7 @@ import weightUtils from '../utils/weight.js';
 const utilsMixin = {
     methods: {
         displayWeight(mg, unit) {
-            return weightUtils.MgToWeight(mg, unit) || 0;
+            return weightUtils.MgToDisplayWeight(mg, unit) || 0;
         },
         displayPrice(price, symbol) {
             let amount = '0.00';

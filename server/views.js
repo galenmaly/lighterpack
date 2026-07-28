@@ -452,7 +452,7 @@ const renderItem = function (item, args) {
     let unit = item.authorUnit;
     if (args.unit) unit = args.unit;
 
-    const displayWeight = weightUtils.MgToWeight(item.weight, unit);
+    const displayWeight = weightUtils.MgToDisplayWeight(item.weight, unit);
 
     const displayPrice = item.price ? item.price.toFixed(2) : '0.00';
 
@@ -483,7 +483,7 @@ const renderCategory = function (category, args) {
     }
 
     category.calculateSubtotal(args.listOptionalFields);
-    category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, args.totalUnit);
+    category.subtotalWeightDisplay = weightUtils.MgToDisplayWeight(category.subtotalWeight, args.totalUnit);
     category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
     let temp = Object.assign({}, category);
     Object.assign(temp, {
@@ -526,7 +526,7 @@ const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, uni
 
         if (category) {
             category.calculateSubtotal(list.optionalFields);
-            category.subtotalWeightDisplay = weightUtils.MgToWeight(category.subtotalWeight, unit);
+            category.subtotalWeightDisplay = weightUtils.MgToDisplayWeight(category.subtotalWeight, unit);
             category.subtotalUnit = unit;
 
             totalWeight += category.subtotalWeight;
@@ -543,18 +543,18 @@ const renderListTotals = function (list, totalsTemplate, unitSelectTemplate, uni
     totalPackWeight = totalWeight - totalWornWeight;
 
     out.totalWeight = totalWeight;
-    out.totalWeightDisplay = weightUtils.MgToWeight(totalWeight, unit);
+    out.totalWeightDisplay = weightUtils.MgToDisplayWeight(totalWeight, unit);
     out.totalUnit = renderUnitSelect(unit, unitSelectTemplate, totalWeight);
     out.subtotalUnit = unit;
     out.totalWornWeight = totalWornWeight;
-    out.totalWornWeightDisplay = weightUtils.MgToWeight(totalWornWeight, unit);
+    out.totalWornWeightDisplay = weightUtils.MgToDisplayWeight(totalWornWeight, unit);
     out.totalConsumableWeight = totalConsumableWeight;
-    out.totalConsumableWeightDisplay = weightUtils.MgToWeight(totalConsumableWeight, unit);
+    out.totalConsumableWeightDisplay = weightUtils.MgToDisplayWeight(totalConsumableWeight, unit);
     out.totalBaseWeight = totalBaseWeight;
-    out.totalBaseWeightDisplay = weightUtils.MgToWeight(totalBaseWeight, unit);
+    out.totalBaseWeightDisplay = weightUtils.MgToDisplayWeight(totalBaseWeight, unit);
     out.shouldDisplayBaseWeight = totalBaseWeight !== totalWeight;
     out.totalPackWeight = totalPackWeight;
-    out.totalPackWeightDisplay = weightUtils.MgToWeight(totalPackWeight, unit);
+    out.totalPackWeightDisplay = weightUtils.MgToDisplayWeight(totalPackWeight, unit);
     out.showPackWeight = list.optionalFields.packWeight;
     out.totalQty = totalQty;
     out.totalPrice = totalPrice;

@@ -1,5 +1,6 @@
 import './css/share.scss';
 import pies from './pies.js';
+import weightUtils from './utils/weight.js';
 import {
     initTheme, toggleTheme, chartLineColor, chartHoverColor, onThemeChange,
 } from './utils/theme.js';
@@ -23,12 +24,15 @@ function safely(fn) {
 
 safely(initTheme);
 
+// Server-rendered numbers on this page come from MgToDisplayWeight, so the
+// reader flipping a unit picker has to land on the same digits -- this defers
+// to that function instead of the copy of the rounding rule that used to live
+// here, which is exactly the kind of thing that drifts. The passthrough keeps
+// the old behaviour for a unit it doesn't recognise; the pickers only ever
+// offer oz/lb/g/kg.
 function MgToWeight(value, unit) {
-    if (unit === 'g') return Math.round(100 * value / 1000.0) / 100;
-    if (unit === 'kg') return Math.round(100 * value / 1000000.0) / 100;
-    if (unit === 'oz') return Math.round(100 * value / 28349.5) / 100;
-    if (unit === 'lb') return Math.round(100 * value / 453592.0) / 100;
-    return value;
+    const weight = weightUtils.MgToDisplayWeight(value, unit);
+    return weight === undefined ? value : weight;
 }
 
 function addParents(chartData, parent) {
