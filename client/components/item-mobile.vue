@@ -13,12 +13,12 @@
         <div v-if="!rowFocused" class="lpItemMobileRest" data-testid="item-rest" @click="startEditing($event)">
             <span v-if="showThumb" class="lpItemMobileThumb" @click.stop="viewItemImage()">
                 <img :src="thumbnailImage" :alt="item.name">
-                <span v-if="categoryItem.qty > 1" class="lpItemMobileBadge">{{ categoryItem.qty }}</span>
+                <span v-if="categoryItem.qty != 1" class="lpItemMobileBadge">{{ categoryItem.qty }}</span>
             </span>
             <span class="lpItemMobileBody">
                 <span class="lpItemMobileTitle">
                     <span class="lpItemMobileName">{{ item.name || 'New item' }}</span>
-                    <span v-if="!showThumb && categoryItem.qty > 1" class="lpItemMobileQty">×{{ categoryItem.qty }}</span>
+                    <span v-if="!showThumb && categoryItem.qty != 1" class="lpItemMobileQty">×{{ categoryItem.qty }}</span>
                     <!-- Only flags that are actually set. Unset ones live on
                          the desktop's hover reveal, which has no counterpart
                          here; the editor below is where you turn them on. -->
