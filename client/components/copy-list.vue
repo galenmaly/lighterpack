@@ -11,9 +11,9 @@
                 </option>
             </select>
         </div>
-        <p class="lpWarning">
-            <b>Note:</b> Copying a list will link the items between your lists. Updating an item in one list will alter that item in all other lists that item is in.
-        </p>
+        <toggle id="copyListLinkItems" v-model="linkItems">
+            Link items (changing an item in either list will affect the other)
+        </toggle>
         <div class="lpButtons">
             <a id="copyConfirm" class="lpButton" @click="copyList">Copy List</a>
             <a class="lpHref" @click="$emit('hide')">Cancel</a>
@@ -23,11 +23,13 @@
 
 <script>
 import modal from './modal.vue';
+import toggle from './toggle.vue';
 
 export default {
     name: 'CopyList',
     components: {
         modal,
+        toggle,
     },
     props: {
         shown: {
@@ -42,6 +44,7 @@ export default {
             // the select opens on a prompt instead of a blank row. Still falsy,
             // so copyList's guard reads the same.
             listId: '',
+            linkItems: true,
         };
     },
     computed: {
@@ -57,7 +60,7 @@ export default {
         },
         copyList() {
             if (!this.listId) return;
-            this.$store.commit('copyList', this.listId);
+            this.$store.commit('copyList', { listId: this.listId, linkItems: this.linkItems });
             this.$emit('hide');
         },
     },
@@ -68,10 +71,10 @@ export default {
 @import "../css/_globals";
 
 #copyListDialog {
-    // The note is an aside between the picker and the actions, so it wants the
-    // same breathing room on both sides rather than the tighter default the
-    // modal gives a run of paragraphs.
-    .lpWarning {
+    // The toggle is an aside between the picker and the actions, so it wants
+    // the same breathing room on both sides rather than the tighter default
+    // the modal gives.
+    .lpToggle {
         margin: 0 0 $spacingMedium;
     }
 }

@@ -187,6 +187,34 @@ describe('per-list settings', () => {
         assert.deepEqual(copy.optionalFields, library.lists[0].optionalFields);
         assert.notEqual(copy.optionalFields, library.lists[0].optionalFields);
     });
+
+    test('copyList shares items with the source list by default', () => {
+        const library = new Library();
+        const item = library.items[0];
+
+        const copy = library.copyList(library.lists[0].id);
+
+        const copiedCategory = library.getCategoryById(copy.categoryIds[0]);
+        assert.equal(copiedCategory.categoryItems[0].itemId, item.id);
+    });
+
+    test('copyList with linkItems false copies items instead of sharing them', () => {
+        const library = new Library();
+        const item = library.items[0];
+        item.name = 'Tent';
+        item.weight = 100;
+
+        const copy = library.copyList(library.lists[0].id, { linkItems: false });
+
+        const copiedCategory = library.getCategoryById(copy.categoryIds[0]);
+        const copiedItem = library.getItemById(copiedCategory.categoryItems[0].itemId);
+        assert.notEqual(copiedItem.id, item.id);
+        assert.equal(copiedItem.name, 'Tent');
+        assert.equal(copiedItem.weight, 100);
+
+        item.weight = 200;
+        assert.equal(copiedItem.weight, 100, 'editing the original must not affect the copy');
+    });
 });
 
 describe('Category.load repair', () => {
