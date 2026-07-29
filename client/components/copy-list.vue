@@ -12,7 +12,7 @@
             </select>
         </div>
         <toggle id="copyListLinkItems" v-model="linkItems">
-            Link items (changing an item in either list will affect the other)
+            Link lists (updating an item in one list will affect the other)
         </toggle>
         <div class="lpButtons">
             <a id="copyConfirm" class="lpButton" @click="copyList">Copy List</a>
