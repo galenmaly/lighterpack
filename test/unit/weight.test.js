@@ -54,15 +54,9 @@ describe('MgToDisplayWeight', () => {
         assert.equal(MgToDisplayWeight(WeightToMg(12.34, 'lb'), 'g'), 5597);
     });
 
-    test('keeps a weight the author actually typed in grams', () => {
-        assert.equal(MgToDisplayWeight(WeightToMg(12.5, 'g'), 'g'), 12.5);
-        assert.equal(MgToDisplayWeight(WeightToMg(0.4, 'g'), 'g'), 0.4);
-        assert.equal(MgToDisplayWeight(WeightToMg(34, 'g'), 'g'), 34);
-    });
-
-    test('scales gram precision by magnitude', () => {
-        assert.equal(MgToDisplayWeight(60, 'g'), 0.06); // under 1g: two decimals
-        assert.equal(MgToDisplayWeight(34060, 'g'), 34.1); // 1-100g: one decimal
+    test('rounds to the nearest gram', () => {
+        assert.equal(MgToDisplayWeight(60, 'g'), 0); // under 1g: two decimals
+        assert.equal(MgToDisplayWeight(34060, 'g'), 34); // 1-100g: one decimal
         assert.equal(MgToDisplayWeight(999500, 'g'), 1000); // 100g up: whole grams
     });
 

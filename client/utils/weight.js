@@ -23,31 +23,15 @@ export default (function () {
         }
     }
 
-    // Display-only rounding, layered on top of MgToWeight's flat two decimals.
-    // A hundredth of an ounce or a pound is a real distinction; a hundredth of
-    // a gram is not, so a 1.2 oz item read in grams should say 34, not 34.02 --
-    // digits the author never entered. Precision scales with magnitude instead
-    // of being fixed at zero so a weight genuinely typed in grams (12.5) still
-    // survives the round trip, and a sub-gram item doesn't collapse to 0.
-    //
-    // Grams only: kg, oz and lb are all coarser than a gram at two decimals
-    // already, and readers expect to see them that way.
-    //
-    // Not for the item row's weight box, the arrow keys that step it, or the
-    // CSV export -- those hand back the author's own number and must not round
-    // it. They call MgToWeight directly.
+    // Round grams fully, don't round anything else further.
     function MgToDisplayWeight(value, unit) {
         const weight = MgToWeight(value, unit);
 
         if (unit != 'g') {
             return weight;
-        } if (Math.abs(weight) >= 100) {
-            return Math.round(weight);
-        } if (Math.abs(weight) >= 1) {
-            return Math.round(weight * 10) / 10;
-        }
-
-        return weight;
+        } 
+        
+        return Math.round(weight);
     }
 
     return {
