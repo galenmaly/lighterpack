@@ -1,3 +1,5 @@
+import http from 'http';
+
 import config from 'config';
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -5,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { logger } from './server/log.js';
 import endpoints from './server/endpoints.js';
 import moderationEndpoints from './server/moderation-endpoints.js';
-import views from './server/views.js';
+import views, { hasBuiltAssets } from './server/views.js';
 
 // Backstop: a rejected promise that escapes a handler (e.g. a transient DB
 // error on a detached async call) would otherwise terminate the process on
@@ -62,6 +64,21 @@ app.use(express.urlencoded({
 
 app.use(express.static(`${import.meta.dirname}/public/`, { maxAge: oneDay }));
 
+const server = http.createServer(app);
+
+// Dev without a build: run Vite in-process so its modules and HMR socket share
+// this origin. A production box with a failed build must fall through to the
+// broken-asset path rather than quietly start compiling source on demand.
+if (!hasBuiltAssets && config.get('environment') !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
+    const vite = await createViteServer({
+        root: import.meta.dirname,
+        appType: 'custom',
+        server: { middlewareMode: true, hmr: { server } },
+    });
+    app.use(vite.middlewares);
+}
+
 app.use('/', endpoints);
 app.use('/', moderationEndpoints);
 app.use('/', views);
@@ -84,5 +101,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 logger.info({ message: 'Starting up Lighterpack...' });
-app.listen(config.get('port'));
+server.listen(config.get('port'));
 logger.info({ message: `Listening on ${config.get('port')}` });

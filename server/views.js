@@ -48,7 +48,7 @@ let appStylesHtml = '';
 let docStylesHtml = '';
 
 const manifestPath = path.join(import.meta.dirname, '../public/dist/.vite/manifest.json');
-const hasBuiltAssets = fs.existsSync(manifestPath);
+export const hasBuiltAssets = fs.existsSync(manifestPath);
 
 if (hasBuiltAssets) {
     // Production / test: serve pre-built Vite assets
@@ -85,18 +85,18 @@ if (hasBuiltAssets) {
         docStylesHtml += `<link rel='stylesheet' href='/dist/${docEntry.file}' />`;
     }
 } else {
-    // Dev without a build: proxy to Vite dev server (port 5173).
+    // Dev without a build: Vite runs as middleware on this same origin.
     appStylesHtml = '';
-    appScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
-        + '<script type="module" src="http://localhost:5173/client/lighterpack.js"></script>';
+    appScriptsHtml = '<script type="module" src="/@vite/client"></script>'
+        + '<script type="module" src="/client/lighterpack.js"></script>';
     shareStylesHtml = '';
-    shareScriptsHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
-        + '<script type="module" src="http://localhost:5173/client/share-entry.js"></script>';
-    embedScriptUrls.push('http://localhost:5173/client/embed-entry.js');
+    shareScriptsHtml = '<script type="module" src="/@vite/client"></script>'
+        + '<script type="module" src="/client/share-entry.js"></script>';
+    embedScriptUrls.push(`${config.get('deployUrl')}/client/embed-entry.js`);
     // Vite serves scss as a JS module that injects a style tag, so in dev the
     // doc pages do load a script even though the built version never does.
-    docStylesHtml = '<script type="module" src="http://localhost:5173/@vite/client"></script>'
-        + '<script type="module" src="http://localhost:5173/client/css/doc.scss"></script>';
+    docStylesHtml = '<script type="module" src="/@vite/client"></script>'
+        + '<script type="module" src="/client/css/doc.scss"></script>';
 }
 
 index = index.replace('{{styles}}', appStylesHtml);
