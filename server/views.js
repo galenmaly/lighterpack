@@ -485,6 +485,8 @@ const renderCategory = function (category, args) {
     category.calculateSubtotal(args.listOptionalFields);
     category.subtotalWeightDisplay = weightUtils.MgToDisplayWeight(category.subtotalWeight, args.totalUnit);
     category.subtotalPriceDisplay = category.subtotalPrice ? category.subtotalPrice.toFixed(2) : '0.00';
+    // Mirrors displayQty in utils-mixin.js.
+    category.subtotalQtyDisplay = Math.round(category.subtotalQty * 100) / 100;
     let temp = Object.assign({}, category);
     Object.assign(temp, {
         items, subtotalUnit: args.totalUnit, currencySymbol: args.currencySymbol, showPrices: args.showPrices,

@@ -19,7 +19,7 @@
                     <span class="lpSubtotalUnit">{{ library.totalUnit }} <i class="lpSprite lpExpand lpGhostCaret" /></span>
                 </span>
                 <span class="lpQtyCell lpSubtotal">
-                    <span class="lpQtySubtotal">{{ category.subtotalQty }}</span>
+                    <span class="lpQtySubtotal">{{ displayQty(category.subtotalQty) }}</span>
                 </span>
                 <span class="lpRemoveCell"><a class="lpRemove lpRemoveCategory" title="Remove this category" @click="removeCategory(category)"><i class="lpSprite lpSpriteRemove" /></a></span>
             </li>

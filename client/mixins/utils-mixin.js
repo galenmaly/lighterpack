@@ -12,6 +12,11 @@ const utilsMixin = {
             }
             return symbol + amount;
         },
+        // Qty accepts fractions, so summing leaves float noise (0.1 + 0.2 ->
+        // 0.30000000000000004). No toFixed: a subtotal of 5 reads 5, not 5.00.
+        displayQty(qty) {
+            return Math.round(qty * 100) / 100;
+        },
     },
 };
 
