@@ -32,6 +32,12 @@ export function fetchJson(url, options) {
         assignIn(fetchOptions, options);
     }
 
+    // Callers that restore a session at boot handle their own auth failures:
+    // redirecting from here would throw the user off whatever page they asked
+    // for, including the reset form they need in order to get back in.
+    const redirectOnAuthFailure = fetchOptions.redirectOnAuthFailure !== false;
+    delete fetchOptions.redirectOnAuthFailure;
+
     if (!fetchOptions.body && !fetchOptions.headers['Content-Type']) {
         fetchOptions.headers['Content-Type'] = 'application/json';
     }
@@ -66,7 +72,7 @@ export function fetchJson(url, options) {
                 if (response.ok) {
                     return resolve(response.json);
                 }
-                if (response.status && (response.status === 401 || response.status === 403)) {
+                if (redirectOnAuthFailure && response.status && (response.status === 401 || response.status === 403)) {
                     window.location = '/signin';
                     return;
                 }

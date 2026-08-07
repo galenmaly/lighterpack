@@ -310,6 +310,7 @@ const store = createStore({
                     'Content-Type': 'application/json',
                 },
                 credentials: 'same-origin',
+                redirectOnAuthFailure: false,
             })
                 .then((response) => {
                     context.commit('setSyncToken', response.sync_token);
@@ -317,14 +318,18 @@ const store = createStore({
                     context.commit('setSaveType', 'remote');
                     context.commit('setLoggedIn', response.username);
                 })
-                .catch((response) => {
-                    if (response.status == 401) {
-                        window.location = '/signin';
-                    } else {
-                        return new Promise((resolve, reject) => {
-                            reject('An error occurred while fetching your data, please try again later.');
-                        });
+                .catch((error) => {
+                    // A refused session is the ordinary state for anyone landing
+                    // on the sign-in or password-reset pages, so boot signed-out
+                    // and let the router show the page that was asked for rather
+                    // than redirecting away from it. The server clears the
+                    // cookies alongside these, so the next load starts clean.
+                    if ([401, 403, 404].includes(error.statusCode)) {
+                        context.commit('setLoggedIn', false);
+                        context.commit('clearLibraryData');
+                        return;
                     }
+                    return Promise.reject('An error occurred while fetching your data, please try again later.');
                 });
         },
     },

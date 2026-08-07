@@ -455,4 +455,68 @@ test.describe('Password reset token flow', () => {
 
     await request.dispose();
   });
+
+  // Someone following a reset link almost always has a dead session in the
+  // browser - being locked out is why they asked for the link. The client boots
+  // off lp_loggedin and calls /signin, the server rejects the stale token, and
+  // the page still has to render the form rather than bouncing them away.
+  const deadSessionCookie = 'a'.repeat(96);
+
+  test('a dead session cookie still lets the reset form load and submit', async ({ page, context, playwright }) => {
+    const request = await playwright.request.newContext();
+    const user = await registerViaApi(request);
+    const token = await seedResetToken(user.username);
+    await request.dispose();
+
+    // The state a server-side-invalidated session leaves behind: the flag the
+    // client boots from, plus a token matching no user. Only /signout ever
+    // cleared these, so the browser holds them indefinitely.
+    await context.addCookies([
+      { name: 'lp', value: deadSessionCookie, url: testRoot },
+      { name: 'lp_loggedin', value: '1', url: testRoot },
+    ]);
+
+    await page.goto(`${testRoot}reset-password/${token}`);
+
+    // The failure this guards against is being redirected away mid-boot, so
+    // assert on where we ended up before looking for anything on the page.
+    await expect(page).toHaveURL(`${testRoot}reset-password/${token}`);
+
+    const form = page.getByTestId('reset-password-form');
+    await expect(form).toBeVisible();
+
+    const newPassword = 'afterdeadcookie';
+    await form.locator('input.password').fill(newPassword);
+    await form.locator('input.passwordConfirm').fill(newPassword);
+    await form.getByRole('button', { name: 'Save new password' }).click();
+
+    await expect(page.getByTestId('account-menu')).toContainText(user.username);
+
+    const fresh = await playwright.request.newContext();
+    const withNew = await fresh.post(url('/signin'), {
+      data: { username: user.username, password: newPassword },
+    });
+    expect(withNew.status()).toBe(200);
+    await fresh.dispose();
+  });
+
+  test('a rejected session cookie is cleared rather than left to be replayed', async ({ playwright }) => {
+    const request = await playwright.request.newContext();
+
+    const response = await request.post(url('/signin'), {
+      headers: { cookie: `lp=${deadSessionCookie}; lp_loggedin=1` },
+    });
+    expect(response.status()).toBe(404);
+
+    const setCookies = response.headersArray()
+      .filter((h) => h.name.toLowerCase() === 'set-cookie')
+      .map((h) => h.value);
+
+    // Without this the browser replays the same dead session on every load and
+    // never leaves the broken state on its own.
+    expect(setCookies.some((c) => c.startsWith('lp=;'))).toBe(true);
+    expect(setCookies.some((c) => c.startsWith('lp_loggedin=;'))).toBe(true);
+
+    await request.dispose();
+  });
 });

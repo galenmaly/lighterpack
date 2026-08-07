@@ -58,9 +58,22 @@ const authenticateModerator = async function (req, res, callback) {
     });
 };
 
+// The browser is holding a session this server won't honour. /signout was the
+// only thing that ever cleared these, so without this the client keeps booting
+// off lp_loggedin, gets rejected again, and every reload lands in the same
+// broken state - including on the password-reset page, which is exactly where
+// someone with a dead session ends up.
+const clearStaleSessionCookies = function (req, res) {
+    if (!req.cookies.lp && !req.cookies.lp_loggedin) return;
+    const opts = sessionCookieOptions();
+    res.clearCookie('lp', opts);
+    res.clearCookie('lp_loggedin', { ...opts, httpOnly: false });
+};
+
 const authenticateUser = async function (req, res, callback) {
     if (!req.body) req.body = {}; // GETs and multipart requests arrive with no parsed body
     if (!req.cookies.lp && (!req.body.username || !req.body.password)) {
+        clearStaleSessionCookies(req, res);
         return res.status(401).json({ message: 'Please log in.' });
     }
 
@@ -90,6 +103,7 @@ const authenticateUser = async function (req, res, callback) {
 
             if (!users.length) {
                 logWithRequest(req, { message: 'bad cookie!' });
+                clearStaleSessionCookies(req, res);
                 return res.status(404).json({ message: 'Please log in again.' });
             }
 
