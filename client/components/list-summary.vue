@@ -4,7 +4,7 @@
             <canvas class="lpChart" height="260" width="260" />
         </div>
         <div class="lpTotalsContainer">
-            <ul class="lpTotals lpTable lpDataTable">
+            <ul class="lpTotals lpTable lpDataTable" :class="{ lpHasPrice: list.optionalFields['price'] }">
                 <li v-for="category in categories" :key="category.id" :class="{'hover': category.id === hoveredCategoryId, 'lpTotalCategory lpRow': true}">
                     <span class="lpCell lpLegendCell">
                         <colorPicker v-if="category.displayColor" :color="colorToHex(category.displayColor)" @color-change="updateColor(category, $event)" />
@@ -206,8 +206,14 @@ export default {
     }
 }
 
+// A flex item floors at its contents' min-content width, so `flex: 0 0 330px`
+// was only ever a suggestion — one long category name pushed the panel, and the
+// page, well past it. Bound the growth instead: 330px is the resting width, and
+// only a name that needs the room takes the panel wider.
 .lpTotalsContainer {
-    flex: 0 0 330px;
+    flex: 0 1 auto;
+    max-width: 460px;
+    min-width: min(330px, 100%);
 }
 
 .lpTotals {
@@ -217,16 +223,28 @@ export default {
     margin: 0;
     padding: 0;
 
+    // One column budget for every row, declared the way the item table below
+    // declares its own (category.vue). `minmax(0, 1fr)` is the load-bearing
+    // part: a bare 1fr floors at its content, which is what let a long category
+    // name widen the panel instead of ellipsizing inside it.
     .lpRow {
         align-items: center;
-        display: flex;
-        gap: 9px;
+        column-gap: 9px;
+        display: grid;
+        grid-template-columns: 11px minmax(0, 1fr) 52px 30px;
         list-style: none;
         padding: 3px 0;
 
         &.hover {
             background: var(--lp-row-hover);
         }
+    }
+
+    // The price cell is conditional, so it gets its own track rather than
+    // shifting every column after it. These are subtotals, so unlike the item
+    // table's fixed 52px the track has to be able to outgrow it.
+    &.lpHasPrice .lpRow {
+        grid-template-columns: 11px minmax(0, 1fr) minmax(52px, auto) 52px 30px;
     }
 
     .lpTotalCategory {
@@ -258,31 +276,30 @@ export default {
     }
 
     .lpLegendCell {
-        flex: 0 0 11px;
         line-height: 0;
     }
 
     .lpCategoryCell {
-        flex: 1 1 auto;
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    // Right-aligned like the item table's, so the price track growing for a
+    // four-figure subtotal doesn't shift the column.
     .lpNumber {
         color: var(--lp-text-secondary);
-        flex: 0 0 auto;
+        text-align: right;
     }
 
     .lpWeightVal {
         color: var(--lp-text);
-        flex: 0 0 52px;
         text-align: right;
     }
 
     .lpUnitCell {
         color: var(--lp-text-secondary);
-        flex: 0 0 30px;
         font-size: 12px;
         padding-left: 5px;
     }

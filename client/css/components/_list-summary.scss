@@ -23,8 +23,14 @@
     }
 }
 
+// A flex item floors at its contents' min-content width, so `flex: 0 0 330px`
+// was only ever a suggestion — one long category name pushed the panel well
+// past it. Bound the growth instead: 330px is the resting width, and only a
+// name that needs the room takes the panel wider.
 .lpTotalsContainer {
-    flex: 0 0 330px;
+    flex: 0 1 auto;
+    max-width: 460px;
+    min-width: min(330px, 100%);
 }
 
 .lpLegend {
@@ -46,12 +52,24 @@
     margin: 0;
     padding: 0;
 
+    // One column budget for every row. `minmax(0, 1fr)` is the load-bearing
+    // part: a bare 1fr floors at its content, which is what let a long category
+    // name widen the panel instead of ellipsizing inside it. Three columns
+    // here, not the app's four — the weight and its unit share a cell (below).
     .lpRow {
         align-items: center;
-        display: flex;
-        gap: 9px;
+        column-gap: 9px;
+        display: grid;
+        grid-template-columns: 11px minmax(0, 1fr) 87px;
         list-style: none;
         padding: 3px 0;
+    }
+
+    // The price cell is conditional, so it gets its own track rather than
+    // shifting every column after it. These are subtotals, so unlike the item
+    // table's fixed 52px the track has to be able to outgrow it.
+    .lpShowPrices & .lpRow {
+        grid-template-columns: 11px minmax(0, 1fr) minmax(52px, auto) 87px;
     }
 
     .lpTotalCategory {
@@ -84,20 +102,21 @@
     }
 
     .lpLegendCell {
-        flex: 0 0 11px;
         line-height: 0;
     }
 
     .lpCategoryCell {
-        flex: 1 1 auto;
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    // Right-aligned like the item table's, so the price track growing for a
+    // four-figure subtotal doesn't shift the column.
     .lpNumber {
         color: var(--lp-text-secondary);
-        flex: 0 0 auto;
+        text-align: right;
     }
 
     // The app splits the weight value and its unit into two cells. Here they
@@ -107,7 +126,6 @@
     .lpWeightVal {
         color: var(--lp-text);
         display: flex;
-        flex: 0 0 87px;
         justify-content: flex-end;
         align-items: baseline;
 
@@ -161,6 +179,13 @@
 
     .lpChart {
         max-width: 100%;
+    }
+
+    // Too narrow to hold the chart and a 330px panel side by side; below this
+    // the panel gives up its resting width rather than push the pair wider
+    // than the page.
+    .lpTotalsContainer {
+        min-width: 0;
     }
 }
 
