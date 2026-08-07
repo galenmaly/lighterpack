@@ -221,8 +221,8 @@ const store = createStore({
             state.library.forkItem(args.itemId, args.listId);
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
-        copyList(state, listId) {
-            const copiedList = state.library.copyList(listId);
+        copyList(state, { listId, linkItems }) {
+            const copiedList = state.library.copyList(listId, { linkItems });
             state.library.defaultListId = copiedList.id;
         },
         importCSV(state, importData) {

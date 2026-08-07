@@ -474,11 +474,15 @@ Library.prototype.removeList = function (id) {
     }
 };
 
-Library.prototype.copyList = function (id) {
+Library.prototype.copyList = function (id, { linkItems = true } = {}) {
     const oldList = this.getListById(id);
     if (!oldList) return;
 
     const copiedList = this.newList();
+
+    // When unlinking, an item appearing several times in the source list maps
+    // to a single new item, so the copy is still internally consistent.
+    const copiedItemIds = {};
 
     copiedList.name = `Copy of ${oldList.name}`;
     copiedList.optionalFields = assignIn({}, oldList.optionalFields);
@@ -489,7 +493,19 @@ Library.prototype.copyList = function (id) {
         copiedCategory.name = oldCategory.name;
 
         for (const j in oldCategory.categoryItems) {
-            copiedCategory.addItem(oldCategory.categoryItems[j]);
+            const oldCategoryItem = oldCategory.categoryItems[j];
+            let itemId = oldCategoryItem.itemId;
+            if (!linkItems) {
+                if (!(itemId in copiedItemIds)) {
+                    const copiedItem = this.newItem({});
+                    const copiedId = copiedItem.id;
+                    assignIn(copiedItem, this.getItemById(itemId));
+                    copiedItem.id = copiedId;
+                    copiedItemIds[itemId] = copiedId;
+                }
+                itemId = copiedItemIds[itemId];
+            }
+            copiedCategory.addItem(assignIn({}, oldCategoryItem, { itemId }));
         }
     }
 
