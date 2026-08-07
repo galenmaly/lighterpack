@@ -10,7 +10,8 @@ import cloneDeep from 'lodash/cloneDeep.js';
 import Knex from 'knex';
 import { logWithRequest } from './log.js';
 import { authenticateUser, verifyPassword, generateSession, sessionCookieOptions, issueResetToken, hashResetToken, resetPasswordUrl, RESET_TOKEN_TTL_MS } from './auth.js';
-import { sniffImage, storeImage, deleteUserImages } from './images.js';
+import { sniffImage, storeImage } from './images.js';
+import { deleteUserAccount } from './accounts.js';
 import { Library } from '../client/dataTypes.js';
 
 const router = express.Router();
@@ -537,22 +538,13 @@ async function deleteAccount(req, res, user) {
     }
 
     try {
-        // list rows FK-reference the user, so they must go first (same transaction)
-        await knex.transaction(async (trx) => {
-            await trx('list').where({user_id: user.user_id}).del();
-            await trx('users').where({user_id: user.user_id}).del();
-        });
+        const { removedImages, imageError } = await deleteUserAccount(user);
 
         logWithRequest(req, { message: 'Completed account delete', username: user.username });
-
-        // After the commit, so a rolled-back delete never destroys photos. Best
-        // effort: the account itself is already gone, and leaving files behind
-        // is recoverable in a way that failing the request to the user is not.
-        try {
-            const removed = deleteUserImages(user.user_id);
-            logWithRequest(req, { message: 'Deleted account images', username: user.username, removed });
-        } catch (err) {
-            logWithRequest(req, { message: 'Account image cleanup failed', username: user.username, err });
+        if (imageError) {
+            logWithRequest(req, { message: 'Account image cleanup failed', username: user.username, err: imageError });
+        } else {
+            logWithRequest(req, { message: 'Deleted account images', username: user.username, removed: removedImages });
         }
 
         return res.status(200).json({ message: 'success' });

@@ -168,6 +168,24 @@ test.describe('User Authentication Tests', () => {
     await expect(page.getByTestId('account-menu')).not.toBeVisible();
   });
 
+  test('accepts confirmation text with the trailing space a phone keyboard adds', async ({ page }) => {
+    await page.goto(testRoot);
+
+    const { username, password, email } = generateTestUser('deltrim');
+
+    await registerUser(page, username, password, email);
+    await page.getByTestId('account-menu').hover();
+    await page.getByText('Account Settings').click();
+    await page.getByText('Delete Account').click();
+
+    const deleteModal = page.locator('.lpModal').filter({ hasText: 'delete my account' });
+    await deleteModal.getByPlaceholder('Current password').fill(password);
+    await deleteModal.getByPlaceholder('Confirmation text').fill('Delete my account ');
+
+    await page.getByText('Permanently delete account').click();
+    await expect(page.getByRole('heading').filter({hasText: 'Sign in'})).toBeVisible();
+  });
+
   test('should show validation errors when registering with missing fields', async ({ page }) => {
     await page.goto(testRoot);
 

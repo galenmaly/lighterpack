@@ -10,7 +10,7 @@
             <div class="lpFields">
                 <input v-model="currentPassword" type="password" placeholder="Current password" name="currentPassword" class="currentPassword">
 
-                <input v-model="confirmationText" type="text" name="confirmationText" placeholder="Confirmation text">
+                <input v-model="confirmationText" type="text" name="confirmationText" placeholder="Confirmation text" autocapitalize="none" autocorrect="off" spellcheck="false">
             </div>
 
             <errors :errors="errors" />
@@ -51,7 +51,9 @@ export default {
     },
     computed: {
         isConfirmationComplete() {
-            return this.confirmationText.toLocaleLowerCase() === 'delete my account';
+            // Trimmed: phone keyboards add a trailing space when you accept an
+            // autocomplete suggestion, which is invisible in the field.
+            return this.confirmationText.trim().toLocaleLowerCase() === 'delete my account';
         },
     },
     methods: {

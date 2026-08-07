@@ -241,6 +241,36 @@ test.describe('/moderation contract', () => {
         await request.dispose();
     });
 
+    test('search returns only the fields the panel needs, never credentials', async ({ playwright }) => {
+        // The handler selects the whole row, which carries the password hash and
+        // the live session token. Only the mapped allowlist may leave the server.
+        const request = await playwright.request.newContext();
+        const user = await registerViaApi(request);
+
+        const moderator = `lpe2emoderator${test.info().workerIndex}`;
+        const registered = await request.post(url('/register'), {
+            data: { username: moderator, email: `${moderator}@lighterpack.com`, password: 'moderatortest' },
+        });
+        if (registered.status() !== 200) {
+            const signedIn = await request.post(url('/signin'), {
+                data: { username: moderator, password: 'moderatortest' },
+            });
+            expect(signedIn.status()).toBe(200);
+        }
+
+        const response = await request.get(url(`/moderation/search?q=${user.username}`));
+        expect(response.status()).toBe(200);
+        const raw = await response.text();
+        expect(raw).not.toContain(user.password);
+
+        const [hit] = (JSON.parse(raw)).results;
+        expect(hit.username).toBe(user.username);
+        expect(Object.keys(hit).sort()).toEqual(
+            ['email', 'lastSeen', 'library', 'lists', 'registered', 'syncToken', 'username'],
+        );
+        await request.dispose();
+    });
+
     test('regular signed-in user is denied moderation password reset with 403', async ({ playwright }) => {
         const request = await playwright.request.newContext();
         await registerViaApi(request);
@@ -341,6 +371,56 @@ test.describe('/delete-account contract', () => {
         expect(del.status()).toBe(200);
         expect((await del.json()).message).toBe('success');
         await request.dispose();
+    });
+
+    // The client posts username+password, so authenticateUser takes its
+    // credential branch and refuses these before deleteAccount ever runs --
+    // hence 404 from the auth layer rather than the handler's own 400. What
+    // matters either way is that the account is still there afterwards.
+    test('a wrong password does not delete the account', async ({ playwright }) => {
+        const request = await playwright.request.newContext();
+        const user = await registerViaApi(request);
+
+        const del = await request.post(url('/delete-account'), {
+            data: { username: user.username, password: 'notthepassword' },
+        });
+        expect(del.status()).toBe(404);
+        expect((await del.json()).message).toBe('Invalid username and/or password.');
+
+        const stillThere = await request.post(url('/signin'), {
+            data: { username: user.username, password: user.password },
+        });
+        expect(stillThere.status()).toBe(200);
+        await request.dispose();
+    });
+
+    test('a session cannot delete a different account than its own', async ({ playwright }) => {
+        const request = await playwright.request.newContext();
+        const victim = await registerViaApi(request);
+
+        // A distinct password: generateTestUser gives every account the same
+        // one, which would make the session's password the victim's too.
+        const attacker = await playwright.request.newContext();
+        const other = generateTestUser('api');
+        const otherPassword = 'a-different-password';
+        const registered = await attacker.post(url('/register'), {
+            data: { username: other.username, email: other.email, password: otherPassword },
+        });
+        expect(registered.status()).toBe(200);
+
+        // Signed in as one account, naming another. The session's own password
+        // does not unlock someone else's row.
+        const del = await attacker.post(url('/delete-account'), {
+            data: { username: victim.username, password: otherPassword },
+        });
+        expect(del.status()).toBe(404);
+
+        const victimAlive = await request.post(url('/signin'), {
+            data: { username: victim.username, password: victim.password },
+        });
+        expect(victimAlive.status()).toBe(200);
+        await request.dispose();
+        await attacker.dispose();
     });
 });
 

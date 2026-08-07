@@ -25,11 +25,29 @@ async function search(req, res) {
             .orWhereILike('email', `%${searchQuery}%`)
             .select('*');
 
+        // One grouped count for the whole result set rather than a query per
+        // user. Users with no lists simply don't appear in it.
+        const listCounts = new Map();
+        if (userResults.length) {
+            const counts = await knex('list')
+                .whereIn('user_id', userResults.map((user) => user.user_id))
+                .groupBy('user_id')
+                .select('user_id')
+                .count({ lists: '*' });
+            for (const row of counts) listCounts.set(row.user_id, Number(row.lists));
+        }
+
+        // Explicit field list, never select('*'): the row carries the password
+        // hash and the session token.
         const bridgeUserResults = userResults
             .map((user) => ({
                 username: user.username,
                 library: user.library,
                 email: user.email,
+                registered: user.registered,
+                lastSeen: user.last_seen,
+                syncToken: user.sync_token,
+                lists: listCounts.get(user.user_id) ?? 0,
             }));
 
         res.json({ results: bridgeUserResults });
