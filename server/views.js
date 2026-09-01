@@ -11,6 +11,7 @@ import { logWithRequest, logger } from './log.js';
 import weightUtils from '../client/utils/weight.js';
 import { marked, isSafeHref } from '../client/utils/markdown.js';
 import { Library } from '../client/dataTypes.js';
+import vueRoutePaths from '../client/route-paths.js';
 import { listToCsv } from './csv.js';
 
 const router = express.Router();
@@ -34,18 +35,6 @@ const embedTemplate = fs.readFileSync(path.join(templatesDir, 'embed.mustache'),
 const embedJTemplate = fs.readFileSync(path.join(templatesDir, 'embed.jmustache'), 'utf8');
 // Absolute, unlike the style links: the embed runs on another origin.
 const embedScriptUrls = [];
-
-const vueRoutes = [ /* TODO - get this from same data source as Vue */
-    { path: '/' },
-    { path: '/signin' },
-    { path: '/signin/reset-password' },
-    { path: '/signin/forgot-username' },
-    { path: '/welcome' },
-    { path: '/register' },
-    { path: '/forgot-password' },
-    { path: '/reset-password/:token' },
-    { path: '/moderation' },
-];
 
 let index = fs.readFileSync(path.join(import.meta.dirname, '../_index.html'), 'utf8');
 let shareStylesHtml = '';
@@ -173,8 +162,8 @@ docPages.forEach((doc, i) => {
     });
 });
 
-for (let i = 0; i < vueRoutes.length; i++) {
-    router.get(vueRoutes[i].path, (req, res) => {
+for (const routePath of vueRoutePaths) {
+    router.get(routePath, (req, res) => {
         res.send(index);
     });
 }
