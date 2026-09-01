@@ -20,10 +20,18 @@ const knex = Knex({
     connection: cloneDeep(config.get('pgDatabase'))
 });
 
+const templatesDir = path.join(import.meta.dirname, '../templates');
+
 const templates = {};
-let shareTemplate = '';
-let embedTemplate = '';
-let embedJTemplate = '';
+fs.readdirSync(templatesDir)
+    .filter((file) => file.startsWith('t_') && file.endsWith('.mustache'))
+    .forEach((file) => {
+        templates[file.slice(0, -'.mustache'.length)] = fs.readFileSync(path.join(templatesDir, file), 'utf8');
+    });
+
+const shareTemplate = fs.readFileSync(path.join(templatesDir, 'share.mustache'), 'utf8').replace(/\r?\n|\r/g, '');
+const embedTemplate = fs.readFileSync(path.join(templatesDir, 'embed.mustache'), 'utf8').replace(/\r?\n|\r/g, '');
+const embedJTemplate = fs.readFileSync(path.join(templatesDir, 'embed.jmustache'), 'utf8');
 // Absolute, unlike the style links: the embed runs on another origin.
 const embedScriptUrls = [];
 
@@ -125,7 +133,7 @@ const docPages = [
     },
 ];
 
-const docTemplate = fs.readFileSync(path.join(import.meta.dirname, '../templates/doc.mustache'), 'utf8');
+const docTemplate = fs.readFileSync(path.join(templatesDir, 'doc.mustache'), 'utf8');
 
 function renderDocPage(doc, sibling) {
     const source = fs.readFileSync(path.join(import.meta.dirname, '..', doc.file), 'utf8');
@@ -272,48 +280,6 @@ router.get('/csv/:id', sharedListRoute('csv', (req, res, { id, library, list }) 
     res.send(out);
 }));
 
-function init() {
-    fs.readdir(path.join(import.meta.dirname, '../templates'), (err, files) => {
-        if (err) {
-            logger.error({message: 'Error loading templates', err});
-        }
-        files.filter((file) => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
-            const fileShort = file.substr(0, file.length - 9);
-            const data = fs.readFileSync(path.join(import.meta.dirname, '../templates/', file));
-            templates[fileShort] = data.toString();
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/share.mustache'), (err, data) => {
-            if (!err) {
-                shareTemplate = data.toString();
-                shareTemplate = shareTemplate.replace(/\r?\n|\r/g, '');
-            } else {
-                logger.error({message: 'ERROR reading share.mustache', err});
-            }
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/embed.mustache'), (err, data) => {
-            if (!err) {
-                embedTemplate = data.toString();
-                embedTemplate = embedTemplate.replace(/\r?\n|\r/g, '');
-            } else {
-                logger.error({message: 'ERROR reading embed.mustache', err});
-            }
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/embed.jmustache'), (err, data) => {
-            if (!err) {
-                embedJTemplate = data.toString();
-            } else {
-                logger.error({message: 'ERROR reading embed.jmustache', err});
-            }
-        });
-
-        // fs.writeFile(filePath, data, function(err) {
-        logger.info({message: 'views init complete.'});
-    });
-}
-
 const renderItem = function (item, args) {
     let classes = '';
     if (args.classes) classes = args.classes;
@@ -447,7 +413,5 @@ function renderUnitSelect(unit, unitSelectTemplate, weight) {
     const temp = { unit, units: [{ unit: 'oz', selected: (unit == 'oz') }, { unit: 'lb', selected: (unit == 'lb') }, { unit: 'g', selected: (unit == 'g') }, { unit: 'kg', selected: (unit == 'kg') }], weight };
     return Mustache.render(unitSelectTemplate, temp);
 }
-
-init();
 
 export default router;
