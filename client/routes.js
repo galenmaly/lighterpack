@@ -1,3 +1,4 @@
+import routePaths from './route-paths.js';
 import dashboard from './views/dashboard.vue';
 import gear from './views/gear.vue';
 import welcome from './views/welcome.vue';
@@ -7,16 +8,26 @@ import forgotPassword from './views/forgot-password.vue';
 import resetPassword from './views/reset-password.vue';
 import moderation from './views/moderation.vue';
 
+const components = {
+    '/': dashboard,
+    '/gear': gear,
+    '/welcome': welcome,
+    '/signin': signin,
+    '/signin/reset-password': signin,
+    '/signin/forgot-username': signin,
+    '/register': register,
+    '/forgot-password': forgotPassword,
+    '/reset-password/:token': resetPassword,
+    '/moderation': moderation,
+};
+
 export default [
-    { path: '/', component: dashboard },
-    { path: '/gear', component: gear },
-    { path: '/welcome', component: welcome },
-    { path: '/signin', component: signin },
-    { path: '/signin/reset-password', component: signin },
-    { path: '/signin/forgot-username', component: signin },
-    { path: '/register', component: register },
-    { path: '/forgot-password', component: forgotPassword },
-    { path: '/reset-password/:token', component: resetPassword },
-    { path: '/moderation', component: moderation },
+    ...routePaths.map((path) => {
+        const component = components[path];
+        if (!component) {
+            throw new Error(`No component registered for route ${path}`);
+        }
+        return { path, component };
+    }),
     { path: '/:pathMatch(.*)*', component: dashboard },
 ];

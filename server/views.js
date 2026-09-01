@@ -11,6 +11,7 @@ import { logWithRequest, logger } from './log.js';
 import weightUtils from '../client/utils/weight.js';
 import { marked, isSafeHref } from '../client/utils/markdown.js';
 import { Library } from '../client/dataTypes.js';
+import vueRoutePaths from '../client/route-paths.js';
 import { listToCsv } from './csv.js';
 
 const router = express.Router();
@@ -20,24 +21,20 @@ const knex = Knex({
     connection: cloneDeep(config.get('pgDatabase'))
 });
 
+const templatesDir = path.join(import.meta.dirname, '../templates');
+
 const templates = {};
-let shareTemplate = '';
-let embedTemplate = '';
-let embedJTemplate = '';
+fs.readdirSync(templatesDir)
+    .filter((file) => file.startsWith('t_') && file.endsWith('.mustache'))
+    .forEach((file) => {
+        templates[file.slice(0, -'.mustache'.length)] = fs.readFileSync(path.join(templatesDir, file), 'utf8');
+    });
+
+const shareTemplate = fs.readFileSync(path.join(templatesDir, 'share.mustache'), 'utf8').replace(/\r?\n|\r/g, '');
+const embedTemplate = fs.readFileSync(path.join(templatesDir, 'embed.mustache'), 'utf8').replace(/\r?\n|\r/g, '');
+const embedJTemplate = fs.readFileSync(path.join(templatesDir, 'embed.jmustache'), 'utf8');
 // Absolute, unlike the style links: the embed runs on another origin.
 const embedScriptUrls = [];
-
-const vueRoutes = [ /* TODO - get this from same data source as Vue */
-    { path: '/' },
-    { path: '/signin' },
-    { path: '/signin/reset-password' },
-    { path: '/signin/forgot-username' },
-    { path: '/welcome' },
-    { path: '/register' },
-    { path: '/forgot-password' },
-    { path: '/reset-password/:token' },
-    { path: '/moderation' },
-];
 
 let index = fs.readFileSync(path.join(import.meta.dirname, '../_index.html'), 'utf8');
 let shareStylesHtml = '';
@@ -125,7 +122,7 @@ const docPages = [
     },
 ];
 
-const docTemplate = fs.readFileSync(path.join(import.meta.dirname, '../templates/doc.mustache'), 'utf8');
+const docTemplate = fs.readFileSync(path.join(templatesDir, 'doc.mustache'), 'utf8');
 
 function renderDocPage(doc, sibling) {
     const source = fs.readFileSync(path.join(import.meta.dirname, '..', doc.file), 'utf8');
@@ -165,88 +162,79 @@ docPages.forEach((doc, i) => {
     });
 });
 
-for (let i = 0; i < vueRoutes.length; i++) {
-    router.get(vueRoutes[i].path, (req, res) => {
+for (const routePath of vueRoutePaths) {
+    router.get(routePath, (req, res) => {
         res.send(index);
     });
 }
 
-router.get('/r/:id', (req, res) => {
-    renderListView(req, res);
-});
+function sharedListRoute(surface, render) {
+    return async (req, res) => {
+        const id = String(req.params.id).trim();
 
-async function renderListView(req, res) {
-    const id = String(req.params.id).trim();
-
-    if (!id) {
-        res.status(400).send('No list specified!');
-        return;
-    }
-
-    try {
-        const users = await knex('users')
-            .join('list', 'users.user_id', '=', 'list.user_id')
-            .select('users.library')
-            .where({'list.external_id': id });
-
-        if (!users.length) {
-            res.status(400).send('Invalid list specified.');
-            return;
+        if (!id) {
+            return res.status(400).send('No list specified!');
         }
 
-        const user = users[0];
+        try {
+            const users = await knex('users')
+                .join('list', 'users.user_id', '=', 'list.user_id')
+                .select('users.library')
+                .where({'list.external_id': id });
 
-        const library = new Library();
-        let list;
-
-        if (typeof (user.library) === 'undefined') {
-            logWithRequest(req, `Undefined user library with list ID ${id}`);
-            return res.status(500).send('Unknown error.');
-        }
-
-        library.load(user.library);
-        for (const i in library.lists) {
-            if (library.lists[i].externalId && library.lists[i].externalId == id) {
-                library.defaultListId = library.lists[i].id;
-                list = library.lists[i];
-                break;
+            if (!users.length) {
+                return res.status(400).send('Invalid list specified.');
             }
-        }
 
-        if (!list) { //List is in the DB but not the library
-            res.status(400).send('Invalid list specified.');
-            return;
-        }
+            const user = users[0];
 
-        const chartData = escape(JSON.stringify(list.renderChart('total', false)));
-        const renderedCategories = renderLibrary(library, {
+            if (typeof (user.library) === 'undefined') {
+                logWithRequest(req, `Undefined user library with list ID ${id}`);
+                return res.status(500).send('Unknown error.');
+            }
+
+            const library = new Library();
+            library.load(user.library);
+            const list = library.lists.find((l) => l.externalId && l.externalId == id);
+
+            if (!list) { // List is in the DB but not the library
+                return res.status(400).send('Invalid list specified.');
+            }
+            library.defaultListId = list.id;
+
+            return await render(req, res, { id, library, list });
+        } catch (err) {
+            logWithRequest(req, {message: `error rendering ${surface}`, err});
+            return res.status(500).send('An error occurred.');
+        }
+    };
+}
+
+function sharedListModel(library, list) {
+    return {
+        listName: list.name,
+        chartData: escape(JSON.stringify(list.renderChart('total', false))),
+        renderedCategories: renderLibrary(library, {
             itemTemplate: templates.t_itemShare,
             categoryTemplate: templates.t_categoryShare,
             optionalFields: list.optionalFields,
             unitSelectTemplate: templates.t_unitSelect,
             currencySymbol: library.currencySymbol,
-        });
-
-        const renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect);
-
-        let model = {
-            listName: list.name,
-            chartData,
-            renderedCategories,
-            renderedTotals,
-            optionalFields: list.optionalFields,
-            renderedDescription: marked(list.description),
-            scripts: shareScriptsHtml,
-            styles: shareStylesHtml,
-        };
-
-        Object.assign(model, templates);
-        res.send(Mustache.render(shareTemplate, model));
-    } catch (err) {
-        logWithRequest(req, {message: 'error rendering list', err});
-        return res.status(500).send('An error occurred.');
-    }
+        }),
+        renderedTotals: renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect),
+        optionalFields: list.optionalFields,
+        renderedDescription: marked(list.description),
+    };
 }
+
+router.get('/r/:id', sharedListRoute('list', (req, res, { library, list }) => {
+    const model = Object.assign(sharedListModel(library, list), {
+        scripts: shareScriptsHtml,
+        styles: shareStylesHtml,
+    }, templates);
+
+    res.send(Mustache.render(shareTemplate, model));
+}));
 
 // The embed's bundle, served from a path we control so it can carry CORS —
 // module scripts are fetched cors-mode, and /dist is served by Apache. The
@@ -258,191 +246,28 @@ router.use('/e/dist', express.static(path.join(import.meta.dirname, '../public/d
     setHeaders: (res) => res.set('Access-Control-Allow-Origin', '*'),
 }));
 
-router.get('/e/:id', (req, res) => {
-    renderEmberView(req, res);
-});
+router.get('/e/:id', sharedListRoute('embed', (req, res, { id, library, list }) => {
+    const model = Object.assign(sharedListModel(library, list), {
+        externalId: id,
+        baseUrl: config.get('deployUrl'),
+        styles: shareStylesLinks,
+        scripts: embedScriptUrls,
+    }, templates);
 
-async function renderEmberView(req, res) {
-    const id = String(req.params.id).trim();
+    model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
+    res.type('application/javascript');
+    res.send(Mustache.render(embedJTemplate, model));
+}));
 
-    if (!id) {
-        res.status(400).send('No list specified!');
-        return;
-    }
+router.get('/csv/:id', sharedListRoute('csv', (req, res, { id, library, list }) => {
+    const out = listToCsv(library, list);
 
-    try {
-        const users = await knex('users')
-            .join('list', 'users.user_id', '=', 'list.user_id')
-            .select('users.library')
-            .where({'list.external_id': id });
+    const filename = (list.name || id).replace(/[^a-z0-9-]/gi, '_');
 
-        if (!users.length) {
-            res.status(400).send('Invalid list specified.');
-            return;
-        }
-
-        const user = users[0];
-
-        const library = new Library();
-        let list;
-
-        if (typeof (user.library) === 'undefined') {
-            logWithRequest(req, `Undefined user library with list ID ${id}`);
-            return res.status(500).send('Unknown error.');
-        }
-
-        library.load(user.library);
-        for (const i in library.lists) {
-            if (library.lists[i].externalId && library.lists[i].externalId == id) {
-                library.defaultListId = library.lists[i].id;
-                list = library.lists[i];
-                break;
-            }
-        }
-
-        if (!list) { // List is in the DB but not the library
-            res.status(400).send('Invalid list specified.');
-            return;
-        }
-
-        const chartData = escape(JSON.stringify(list.renderChart('total', false)));
-
-        const renderedCategories = renderLibrary(library, {
-            itemTemplate: templates.t_itemShare,
-            categoryTemplate: templates.t_categoryShare,
-            optionalFields: list.optionalFields,
-            unitSelectTemplate: templates.t_unitSelect,
-            renderedDescription: marked(list.description),
-            currencySymbol: library.currencySymbol,
-        });
-
-        const renderedTotals = renderLibraryTotals(library, templates.t_totals, templates.t_unitSelect);
-
-        let model = {
-            externalId: id,
-            listName: list.name,
-            chartData,
-            renderedCategories,
-            renderedTotals,
-            optionalFields: list.optionalFields,
-            renderedDescription: marked(list.description),
-            baseUrl: config.get('deployUrl'),
-            styles: shareStylesLinks,
-            scripts: embedScriptUrls,
-        };
-        Object.assign(model, templates);
-        model.renderedTemplate = escape(Mustache.render(embedTemplate, model));
-        res.type('application/javascript');
-        res.send(Mustache.render(embedJTemplate, model));
-    } catch (err) {
-        logWithRequest(req, {message: 'error rendering ember', err});
-        return res.status(500).send('An error occurred.');
-    }
-}
-
-router.get('/csv/:id', (req, res) => {
-    renderListCSV(req, res);   
-});
-
-async function renderListCSV(req, res) {
-    const id = req.params.id;
-
-    if (!id) {
-        res.status(400).send('No list specified!');
-        return;
-    }
-
-    try {
-        const users = await knex('users')
-            .join('list', 'users.user_id', '=', 'list.user_id')
-            .select('users.library')
-            .where({'list.external_id': id });
-
-        if (!users.length) {
-            res.status(400).send('Invalid list specified.');
-            return;
-        }
-
-        const user = users[0];
-
-        const library = new Library();
-        let list;
-
-        if (typeof (user.library) === 'undefined') {
-            logWithRequest(req, `Undefined user library with list ID ${id}`);
-            return res.status(500).send('Unknown error.');
-        }
-
-        library.load(users[0].library);
-        for (var i in library.lists) {
-            if (library.lists[i].externalId && library.lists[i].externalId == id) {
-                library.defaultListId = library.lists[i].id;
-                list = library.lists[i];
-                break;
-            }
-        }
-
-        if (!list) {
-            res.status(400).send('Invalid list specified.');
-            return;
-        }
-
-        const out = listToCsv(library, list);
-
-        let filename = list.name;
-        if (!filename) filename = id;
-        filename = filename.replace(/[^a-z0-9-]/gi, '_');
-
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', `attachment;filename=${filename}.csv`);
-        res.send(out);
-    } catch (err) {
-        logWithRequest(req, {message: 'error rendering csv', err});
-        return res.status(500).send('An error occurred.');
-    }
-}
-
-function init() {
-    fs.readdir(path.join(import.meta.dirname, '../templates'), (err, files) => {
-        if (err) {
-            logger.error({message: 'Error loading templates', err});
-        }
-        files.filter((file) => (file.substr(0, 2) == 't_' && file.substr(-9) == '.mustache')).forEach((file) => {
-            const fileShort = file.substr(0, file.length - 9);
-            const data = fs.readFileSync(path.join(import.meta.dirname, '../templates/', file));
-            templates[fileShort] = data.toString();
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/share.mustache'), (err, data) => {
-            if (!err) {
-                shareTemplate = data.toString();
-                shareTemplate = shareTemplate.replace(/\r?\n|\r/g, '');
-            } else {
-                logger.error({message: 'ERROR reading share.mustache', err});
-            }
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/embed.mustache'), (err, data) => {
-            if (!err) {
-                embedTemplate = data.toString();
-                embedTemplate = embedTemplate.replace(/\r?\n|\r/g, '');
-            } else {
-                logger.error({message: 'ERROR reading embed.mustache', err});
-            }
-        });
-
-        fs.readFile(path.join(import.meta.dirname, '../templates/embed.jmustache'), (err, data) => {
-            if (!err) {
-                embedJTemplate = data.toString();
-            } else {
-                logger.error({message: 'ERROR reading embed.jmustache', err});
-            }
-        });
-
-        // fs.writeFile(filePath, data, function(err) {
-        logger.info({message: 'views init complete.'});
-    });
-}
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment;filename=${filename}.csv`);
+    res.send(out);
+}));
 
 const renderItem = function (item, args) {
     let classes = '';
@@ -577,7 +402,5 @@ function renderUnitSelect(unit, unitSelectTemplate, weight) {
     const temp = { unit, units: [{ unit: 'oz', selected: (unit == 'oz') }, { unit: 'lb', selected: (unit == 'lb') }, { unit: 'g', selected: (unit == 'g') }, { unit: 'kg', selected: (unit == 'kg') }], weight };
     return Mustache.render(unitSelectTemplate, temp);
 }
-
-init();
 
 export default router;

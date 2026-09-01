@@ -529,3 +529,17 @@ test.describe('legacy sha3 password upgrade on signin', () => {
         });
     }
 });
+
+test.describe('SPA shell routes', () => {
+    test('every SPA route returns the app shell', async ({ playwright }) => {
+        const { default: vueRoutePaths } = await import('../../client/route-paths.js');
+        const request = await playwright.request.newContext();
+        for (const routePath of vueRoutePaths) {
+            const concrete = routePath.replace(':token', 'sometoken');
+            const response = await request.get(url(concrete));
+            expect(response.status(), `GET ${concrete}`).toBe(200);
+            expect(await response.text(), `GET ${concrete}`).toContain('<div id="lp">');
+        }
+        await request.dispose();
+    });
+});
