@@ -49,5 +49,10 @@
     "eslint": "^10.2.0",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^16.0.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true
   }
 }
